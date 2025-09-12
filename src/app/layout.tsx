@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/shared/theme-provider";
+import PurposeWarning from "@/components/shared/purpose-warning";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Go Electrify",
+  title: "Electrify",
   description: "A tool to help you find electric vehicle incentives.",
 };
 
@@ -34,6 +35,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <PurposeWarning />
           {children}
         </ThemeProvider>
       </body>

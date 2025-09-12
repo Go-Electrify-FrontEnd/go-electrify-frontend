@@ -11,7 +11,7 @@ interface AppLogoProps {
   className?: string;
 }
 
-export default async function AppLogo(props: AppLogoProps) {
+export default function AppLogo(props: AppLogoProps) {
   return (
     <Link
       href="/"
