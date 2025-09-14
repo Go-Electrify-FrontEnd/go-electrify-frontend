@@ -11,7 +11,9 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 ## Tech Stack
 
 Mocking: Using MockAPI to test the application in implementation phase locally.
+
 Deployment: Leveraging Vercel to publish the application to users
+
 UI Framework: TailwindCSS + ShadCN
 
 ## Architecture

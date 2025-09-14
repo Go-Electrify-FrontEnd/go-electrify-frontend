@@ -35,7 +35,6 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <PurposeWarning />
           {children}
         </ThemeProvider>
       </body>
