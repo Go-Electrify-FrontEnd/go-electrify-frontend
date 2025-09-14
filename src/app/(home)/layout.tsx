@@ -1,4 +1,5 @@
 import Navbar from "@/components/shared/navbar";
+import PurposeWarning from "@/components/shared/purpose-warning";
 
 export default function LandingLayout({
   children,
@@ -7,10 +8,8 @@ export default function LandingLayout({
 }>) {
   return (
     <main>
-      <div className="w-full">
-        <Navbar />
-      </div>
-
+      <PurposeWarning />
+      <Navbar />
       {children}
     </main>
   );

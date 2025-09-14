@@ -25,27 +25,30 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
-        {/* Logo */}
-        <div className="flex items-center">
+      <div className="container mx-auto flex h-16 items-center px-4 md:px-6">
+        {/* Logo - Fixed width */}
+        <div className="flex items-center w-48 flex-shrink-0">
           <AppLogo />
         </div>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8">
-          {navigationLinks.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-            >
-              {link.name}
-            </Link>
-          ))}
-        </nav>
+        {/* Desktop Navigation - Centered */}
+        <div className="w-full">
+          <nav className="hidden md:flex items-center justify-center flex-1">
+            <div className="flex items-center space-x-8">
+              {navigationLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {link.name}
+                </Link>
+              ))}
+            </div>
+          </nav>
+        </div>
 
-        {/* Desktop Login Button */}
-        <div className="hidden md:flex items-center space-x-4">
+        <div className="hidden md:flex items-center justify-end w-48 flex-shrink-0">
           <Button asChild>
             <Link href="/login">Login</Link>
           </Button>
