@@ -56,11 +56,12 @@ export function DashboardSidebar() {
   return (
     <div
       className={cn(
-        "hidden md:flex flex-col h-full border-r fixed border-border bg-sidebar transition-all duration-300 ease-in-out overflow-hidden",
+        "hidden md:flex flex-col h-screen border-r fixed top-16 left-0 z-40 border-border bg-sidebar transition-all duration-300 ease-in-out overflow-hidden",
         collapsed ? "w-16" : "w-52"
       )}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      suppressHydrationWarning
     >
       <nav className="flex-1 space-y-1 px-2 py-4">
         {general.map((item) => {

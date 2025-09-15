@@ -54,7 +54,6 @@ export default function Navbar() {
           </Button>
         </div>
 
-        {/* Mobile Menu Sheet */}
         <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" className="md:hidden">
@@ -69,7 +68,7 @@ export default function Navbar() {
                 Access all sections of our platform
               </SheetDescription>
             </SheetHeader>
-            <div className="mt-6 space-y-4">
+            <div className="grid auto-rows-min gap-6 px-4">
               {navigationLinks.map((link) => (
                 <Link
                   key={link.name}

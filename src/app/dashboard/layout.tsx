@@ -1,6 +1,5 @@
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { DashboardSidebar } from "@/components/dashboard/dashboard-sidebar";
-import Navbar from "@/components/shared/navbar";
 
 export default function LandingLayout({
   children,
@@ -8,18 +7,14 @@ export default function LandingLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="h-screen bg-background flex flex-col">
-      {/* Fixed Header */}
+    <div className="bg-background flex h-screen flex-col">
       <DashboardHeader />
 
-      {/* Main Content Area */}
-      <div className="flex flex-1 min-h-0">
-        {/* Fixed Sidebar */}
+      <div className="flex min-h-0 flex-1 pt-16">
         <DashboardSidebar />
 
-        {/* Scrollable Main Content */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden md:px-20 lg:px-42">
-          <div className="p-4 sm:p-6 min-h-full">{children}</div>
+        <main className="flex-1 overflow-x-hidden overflow-y-auto md:px-12 lg:px-24 xl:px-48">
+          <div className="min-h-full p-4 sm:p-6">{children}</div>
         </main>
       </div>
     </div>

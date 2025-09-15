@@ -1,4 +1,4 @@
-import { Bell, Settings, User, Zap } from "lucide-react";
+import { Bell, Settings, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -14,7 +14,7 @@ import { MobileSidebar } from "./mobile-sidebar";
 
 export function DashboardHeader() {
   return (
-    <header className="border-b border-border bg-card px-6 py-4">
+    <header className="border-border bg-card fixed top-0 right-0 left-0 z-50 border-b px-6 py-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
@@ -25,7 +25,7 @@ export function DashboardHeader() {
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-5 w-5" />
-            <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-accent"></span>
+            <span className="bg-accent absolute -top-1 -right-1 h-3 w-3 rounded-full"></span>
           </Button>
 
           <Button variant="ghost" size="icon">
@@ -44,8 +44,8 @@ export function DashboardHeader() {
             <DropdownMenuContent className="w-56" align="end" forceMount>
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">John Doe</p>
-                  <p className="text-xs leading-none text-muted-foreground">
+                  <p className="text-sm leading-none font-medium">John Doe</p>
+                  <p className="text-muted-foreground text-xs leading-none">
                     john.doe@company.com
                   </p>
                 </div>

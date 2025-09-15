@@ -1,18 +1,18 @@
-import { TransactionTable } from "@/components/dashboard/donate/transasction-table";
-import { Button } from "@/components/ui/button";
-import { Wallet, CreditCard, Plus } from "lucide-react";
 import { PenaltyTable } from "@/components/dashboard/donate/penalty-table";
+import { TransactionTable } from "@/components/dashboard/donate/transasction-table";
 import { WalletOverview } from "@/components/dashboard/donate/wallet-overview";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 
 export default async function DonatePage() {
   return (
     <div className="space-y-4 sm:space-y-6 sm:p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+          <h1 className="text-foreground text-2xl font-bold tracking-tight sm:text-3xl">
             Ví Điện Tử
           </h1>
-          <p className="text-sm sm:text-base text-muted-foreground">
+          <p className="text-muted-foreground text-sm sm:text-base">
             Quản lý số dư và lịch sử giao dịch của bạn
           </p>
         </div>
