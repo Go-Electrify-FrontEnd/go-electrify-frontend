@@ -1,63 +1,9 @@
-"use client";
-
 import { NearestStationsList } from "@/components/dashboard/find-stations/nearest-stations-list";
 import { StationMap } from "@/components/dashboard/find-stations/station-map";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { getBackendUrl } from "@/lib/utils";
 import { Filter, MapPin, RotateCcw, Search } from "lucide-react";
-
-const chargingStations = [
-  {
-    id: 1,
-    name: "Trạm sạc FPT University",
-    address: "Quốc lộ 1A, Phường Linh Trung, Thủ Đức, TP.HCM",
-    coordinates: [106.8098, 10.8413] as [number, number],
-    type: "fast",
-    available: true,
-    available_connectors: 2,
-    total_connectors: 4,
-  },
-  {
-    id: 2,
-    name: "Trạm sạc Vincom Center",
-    address: "72 Lê Thánh Tôn, Bến Nghé, Quận 1, TP.HCM",
-    coordinates: [106.7008, 10.7718] as [number, number],
-    type: "normal",
-    available: true,
-    available_connectors: 2,
-    total_connectors: 4,
-  },
-  {
-    id: 3,
-    name: "Trạm sạc Diamond Plaza",
-    address: "34 Lê Duẩn, Bến Nghé, Quận 1, TP.HCM",
-    coordinates: [106.7003, 10.7831] as [number, number],
-    type: "fast",
-    available: false,
-    available_connectors: 0,
-    total_connectors: 4,
-  },
-  {
-    id: 4,
-    name: "Trạm sạc Landmark 81",
-    address: "Vinhomes Central Park, 208 Nguyễn Hữu Cảnh, Bình Thạnh, TP.HCM",
-    coordinates: [106.7214, 10.7947] as [number, number],
-    available_connectors: 2,
-    total_connectors: 4,
-    type: "super_fast",
-    available: true,
-  },
-  {
-    id: 5,
-    name: "Trạm sạc Bitexco",
-    address: "2 Hải Triều, Bến Nghé, Quận 1, TP.HCM",
-    coordinates: [106.7034, 10.7718] as [number, number],
-    available_connectors: 2,
-    total_connectors: 4,
-    type: "normal",
-    available: true,
-  },
-];
 
 export interface StationWithDistance {
   id: number;
@@ -71,7 +17,10 @@ export interface StationWithDistance {
   distance?: number;
 }
 
-export default function FindStationsPage() {
+export default async function FindStationsPage() {
+  const response = await fetch(getBackendUrl("api/stations"));
+  const chargingStations: StationWithDistance[] = await response.json();
+
   return (
     <div>
       <div className="border-b">
