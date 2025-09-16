@@ -1,8 +1,10 @@
 "use client";
 
 import { StationWithDistance } from "@/app/dashboard/find-stations/page";
-import { Button } from "@/components/ui/button";
-import { MapPin, Navigation, Phone, Zap } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Battery, MapPin, Navigation, Phone, Zap, Bolt } from "lucide-react";
+import Link from "next/link";
 
 interface StationCardProps {
   station: StationWithDistance;
@@ -15,32 +17,28 @@ export function StationCard({ station }: StationCardProps) {
       case "super_fast":
         return {
           label: "Siêu Nhanh",
-          icon: "⚡",
         };
       case "fast":
         return {
           label: "Nhanh",
-          icon: "🔋",
         };
       case "normal":
         return {
           label: "Thường",
-          icon: "🔌",
         };
       default:
         return {
           label: "Không xác định",
-          icon: "❓",
         };
     }
   };
 
-  const openInMaps = (coordinates: [number, number], name: string) => {
+  const generateURL = (coordinates: [number, number], name: string) => {
     const [lng, lat] = coordinates;
     const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&destination_place_id=${encodeURIComponent(
       name,
     )}`;
-    window.open(url, "_blank");
+    return url;
   };
 
   const typeInfo = getStationTypeInfo(station.type);
@@ -51,9 +49,7 @@ export function StationCard({ station }: StationCardProps) {
         <div className="min-w-0 flex-1">
           <h4 className="truncate text-sm font-medium">{station.name}</h4>
           <div className="mt-1 flex items-center gap-2">
-            <span className="bg-primary/10 text-primary rounded-md px-2 py-1 text-xs">
-              {typeInfo.icon} {typeInfo.label}
-            </span>
+            <Badge variant="default">{typeInfo.label}</Badge>
             <div
               className={`h-2 w-2 rounded-full ${
                 station.available ? "bg-green-500" : "bg-red-500"
@@ -77,16 +73,19 @@ export function StationCard({ station }: StationCardProps) {
       </div>
 
       <div className="flex gap-2">
-        <Button
-          size="sm"
-          variant="outline"
-          className="h-8 flex-1 text-xs"
-          onClick={() => openInMaps(station.coordinates, station.name)}
-          disabled={!station.available}
+        <Link
+          prefetch={false}
+          className={buttonVariants({
+            variant: "outline",
+            size: "sm",
+            className: "h-8 flex-1 text-xs",
+          })}
+          href={generateURL(station.coordinates, station.name)}
+          target="_blank"
         >
           <Navigation className="mr-1 h-3 w-3" />
           Chỉ đường
-        </Button>
+        </Link>
         <Button variant="ghost" size="sm" className="h-8 px-2">
           <Phone className="h-3 w-3" />
         </Button>

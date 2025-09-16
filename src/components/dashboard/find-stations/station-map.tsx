@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import "mapbox-gl/dist/mapbox-gl.css";
 import mapboxgl from "mapbox-gl";
 
@@ -14,11 +14,18 @@ interface StationMapProps {
         available: boolean;
       }[]
     | null;
+  onUserLocationUpdate?: (coordinates: [number, number]) => void;
 }
 
-export function StationMap({ stations }: StationMapProps) {
+export function StationMap({
+  stations,
+  onUserLocationUpdate,
+}: StationMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(
+    null,
+  );
 
   useEffect(() => {
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_BOXMAP_API || "";
@@ -27,7 +34,7 @@ export function StationMap({ stations }: StationMapProps) {
       alert("Your browser does not support Mapbox GL");
     } else {
       if (mapContainerRef.current && !mapRef.current) {
-        mapRef.current = new mapboxgl.Map({
+        const map = new mapboxgl.Map({
           container: mapContainerRef.current,
           center: [106.6297, 10.8231],
           zoom: 12,
@@ -39,14 +46,13 @@ export function StationMap({ stations }: StationMapProps) {
           fadeDuration: 300,
         });
 
-        mapRef.current.on("load", () => {
-          stations!.forEach((station) => {
-            const markerColor = station.available ? "#10B981" : "#EF4444";
+        stations!.forEach((station) => {
+          const markerColor = station.available ? "#10B981" : "#EF4444";
 
-            new mapboxgl.Marker({ color: markerColor })
-              .setLngLat(station.coordinates)
-              .setPopup(
-                new mapboxgl.Popup({ offset: 25 }).setHTML(`
+          new mapboxgl.Marker({ color: markerColor })
+            .setLngLat(station.coordinates)
+            .setPopup(
+              new mapboxgl.Popup({ offset: 25 }).setHTML(`
             <div class="p-2">
               <h3 class="font-bold text-sm mb-2 text-black">${station.name}</h3>
               <p class="text-xs mb-1 text-black">⚡ Loại: ${station.type}</p>
@@ -57,22 +63,38 @@ export function StationMap({ stations }: StationMapProps) {
               </p>
             </div>
           `),
-              )
-              .addTo(mapRef.current!);
-          });
+            )
+            .addTo(map);
         });
 
-        mapRef.current.addControl(
-          new mapboxgl.GeolocateControl({
-            positionOptions: {
-              enableHighAccuracy: true,
-            },
-            trackUserLocation: true,
-            showUserHeading: true,
-          }),
-        );
+        const geolocateControl = new mapboxgl.GeolocateControl({
+          positionOptions: {
+            enableHighAccuracy: true,
+          },
+          trackUserLocation: true,
+          showUserLocation: true,
+          showUserHeading: true,
+          showAccuracyCircle: true,
+        });
 
-        mapRef.current.addControl(new mapboxgl.FullscreenControl());
+        geolocateControl.on("geolocate", (e) => {
+          const location = e.target._lastKnownPosition;
+          if (location) {
+            const coords: [number, number] = [
+              location.coords.longitude,
+              location.coords.latitude,
+            ];
+            setUserLocation(coords);
+            if (onUserLocationUpdate) {
+              onUserLocationUpdate(coords);
+            }
+          }
+        });
+
+        map.addControl(geolocateControl);
+        map.addControl(new mapboxgl.FullscreenControl());
+
+        mapRef.current = map;
       }
     }
 
