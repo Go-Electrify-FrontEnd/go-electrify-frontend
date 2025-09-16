@@ -20,6 +20,8 @@ export async function handleLogin(prevState: any, data: FormData) {
     url.searchParams.append("teamId", process.env.TEST_TEAM_ID || "");
   }
 
+  console.log("URL: " + url.toString());
+
   const response = await fetch(url, {
     method: "POST",
     headers: {
@@ -59,6 +61,8 @@ export async function handleVerifyOTP(prevState: any, data: FormData) {
   if (process.env.NODE_ENV === "development") {
     url.searchParams.append("teamId", process.env.TEST_TEAM_ID || "");
   }
+
+  console.log("URL: " + url.toString());
 
   const response = await fetch(url, {
     method: "POST",

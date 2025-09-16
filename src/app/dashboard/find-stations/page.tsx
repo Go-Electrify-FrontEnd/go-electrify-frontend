@@ -73,7 +73,7 @@ export interface StationWithDistance {
 
 export default function FindStationsPage() {
   return (
-    <div className="bg-background">
+    <div>
       <div className="border-b">
         <div className="py-6">
           <div className="flex items-center justify-between">
@@ -126,14 +126,14 @@ export default function FindStationsPage() {
                 </div>
               </div>
             </div>
-            <div className="h-[70vh] overflow-hidden rounded-xl border">
+            <div className="h-[65vh] overflow-hidden rounded-xl border">
               <StationMap stations={chargingStations} />
             </div>
           </div>
 
           <div className="xl:col-span-1">
             <div className="mb-4 flex h-[30px] items-center justify-between"></div>
-            <div className="h-[70vh] overflow-y-auto">
+            <div className="h-[65vh] overflow-y-auto">
               <NearestStationsList
                 stations={chargingStations}
                 location={null}
