@@ -24,7 +24,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { TeamSwitcher } from "./team-switcher";
+import { DashboardLogo } from "./dashboard-logo";
 import { NavUser } from "./nav-user";
 import { NavSection } from "./nav-section";
 import { NavSecondary } from "./nav-secondary";
@@ -82,15 +82,27 @@ const payment = {
       isActive: false,
     },
     {
-      title: "Giao dịch",
-      url: "/dashboard/transactions",
-      icon: SquareTerminal,
-      isActive: false,
-    },
-    {
       title: "Gói & Thanh toán",
       url: "/dashboard/plans-billing",
       icon: BookOpen,
+      isActive: false,
+    },
+  ],
+};
+
+const admin = {
+  title: "Quản trị",
+  items: [
+    {
+      title: "Quản lý trạm",
+      url: "/dashboard/admin/stations",
+      icon: Command,
+      isActive: false,
+    },
+    {
+      title: "Quản lý người dùng",
+      url: "/dashboard/admin/users",
+      icon: GalleryVerticalEnd,
       isActive: false,
     },
   ],
@@ -113,12 +125,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher />
+        <DashboardLogo />
       </SidebarHeader>
       <SidebarContent>
         <NavSection items={overview} />
         <NavSection items={charging} />
         <NavSection items={payment} />
+        <NavSection items={admin} />
         <NavSecondary items={secondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
