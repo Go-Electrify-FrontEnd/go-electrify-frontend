@@ -22,10 +22,10 @@ export default async function FindStationsPage() {
   const chargingStations: StationWithDistance[] = await response.json();
 
   return (
-    <div>
+    <>
       <div className="border-b">
         <div className="py-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col items-start justify-between gap-3 md:flex-row md:items-center">
             <div className="flex items-center gap-3">
               <div>
                 <h1 className="text-foreground text-2xl font-bold sm:text-3xl">
@@ -91,6 +91,6 @@ export default async function FindStationsPage() {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
