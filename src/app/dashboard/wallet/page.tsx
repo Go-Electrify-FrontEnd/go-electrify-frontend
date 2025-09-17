@@ -6,8 +6,8 @@ import { Plus } from "lucide-react";
 
 export default async function DonatePage() {
   return (
-    <div className="space-y-4 sm:space-y-6 sm:p-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="container mx-auto space-y-4">
+      <div className="flex flex-col gap-4 py-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-foreground text-2xl font-bold tracking-tight sm:text-3xl">
             Ví Điện Tử
