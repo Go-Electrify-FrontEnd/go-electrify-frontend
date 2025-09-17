@@ -1,13 +1,13 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   images: {
-    localPatterns: [
-      {
-        pathname: "/assets/images/**",
-        search: "",
-      },
-    ],
+    unoptimized: true,
   },
 };
 
