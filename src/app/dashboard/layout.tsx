@@ -1,13 +1,5 @@
 import { AppSidebar } from "@/components/dashboard/sidebar/app-sidebar";
 import HeaderBreadcrumb from "@/components/dashboard/sidebar/header-breadcrumb";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
@@ -35,7 +27,9 @@ export default function LandingLayout({
           </div>
         </header>
         <main className="flex-1 overflow-y-auto">
-          <div className="flex flex-1 flex-col gap-4 p-4">{children}</div>
+          <div className="flex flex-1 flex-col gap-4 px-4 pt-4 pb-4 md:px-10">
+            {children}
+          </div>
         </main>
       </SidebarInset>
     </SidebarProvider>
