@@ -83,7 +83,6 @@ const carModels = [
   },
 ];
 
-// Charging port standards
 const chargingPorts = [
   {
     id: "CCS2",
@@ -105,7 +104,6 @@ const chargingPorts = [
   },
 ];
 
-// Mock existing bookings data
 const existingBookings = [
   {
     id: 1,
