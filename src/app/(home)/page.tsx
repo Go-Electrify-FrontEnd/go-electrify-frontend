@@ -75,7 +75,7 @@ const Navbar = ({ isDark, onToggle }: NavbarProps) => {
           <div className="flex items-center">
             <Link href="/" className="flex items-center gap-3">
               <Image
-                src="/logo01.png"
+                src="/assets/images/logo01.png"
                 alt="Electrify Logo"
                 width={40}
                 height={40}
@@ -222,7 +222,7 @@ const Footer = () => {
           <div>
             <div className="flex items-center space-x-2 mb-4">
               <Image
-                src="/logo01.png"
+                src="/assets/images/logo01.png"
                 alt="Electrify Logo"
                 width={32}
                 height={32}
@@ -371,21 +371,21 @@ export default function LandingPage() {
       name: "John Doe",
       role: "CEO",
       company: "ABC Corp",
-      avatar: "/avatar1.png",
+      avatar: "/assets/images/avatar1.png",
     },
     {
       content: "Effortless management and excellent support.",
       name: "Jane Smith",
       role: "CTO",
       company: "XYZ Inc",
-      avatar: "/avatar2.png",
+      avatar: "/assets/images/avatar2.png",
     },
     {
       content: "Highly recommend for any EV charging needs.",
       name: "Alice Johnson",
       role: "Manager",
       company: "DEF Ltd",
-      avatar: "/avatar3.png",
+      avatar: "/assets/images/avatar3.png",
     },
   ];
 
@@ -404,7 +404,7 @@ export default function LandingPage() {
             <div className="order-2 lg:order-1 flex justify-center">
               <div className="relative">
                 <Image
-                  src="/hero.jpq"
+                  src="/assets/images/hero.jpq"
                   alt="Modern urban EV charging stations under bridge with city skyline"
                   width={512}
                   height={384}
