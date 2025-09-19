@@ -8,6 +8,19 @@ const nextConfig = {
   },
   images: {
     unoptimized: true,
+    domains: ["localhost"],
+    localPatterns: [
+      {
+        pathname: "/assets/images/**",
+        search: "",
+      },
+    ],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**",
+      },
+    ],
   },
 };
 
