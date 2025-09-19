@@ -1,9 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 
-const ModeToggle = ({ isDark, onToggle }) => {
+import type React from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { Card } from "@/components/ui/card";
+import FeaturesSection from "@/components/features-section";
+
+interface ModeToggleProps {
+  isDark: boolean;
+  onToggle: () => void;
+}
+
+const ModeToggle = ({ isDark, onToggle }: ModeToggleProps) => {
   return (
     <button
       onClick={onToggle}
@@ -42,7 +52,12 @@ const ModeToggle = ({ isDark, onToggle }) => {
   );
 };
 
-const Navbar = ({ isDark, onToggle }) => {
+interface NavbarProps {
+  isDark: boolean;
+  onToggle: () => void;
+}
+
+const Navbar = ({ isDark, onToggle }: NavbarProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navLinks = [
@@ -58,9 +73,9 @@ const Navbar = ({ isDark, onToggle }) => {
       <div className="max-w-6xl mx-auto px-6 sm:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
-            <a href="/" className="flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-3">
               <Image
-                src="/electrify-logo.png"
+                src="/logo01.png"
                 alt="Electrify Logo"
                 width={40}
                 height={40}
@@ -69,7 +84,7 @@ const Navbar = ({ isDark, onToggle }) => {
               <span className="text-2xl font-bold text-foreground">
                 Electrify
               </span>
-            </a>
+            </Link>
           </div>
 
           <div className="hidden md:flex items-center space-x-8">
@@ -162,66 +177,65 @@ const Navbar = ({ isDark, onToggle }) => {
   );
 };
 
-const FeatureCard = ({ icon, title, description, delay }) => {
-  return (
-    <div
-      className="group p-8 rounded-2xl bg-card border border-border hover:border-primary/20 transition-all duration-500 hover:transform hover:-translate-y-2 hover:shadow-xl"
-      style={{ animationDelay: `${delay}ms` }}
-    >
-      <div className="mb-6 p-3 rounded-xl bg-primary/10 w-fit">
-        <div className="h-6 w-6 text-primary">{icon}</div>
-      </div>
-      <h3 className="text-xl font-bold mb-3 text-card-foreground group-hover:text-primary transition-all duration-300">
-        {title}
-      </h3>
-      <p className="text-muted-foreground leading-relaxed">{description}</p>
-    </div>
-  );
-};
+interface TestimonialCardProps {
+  name: string;
+  role: string;
+  company: string;
+  content: string;
+  avatar?: string;
+}
 
-const TestimonialCard = ({ content, name, role, avatar }) => (
-  <div className="bg-card p-6 rounded-xl shadow-lg border border-border">
-    <p className="text-card-foreground mb-6 leading-relaxed">"{content}"</p>
-    <div className="flex items-center">
-      <Image
-        src={avatar || "/placeholder.svg"}
-        alt={name}
-        width={48}
-        height={48}
-        className="rounded-full mr-4"
-      />
-      <div>
-        <h4 className="font-semibold text-card-foreground">{name}</h4>
-        <p className="text-sm text-muted-foreground">
-          {role} at {avatar}
-        </p>
+function TestimonialCard({
+  name,
+  role,
+  company,
+  content,
+  avatar,
+}: TestimonialCardProps) {
+  return (
+    <Card className="p-6">
+      <div className="flex items-start mb-4">
+        <Image
+          src={avatar || "/placeholder.svg"}
+          alt={name}
+          width={48}
+          height={48}
+          className="rounded-full mr-4"
+        />
+        <div>
+          <h4 className="font-semibold">{name}</h4>
+          <p className="text-sm text-muted-foreground">
+            {role} at {company}
+          </p>
+        </div>
       </div>
-    </div>
-  </div>
-);
+      <p className="text-muted-foreground">{content}</p>
+    </Card>
+  );
+}
 
 const Footer = () => {
   return (
-    <footer className="bg-muted/30 border-t border-border">
-      <div className="max-w-6xl mx-auto px-6 sm:px-8 py-12">
+    <footer className="bg-muted py-12">
+      <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
+          <div>
+            <div className="flex items-center space-x-2 mb-4">
               <Image
-                src="/electrify-logo.png"
+                src="/logo01.png"
                 alt="Electrify Logo"
                 width={32}
                 height={32}
                 className="object-contain"
               />
-              <span className="text-xl font-bold text-foreground">
-                Electrify
-              </span>
+              <span className="text-lg font-bold">Electrify</span>
             </div>
+
             <p className="text-sm leading-relaxed mb-6 text-muted-foreground">
               Empowering the future of electric vehicle charging with
               intelligent management solutions and sustainable technology.
             </p>
+
             <div className="flex items-center gap-4">
               {[
                 {
@@ -342,7 +356,7 @@ const Footer = () => {
   );
 };
 
-export default function Home() {
+export default function LandingPage() {
   const [isDark, setIsDark] = useState(false);
   const [email, setEmail] = useState("");
 
@@ -351,811 +365,106 @@ export default function Home() {
     setEmail("");
   };
 
-  const features = [
-    {
-      icon: (
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
-          />
-        </svg>
-      ),
-      title: "Feature 1",
-      description: "Description of Feature 1",
-      delay: 0,
-    },
-    {
-      icon: (
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
-          />
-        </svg>
-      ),
-      title: "Feature 2",
-      description: "Description of Feature 2",
-      delay: 200,
-    },
-    {
-      icon: (
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
-          />
-        </svg>
-      ),
-      title: "Feature 3",
-      description: "Description of Feature 3",
-      delay: 400,
-    },
-  ];
-
   const testimonials = [
     {
       content: "Great service and reliable charging stations!",
       name: "John Doe",
       role: "CEO",
-      avatar: "/john-doe-avatar.png",
+      company: "ABC Corp",
+      avatar: "/avatar1.png",
     },
     {
       content: "Effortless management and excellent support.",
       name: "Jane Smith",
       role: "CTO",
-      avatar: "/jane-smith-avatar.png",
+      company: "XYZ Inc",
+      avatar: "/avatar2.png",
     },
     {
       content: "Highly recommend for any EV charging needs.",
       name: "Alice Johnson",
       role: "Manager",
-      avatar: "/alice-johnson-avatar.png",
+      company: "DEF Ltd",
+      avatar: "/avatar3.png",
     },
   ];
 
   return (
-    <html lang="en" className={isDark ? "dark" : ""}>
-      <head>
-        <title>Electrify - EV Charging Station Management</title>
-        <meta
-          name="description"
-          content="Manage your EV charging stations effectively with our comprehensive platform"
-        />
-      </head>
-      <body>
-        <style jsx global>{`
-          @keyframes slideUp {
-            from {
-              transform: translateY(30px);
-              opacity: 0;
-            }
-            to {
-              transform: translateY(0);
-              opacity: 1;
-            }
-          }
-          @keyframes fadeIn {
-            from {
-              opacity: 0;
-            }
-            to {
-              opacity: 1;
-            }
-          }
-          .animate-slide-up {
-            animation: slideUp 0.8s ease-out forwards;
-          }
-          .animate-fade-in {
-            animation: fadeIn 1s ease-out forwards;
-          }
-        `}</style>
+    <div
+      className={`min-h-screen bg-background text-foreground ${
+        isDark ? "dark" : ""
+      }`}
+    >
+      <Navbar isDark={isDark} onToggle={() => setIsDark(!isDark)} />
 
-        <div
-          className={`min-h-screen transition-all duration-500 ${
-            isDark ? "bg-black text-white" : "bg-white text-black"
-          }`}
-        >
-          <Navbar isDark={isDark} onToggle={() => setIsDark(!isDark)} />
+      <div className="relative z-10 font-sans flex flex-col min-h-screen pt-16">
+        <main className="flex flex-col gap-20 items-center max-w-7xl w-full mx-auto px-8 py-20 flex-1">
+          {/* Hero Section */}
+          <div className="grid lg:grid-cols-2 gap-12 items-center w-full animate-slide-up">
+            <div className="order-2 lg:order-1 flex justify-center">
+              <div className="relative">
+                <Image
+                  src="/hero.jpq"
+                  alt="Modern urban EV charging stations under bridge with city skyline"
+                  width={512}
+                  height={384}
+                  className="rounded-2xl shadow-2xl w-full max-w-lg"
+                />
+                <div className="absolute -top-4 -right-4 w-20 h-20 bg-primary/20 rounded-full blur-xl animate-pulse"></div>
+                <div
+                  className="absolute -bottom-4 -left-4 w-16 h-16 bg-secondary/20 rounded-full blur-xl animate-pulse"
+                  style={{ animationDelay: "1s" }}
+                ></div>
+              </div>
+            </div>
 
-          <div className="relative z-10 font-sans flex flex-col min-h-screen pt-16">
-            <main className="flex flex-col gap-20 items-center max-w-7xl w-full mx-auto px-8 py-20 flex-1">
-              {/* Hero Section */}
-              <div className="grid lg:grid-cols-2 gap-12 items-center w-full animate-slide-up">
-                <div className="order-2 lg:order-1 flex justify-center">
-                  <div className="relative">
-                    <Image
-                      src="/urban-ev-charging-stations.jpg"
-                      alt="Modern urban EV charging stations under bridge with city skyline"
-                      width={512}
-                      height={384}
-                      className="rounded-2xl shadow-2xl w-full max-w-lg"
-                    />
-                    <div className="absolute -top-4 -right-4 w-20 h-20 bg-primary/20 rounded-full blur-xl animate-pulse"></div>
-                    <div
-                      className="absolute -bottom-4 -left-4 w-16 h-16 bg-secondary/20 rounded-full blur-xl animate-pulse"
-                      style={{ animationDelay: "1s" }}
-                    ></div>
-                  </div>
-                </div>
+            <div className="order-1 lg:order-2 flex flex-col items-center lg:items-start text-center lg:text-left gap-8">
+              <h1 className="text-4xl md:text-6xl font-bold leading-tight">
+                <span className={isDark ? "text-white" : "text-black"}>
+                  Manage your
+                </span>
+                <br />
+                <span className="bg-gradient-to-r from-green-500 to-blue-500 text-transparent bg-clip-text">
+                  EV Charging Stations
+                </span>
+                <br />
+                <span className={isDark ? "text-white" : "text-black"}>
+                  Effectively
+                </span>
+              </h1>
 
-                <div className="order-1 lg:order-2 flex flex-col items-center lg:items-start text-center lg:text-left gap-8">
-                  <h1 className="text-4xl md:text-6xl font-bold leading-tight">
-                    <span className={isDark ? "text-white" : "text-black"}>
-                      Manage your
-                    </span>
-                    <br />
-                    <span className="bg-gradient-to-r from-green-500 to-blue-500 text-transparent bg-clip-text">
-                      EV Charging Stations
-                    </span>
-                    <br />
-                    <span className={isDark ? "text-white" : "text-black"}>
-                      Effectively
-                    </span>
-                  </h1>
+              <p
+                className={`text-xl md:text-2xl max-w-2xl leading-relaxed ${
+                  isDark ? "text-gray-300" : "text-gray-600"
+                }`}
+              >
+                Optimize operations, reduce costs, and deliver a seamless
+                charging experience for your customers with our comprehensive
+                management platform.
+              </p>
 
-                  <p
-                    className={`text-xl md:text-2xl max-w-2xl leading-relaxed ${
-                      isDark ? "text-gray-300" : "text-gray-600"
+              <div className="flex flex-col sm:flex-row items-center gap-4 mt-8 w-full lg:w-auto">
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email"
+                    className={`px-6 py-4 rounded-xl border focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all duration-300 flex-1 sm:w-80 ${
+                      isDark
+                        ? "bg-gray-800 border-gray-600 text-white placeholder-gray-400"
+                        : "bg-white border-gray-300 text-black placeholder-gray-500"
+                    }`}
+                  />
+                  <button
+                    onClick={handleSubmit}
+                    className={`px-8 py-4 rounded-xl bg-foreground text-background font-semibold hover:bg-foreground/90 transition-all duration-300 shadow-lg flex items-center gap-2 ${
+                      isDark
+                        ? "bg-white text-black hover:bg-gray-100"
+                        : "bg-black text-white hover:bg-gray-800"
                     }`}
                   >
-                    Optimize operations, reduce costs, and deliver a seamless
-                    charging experience for your customers with our
-                    comprehensive management platform.
-                  </p>
-
-                  <div className="flex flex-col sm:flex-row items-center gap-4 mt-8 w-full lg:w-auto">
-                    <div className="flex items-center gap-2 w-full sm:w-auto">
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Enter your email"
-                        className={`px-6 py-4 rounded-xl border focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all duration-300 flex-1 sm:w-80 ${
-                          isDark
-                            ? "bg-gray-800 border-gray-600 text-white placeholder-gray-400"
-                            : "bg-white border-gray-300 text-black placeholder-gray-500"
-                        }`}
-                      />
-                      <button
-                        onClick={handleSubmit}
-                        className={`px-8 py-4 rounded-xl font-semibold transform hover:scale-105 transition-all duration-300 shadow-lg flex items-center gap-2 ${
-                          isDark
-                            ? "bg-white text-black hover:bg-gray-100"
-                            : "bg-black text-white hover:bg-gray-800"
-                        }`}
-                      >
-                        Get Started
-                        <svg
-                          className="h-4 w-4"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M17 8l4 4m0 0l-4 4m4-4H3"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Features Section */}
-              <section id="features" className="w-full">
-                <div className="text-center mb-16">
-                  <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
-                    Everything you need to manage EV charging
-                  </h2>
-                  <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                    Comprehensive tools and insights to optimize your charging
-                    infrastructure and enhance customer experience.
-                  </p>
-                </div>
-                <div className="grid md:grid-cols-3 gap-8 w-full animate-fade-in">
-                  {features.map((feature, index) => (
-                    <FeatureCard
-                      key={index}
-                      icon={feature.icon}
-                      title={feature.title}
-                      description={feature.description}
-                      delay={feature.delay}
-                    />
-                  ))}
-                </div>
-              </section>
-
-              {/* How It Works Section */}
-              <section id="how-it-works" className="w-full">
-                <div className="text-center mb-16">
-                  <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
-                    How it works
-                  </h2>
-                  <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                    Get started in minutes with our simple three-step process.
-                  </p>
-                </div>
-                <div className="grid md:grid-cols-3 gap-8">
-                  {[
-                    {
-                      step: "01",
-                      title: "Connect Your Stations",
-                      description:
-                        "Integrate your existing charging infrastructure with our platform in minutes.",
-                      icon: (
-                        <svg
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"
-                          />
-                        </svg>
-                      ),
-                    },
-                    {
-                      step: "02",
-                      title: "Monitor & Analyze",
-                      description:
-                        "Track real-time usage, performance metrics, and customer behavior patterns.",
-                      icon: (
-                        <svg
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                          />
-                        </svg>
-                      ),
-                    },
-                    {
-                      step: "03",
-                      title: "Optimize & Scale",
-                      description:
-                        "Use insights to improve efficiency, reduce costs, and expand your network.",
-                      icon: (
-                        <svg
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M13 10V3L4 14h7v7l9-11h-7z"
-                          />
-                        </svg>
-                      ),
-                    },
-                  ].map((item, index) => (
-                    <div key={index} className="text-center">
-                      <div className="mb-6 mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                        <div className="h-8 w-8 text-primary">{item.icon}</div>
-                      </div>
-                      <div className="text-4xl font-bold text-primary mb-4">
-                        {item.step}
-                      </div>
-                      <h3 className="text-xl font-bold mb-3 text-foreground">
-                        {item.title}
-                      </h3>
-                      <p className="text-muted-foreground leading-relaxed">
-                        {item.description}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </section>
-
-              {/* Stats Section */}
-              <section className="w-full bg-muted/30 rounded-3xl p-12">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-                  {[
-                    {
-                      number: "10K+",
-                      label: "Charging Sessions",
-                      icon: (
-                        <svg
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M13 10V3L4 14h7v7l9-11h-7z"
-                          />
-                        </svg>
-                      ),
-                    },
-                    {
-                      number: "99.9%",
-                      label: "Uptime",
-                      icon: (
-                        <svg
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                      ),
-                    },
-                    {
-                      number: "500+",
-                      label: "Stations Managed",
-                      icon: (
-                        <svg
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                          />
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                          />
-                        </svg>
-                      ),
-                    },
-                    {
-                      number: "24/7",
-                      label: "Support",
-                      icon: (
-                        <svg
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                      ),
-                    },
-                  ].map((stat, index) => (
-                    <div key={index} className="flex flex-col items-center">
-                      <div className="h-8 w-8 text-primary mb-3">
-                        {stat.icon}
-                      </div>
-                      <div className="text-3xl md:text-4xl font-bold mb-2 text-foreground">
-                        {stat.number}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        {stat.label}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
-
-              {/* Testimonials Section */}
-              <section id="testimonials" className="w-full">
-                <div className="text-center mb-16">
-                  <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
-                    Trusted by industry leaders
-                  </h2>
-                  <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                    See what our customers say about their experience with
-                    EVCharge.
-                  </p>
-                </div>
-                <div className="grid md:grid-cols-3 gap-8">
-                  {testimonials.map((testimonial, index) => (
-                    <TestimonialCard key={index} {...testimonial} />
-                  ))}
-                </div>
-              </section>
-
-              {/* Pricing Section */}
-              <section id="pricing" className="w-full">
-                <div className="text-center mb-16">
-                  <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
-                    Pricing
-                  </h2>
-                  <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                    Choose the perfect plan for your EV charging needs. All
-                    plans include our core features with scalable options.
-                  </p>
-                </div>
-
-                <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                  {/* Starter Plan */}
-                  <div className="p-8 rounded-2xl bg-card border border-border hover:border-primary/20 transition-all duration-300 relative">
-                    <div className="text-center">
-                      <h3 className="text-2xl font-bold mb-2 text-card-foreground">
-                        Starter
-                      </h3>
-                      <div className="text-4xl font-bold mb-2 text-card-foreground">
-                        $19
-                      </div>
-                      <p className="text-muted-foreground mb-8">
-                        Perfect for occasional EV drivers who need reliable
-                        access to standard charging.
-                      </p>
-
-                      <ul className="space-y-4 mb-8 text-left">
-                        <li className="flex items-center gap-3">
-                          <svg
-                            className="h-5 w-5 text-green-500 flex-shrink-0"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          <span className="text-card-foreground">
-                            Access to standard charging stations
-                          </span>
-                        </li>
-                        <li className="flex items-center gap-3">
-                          <svg
-                            className="h-5 w-5 text-green-500 flex-shrink-0"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          <span className="text-card-foreground">
-                            Charging speed up to 11kW
-                          </span>
-                        </li>
-                        <li className="flex items-center gap-3">
-                          <svg
-                            className="h-5 w-5 text-green-500 flex-shrink-0"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          <span className="text-card-foreground">
-                            10 charging sessions per month
-                          </span>
-                        </li>
-                        <li className="flex items-center gap-3">
-                          <svg
-                            className="h-5 w-5 text-green-500 flex-shrink-0"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          <span className="text-card-foreground">
-                            Mobile app usage tracking
-                          </span>
-                        </li>
-                        <li className="flex items-center gap-3">
-                          <svg
-                            className="h-5 w-5 text-green-500 flex-shrink-0"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          <span className="text-card-foreground">
-                            Email customer support
-                          </span>
-                        </li>
-                      </ul>
-
-                      <button className="w-full px-6 py-3 rounded-xl bg-foreground text-background font-semibold hover:bg-foreground/90 transition-all duration-300 shadow-lg">
-                        Get Starter
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Pro Plan - Most Popular */}
-                  <div className="p-8 rounded-2xl bg-card border-2 border-foreground hover:border-foreground/80 transition-all duration-300 relative transform scale-105">
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                      <span className="bg-foreground text-background px-4 py-1 rounded-full text-sm font-semibold">
-                        Most Popular
-                      </span>
-                    </div>
-
-                    <div className="text-center">
-                      <h3 className="text-2xl font-bold mb-2 text-card-foreground">
-                        Pro
-                      </h3>
-                      <div className="text-4xl font-bold mb-2 text-card-foreground">
-                        $49
-                      </div>
-                      <p className="text-muted-foreground mb-8">
-                        Ideal for frequent drivers who want faster charging and
-                        more benefits.
-                      </p>
-
-                      <ul className="space-y-4 mb-8 text-left">
-                        <li className="flex items-center gap-3">
-                          <svg
-                            className="h-5 w-5 text-green-500 flex-shrink-0"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          <span className="text-card-foreground">
-                            Access to fast charging stations (up to 50kW)
-                          </span>
-                        </li>
-                        <li className="flex items-center gap-3">
-                          <svg
-                            className="h-5 w-5 text-green-500 flex-shrink-0"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          <span className="text-card-foreground">
-                            Unlimited charging sessions
-                          </span>
-                        </li>
-                        <li className="flex items-center gap-3">
-                          <svg
-                            className="h-5 w-5 text-green-500 flex-shrink-0"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          <span className="text-card-foreground">
-                            Priority station booking
-                          </span>
-                        </li>
-                        <li className="flex items-center gap-3">
-                          <svg
-                            className="h-5 w-5 text-green-500 flex-shrink-0"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          <span className="text-card-foreground">
-                            24/7 customer support
-                          </span>
-                        </li>
-                        <li className="flex items-center gap-3">
-                          <svg
-                            className="h-5 w-5 text-green-500 flex-shrink-0"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          <span className="text-card-foreground">
-                            Real-time station availability
-                          </span>
-                        </li>
-                        <li className="flex items-center gap-3">
-                          <svg
-                            className="h-5 w-5 text-green-500 flex-shrink-0"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          <span className="text-card-foreground">
-                            Monthly usage analytics
-                          </span>
-                        </li>
-                      </ul>
-
-                      <button className="w-full px-6 py-3 rounded-xl bg-foreground text-background font-semibold hover:bg-foreground/90 transition-all duration-300 shadow-lg border-2 border-foreground">
-                        Choose Pro
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Enterprise Plan */}
-                  <div className="p-8 rounded-2xl bg-card border border-border hover:border-primary/20 transition-all duration-300 relative">
-                    <div className="text-center">
-                      <h3 className="text-2xl font-bold mb-2 text-card-foreground">
-                        Enterprise
-                      </h3>
-                      <div className="text-4xl font-bold mb-2 text-card-foreground">
-                        $35
-                      </div>
-                      <p className="text-muted-foreground mb-8">
-                        Designed for businesses and EV fleets that need scalable
-                        charging solutions.
-                      </p>
-
-                      <ul className="space-y-4 mb-8 text-left">
-                        <li className="flex items-center gap-3">
-                          <svg
-                            className="h-5 w-5 text-green-500 flex-shrink-0"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          <span className="text-card-foreground">
-                            Ultra-fast charging (up to 350kW)
-                          </span>
-                        </li>
-                        <li className="flex items-center gap-3">
-                          <svg
-                            className="h-5 w-5 text-green-500 flex-shrink-0"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          <span className="text-card-foreground">
-                            Dedicated fleet management tools
-                          </span>
-                        </li>
-                        <li className="flex items-center gap-3">
-                          <svg
-                            className="h-5 w-5 text-green-500 flex-shrink-0"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          <span className="text-card-foreground">
-                            Custom billing & invoices
-                          </span>
-                        </li>
-                        <li className="flex items-center gap-3">
-                          <svg
-                            className="h-5 w-5 text-green-500 flex-shrink-0"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          <span className="text-card-foreground">
-                            Dedicated account manager
-                          </span>
-                        </li>
-                      </ul>
-
-                      <button className="w-full px-6 py-3 rounded-xl bg-foreground text-background font-semibold hover:bg-foreground/90 transition-all duration-300 shadow-lg">
-                        Get Started
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              {/* CTA Section */}
-              <section className="w-full text-center bg-gradient-to-r from-primary/10 to-secondary/10 rounded-3xl p-16">
-                <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
-                  Ready to revolutionize your EV charging?
-                </h2>
-                <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-                  Join hundreds of businesses already using EVCharge to optimize
-                  their charging infrastructure.
-                </p>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                  <button className="px-8 py-4 rounded-xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transform hover:scale-105 transition-all duration-300 shadow-lg">
-                    Start Free Trial
-                  </button>
-                  <button className="px-8 py-4 rounded-xl bg-transparent border border-border text-foreground font-semibold hover:bg-muted transition-all duration-300 flex items-center gap-2">
+                    Get Started
                     <svg
                       className="h-4 w-4"
                       fill="none"
@@ -1166,20 +475,530 @@ export default function Home() {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h8m-9-4V8a3 3 0 016 0v2M7 16a3 3 0 006 0v-2"
+                        d="M17 8l4 4m0 0l-4 4m4-4H3"
                       />
                     </svg>
-                    Watch Demo
                   </button>
                 </div>
-              </section>
-            </main>
-
-            {/* Footer */}
-            <Footer />
+              </div>
+            </div>
           </div>
-        </div>
-      </body>
-    </html>
+
+          {/* Features Section */}
+          <section id="features" className="mb-20">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
+                Everything you need to manage EV charging
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+                Comprehensive tools and insights to optimize your charging
+                infrastructure and enhance customer experience.
+              </p>
+            </div>
+            <FeaturesSection />
+          </section>
+
+          {/* How It Works Section */}
+          <section id="how-it-works" className="w-full">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
+                How It Work
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+                A simple step-by-step process to understand how our platform
+                helps you manage charging stations efficiently.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-8">
+              {[
+                {
+                  step: "01",
+                  title: "Connect Your Stations",
+                  description:
+                    "Integrate your existing charging infrastructure with our platform in minutes.",
+                  icon: (
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"
+                      />
+                    </svg>
+                  ),
+                  bgColor: "bg-white dark:bg-black",
+                },
+                {
+                  step: "02",
+                  title: "Monitor & Analyze",
+                  description:
+                    "Track real-time usage, performance metrics, and customer behavior patterns.",
+                  icon: (
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                      />
+                    </svg>
+                  ),
+                  bgColor: "bg-white dark:bg-black",
+                },
+                {
+                  step: "03",
+                  title: "Optimize & Scale",
+                  description:
+                    "Use insights to improve efficiency, reduce costs, and expand your network.",
+                  icon: (
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 10V3L4 14h7v7l9-11h-7z"
+                      />
+                    </svg>
+                  ),
+                  bgColor: "bg-white dark:bg-black",
+                },
+              ].map((item, index) => (
+                <div
+                  key={index}
+                  className={`${item.bgColor} rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105`}
+                >
+                  <div className="flex items-center justify-between mb-6">
+                    <span className="text-6xl font-bold text-black dark:text-white opacity-80">
+                      {item.step}
+                    </span>
+                    <div className="w-12 h-12 text-black dark:text-white">
+                      {item.icon}
+                    </div>
+                  </div>
+                  <h3 className="text-2xl font-bold text-black dark:text-white mb-4">
+                    {item.title}
+                  </h3>
+                  <p className="text-black dark:text-white opacity-90 leading-relaxed">
+                    {item.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Testimonials Section */}
+          <section id="testimonials" className="w-full">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
+                Trusted by industry leaders
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+                See what our customers say about their experience with EVCharge.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-8">
+              {testimonials.map((testimonial, index) => (
+                <TestimonialCard key={index} {...testimonial} />
+              ))}
+            </div>
+          </section>
+
+          {/* Pricing Section */}
+          <section id="pricing" className="w-full">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
+                Pricing
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+                Choose the perfect plan for your EV charging needs. All plans
+                include our core features with scalable options.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+              {/* Starter Plan */}
+              <div className="p-8 rounded-2xl bg-card border border-border hover:border-primary/20 transition-all duration-300 relative">
+                <div className="text-center">
+                  <h3 className="text-2xl font-bold mb-2 text-card-foreground">
+                    Starter
+                  </h3>
+                  <div className="text-4xl font-bold mb-2 text-card-foreground">
+                    $19
+                  </div>
+                  <p className="text-muted-foreground mb-8">
+                    Perfect for occasional EV drivers who need reliable access
+                    to standard charging.
+                  </p>
+
+                  <ul className="space-y-4 mb-8 text-left">
+                    <li className="flex items-center gap-3">
+                      <svg
+                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <span className="text-card-foreground">
+                        Access to standard charging stations
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <svg
+                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <span className="text-card-foreground">
+                        Charging speed up to 11kW
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <svg
+                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <span className="text-card-foreground">
+                        10 charging sessions per month
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <svg
+                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <span className="text-card-foreground">
+                        Mobile app usage tracking
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <svg
+                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <span className="text-card-foreground">
+                        Email customer support
+                      </span>
+                    </li>
+                  </ul>
+
+                  <button className="w-full px-6 py-3 rounded-xl bg-foreground text-background font-semibold hover:bg-foreground/90 transition-all duration-300 shadow-lg">
+                    Get Starter
+                  </button>
+                </div>
+              </div>
+
+              {/* Pro Plan - Most Popular */}
+              <div className="p-8 rounded-2xl bg-card border-2 border-foreground hover:border-foreground/80 transition-all duration-300 relative transform scale-105">
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                  <span className="bg-foreground text-background px-4 py-1 rounded-full text-sm font-semibold">
+                    Most Popular
+                  </span>
+                </div>
+
+                <div className="text-center">
+                  <h3 className="text-2xl font-bold mb-2 text-card-foreground">
+                    Pro
+                  </h3>
+                  <div className="text-4xl font-bold mb-2 text-card-foreground">
+                    $49
+                  </div>
+                  <p className="text-muted-foreground mb-8">
+                    Ideal for frequent drivers who want faster charging and more
+                    benefits.
+                  </p>
+
+                  <ul className="space-y-4 mb-8 text-left">
+                    <li className="flex items-center gap-3">
+                      <svg
+                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <span className="text-card-foreground">
+                        Access to fast charging stations (up to 50kW)
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <svg
+                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <span className="text-card-foreground">
+                        Unlimited charging sessions
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <svg
+                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <span className="text-card-foreground">
+                        Priority station booking
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <svg
+                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <span className="text-card-foreground">
+                        24/7 customer support
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <svg
+                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <span className="text-card-foreground">
+                        Real-time station availability
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <svg
+                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <span className="text-card-foreground">
+                        Monthly usage analytics
+                      </span>
+                    </li>
+                  </ul>
+
+                  <button className="w-full px-6 py-3 rounded-xl bg-foreground text-background font-semibold hover:bg-foreground/90 transition-all duration-300 shadow-lg border-2 border-foreground">
+                    Choose Pro
+                  </button>
+                </div>
+              </div>
+
+              {/* Enterprise Plan */}
+              <div className="p-8 rounded-2xl bg-card border border-border hover:border-primary/20 transition-all duration-300 relative">
+                <div className="text-center">
+                  <h3 className="text-2xl font-bold mb-2 text-card-foreground">
+                    Enterprise
+                  </h3>
+                  <div className="text-4xl font-bold mb-2 text-card-foreground">
+                    $35
+                  </div>
+                  <p className="text-muted-foreground mb-8">
+                    Designed for businesses and EV fleets that need scalable
+                    charging solutions.
+                  </p>
+
+                  <ul className="space-y-4 mb-8 text-left">
+                    <li className="flex items-center gap-3">
+                      <svg
+                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <span className="text-card-foreground">
+                        Ultra-fast charging (up to 350kW)
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <svg
+                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <span className="text-card-foreground">
+                        Dedicated fleet management tools
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <svg
+                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <span className="text-card-foreground">
+                        Custom billing & invoices
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <svg
+                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <span className="text-card-foreground">
+                        Dedicated account manager
+                      </span>
+                    </li>
+                  </ul>
+
+                  <button className="w-full px-6 py-3 rounded-xl bg-foreground text-background font-semibold hover:bg-foreground/90 transition-all duration-300 shadow-lg">
+                    Get Started
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* CTA Section */}
+          <section className="w-full text-center bg-gradient-to-r from-primary/10 to-secondary/10 rounded-3xl p-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
+              Ready to revolutionize your EV charging?
+            </h2>
+            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+              Join hundreds of businesses already using EVCharge to optimize
+              their charging infrastructure.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <button className="px-8 py-4 rounded-xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transform hover:scale-105 transition-all duration-300 shadow-lg">
+                Start Free Trial
+              </button>
+              <button className="px-8 py-4 rounded-xl bg-transparent border border-border text-foreground font-semibold hover:bg-muted transition-all duration-300 flex items-center gap-2">
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h8m-9-4V8a3 3 0 016 0v2M7 16a3 3 0 006 0v-2"
+                  />
+                </svg>
+                Watch Demo
+              </button>
+            </div>
+          </section>
+        </main>
+
+        {/* Footer */}
+        <Footer />
+      </div>
+    </div>
   );
 }
