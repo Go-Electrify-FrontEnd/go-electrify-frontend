@@ -371,7 +371,7 @@ export default function LandingPage() {
       name: "John Doe",
       role: "CEO",
       company: "ABC Corp",
-      avatar: "/assets/images/avatar1.png",
+      avatar: "/assets/images/avatar01.jpg",
     },
     {
       content: "Effortless management and excellent support.",
@@ -404,7 +404,7 @@ export default function LandingPage() {
             <div className="order-2 lg:order-1 flex justify-center">
               <div className="relative">
                 <Image
-                  src="/assets/images/hero.jpq"
+                  src="/assets/images/hero.jpg"
                   alt="Modern urban EV charging stations under bridge with city skyline"
                   width={512}
                   height={384}
