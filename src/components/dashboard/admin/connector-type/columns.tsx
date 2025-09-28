@@ -1,0 +1,132 @@
+"use client";
+
+import React from "react";
+import { ColumnDef } from "@tanstack/react-table";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { ActionsCell } from "./actions-cell";
+
+export interface ConnectorType {
+  id: number;
+  name: string;
+  description: string;
+  maxPowerKw: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const formatDate = (date: Date) => {
+  return new Intl.DateTimeFormat("vi-VN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date(date));
+};
+
+const formatPower = (power: number) => {
+  return `${power} kW`;
+};
+
+export const columns: ColumnDef<ConnectorType>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <div className="flex items-center justify-center">
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      </div>
+    ),
+    cell: ({ row }) => (
+      <div className="flex items-center justify-center">
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      </div>
+    ),
+  },
+  {
+    accessorKey: "id",
+    header: "ID",
+    cell: ({ row }) => <div className="font-medium">#{row.getValue("id")}</div>,
+  },
+  {
+    accessorKey: "name",
+    header: "Tên Cổng Kết Nối",
+    cell: ({ row }) => (
+      <div className="font-medium">{row.getValue("name")}</div>
+    ),
+  },
+  {
+    accessorKey: "description",
+    header: "Mô Tả",
+    cell: ({ row }) => {
+      const description = row.getValue("description") as string;
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="text-muted-foreground max-w-[200px] cursor-help truncate">
+                {description}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-[300px]">
+              <p className="whitespace-normal">{description}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    },
+  },
+  {
+    accessorKey: "maxPowerKw",
+    header: "Công Suất Tối Đa",
+    cell: ({ row }) => {
+      const power = row.getValue("maxPowerKw") as number;
+      return (
+        <Badge variant="secondary" className="font-mono">
+          {formatPower(power)}
+        </Badge>
+      );
+    },
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Ngày Tạo",
+    cell: ({ row }) => (
+      <div className="text-muted-foreground">
+        {formatDate(row.getValue("createdAt"))}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "updatedAt",
+    header: "Cập Nhật Lần Cuối",
+    cell: ({ row }) => (
+      <div className="text-muted-foreground">
+        {formatDate(row.getValue("updatedAt"))}
+      </div>
+    ),
+  },
+  {
+    id: "actions",
+    header: "Hành Động",
+    cell: ({ row }) => {
+      const connectorType = row.original;
+      return <ActionsCell connectorType={connectorType} />;
+    },
+  },
+];
