@@ -9,9 +9,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
-export default function UserInformation() {
+export default function FullNameUpdate() {
   return (
-    <Card className="w-full">
+    <Card className="max-w-[1000px]">
       <CardHeader>
         <CardTitle>Tên đầy đủ</CardTitle>
         <CardDescription>Thay đổi tên đầy đủ của bạn</CardDescription>

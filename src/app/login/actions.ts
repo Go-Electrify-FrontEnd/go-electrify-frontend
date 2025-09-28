@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { getBackendUrl } from "@/lib/utils";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export async function handleLogin(prevState: any, data: FormData) {
@@ -10,10 +11,7 @@ export async function handleLogin(prevState: any, data: FormData) {
     return { success: false, msg: "Email is required" };
   }
 
-  const url = new URL(process.env.BACKEND_URL + "auth/register-email");
-  if (process.env.NODE_ENV === "development") {
-    url.searchParams.append("teamId", process.env.TEST_TEAM_ID || "");
-  }
+  const url = getBackendUrl("auth/register-email");
 
   const response = await fetch(url, {
     method: "POST",
@@ -58,12 +56,9 @@ export async function handleVerifyOTP(prevState: any, data: FormData) {
     return { success: true, msg: "Already logged in" };
   }
 
-  const url = new URL(process.env.BACKEND_URL + "auth/verify-otp");
-  if (process.env.NODE_ENV === "development") {
-    url.searchParams.append("teamId", process.env.TEST_TEAM_ID || "");
-  }
+  const url = getBackendUrl("auth/verify-otp");
 
-  console.log("URL: " + url.toString());
+  console.log("URL: " + url);
 
   const response = await fetch(url, {
     method: "POST",
