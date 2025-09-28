@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/shared/theme-provider";
-import PurposeWarning from "@/components/shared/purpose-warning";
+import { Toaster } from "sonner";
+import { UserProvider } from "@/contexts/user-context";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,6 +25,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = {
+    name: "John Doe",
+    email: "john.doe@example.com",
+    avatar: "/avatar.png",
+  };
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -35,8 +41,8 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <PurposeWarning />
-          {children}
+          <UserProvider user={user}>{children}</UserProvider>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
