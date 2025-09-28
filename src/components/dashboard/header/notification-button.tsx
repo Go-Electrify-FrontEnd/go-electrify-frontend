@@ -26,15 +26,6 @@ const notifications = [
   },
   {
     id: 2,
-    type: "message",
-    title: "Tin nhắn mới",
-    description: "Bạn có tin nhắn mới từ khách hàng",
-    time: "15 phút trước",
-    isRead: false,
-    icon: MessageSquare,
-  },
-  {
-    id: 3,
     type: "user",
     title: "Người dùng mới",
     description: "Có người dùng mới đăng ký",
@@ -43,7 +34,7 @@ const notifications = [
     icon: UserPlus,
   },
   {
-    id: 4,
+    id: 3,
     type: "reservation",
     title: "Hoàn thành sạc",
     description: "Quá trình sạc tại Trạm Landmark81 đã hoàn thành",

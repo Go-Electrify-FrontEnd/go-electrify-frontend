@@ -10,6 +10,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { LucideIcon } from "lucide-react";
+import Link from "next/link";
 
 interface NavSecondaryProps
   extends React.ComponentPropsWithoutRef<typeof SidebarGroup> {
@@ -28,10 +29,10 @@ export function NavSecondary({ items, ...props }: NavSecondaryProps) {
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild>
-                <a href={item.url}>
+                <Link prefetch={false} href={item.url}>
                   <item.icon />
                   <span>{item.title}</span>
-                </a>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}

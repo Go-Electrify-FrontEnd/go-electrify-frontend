@@ -1,10 +1,10 @@
 "use client";
 
-import { StationWithDistance } from "@/app/dashboard/find-stations/page";
+import { Station } from "@/app/dashboard/find-stations/page";
 import { StationCard } from "./station-card";
 
 interface NearestStationsListProps {
-  stations: StationWithDistance[];
+  stations: Station[];
   location: { lat: number; lng: number } | null;
 }
 

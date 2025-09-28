@@ -9,6 +9,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import Link from "next/link";
 
 export function NavSection({
   items,
@@ -36,10 +37,10 @@ export function NavSection({
               isActive={item.isActive}
               asChild
             >
-              <a href={item.url}>
+              <Link prefetch={false} href={item.url}>
                 {item.icon && <item.icon />}
                 <span>{item.title}</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         ))}
