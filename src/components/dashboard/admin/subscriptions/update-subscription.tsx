@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Subscription } from "./columns";
 
@@ -61,16 +60,9 @@ export function UpdateSubscription({
     setIsLoading(true);
 
     try {
-      // Here you would make the API call to update the subscription
-      // await updateSubscription(subscription.id, { name, price: Number(price), totalKwh: Number(totalKwh), durationDays: Number(durationDays) });
-
       await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
-
       toast.success("Cập nhật gói đăng ký thành công!");
       onOpenChange(false);
-
-      // Refresh the page or update the data
-      window.location.reload();
     } catch (error) {
       toast.error("Có lỗi xảy ra khi cập nhật gói đăng ký");
     } finally {
