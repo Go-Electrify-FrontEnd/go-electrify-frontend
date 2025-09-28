@@ -19,7 +19,7 @@ interface ActionsCellProps {
   connectorType: ConnectorType;
 }
 
-export const ActionsCell = ({ connectorType }: ActionsCellProps) => {
+export function ActionsCell({ connectorType }: ActionsCellProps) {
   const [showUpdateDialog, setShowUpdateDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
@@ -62,4 +62,4 @@ export const ActionsCell = ({ connectorType }: ActionsCellProps) => {
       />
     </>
   );
-};
+}

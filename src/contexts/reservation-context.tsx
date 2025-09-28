@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { Station } from "@/app/dashboard/find-stations/page";
-import { CarModel, ChargingPort } from "@/types/reservation";
+import { CarModel, ChargingPort, Reservation } from "@/types/reservation";
 
 // Types
 export interface ReservationState {
@@ -29,6 +29,7 @@ interface ReservationContextType {
   initialSoc: string;
   targetSoc: string;
   carModels: CarModel[];
+  reservations: Reservation[];
 
   // Setters
   setCurrentStep: (step: "form" | "summary") => void;
@@ -40,6 +41,7 @@ interface ReservationContextType {
   setInitialSoc: (soc: string) => void;
   setTargetSoc: (soc: string) => void;
   setCarModels: (models: CarModel[]) => void;
+  setReservations: React.Dispatch<React.SetStateAction<Reservation[]>>;
   resetForm: () => void;
 
   // Static data
@@ -61,12 +63,14 @@ interface ReservationProviderProps {
   children: ReactNode;
   stations: Station[];
   chargingPorts: ChargingPort[];
+  reservations: Reservation[];
 }
 
 export function ReservationProvider({
   children,
   stations,
   chargingPorts,
+  reservations,
 }: ReservationProviderProps) {
   // useState for each piece of state
   const [currentStep, setCurrentStep] = useState<"form" | "summary">("form");
@@ -78,6 +82,8 @@ export function ReservationProvider({
   const [initialSoc, setInitialSoc] = useState("");
   const [targetSoc, setTargetSoc] = useState("");
   const [carModels, setCarModels] = useState<CarModel[]>([]);
+  const [reservationsState, setReservations] =
+    useState<Reservation[]>(reservations);
 
   // Reset function
   const resetForm = () => {
@@ -117,6 +123,7 @@ export function ReservationProvider({
         initialSoc,
         targetSoc,
         carModels,
+        reservations: reservationsState,
 
         // Setters
         setCurrentStep,
@@ -128,6 +135,7 @@ export function ReservationProvider({
         setInitialSoc,
         setTargetSoc,
         setCarModels,
+        setReservations,
         resetForm,
 
         // Static data

@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/card";
 import { getBackendUrl } from "@/lib/utils";
 import { Filter, MapPin, RotateCcw, Search } from "lucide-react";
+import { Suspense } from "react";
+import MapLoadingSpinner from "./loading";
 
 export interface Station {
   id: number;

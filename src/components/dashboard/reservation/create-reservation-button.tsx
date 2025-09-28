@@ -15,7 +15,7 @@ import { Station } from "@/app/dashboard/find-stations/page";
 import { ReservationForm } from "./reservation-form";
 import { BookingSummary } from "./booking-summary";
 import { getCarModels } from "@/lib/actions/car-models";
-import { ChargingPort } from "@/types/reservation";
+import { ChargingPort, Reservation } from "@/types/reservation";
 import {
   ReservationProvider,
   useReservation,
@@ -44,6 +44,7 @@ const chargingPorts: ChargingPort[] = [
 
 interface CreateReservationButtonProps {
   stations: Station[];
+  reservations: Reservation[];
 }
 
 function ReservationDialog() {
@@ -100,6 +101,7 @@ function ReservationDialog() {
 
 export default function CreateReservationButton({
   stations,
+  reservations,
 }: CreateReservationButtonProps) {
   const [open, setOpen] = useState(false);
 
@@ -108,7 +110,11 @@ export default function CreateReservationButton({
   };
 
   return (
-    <ReservationProvider stations={stations} chargingPorts={chargingPorts}>
+    <ReservationProvider
+      stations={stations}
+      chargingPorts={chargingPorts}
+      reservations={reservations}
+    >
       <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogTrigger asChild>
           <Button size="lg" className="gap-2">

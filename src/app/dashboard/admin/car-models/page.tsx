@@ -1,5 +1,4 @@
-import { columns } from "@/components/dashboard/admin/car-models/columns";
-import { SharedDataTable } from "@/components/ui/shared-data-table";
+import { CarModelsTable } from "@/components/dashboard/admin/car-models/car-models-table";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -98,13 +97,7 @@ export default async function CarModelsPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <SharedDataTable
-            columns={columns}
-            data={carModels}
-            searchColumn="modelName"
-            searchPlaceholder="Tìm kiếm mẫu xe..."
-            emptyMessage="Không có mẫu xe nào."
-          />
+          <CarModelsTable data={carModels} />
         </CardContent>
       </Card>
     </div>

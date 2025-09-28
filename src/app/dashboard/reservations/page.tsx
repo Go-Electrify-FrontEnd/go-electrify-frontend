@@ -67,7 +67,10 @@ export default async function ReservationPage() {
               </div>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
-              <CreateReservationButton stations={chargingStations} />
+              <CreateReservationButton
+                stations={chargingStations}
+                reservations={reservationsData}
+              />
             </div>
           </div>
         </CardHeader>

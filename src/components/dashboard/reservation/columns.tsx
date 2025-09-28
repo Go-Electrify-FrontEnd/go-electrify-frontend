@@ -4,6 +4,9 @@ import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import type { Reservation } from "@/types/reservation";
+
+export type { Reservation };
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,20 +15,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-export type Reservation = {
-  id: number; // int
-  userId: number; // int
-  pointId: number; // int (charging point / station id)
-  scheduledStart: string | Date; // datetime
-  scheduledEnd: string | Date; // datetime
-  initialSoc: number; // int
-  type: string; // varchar(16)
-  status: string; // varchar(32)
-  estimatedCost: number; // decimal(18,2)
-  createdAt: string | Date; // datetime
-  updatedAt: string | Date; // datetime
-};
 
 // Helper function to format Vietnamese currency
 const formatCurrency = (amount: number) => {
