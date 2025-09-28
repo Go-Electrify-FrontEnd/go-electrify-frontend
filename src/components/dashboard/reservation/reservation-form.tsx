@@ -32,7 +32,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import { format, isSameDay } from "date-fns";
 import { useReservation } from "@/contexts/reservation-context";
 
 interface ReservationFormProps {
@@ -53,6 +53,7 @@ export function ReservationForm({ onContinue }: ReservationFormProps) {
     chargingPorts,
     selectedStationData,
     selectedCarModelData,
+    reservations,
     setSelectedStation,
     setSelectedCarModel,
     setSelectedChargingPort,
@@ -65,6 +66,38 @@ export function ReservationForm({ onContinue }: ReservationFormProps) {
   const [openStation, setOpenStation] = React.useState(false);
   const [openCarModel, setOpenCarModel] = React.useState(false);
   const [openChargingPort, setOpenChargingPort] = React.useState(false);
+
+  const filteredReservations = React.useMemo(() => {
+    if (!selectedStation || !selectedDate) {
+      return [];
+    }
+
+    return reservations
+      .filter((reservation) => {
+        if (reservation.pointId.toString() !== selectedStation) {
+          return false;
+        }
+
+        const start = new Date(reservation.scheduledStart);
+        if (Number.isNaN(start.getTime())) {
+          return false;
+        }
+
+        return isSameDay(start, selectedDate);
+      })
+      .sort((a, b) => {
+        const startA = new Date(a.scheduledStart).getTime();
+        const startB = new Date(b.scheduledStart).getTime();
+        return startA - startB;
+      });
+  }, [reservations, selectedStation, selectedDate]);
+
+  const statusLabels: Record<string, string> = {
+    confirmed: "Đã xác nhận",
+    pending: "Chờ xử lý",
+    completed: "Hoàn thành",
+    cancelled: "Đã hủy",
+  };
 
   const isFormValid = () => {
     return (
@@ -304,6 +337,60 @@ export function ReservationForm({ onContinue }: ReservationFormProps) {
           </PopoverContent>
         </Popover>
       </div>
+
+      {selectedStation && selectedDate && (
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-semibold">
+              Đặt chỗ trong ngày đã chọn
+            </CardTitle>
+            <p className="text-muted-foreground text-sm">
+              Các đặt chỗ tại trạm này trong ngày{" "}
+              {format(selectedDate, "dd/MM/yyyy")}.
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {filteredReservations.length > 0 ? (
+              filteredReservations.map((reservation) => {
+                const start = new Date(reservation.scheduledStart);
+                const end = new Date(reservation.scheduledEnd);
+                const startLabel = Number.isNaN(start.getTime())
+                  ? "--:--"
+                  : format(start, "HH:mm");
+                const endLabel = Number.isNaN(end.getTime())
+                  ? "--:--"
+                  : format(end, "HH:mm");
+                const statusLabel =
+                  statusLabels[reservation.status.toLowerCase()] ??
+                  reservation.status;
+
+                return (
+                  <div
+                    key={reservation.id}
+                    className="bg-muted/40 border-border/60 rounded-lg border p-3 text-sm"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold">
+                        {startLabel} - {endLabel}
+                      </span>
+                      <span className="text-muted-foreground text-xs tracking-wide uppercase">
+                        {statusLabel}
+                      </span>
+                    </div>
+                    <div className="text-muted-foreground mt-1 text-xs">
+                      SOC: {reservation.initialSoc}% • Loại: {reservation.type}
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <p className="text-muted-foreground text-sm">
+                Chưa có đặt chỗ nào cho ngày này tại trạm đã chọn.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Time Selection */}
       {selectedDate && (

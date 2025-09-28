@@ -1,6 +1,6 @@
-import { PenaltyTable } from "@/components/dashboard/donate/penalty-table";
-import { TransactionTable } from "@/components/dashboard/donate/transasction-table";
-import { WalletOverview } from "@/components/dashboard/donate/wallet-overview";
+import { PenaltyTable } from "@/components/dashboard/wallet/penalty-table";
+import { TransactionTable } from "@/components/dashboard/wallet/transasction-table";
+import { WalletOverview } from "@/components/dashboard/wallet/wallet-overview";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 

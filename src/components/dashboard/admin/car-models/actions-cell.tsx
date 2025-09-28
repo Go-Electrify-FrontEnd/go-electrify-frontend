@@ -19,7 +19,7 @@ interface ActionsCellProps {
   carModel: CarModel;
 }
 
-export const ActionsCell: React.FC<ActionsCellProps> = ({ carModel }) => {
+export function ActionsCell({ carModel }: ActionsCellProps) {
   const [showUpdateDialog, setShowUpdateDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
@@ -62,4 +62,4 @@ export const ActionsCell: React.FC<ActionsCellProps> = ({ carModel }) => {
       )}
     </>
   );
-};
+}

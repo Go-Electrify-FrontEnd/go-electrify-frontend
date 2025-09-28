@@ -1,5 +1,4 @@
-import { columns } from "@/components/dashboard/admin/subscriptions/columns";
-import { SharedDataTable } from "@/components/ui/shared-data-table";
+import { SubscriptionsTable } from "@/components/dashboard/admin/subscriptions/subscriptions-table";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -106,13 +105,7 @@ export default async function SubscriptionsPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <SharedDataTable
-            columns={columns}
-            data={subscriptions}
-            searchColumn="name"
-            searchPlaceholder="Tìm kiếm theo tên gói..."
-            emptyMessage="Không có gói nạp nào."
-          />
+          <SubscriptionsTable data={subscriptions} />
         </CardContent>
       </Card>
     </div>
