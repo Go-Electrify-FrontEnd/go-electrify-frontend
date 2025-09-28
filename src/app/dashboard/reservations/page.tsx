@@ -2,156 +2,140 @@ import {
   columns,
   Reservation,
 } from "@/components/dashboard/reservation/columns";
-import CreateReservationButton from "@/components/dashboard/reservation/create-reservation-button";
 import { DataTable } from "@/components/dashboard/reservation/data-table";
 import { EmptyTable } from "@/components/dashboard/reservation/empty-table";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { getBackendUrl } from "@/lib/utils";
-import { StationWithDistance } from "../find-stations/page";
+import { Station } from "../find-stations/page";
+import Link from "next/link";
+import { Plus, Calendar } from "lucide-react";
+import CreateReservationButton from "@/components/dashboard/reservation/create-reservation-button";
 
-async function getData(): Promise<Reservation[]> {
-  // Fetch data from your API here.
-  return [
-    {
-      id: 1,
-      userId: 101,
-      pointId: 201,
-      scheduledStart: "2024-12-20T08:00:00Z",
-      scheduledEnd: "2024-12-20T10:00:00Z",
-      initialSoc: 25,
-      type: "standard",
-      status: "confirmed",
-      estimatedCost: 125000,
-      createdAt: "2024-12-18T14:30:00Z",
-      updatedAt: "2024-12-18T14:30:00Z",
-    },
-    {
-      id: 2,
-      userId: 101,
-      pointId: 203,
-      scheduledStart: "2024-12-22T14:30:00Z",
-      scheduledEnd: "2024-12-22T16:00:00Z",
-      initialSoc: 15,
-      type: "fast",
-      status: "pending",
-      estimatedCost: 89500,
-      createdAt: "2024-12-19T09:15:00Z",
-      updatedAt: "2024-12-19T09:15:00Z",
-    },
-    {
-      id: 3,
-      userId: 102,
-      pointId: 205,
-      scheduledStart: "2024-12-21T18:00:00Z",
-      scheduledEnd: "2024-12-21T20:30:00Z",
-      initialSoc: 40,
-      type: "rapid",
-      status: "completed",
-      estimatedCost: 156750,
-      createdAt: "2024-12-17T11:45:00Z",
-      updatedAt: "2024-12-21T20:35:00Z",
-    },
-    {
-      id: 4,
-      userId: 103,
-      pointId: 202,
-      scheduledStart: "2024-12-23T07:15:00Z",
-      scheduledEnd: "2024-12-23T09:45:00Z",
-      initialSoc: 30,
-      type: "standard",
-      status: "cancelled",
-      estimatedCost: 98200,
-      createdAt: "2024-12-19T16:20:00Z",
-      updatedAt: "2024-12-20T08:10:00Z",
-    },
-    {
-      id: 5,
-      userId: 101,
-      pointId: 207,
-      scheduledStart: "2024-12-25T12:00:00Z",
-      scheduledEnd: "2024-12-25T13:30:00Z",
-      initialSoc: 20,
-      type: "fast",
-      status: "confirmed",
-      estimatedCost: 67800,
-      createdAt: "2024-12-20T10:30:00Z",
-      updatedAt: "2024-12-20T10:30:00Z",
-    },
-    {
-      id: 6,
-      userId: 104,
-      pointId: 204,
-      scheduledStart: "2024-12-24T16:45:00Z",
-      scheduledEnd: "2024-12-24T19:15:00Z",
-      initialSoc: 10,
-      type: "rapid",
-      status: "pending",
-      estimatedCost: 187500,
-      createdAt: "2024-12-20T13:22:00Z",
-      updatedAt: "2024-12-20T13:22:00Z",
-    },
-  ];
+async function getData() {
+  const reservationsResponse = await fetch(getBackendUrl("api/reservations"));
+  const reservationsData: Reservation[] = await reservationsResponse.json();
+
+  const chargingStationsResponse = await fetch(getBackendUrl("api/stations"));
+  const chargingStations: Station[] = await chargingStationsResponse.json();
+
+  return { reservationsData, chargingStations };
 }
 
 export default async function ReservationPage() {
-  const data = await getData();
+  const { reservationsData, chargingStations } = await getData();
 
-  const response = await fetch(getBackendUrl("api/stations"));
-  const chargingStations: StationWithDistance[] = await response.json();
-
-  const inComingReservations = data.filter(
+  const inComingReservations = reservationsData.filter(
     (reservation) => new Date(reservation.scheduledStart) > new Date(),
   );
 
   return (
-    <div className="container mx-auto">
-      <div className="border-b">
-        <div className="py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+    <div className="container mx-auto mt-4 space-y-6">
+      {/* Header Card */}
+      <Card>
+        <CardHeader className="pt-2 pb-2">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-3">
+              <div className="flex items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 shadow-lg">
+                  <Calendar className="h-6 w-6 text-white" />
+                </div>
+                <div className="space-y-1">
+                  <CardTitle className="text-3xl">Đặt Chỗ</CardTitle>
+                  <CardDescription className="text-base">
+                    Quản lý và theo dõi các đặt chỗ sạc xe điện của bạn
+                  </CardDescription>
+                </div>
+              </div>
+              <div className="text-muted-foreground flex items-center gap-6 text-sm">
+                <div className="flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-green-500"></div>
+                  <span>Hoạt động</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-foreground font-medium">
+                    {reservationsData.length}
+                  </span>
+                  <span>đặt chỗ</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <CreateReservationButton stations={chargingStations} />
+            </div>
+          </div>
+        </CardHeader>
+      </Card>
+
+      {/* Content Sections */}
+      <div className="space-y-8">
+        {/* Upcoming Reservations Section */}
+        <div className="bg-card rounded-lg border">
+          <div className="bg-muted/30 border-b px-6 py-4">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900">
+                <Plus className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+              </div>
               <div>
-                <h1 className="text-foreground text-2xl font-bold sm:text-3xl">
-                  Quản Lý Đặt Chỗ
-                </h1>
-                <p className="text-muted-foreground text-sm sm:text-base">
-                  Danh sách các đặt chỗ của bạn
+                <h2 className="text-foreground text-lg font-semibold">
+                  Đặt Chỗ Sắp Tới
+                </h2>
+                <p className="text-muted-foreground text-sm">
+                  Các đặt chỗ trong tương lai của bạn (
+                  {inComingReservations.length} đặt chỗ)
                 </p>
               </div>
             </div>
-
-            <CreateReservationButton stations={chargingStations} />
+          </div>
+          <div className="p-6">
+            {inComingReservations == null ||
+            inComingReservations.length === 0 ? (
+              <EmptyTable />
+            ) : (
+              <DataTable columns={columns} data={inComingReservations} />
+            )}
           </div>
         </div>
-      </div>
-      <div className="mt-6 space-y-8">
-        {/* Upcoming Reservations Section */}
-        <div>
-          <div className="mb-4">
-            <h2 className="text-foreground text-xl font-semibold">
-              Đặt Chỗ Sắp Tới
-            </h2>
-            <p className="text-muted-foreground text-sm">
-              Các đặt chỗ trong tương lai của bạn
-            </p>
-          </div>
-          {inComingReservations == null || inComingReservations.length === 0 ? (
-            <EmptyTable />
-          ) : (
-            <DataTable columns={columns} data={inComingReservations} />
-          )}
-        </div>
 
-        {/* All Reservations History Section */}
-        <div>
-          <div className="mb-4">
-            <h2 className="text-foreground text-xl font-semibold">
-              Lịch Sử Đặt Chỗ
-            </h2>
-            <p className="text-muted-foreground text-sm">
-              Tất cả các đặt chỗ của bạn
-            </p>
+        {/* All Reservations Section */}
+        <div className="bg-card rounded-lg border">
+          <div className="bg-muted/30 border-b px-6 py-4">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
+                <svg
+                  className="h-4 w-4 text-gray-600 dark:text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h2 className="text-foreground text-lg font-semibold">
+                  Lịch Sử Đặt Chỗ
+                </h2>
+                <p className="text-muted-foreground text-sm">
+                  Tất cả các đặt chỗ của bạn ({reservationsData.length} đặt chỗ)
+                </p>
+              </div>
+            </div>
           </div>
-          <DataTable columns={columns} data={data} />
+          <div className="p-6">
+            <DataTable columns={columns} data={reservationsData} />
+          </div>
         </div>
       </div>
     </div>

@@ -5,16 +5,17 @@ import {
   AudioWaveform,
   BookOpen,
   Bot,
+  Car,
   Command,
-  Frame,
   GalleryVerticalEnd,
   House,
   Map,
   PieChart,
+  Plug,
   Settings2,
-  SquareTerminal,
   TicketCheckIcon,
   Wallet2Icon,
+  Zap,
 } from "lucide-react";
 
 import {
@@ -23,13 +24,13 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { DashboardLogo } from "./dashboard-logo";
 import { NavUser } from "./nav-user";
 import { NavSection } from "./nav-section";
 import { NavSecondary } from "./nav-secondary";
 
-// User data
 const user = {
   name: "shadcn",
   email: "m@example.com",
@@ -43,6 +44,12 @@ const overview = {
       title: "Bảng điều khiển",
       url: "/dashboard",
       icon: House,
+      isActive: false,
+    },
+    {
+      title: "Bắt đầu sạc",
+      url: "/dashboard/start-charging",
+      icon: Zap,
       isActive: false,
     },
   ],
@@ -105,13 +112,28 @@ const admin = {
       icon: GalleryVerticalEnd,
       isActive: false,
     },
+    {
+      title: "Quản lý gói nạp",
+      url: "/dashboard/admin/subscriptions",
+      icon: AudioWaveform,
+    },
+    {
+      title: "Quản lý loại cổng sạc",
+      url: "/dashboard/admin/connector-type",
+      icon: Plug,
+    },
+    {
+      title: "Quản lý mẫu xe",
+      url: "/dashboard/admin/car-models",
+      icon: Car,
+    },
   ],
 };
 
 const secondary = [
   {
     title: "Cài đặt",
-    url: "#",
+    url: "/dashboard/settings",
     icon: Settings2,
   },
   {
@@ -122,6 +144,9 @@ const secondary = [
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { state } = useSidebar();
+  const isCollapsed = state === "collapsed";
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>

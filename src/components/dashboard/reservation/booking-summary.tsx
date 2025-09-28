@@ -12,160 +12,148 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { StationWithDistance } from "@/app/dashboard/find-stations/page";
+import { DialogFooter } from "@/components/ui/dialog";
+import { format } from "date-fns";
+import { useReservation } from "@/contexts/reservation-context";
 
 interface BookingSummaryProps {
-  selectedStation: StationWithDistance | undefined;
-  selectedCarModel: any;
-  selectedChargingPort: any;
-  selectedDate: Date | undefined;
-  startTime: string;
-  initialSoc: string;
   onBack: () => void;
   onConfirm: () => void;
 }
 
-export function BookingSummary({
-  selectedStation,
-  selectedCarModel,
-  selectedChargingPort,
-  selectedDate,
-  startTime,
-  initialSoc,
-  onBack,
-  onConfirm,
-}: BookingSummaryProps) {
-  // Mock estimated cost calculation
-  const estimatedCost = 125750; // VND
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(amount);
-  };
-
-  const formatDateTime = (date: Date, time: string) => {
-    if (!date || !time) return "";
-    return `${date.toLocaleDateString("vi-VN", {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    })} lúc ${time}`;
-  };
+export function BookingSummary({ onBack, onConfirm }: BookingSummaryProps) {
+  const {
+    selectedDate,
+    startTime,
+    initialSoc,
+    targetSoc,
+    selectedStationData,
+    selectedCarModelData,
+    selectedChargingPortData,
+  } = useReservation();
 
   return (
-    <div className="space-y-4">
-      <div className="space-y-2 text-center">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-          <Check className="h-8 w-8 text-green-600" />
-        </div>
-        <h3 className="text-lg font-semibold">Xác nhận đặt chỗ</h3>
-        <p className="text-muted-foreground text-sm">
-          Vui lòng kiểm tra thông tin trước khi xác nhận
-        </p>
+    <div className="space-y-6">
+      <div className="space-y-4">
+        {/* Station Info */}
+        {selectedStationData && (
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-start gap-3">
+                <MapPin className="text-primary mt-0.5 h-5 w-5" />
+                <div className="flex-1">
+                  <h4 className="font-medium">{selectedStationData.name}</h4>
+                  <p className="text-muted-foreground mt-1 text-sm">
+                    {selectedStationData.address}
+                  </p>
+                  <p className="text-muted-foreground text-sm">
+                    Khoảng cách: {selectedStationData.distance}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Car Model Info */}
+        {selectedCarModelData && (
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-start gap-3">
+                <Car className="text-primary mt-0.5 h-5 w-5" />
+                <div className="flex-1">
+                  <h4 className="font-medium">
+                    {selectedCarModelData.brand} {selectedCarModelData.model}
+                  </h4>
+                  <p className="text-muted-foreground text-sm">
+                    Năm: {selectedCarModelData.year}
+                  </p>
+                  <p className="text-muted-foreground text-sm">
+                    Dung lượng pin: {selectedCarModelData.batteryCapacity} kWh
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Charging Port Info */}
+        {selectedChargingPortData && (
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-start gap-3">
+                <Zap className="text-primary mt-0.5 h-5 w-5" />
+                <div className="flex-1">
+                  <h4 className="font-medium">
+                    {selectedChargingPortData.name}
+                  </h4>
+                  <p className="text-muted-foreground text-sm">
+                    {selectedChargingPortData.type}
+                  </p>
+                  <p className="text-muted-foreground text-sm">
+                    Công suất tối đa: {selectedChargingPortData.maxPower}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Schedule Info */}
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-start gap-3">
+              <Clock className="text-primary mt-0.5 h-5 w-5" />
+              <div className="flex-1">
+                <h4 className="font-medium">Lịch sạc</h4>
+                {selectedDate && (
+                  <p className="text-muted-foreground text-sm">
+                    Ngày: {format(selectedDate, "dd/MM/yyyy")}
+                  </p>
+                )}
+                <p className="text-muted-foreground text-sm">
+                  Giờ bắt đầu: {startTime}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Battery Info */}
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-start gap-3">
+              <Battery className="text-primary mt-0.5 h-5 w-5" />
+              <div className="flex-1">
+                <h4 className="font-medium">Thông tin pin</h4>
+                <p className="text-muted-foreground text-sm">
+                  Mức pin hiện tại: {initialSoc}%
+                </p>
+                <p className="text-muted-foreground text-sm">
+                  Mức pin mong muốn: {targetSoc}%
+                </p>
+                {initialSoc && targetSoc && (
+                  <p className="text-primary text-sm font-medium">
+                    Sạc thêm: {parseInt(targetSoc) - parseInt(initialSoc)}%
+                  </p>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Booking Details */}
-      <Card>
-        <CardContent className="space-y-4 pt-6">
-          {/* Station Info */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-sm font-medium">
-              <MapPin className="h-4 w-4" />
-              Trạm sạc
-            </div>
-            <div className="ml-6">
-              <div className="font-medium">{selectedStation?.name}</div>
-              <div className="text-muted-foreground text-sm">
-                {selectedStation?.address}
-              </div>
-            </div>
-          </div>
-
-          {/* Car Info */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-sm font-medium">
-              <Car className="h-4 w-4" />
-              Xe của bạn
-            </div>
-            <div className="ml-6">
-              <div className="font-medium">
-                {selectedCarModel?.brand} {selectedCarModel?.model}
-              </div>
-              <div className="text-muted-foreground text-sm">
-                {selectedCarModel?.batteryCapacity}kWh
-              </div>
-            </div>
-          </div>
-
-          {/* Charging Port */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-sm font-medium">
-              <Zap className="h-4 w-4" />
-              Cổng sạc
-            </div>
-            <div className="ml-6">
-              <div className="font-medium">{selectedChargingPort?.name}</div>
-              <div className="text-muted-foreground text-sm">
-                {selectedChargingPort?.type}
-              </div>
-            </div>
-          </div>
-
-          {/* DateTime */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-sm font-medium">
-              <Clock className="h-4 w-4" />
-              Thời gian
-            </div>
-            <div className="ml-6">
-              <div className="font-medium">
-                Bắt đầu:{" "}
-                {selectedDate && formatDateTime(selectedDate, startTime)}
-              </div>
-            </div>
-          </div>
-
-          {/* Initial SoC */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-sm font-medium">
-              <Battery className="h-4 w-4" />
-              SoC ban đầu
-            </div>
-            <div className="ml-6">
-              <div className="font-medium">{initialSoc}%</div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Cost Estimate */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex items-center justify-between">
-            <span className="text-lg font-semibold">Chi phí dự kiến</span>
-            <span className="text-2xl font-bold text-green-600">
-              {formatCurrency(estimatedCost)}
-            </span>
-          </div>
-          <p className="text-muted-foreground mt-2 text-sm">
-            * Chi phí có thể thay đổi dựa trên thời gian sạc thực tế
-          </p>
-        </CardContent>
-      </Card>
-
       {/* Action Buttons */}
-      <div className="flex gap-3">
+      <DialogFooter className="gap-2">
         <Button variant="outline" onClick={onBack} className="flex-1">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Quay lại
         </Button>
         <Button onClick={onConfirm} className="flex-1">
+          <Check className="mr-2 h-4 w-4" />
           Xác nhận đặt chỗ
         </Button>
-      </div>
+      </DialogFooter>
     </div>
   );
 }
