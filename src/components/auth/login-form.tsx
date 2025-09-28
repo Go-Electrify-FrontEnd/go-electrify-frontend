@@ -1,36 +1,84 @@
+"use client";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useActionState, useEffect, useState } from "react";
+import { handleLogin } from "@/app/login/actions";
+import { toast } from "sonner";
+import { OTPForm } from "./otp-form";
+
+const initialState = {
+  success: false,
+  msg: "",
+};
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
+  const [email, setEmail] = useState<string>("");
+  const [loginState, loginAction] = useActionState(handleLogin, initialState);
+  const [otpSent, setOtpSent] = useState(false);
+
+  useEffect(() => {
+    if (loginState.success) {
+      toast("Email Sent!", {
+        description: loginState.msg,
+      });
+      setOtpSent(true);
+    } else {
+      if (loginState.msg) {
+        toast.error("Error", {
+          description: loginState.msg,
+        });
+      }
+    }
+  }, [loginState]);
+
+  if (otpSent) {
+    return <OTPForm email={email} />;
+  }
+
   return (
-    <form className={cn("flex flex-col gap-6", className)} {...props}>
+    <form
+      action={loginAction}
+      className={cn("flex flex-col gap-6", className)}
+      {...props}
+    >
       <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-2xl">Authentication</h1>
-        <p className="text-muted-foreground text-sm text-balance">
+        <h1 className="text-3xl">Authentication</h1>
+        <p className="text-muted-foreground text-balance">
           Enter your credentials below to continue
         </p>
       </div>
       <div className="grid gap-6">
         <div className="grid gap-3">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="m@example.com" required />
+          <Label className="text-base" htmlFor="email">
+            Email
+          </Label>
+          <Input
+            id="email"
+            type="email"
+            name="email"
+            className="h-[45px]"
+            placeholder="m@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
         </div>
-        <Button type="submit" className="w-full">
-          Login
+        <Button type="submit" className="w-full" size="lg">
+          <div className="text-base font-medium">Login</div>
         </Button>
-        <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
+        <div className="after:border-border relative text-center after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
           <span className="bg-background text-muted-foreground relative z-10 px-2">
             Or continue with
           </span>
         </div>
         <Button
           variant="outline"
-          className="flex items-center justify-center gap-2 h-11 hover:bg-red-50 hover:border-red-200 transition-colors"
+          className="flex h-11 items-center justify-center gap-2 transition-colors hover:border-red-200 hover:bg-red-50"
         >
           <svg
             className="h-5 w-5"
@@ -54,7 +102,7 @@ export function LoginForm({
               d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
             />
           </svg>
-          <span className="text-sm font-medium">Google</span>
+          <span className="text-base font-medium">Google</span>
         </Button>
       </div>
     </form>
