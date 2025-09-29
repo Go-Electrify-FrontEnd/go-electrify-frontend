@@ -1,11 +1,4 @@
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import FullNameUpdate from "@/components/dashboard/settings/fullname-update";
 import AvatarUpdate from "@/components/dashboard/settings/avatar-update";

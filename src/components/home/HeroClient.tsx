@@ -35,22 +35,16 @@ export default function HeroClient() {
 
       <div className="order-1 flex flex-col items-center gap-8 text-center lg:order-2 lg:items-start lg:text-left">
         <h1 className="text-4xl leading-tight font-bold md:text-6xl">
-          <span className={isDark ? "text-white" : "text-black"}>
-            Manage your
-          </span>
+          <span className="text-foreground">Manage your</span>
           <br />
           <span className="bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent">
             EV Charging Stations
           </span>
           <br />
-          <span className={isDark ? "text-white" : "text-black"}>
-            Effectively
-          </span>
+          <span className="text-foreground">Effectively</span>
         </h1>
 
-        <p
-          className={`max-w-2xl text-xl leading-relaxed md:text-2xl ${isDark ? "text-gray-300" : "text-gray-600"}`}
-        >
+        <p className="text-muted-foreground max-w-2xl text-xl leading-relaxed md:text-2xl">
           Optimize operations, reduce costs, and deliver a seamless charging
           experience for your customers with our comprehensive management
           platform.
@@ -63,11 +57,11 @@ export default function HeroClient() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
-              className={`flex-1 rounded-xl border px-6 py-4 transition-all duration-300 focus:ring-2 focus:ring-green-500/20 focus:outline-none sm:w-80 ${isDark ? "border-gray-600 bg-gray-800 text-white placeholder-gray-400" : "border-gray-300 bg-white text-black placeholder-gray-500"}`}
+              className="border-input bg-background text-foreground placeholder:text-muted-foreground focus:ring-ring flex-1 rounded-xl border px-6 py-4 transition-all duration-300 focus:ring-2 focus:outline-none sm:w-80"
             />
             <button
               onClick={handleSubmit}
-              className={`bg-foreground text-background hover:bg-foreground/90 flex items-center gap-2 rounded-xl px-8 py-4 font-semibold shadow-lg transition-all duration-300 ${isDark ? "bg-white text-black hover:bg-gray-100" : "bg-black text-white hover:bg-gray-800"}`}
+              className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-2 rounded-xl px-8 py-4 font-semibold shadow-lg transition-all duration-300"
             >
               Get Started
               <svg

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import FeaturesSection from "@/components/features-section";
 import NavbarClient from "@/components/home/NavbarClient";
 import HeroClient from "@/components/home/HeroClient";
@@ -210,7 +211,8 @@ export default function LandingPage() {
 
   return (
     <div className="bg-background text-foreground min-h-screen">
-      <div className="relative z-10 flex min-h-screen flex-col pt-16 font-sans">
+      <NavbarClient />
+      <div className="relative z-10 flex min-h-screen flex-col pt-28 font-sans">
         <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col items-center gap-20 px-8 py-20">
           {/* Hero Section */}
           <HeroClient />
@@ -233,7 +235,7 @@ export default function LandingPage() {
           <section id="how-it-works" className="w-full">
             <div className="mb-16 text-center">
               <h2 className="text-foreground mb-4 text-3xl font-bold md:text-4xl">
-                How It Work
+                How It Works
               </h2>
               <p className="text-muted-foreground mx-auto max-w-3xl text-xl">
                 A simple step-by-step process to understand how our platform
@@ -253,11 +255,10 @@ export default function LandingPage() {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"
+                        d="M8.111 16.404a5.5 5.5 0 717.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"
                       />
                     </svg>
                   ),
-                  bgColor: "bg-white dark:bg-black",
                 },
                 {
                   step: "02",
@@ -274,7 +275,6 @@ export default function LandingPage() {
                       />
                     </svg>
                   ),
-                  bgColor: "bg-white dark:bg-black",
                 },
                 {
                   step: "03",
@@ -291,28 +291,25 @@ export default function LandingPage() {
                       />
                     </svg>
                   ),
-                  bgColor: "bg-white dark:bg-black",
                 },
               ].map((item, index) => (
-                <div
+                <Card
                   key={index}
-                  className={`${item.bgColor} rounded-2xl p-8 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl`}
+                  className="p-8 transition-all duration-300 hover:scale-105 hover:shadow-xl"
                 >
                   <div className="mb-6 flex items-center justify-between">
-                    <span className="text-6xl font-bold text-black opacity-80 dark:text-white">
+                    <span className="text-foreground text-6xl font-bold opacity-80">
                       {item.step}
                     </span>
-                    <div className="h-12 w-12 text-black dark:text-white">
-                      {item.icon}
-                    </div>
+                    <div className="text-foreground h-12 w-12">{item.icon}</div>
                   </div>
-                  <h3 className="mb-4 text-2xl font-bold text-black dark:text-white">
+                  <h3 className="text-foreground mb-4 text-2xl font-bold">
                     {item.title}
                   </h3>
-                  <p className="leading-relaxed text-black opacity-90 dark:text-white">
+                  <p className="text-muted-foreground leading-relaxed">
                     {item.description}
                   </p>
-                </div>
+                </Card>
               ))}
             </div>
           </section>
@@ -348,7 +345,7 @@ export default function LandingPage() {
 
             <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-3">
               {/* Starter Plan */}
-              <div className="bg-card border-border hover:border-primary/20 relative rounded-2xl border p-8 transition-all duration-300">
+              <Card className="hover:border-primary/20 relative p-8 transition-all duration-300">
                 <div className="text-center">
                   <h3 className="text-card-foreground mb-2 text-2xl font-bold">
                     Starter
@@ -454,14 +451,14 @@ export default function LandingPage() {
                     </li>
                   </ul>
 
-                  <button className="bg-foreground text-background hover:bg-foreground/90 w-full rounded-xl px-6 py-3 font-semibold shadow-lg transition-all duration-300">
+                  <Button className="w-full" size="lg">
                     Get Starter
-                  </button>
+                  </Button>
                 </div>
-              </div>
+              </Card>
 
               {/* Pro Plan - Most Popular */}
-              <div className="bg-card border-foreground hover:border-foreground/80 relative scale-105 transform rounded-2xl border-2 p-8 transition-all duration-300">
+              <Card className="border-foreground hover:border-foreground/80 relative scale-105 transform border-2 p-8 transition-all duration-300">
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 transform">
                   <span className="bg-foreground text-background rounded-full px-4 py-1 text-sm font-semibold">
                     Most Popular
@@ -591,14 +588,14 @@ export default function LandingPage() {
                     </li>
                   </ul>
 
-                  <button className="bg-foreground text-background hover:bg-foreground/90 border-foreground w-full rounded-xl border-2 px-6 py-3 font-semibold shadow-lg transition-all duration-300">
+                  <Button className="w-full" size="lg" variant="default">
                     Choose Pro
-                  </button>
+                  </Button>
                 </div>
-              </div>
+              </Card>
 
               {/* Enterprise Plan */}
-              <div className="bg-card border-border hover:border-primary/20 relative rounded-2xl border p-8 transition-all duration-300">
+              <Card className="hover:border-primary/20 relative p-8 transition-all duration-300">
                 <div className="text-center">
                   <h3 className="text-card-foreground mb-2 text-2xl font-bold">
                     Enterprise
@@ -686,11 +683,11 @@ export default function LandingPage() {
                     </li>
                   </ul>
 
-                  <button className="bg-foreground text-background hover:bg-foreground/90 w-full rounded-xl px-6 py-3 font-semibold shadow-lg transition-all duration-300">
+                  <Button className="w-full" size="lg">
                     Get Started
-                  </button>
+                  </Button>
                 </div>
-              </div>
+              </Card>
             </div>
           </section>
 
@@ -704,12 +701,15 @@ export default function LandingPage() {
               their charging infrastructure.
             </p>
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <button className="bg-primary text-primary-foreground hover:bg-primary/90 transform rounded-xl px-8 py-4 font-semibold shadow-lg transition-all duration-300 hover:scale-105">
+              <Button
+                size="lg"
+                className="transition-transform hover:scale-105"
+              >
                 Start Free Trial
-              </button>
-              <button className="border-border text-foreground hover:bg-muted flex items-center gap-2 rounded-xl border bg-transparent px-8 py-4 font-semibold transition-all duration-300">
+              </Button>
+              <Button variant="outline" size="lg">
                 <svg
-                  className="h-4 w-4"
+                  className="mr-2 h-4 w-4"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -722,7 +722,7 @@ export default function LandingPage() {
                   />
                 </svg>
                 Watch Demo
-              </button>
+              </Button>
             </div>
           </section>
         </main>
