@@ -76,12 +76,12 @@ export default function AvatarUpdate() {
       </CardContent>
 
       {/* Footer uses relative container; actions are absolutely positioned to the right */}
-      <CardFooter className="relative border-t px-4 py-3">
+      <CardFooter className="relative border-t">
         <p className="text-muted-foreground text-sm">
           Ảnh đại diện là tuỳ chọn nhưng nên thiết lập để hoàn thiện hồ sơ.
         </p>
 
-        <div className="absolute top-1/2 right-4 flex -translate-y-1/2 items-center gap-2">
+        <div className="absolute top-1/2 right-4 flex h-12 -translate-y-1/2 items-center gap-2">
           <input
             ref={fileRef}
             type="file"
@@ -89,12 +89,6 @@ export default function AvatarUpdate() {
             onChange={handleFileChange}
             className="hidden"
           />
-          <Button variant="secondary" onClick={handleClickAvatar}>
-            Thay đổi ảnh
-          </Button>
-          <Button variant="outline" onClick={handleRemove}>
-            Xóa
-          </Button>
         </div>
       </CardFooter>
     </Card>
