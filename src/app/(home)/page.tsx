@@ -1,181 +1,8 @@
-"use client";
-
-import { useState } from "react";
-
-import type React from "react";
-import Link from "next/link";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import FeaturesSection from "@/components/features-section";
-
-interface ModeToggleProps {
-  isDark: boolean;
-  onToggle: () => void;
-}
-
-const ModeToggle = ({ isDark, onToggle }: ModeToggleProps) => {
-  return (
-    <button
-      onClick={onToggle}
-      className="p-3 rounded-full bg-card/80 backdrop-blur-md border border-border hover:bg-muted transition-all duration-300 hover:scale-110"
-    >
-      {isDark ? (
-        <svg
-          className="h-5 w-5 text-primary"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-          />
-        </svg>
-      ) : (
-        <svg
-          className="h-5 w-5 text-foreground"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-          />
-        </svg>
-      )}
-    </button>
-  );
-};
-
-interface NavbarProps {
-  isDark: boolean;
-  onToggle: () => void;
-}
-
-const Navbar = ({ isDark, onToggle }: NavbarProps) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const navLinks = [
-    { name: "Features", href: "#features" },
-    { name: "How It Works", href: "#how-it-works" },
-    { name: "Pricing", href: "#pricing" },
-    { name: "Testimonials", href: "#testimonials" },
-    { name: "Contact", href: "#contact" },
-  ];
-
-  return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border transition-all duration-300">
-      <div className="max-w-6xl mx-auto px-6 sm:px-8">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center">
-            <Link href="/" className="flex items-center gap-3">
-              <Image
-                src="/assets/images/logo01.png"
-                alt="Electrify Logo"
-                width={40}
-                height={40}
-                className="object-contain"
-              />
-              <span className="text-2xl font-bold text-foreground">
-                Electrify
-              </span>
-            </Link>
-          </div>
-
-          <div className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link, index) => (
-              <a
-                key={index}
-                href={link.href}
-                className="text-sm font-medium text-muted-foreground hover:text-primary transition-all duration-300"
-              >
-                {link.name}
-              </a>
-            ))}
-          </div>
-
-          <div className="hidden md:flex items-center space-x-4">
-            <ModeToggle isDark={isDark} onToggle={onToggle} />
-            <button className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-all duration-300">
-              Sign In
-            </button>
-            <button className="px-6 py-2 text-sm font-semibold text-primary-foreground bg-primary rounded-lg hover:bg-primary/90 transform hover:scale-105 transition-all duration-300 shadow-lg">
-              Get Started
-            </button>
-          </div>
-
-          <div className="md:hidden flex items-center space-x-4">
-            <ModeToggle isDark={isDark} onToggle={onToggle} />
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-300"
-            >
-              {isMenuOpen ? (
-                <svg
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              ) : (
-                <svg
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                </svg>
-              )}
-            </button>
-          </div>
-        </div>
-
-        {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-border">
-            <div className="flex flex-col space-y-4">
-              {navLinks.map((link, index) => (
-                <a
-                  key={index}
-                  href={link.href}
-                  className="text-sm font-medium text-muted-foreground hover:text-primary transition-all duration-300"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {link.name}
-                </a>
-              ))}
-              <div className="flex flex-col space-y-2 pt-4 border-t border-border">
-                <button className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-all duration-300 text-left">
-                  Sign In
-                </button>
-                <button className="px-6 py-2 text-sm font-semibold text-primary-foreground bg-primary rounded-lg hover:bg-primary/90 transform hover:scale-105 transition-all duration-300 text-left">
-                  Get Started
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </nav>
-  );
-};
+import NavbarClient from "@/components/home/NavbarClient";
+import HeroClient from "@/components/home/HeroClient";
 
 interface TestimonialCardProps {
   name: string;
@@ -194,17 +21,17 @@ function TestimonialCard({
 }: TestimonialCardProps) {
   return (
     <Card className="p-6">
-      <div className="flex items-start mb-4">
+      <div className="mb-4 flex items-start">
         <Image
           src={avatar || "/placeholder.svg"}
           alt={name}
           width={48}
           height={48}
-          className="rounded-full mr-4"
+          className="mr-4 rounded-full"
         />
         <div>
           <h4 className="font-semibold">{name}</h4>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {role} at {company}
           </p>
         </div>
@@ -218,9 +45,9 @@ const Footer = () => {
   return (
     <footer className="bg-muted py-12">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           <div>
-            <div className="flex items-center space-x-2 mb-4">
+            <div className="mb-4 flex items-center space-x-2">
               <Image
                 src="/assets/images/logo01.png"
                 alt="Electrify Logo"
@@ -231,7 +58,7 @@ const Footer = () => {
               <span className="text-lg font-bold">Electrify</span>
             </div>
 
-            <p className="text-sm leading-relaxed mb-6 text-muted-foreground">
+            <p className="text-muted-foreground mb-6 text-sm leading-relaxed">
               Empowering the future of electric vehicle charging with
               intelligent management solutions and sustainable technology.
             </p>
@@ -279,7 +106,7 @@ const Footer = () => {
                   key={index}
                   href={social.href}
                   aria-label={social.label}
-                  className="p-2 rounded-lg bg-card hover:bg-muted text-muted-foreground hover:text-foreground transition-all duration-300 hover:scale-110"
+                  className="bg-card hover:bg-muted text-muted-foreground hover:text-foreground rounded-lg p-2 transition-all duration-300 hover:scale-110"
                 >
                   <div className="h-4 w-4">{social.icon}</div>
                 </a>
@@ -288,7 +115,7 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 className="font-semibold mb-6 text-foreground">Product</h3>
+            <h3 className="text-foreground mb-6 font-semibold">Product</h3>
             <ul className="space-y-4">
               {[
                 "Features",
@@ -300,7 +127,7 @@ const Footer = () => {
                 <li key={index}>
                   <a
                     href="#"
-                    className="text-sm text-muted-foreground hover:text-primary transition-all duration-300"
+                    className="text-muted-foreground hover:text-primary text-sm transition-all duration-300"
                   >
                     {item}
                   </a>
@@ -310,44 +137,44 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 className="font-semibold mb-6 text-foreground">Company</h3>
+            <h3 className="text-foreground mb-6 font-semibold">Company</h3>
             <ul className="space-y-4">
               {["About", "Blog", "Careers", "Press", "Partners"].map(
                 (item, index) => (
                   <li key={index}>
                     <a
                       href="#"
-                      className="text-sm text-muted-foreground hover:text-primary transition-all duration-300"
+                      className="text-muted-foreground hover:text-primary text-sm transition-all duration-300"
                     >
                       {item}
                     </a>
                   </li>
-                )
+                ),
               )}
             </ul>
           </div>
 
           <div>
-            <h3 className="font-semibold mb-6 text-foreground">Support</h3>
+            <h3 className="text-foreground mb-6 font-semibold">Support</h3>
             <ul className="space-y-4">
               {["Help Center", "Contact", "Status", "Security", "Privacy"].map(
                 (item, index) => (
                   <li key={index}>
                     <a
                       href="#"
-                      className="text-sm text-muted-foreground hover:text-primary transition-all duration-300"
+                      className="text-muted-foreground hover:text-primary text-sm transition-all duration-300"
                     >
                       {item}
                     </a>
                   </li>
-                )
+                ),
               )}
             </ul>
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row items-center justify-between pt-8 mt-12 border-t border-border">
-          <p className="text-sm mt-4 md:mt-0 text-muted-foreground">
+        <div className="border-border mt-12 flex flex-col items-center justify-between border-t pt-8 md:flex-row">
+          <p className="text-muted-foreground mt-4 text-sm md:mt-0">
             © 2025 Electrify. All rights reserved.
           </p>
         </div>
@@ -357,14 +184,6 @@ const Footer = () => {
 };
 
 export default function LandingPage() {
-  const [isDark, setIsDark] = useState(false);
-  const [email, setEmail] = useState("");
-
-  const handleSubmit = () => {
-    console.log("Email submitted:", email);
-    setEmail("");
-  };
-
   const testimonials = [
     {
       content: "Great service and reliable charging stations!",
@@ -390,107 +209,19 @@ export default function LandingPage() {
   ];
 
   return (
-    <div
-      className={`min-h-screen bg-background text-foreground ${
-        isDark ? "dark" : ""
-      }`}
-    >
-      <Navbar isDark={isDark} onToggle={() => setIsDark(!isDark)} />
-
-      <div className="relative z-10 font-sans flex flex-col min-h-screen pt-16">
-        <main className="flex flex-col gap-20 items-center max-w-7xl w-full mx-auto px-8 py-20 flex-1">
+    <div className="bg-background text-foreground min-h-screen">
+      <div className="relative z-10 flex min-h-screen flex-col pt-16 font-sans">
+        <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col items-center gap-20 px-8 py-20">
           {/* Hero Section */}
-          <div className="grid lg:grid-cols-2 gap-12 items-center w-full animate-slide-up">
-            <div className="order-2 lg:order-1 flex justify-center">
-              <div className="relative">
-                <Image
-                  src="/assets/images/hero.jpg"
-                  alt="Modern urban EV charging stations under bridge with city skyline"
-                  width={512}
-                  height={384}
-                  className="rounded-2xl shadow-2xl w-full max-w-lg"
-                />
-                <div className="absolute -top-4 -right-4 w-20 h-20 bg-primary/20 rounded-full blur-xl animate-pulse"></div>
-                <div
-                  className="absolute -bottom-4 -left-4 w-16 h-16 bg-secondary/20 rounded-full blur-xl animate-pulse"
-                  style={{ animationDelay: "1s" }}
-                ></div>
-              </div>
-            </div>
-
-            <div className="order-1 lg:order-2 flex flex-col items-center lg:items-start text-center lg:text-left gap-8">
-              <h1 className="text-4xl md:text-6xl font-bold leading-tight">
-                <span className={isDark ? "text-white" : "text-black"}>
-                  Manage your
-                </span>
-                <br />
-                <span className="bg-gradient-to-r from-green-500 to-blue-500 text-transparent bg-clip-text">
-                  EV Charging Stations
-                </span>
-                <br />
-                <span className={isDark ? "text-white" : "text-black"}>
-                  Effectively
-                </span>
-              </h1>
-
-              <p
-                className={`text-xl md:text-2xl max-w-2xl leading-relaxed ${
-                  isDark ? "text-gray-300" : "text-gray-600"
-                }`}
-              >
-                Optimize operations, reduce costs, and deliver a seamless
-                charging experience for your customers with our comprehensive
-                management platform.
-              </p>
-
-              <div className="flex flex-col sm:flex-row items-center gap-4 mt-8 w-full lg:w-auto">
-                <div className="flex items-center gap-2 w-full sm:w-auto">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email"
-                    className={`px-6 py-4 rounded-xl border focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all duration-300 flex-1 sm:w-80 ${
-                      isDark
-                        ? "bg-gray-800 border-gray-600 text-white placeholder-gray-400"
-                        : "bg-white border-gray-300 text-black placeholder-gray-500"
-                    }`}
-                  />
-                  <button
-                    onClick={handleSubmit}
-                    className={`px-8 py-4 rounded-xl bg-foreground text-background font-semibold hover:bg-foreground/90 transition-all duration-300 shadow-lg flex items-center gap-2 ${
-                      isDark
-                        ? "bg-white text-black hover:bg-gray-100"
-                        : "bg-black text-white hover:bg-gray-800"
-                    }`}
-                  >
-                    Get Started
-                    <svg
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M17 8l4 4m0 0l-4 4m4-4H3"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+          <HeroClient />
 
           {/* Features Section */}
           <section id="features" className="mb-20">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
+            <div className="mb-16 text-center">
+              <h2 className="text-foreground mb-4 text-3xl font-bold md:text-4xl">
                 Everything you need to manage EV charging
               </h2>
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              <p className="text-muted-foreground mx-auto max-w-3xl text-xl">
                 Comprehensive tools and insights to optimize your charging
                 infrastructure and enhance customer experience.
               </p>
@@ -500,16 +231,16 @@ export default function LandingPage() {
 
           {/* How It Works Section */}
           <section id="how-it-works" className="w-full">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
+            <div className="mb-16 text-center">
+              <h2 className="text-foreground mb-4 text-3xl font-bold md:text-4xl">
                 How It Work
               </h2>
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              <p className="text-muted-foreground mx-auto max-w-3xl text-xl">
                 A simple step-by-step process to understand how our platform
                 helps you manage charging stations efficiently.
               </p>
             </div>
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid gap-8 md:grid-cols-3">
               {[
                 {
                   step: "01",
@@ -565,20 +296,20 @@ export default function LandingPage() {
               ].map((item, index) => (
                 <div
                   key={index}
-                  className={`${item.bgColor} rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105`}
+                  className={`${item.bgColor} rounded-2xl p-8 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl`}
                 >
-                  <div className="flex items-center justify-between mb-6">
-                    <span className="text-6xl font-bold text-black dark:text-white opacity-80">
+                  <div className="mb-6 flex items-center justify-between">
+                    <span className="text-6xl font-bold text-black opacity-80 dark:text-white">
                       {item.step}
                     </span>
-                    <div className="w-12 h-12 text-black dark:text-white">
+                    <div className="h-12 w-12 text-black dark:text-white">
                       {item.icon}
                     </div>
                   </div>
-                  <h3 className="text-2xl font-bold text-black dark:text-white mb-4">
+                  <h3 className="mb-4 text-2xl font-bold text-black dark:text-white">
                     {item.title}
                   </h3>
-                  <p className="text-black dark:text-white opacity-90 leading-relaxed">
+                  <p className="leading-relaxed text-black opacity-90 dark:text-white">
                     {item.description}
                   </p>
                 </div>
@@ -588,15 +319,15 @@ export default function LandingPage() {
 
           {/* Testimonials Section */}
           <section id="testimonials" className="w-full">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
+            <div className="mb-16 text-center">
+              <h2 className="text-foreground mb-4 text-3xl font-bold md:text-4xl">
                 Trusted by industry leaders
               </h2>
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              <p className="text-muted-foreground mx-auto max-w-3xl text-xl">
                 See what our customers say about their experience with EVCharge.
               </p>
             </div>
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid gap-8 md:grid-cols-3">
               {testimonials.map((testimonial, index) => (
                 <TestimonialCard key={index} {...testimonial} />
               ))}
@@ -605,24 +336,24 @@ export default function LandingPage() {
 
           {/* Pricing Section */}
           <section id="pricing" className="w-full">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
+            <div className="mb-16 text-center">
+              <h2 className="text-foreground mb-4 text-3xl font-bold md:text-4xl">
                 Pricing
               </h2>
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              <p className="text-muted-foreground mx-auto max-w-3xl text-xl">
                 Choose the perfect plan for your EV charging needs. All plans
                 include our core features with scalable options.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-3">
               {/* Starter Plan */}
-              <div className="p-8 rounded-2xl bg-card border border-border hover:border-primary/20 transition-all duration-300 relative">
+              <div className="bg-card border-border hover:border-primary/20 relative rounded-2xl border p-8 transition-all duration-300">
                 <div className="text-center">
-                  <h3 className="text-2xl font-bold mb-2 text-card-foreground">
+                  <h3 className="text-card-foreground mb-2 text-2xl font-bold">
                     Starter
                   </h3>
-                  <div className="text-4xl font-bold mb-2 text-card-foreground">
+                  <div className="text-card-foreground mb-2 text-4xl font-bold">
                     $19
                   </div>
                   <p className="text-muted-foreground mb-8">
@@ -630,10 +361,10 @@ export default function LandingPage() {
                     to standard charging.
                   </p>
 
-                  <ul className="space-y-4 mb-8 text-left">
+                  <ul className="mb-8 space-y-4 text-left">
                     <li className="flex items-center gap-3">
                       <svg
-                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        className="h-5 w-5 flex-shrink-0 text-green-500"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -651,7 +382,7 @@ export default function LandingPage() {
                     </li>
                     <li className="flex items-center gap-3">
                       <svg
-                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        className="h-5 w-5 flex-shrink-0 text-green-500"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -669,7 +400,7 @@ export default function LandingPage() {
                     </li>
                     <li className="flex items-center gap-3">
                       <svg
-                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        className="h-5 w-5 flex-shrink-0 text-green-500"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -687,7 +418,7 @@ export default function LandingPage() {
                     </li>
                     <li className="flex items-center gap-3">
                       <svg
-                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        className="h-5 w-5 flex-shrink-0 text-green-500"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -705,7 +436,7 @@ export default function LandingPage() {
                     </li>
                     <li className="flex items-center gap-3">
                       <svg
-                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        className="h-5 w-5 flex-shrink-0 text-green-500"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -723,25 +454,25 @@ export default function LandingPage() {
                     </li>
                   </ul>
 
-                  <button className="w-full px-6 py-3 rounded-xl bg-foreground text-background font-semibold hover:bg-foreground/90 transition-all duration-300 shadow-lg">
+                  <button className="bg-foreground text-background hover:bg-foreground/90 w-full rounded-xl px-6 py-3 font-semibold shadow-lg transition-all duration-300">
                     Get Starter
                   </button>
                 </div>
               </div>
 
               {/* Pro Plan - Most Popular */}
-              <div className="p-8 rounded-2xl bg-card border-2 border-foreground hover:border-foreground/80 transition-all duration-300 relative transform scale-105">
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <span className="bg-foreground text-background px-4 py-1 rounded-full text-sm font-semibold">
+              <div className="bg-card border-foreground hover:border-foreground/80 relative scale-105 transform rounded-2xl border-2 p-8 transition-all duration-300">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 transform">
+                  <span className="bg-foreground text-background rounded-full px-4 py-1 text-sm font-semibold">
                     Most Popular
                   </span>
                 </div>
 
                 <div className="text-center">
-                  <h3 className="text-2xl font-bold mb-2 text-card-foreground">
+                  <h3 className="text-card-foreground mb-2 text-2xl font-bold">
                     Pro
                   </h3>
-                  <div className="text-4xl font-bold mb-2 text-card-foreground">
+                  <div className="text-card-foreground mb-2 text-4xl font-bold">
                     $49
                   </div>
                   <p className="text-muted-foreground mb-8">
@@ -749,10 +480,10 @@ export default function LandingPage() {
                     benefits.
                   </p>
 
-                  <ul className="space-y-4 mb-8 text-left">
+                  <ul className="mb-8 space-y-4 text-left">
                     <li className="flex items-center gap-3">
                       <svg
-                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        className="h-5 w-5 flex-shrink-0 text-green-500"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -770,7 +501,7 @@ export default function LandingPage() {
                     </li>
                     <li className="flex items-center gap-3">
                       <svg
-                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        className="h-5 w-5 flex-shrink-0 text-green-500"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -788,7 +519,7 @@ export default function LandingPage() {
                     </li>
                     <li className="flex items-center gap-3">
                       <svg
-                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        className="h-5 w-5 flex-shrink-0 text-green-500"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -806,7 +537,7 @@ export default function LandingPage() {
                     </li>
                     <li className="flex items-center gap-3">
                       <svg
-                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        className="h-5 w-5 flex-shrink-0 text-green-500"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -824,7 +555,7 @@ export default function LandingPage() {
                     </li>
                     <li className="flex items-center gap-3">
                       <svg
-                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        className="h-5 w-5 flex-shrink-0 text-green-500"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -842,7 +573,7 @@ export default function LandingPage() {
                     </li>
                     <li className="flex items-center gap-3">
                       <svg
-                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        className="h-5 w-5 flex-shrink-0 text-green-500"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -860,19 +591,19 @@ export default function LandingPage() {
                     </li>
                   </ul>
 
-                  <button className="w-full px-6 py-3 rounded-xl bg-foreground text-background font-semibold hover:bg-foreground/90 transition-all duration-300 shadow-lg border-2 border-foreground">
+                  <button className="bg-foreground text-background hover:bg-foreground/90 border-foreground w-full rounded-xl border-2 px-6 py-3 font-semibold shadow-lg transition-all duration-300">
                     Choose Pro
                   </button>
                 </div>
               </div>
 
               {/* Enterprise Plan */}
-              <div className="p-8 rounded-2xl bg-card border border-border hover:border-primary/20 transition-all duration-300 relative">
+              <div className="bg-card border-border hover:border-primary/20 relative rounded-2xl border p-8 transition-all duration-300">
                 <div className="text-center">
-                  <h3 className="text-2xl font-bold mb-2 text-card-foreground">
+                  <h3 className="text-card-foreground mb-2 text-2xl font-bold">
                     Enterprise
                   </h3>
-                  <div className="text-4xl font-bold mb-2 text-card-foreground">
+                  <div className="text-card-foreground mb-2 text-4xl font-bold">
                     $35
                   </div>
                   <p className="text-muted-foreground mb-8">
@@ -880,10 +611,10 @@ export default function LandingPage() {
                     charging solutions.
                   </p>
 
-                  <ul className="space-y-4 mb-8 text-left">
+                  <ul className="mb-8 space-y-4 text-left">
                     <li className="flex items-center gap-3">
                       <svg
-                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        className="h-5 w-5 flex-shrink-0 text-green-500"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -901,7 +632,7 @@ export default function LandingPage() {
                     </li>
                     <li className="flex items-center gap-3">
                       <svg
-                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        className="h-5 w-5 flex-shrink-0 text-green-500"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -919,7 +650,7 @@ export default function LandingPage() {
                     </li>
                     <li className="flex items-center gap-3">
                       <svg
-                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        className="h-5 w-5 flex-shrink-0 text-green-500"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -937,7 +668,7 @@ export default function LandingPage() {
                     </li>
                     <li className="flex items-center gap-3">
                       <svg
-                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        className="h-5 w-5 flex-shrink-0 text-green-500"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -955,7 +686,7 @@ export default function LandingPage() {
                     </li>
                   </ul>
 
-                  <button className="w-full px-6 py-3 rounded-xl bg-foreground text-background font-semibold hover:bg-foreground/90 transition-all duration-300 shadow-lg">
+                  <button className="bg-foreground text-background hover:bg-foreground/90 w-full rounded-xl px-6 py-3 font-semibold shadow-lg transition-all duration-300">
                     Get Started
                   </button>
                 </div>
@@ -964,19 +695,19 @@ export default function LandingPage() {
           </section>
 
           {/* CTA Section */}
-          <section className="w-full text-center bg-gradient-to-r from-primary/10 to-secondary/10 rounded-3xl p-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
+          <section className="from-primary/10 to-secondary/10 w-full rounded-3xl bg-gradient-to-r p-16 text-center">
+            <h2 className="text-foreground mb-4 text-3xl font-bold md:text-4xl">
               Ready to revolutionize your EV charging?
             </h2>
-            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+            <p className="text-muted-foreground mx-auto mb-8 max-w-2xl text-xl">
               Join hundreds of businesses already using EVCharge to optimize
               their charging infrastructure.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <button className="px-8 py-4 rounded-xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transform hover:scale-105 transition-all duration-300 shadow-lg">
+            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+              <button className="bg-primary text-primary-foreground hover:bg-primary/90 transform rounded-xl px-8 py-4 font-semibold shadow-lg transition-all duration-300 hover:scale-105">
                 Start Free Trial
               </button>
-              <button className="px-8 py-4 rounded-xl bg-transparent border border-border text-foreground font-semibold hover:bg-muted transition-all duration-300 flex items-center gap-2">
+              <button className="border-border text-foreground hover:bg-muted flex items-center gap-2 rounded-xl border bg-transparent px-8 py-4 font-semibold transition-all duration-300">
                 <svg
                   className="h-4 w-4"
                   fill="none"

@@ -30,12 +30,12 @@ export default async function SettingsPage() {
       <Separator className="mb-8" />
 
       {/* Main Content */}
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-10">
         {/* Left Sidebar - Navigation/Menu (for future) */}
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-2">
           <div className="sticky top-6">
             <Card className="p-4">
-              <h3 className="mb-3 font-semibold">Danh mục</h3>
+              <h3 className="font-semibold">Danh mục</h3>
               <nav className="space-y-2">
                 <div className="bg-primary/10 text-primary rounded-md px-3 py-2 text-sm font-medium">
                   Hồ sơ cá nhân
@@ -46,68 +46,19 @@ export default async function SettingsPage() {
                 <div className="text-muted-foreground hover:text-foreground hover:bg-accent cursor-pointer rounded-md px-3 py-2 text-sm">
                   Thông báo
                 </div>
-                <div className="text-muted-foreground hover:text-foreground hover:bg-accent cursor-pointer rounded-md px-3 py-2 text-sm">
-                  Thanh toán
-                </div>
               </nav>
             </Card>
           </div>
         </div>
 
         {/* Right Content - Settings Forms */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-8">
           <div className="space-y-6">
             <div>
-              <h2 className="mb-4 text-xl font-semibold">Thông tin cá nhân</h2>
               <div className="space-y-4">
                 <AvatarUpdate />
                 <FullNameUpdate />
               </div>
-            </div>
-
-            <Separator />
-
-            {/* Additional Settings Sections */}
-            <div>
-              <h2 className="mb-4 text-xl font-semibold">Thông tin liên hệ</h2>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Email</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground mb-4 text-sm">
-                    Địa chỉ email hiện tại:{" "}
-                    <span className="text-foreground font-medium">
-                      {mockUser.email}
-                    </span>
-                  </p>
-                  <Button variant="outline">Thay đổi email</Button>
-                </CardContent>
-              </Card>
-            </div>
-
-            <div>
-              <h2 className="mb-4 text-xl font-semibold">Tùy chọn khác</h2>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Ngôn ngữ và khu vực</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium">Ngôn ngữ</label>
-                    <p className="text-muted-foreground text-sm">Tiếng Việt</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">Múi giờ</label>
-                    <p className="text-muted-foreground text-sm">
-                      UTC+7 (Giờ Việt Nam)
-                    </p>
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button variant="outline">Cập nhật</Button>
-                </CardFooter>
-              </Card>
             </div>
           </div>
         </div>
