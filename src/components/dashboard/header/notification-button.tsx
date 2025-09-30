@@ -1,7 +1,6 @@
 "use client";
 
-import * as React from "react";
-import { Bell, Check, MessageSquare, UserPlus, Zap } from "lucide-react";
+import { Bell, UserPlus, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
 
 // Mock notifications data
 const notifications = [
@@ -45,7 +45,7 @@ const notifications = [
 ];
 
 export function NotificationButton() {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   const markAllAsRead = () => {
@@ -98,7 +98,7 @@ export function NotificationButton() {
             {notifications.map((notification, index) => {
               const IconComponent = notification.icon;
               return (
-                <React.Fragment key={notification.id}>
+                <div key={notification.id}>
                   <DropdownMenuItem
                     className="cursor-pointer p-0 focus:bg-transparent"
                     onClick={() => handleNotificationClick(notification.id)}
@@ -140,7 +140,7 @@ export function NotificationButton() {
                   {index < notifications.length - 1 && (
                     <DropdownMenuSeparator className="my-1" />
                   )}
-                </React.Fragment>
+                </div>
               );
             })}
           </div>

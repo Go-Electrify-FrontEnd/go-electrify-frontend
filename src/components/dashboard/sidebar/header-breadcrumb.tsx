@@ -28,6 +28,7 @@ const pathNameMap = new Map([
   ["create-reservation", "Tạo đặt chỗ"],
   ["subscriptions", "Gói đăng ký"],
   ["start-charging", "Bắt đầu sạc"],
+  ["users", "Người dùng"],
 ]);
 
 export default function HeaderBreadcrumb() {

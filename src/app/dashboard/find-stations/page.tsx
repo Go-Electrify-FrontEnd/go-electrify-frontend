@@ -4,15 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { getBackendUrl } from "@/lib/utils";
 import { Filter, MapPin, RotateCcw, Search } from "lucide-react";
-import { Suspense } from "react";
-import MapLoadingSpinner from "./loading";
 
 export interface Station {
   id: number;

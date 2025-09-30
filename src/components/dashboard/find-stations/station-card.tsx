@@ -1,13 +1,13 @@
 "use client";
 
-import { StationWithDistance } from "@/app/dashboard/find-stations/page";
+import { Station } from "@/app/dashboard/find-stations/page";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Battery, MapPin, Navigation, Phone, Zap, Bolt } from "lucide-react";
+import { MapPin, Navigation, Phone, Zap } from "lucide-react";
 import Link from "next/link";
 
 interface StationCardProps {
-  station: StationWithDistance;
+  station: Station;
   index: number;
 }
 
