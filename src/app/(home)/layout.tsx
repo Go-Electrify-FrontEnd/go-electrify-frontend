@@ -1,4 +1,4 @@
-import Navbar from "@/components/shared/navbar";
+import NavbarClient from "@/components/home/NavbarClient";
 import PurposeWarning from "@/components/shared/purpose-warning";
 
 export default function LandingLayout({
@@ -8,8 +8,7 @@ export default function LandingLayout({
 }>) {
   return (
     <main>
-      <PurposeWarning />
-      <Navbar />
+      <NavbarClient />
       {children}
     </main>
   );
