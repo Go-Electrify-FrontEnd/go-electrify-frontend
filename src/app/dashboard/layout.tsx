@@ -8,7 +8,11 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 
-export default function LandingLayout({
+interface User {
+  email: string;
+}
+
+export default async function LandingLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;

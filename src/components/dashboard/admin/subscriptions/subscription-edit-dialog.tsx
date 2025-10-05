@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Subscription } from "./columns";
+import { Subscription } from "./subscription-table-columns";
 
 interface UpdateSubscriptionProps {
   subscription: Subscription;

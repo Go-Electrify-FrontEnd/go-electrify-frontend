@@ -11,7 +11,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { ConnectorType } from "./columns";
+import { ConnectorType } from "./connector-type-table-columns";
 import { toast } from "sonner";
 
 interface DeleteConnectorTypeProps {

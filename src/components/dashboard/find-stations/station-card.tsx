@@ -1,8 +1,8 @@
 "use client";
 
-import { Station } from "@/app/dashboard/find-stations/page";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { Station } from "@/types";
 import { MapPin, Navigation, Phone, Zap } from "lucide-react";
 import Link from "next/link";
 
@@ -44,7 +44,7 @@ export function StationCard({ station }: StationCardProps) {
   const typeInfo = getStationTypeInfo(station.type);
 
   return (
-    <div className="border-border/30 hover:border-border/60 bg-card/50 rounded-lg border p-4 transition-colors">
+    <div className="rounded-lg transition-colors">
       <div className="mb-3 flex items-start justify-between">
         <div className="min-w-0 flex-1">
           <h4 className="truncate text-sm font-medium">{station.name}</h4>
@@ -59,18 +59,19 @@ export function StationCard({ station }: StationCardProps) {
         </div>
       </div>
 
-      <div className="text-muted-foreground mb-3 space-y-2 text-xs">
-        <div className="flex items-center gap-2">
+      <p className="text-muted-foreground mb-3 text-xs">
+        <span className="inline-flex items-center gap-2">
           <MapPin className="h-3 w-3 flex-shrink-0" />
           <span className="truncate">{station.address}</span>
-        </div>
-        <div className="flex items-center gap-2">
+        </span>
+        <br />
+        <span className="inline-flex items-center gap-2">
           <Zap className="h-3 w-3 flex-shrink-0" />
           <span>
             {station.available_connectors}/{station.total_connectors} cổng
           </span>
-        </div>
-      </div>
+        </span>
+      </p>
 
       <div className="flex gap-2">
         <Link
