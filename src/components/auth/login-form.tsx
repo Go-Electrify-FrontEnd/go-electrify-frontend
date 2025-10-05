@@ -13,9 +13,10 @@ const initialState = {
   msg: "",
 };
 
-interface LoginFormProps extends React.ComponentProps<"form"> {}
-
-export function LoginForm({ className, ...props }: LoginFormProps) {
+export function LoginForm({
+  className,
+  ...props
+}: React.ComponentProps<"form">) {
   const [email, setEmail] = useState<string>("");
   const [loginState, loginAction, isPending] = useActionState(
     handleLogin,

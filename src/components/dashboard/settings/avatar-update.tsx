@@ -115,8 +115,8 @@ export default function AvatarUpdate() {
 
       <CardContent className="space-y-4">
         <p className="text-muted-foreground text-sm">
-          Nhấp vào nút bên dưới để chọn ảnh từ thiết bị của bạn, sau đó bấm "Tải
-          ảnh lên" để lưu.
+          Nhấp vào nút bên dưới để chọn ảnh từ thiết bị của bạn, sau đó bấm
+          &ldquo;Tải ảnh lên&rdquo; để lưu.
         </p>
         {selectedFile && (
           <div className="text-sm">
