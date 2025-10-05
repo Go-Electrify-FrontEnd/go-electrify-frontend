@@ -1,4 +1,4 @@
-import { ConnectorTypesTable } from "@/components/dashboard/admin/connector-type/connector-types-table";
+import { ConnectorTypesTable } from "@/components/dashboard/admin/connector-type/connector-type-table";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,18 +8,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Plus, Plug } from "lucide-react";
-
-export interface ConnectorType {
-  id: number;
-  name: string;
-  description: string;
-  maxPowerKw: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import type { ConnectorType } from "@/types";
 
 async function getData(): Promise<ConnectorType[]> {
-  // Mock data - replace with actual API call
   return [
     {
       id: 1,
@@ -62,50 +53,43 @@ export default async function ConnectorTypePage() {
     <div className="container mx-auto mt-4 space-y-6">
       {/* Header Card */}
       <Card>
-        <CardHeader className="pt-2 pb-2">
+        <CardHeader className="relative pt-8 pb-8">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-            <div className="space-y-3">
-              <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 shadow-lg">
-                  <Plug className="h-6 w-6 text-white" />
+            <div className="space-y-4">
+              <div className="flex items-center gap-5">
+                <div className="bg-primary ring-primary/10 relative flex h-16 w-16 items-center justify-center rounded-2xl shadow-xl ring-4 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+                  <Plug className="text-primary-foreground h-8 w-8 drop-shadow-lg" />
                 </div>
-                <div className="space-y-1">
-                  <CardTitle className="text-3xl">
+                <div className="space-y-1.5">
+                  <CardTitle className="text-foreground text-4xl font-semibold">
                     Quản lý Cổng Kết Nối
                   </CardTitle>
-                  <CardDescription className="text-base">
-                    Quản lý các loại cổng kết nối sạc xe điện
+                  <CardDescription className="text-muted-foreground/90 text-base font-medium">
+                    Quản lý và theo dõi các loại cổng kết nối sạc xe điện một
+                    cách hiệu quả
                   </CardDescription>
                 </div>
               </div>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
-              <Button size="lg" className="w-full sm:w-auto">
-                <Plus className="mr-2 h-5 w-5" />
-                Thêm Cổng Mới
+              <Button
+                size="lg"
+                className="group/btn bg-primary shadow-primary/30 hover:bg-primary/90 hover:shadow-primary/40 relative w-full overflow-hidden shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl sm:w-auto"
+              >
+                <Plus className="relative mr-2 h-5 w-5 transition-transform duration-300 group-hover/btn:rotate-90" />
+                <span className="relative font-semibold">Thêm Cổng Mới</span>
               </Button>
             </div>
           </div>
         </CardHeader>
       </Card>
 
-      {/* Data Table Card */}
-      <Card>
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-lg">Danh sách cổng kết nối</CardTitle>
-              <CardDescription>
-                Tất cả các loại cổng kết nối trong hệ thống
-              </CardDescription>
-            </div>
-            <div className="bg-muted rounded-full px-3 py-1.5">
-              <span className="text-sm font-medium">
-                {connectorTypes.length}
-              </span>
-              <span className="text-muted-foreground ml-1 text-xs">cổng</span>
-            </div>
-          </div>
+      <Card className="dark:bg-card/50 overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg">
+        <CardHeader className="border-b">
+          <CardTitle>Danh sách cổng kết nối</CardTitle>
+          <CardDescription>
+            Tất cả các loại cổng kết nối trong hệ thống với thông tin chi tiết
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <ConnectorTypesTable data={connectorTypes} />

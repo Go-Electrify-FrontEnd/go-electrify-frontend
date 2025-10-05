@@ -11,15 +11,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
-import UpdateCarModel from "./update-car-model";
-import DeleteCarModel from "./delete-car-model";
-import { CarModel } from "./columns";
+import { ConnectorType } from "./connector-type-table-columns";
+import { UpdateConnectorType } from "./connector-type-edit-dialog";
+import { DeleteConnectorType } from "./connector-type-delete-dialog";
 
 interface ActionsCellProps {
-  carModel: CarModel;
+  connectorType: ConnectorType;
 }
 
-export function ActionsCell({ carModel }: ActionsCellProps) {
+export function ActionsCell({ connectorType }: ActionsCellProps) {
   const [showUpdateDialog, setShowUpdateDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
@@ -49,17 +49,17 @@ export function ActionsCell({ carModel }: ActionsCellProps) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {showUpdateDialog && (
-        <UpdateCarModel
-          {...carModel}
-          createdAt={carModel.createdAt.toISOString()}
-          updatedAt={carModel.updatedAt.toISOString()}
-        />
-      )}
+      <UpdateConnectorType
+        connectorType={connectorType}
+        open={showUpdateDialog}
+        onOpenChange={setShowUpdateDialog}
+      />
 
-      {showDeleteDialog && (
-        <DeleteCarModel id={carModel.id} modelName={carModel.modelName} />
-      )}
+      <DeleteConnectorType
+        connectorType={connectorType}
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+      />
     </>
   );
 }
