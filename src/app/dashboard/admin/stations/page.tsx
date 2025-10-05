@@ -1,5 +1,5 @@
 import { StationsContent } from "@/components/dashboard/stations/stations";
 
-export default function StationsManagementPage() {
+export default async function StationsManagementPage() {
   return <StationsContent />;
 }

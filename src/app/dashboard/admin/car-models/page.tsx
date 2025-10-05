@@ -1,4 +1,4 @@
-import { CarModelsTable } from "@/components/dashboard/admin/car-models/car-models-table";
+import { CarModelsTable } from "@/components/dashboard/admin/car-models/car-model-table";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,15 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Plus, Car } from "lucide-react";
-
-export interface CarModel {
-  id: number;
-  modelName: string;
-  maxPowerKw: number;
-  batteryCapacityKwh: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import type { CarModel } from "@/types";
 
 async function getData(): Promise<CarModel[]> {
   // Mock data - replace with actual API call
@@ -55,25 +47,31 @@ export default async function CarModelsPage() {
     <div className="container mx-auto mt-4 space-y-6">
       {/* Header Card */}
       <Card>
-        <CardHeader className="pt-2 pb-2">
+        <CardHeader className="relative pt-8 pb-8">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-            <div className="space-y-3">
-              <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg">
-                  <Car className="h-6 w-6 text-white" />
+            <div className="space-y-4">
+              <div className="flex items-center gap-5">
+                <div className="bg-primary ring-primary/10 relative flex h-16 w-16 items-center justify-center rounded-2xl shadow-xl ring-4 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+                  <Car className="text-primary-foreground h-8 w-8 drop-shadow-lg" />
                 </div>
-                <div className="space-y-1">
-                  <CardTitle className="text-3xl">Quản lý Xe Điện</CardTitle>
-                  <CardDescription className="text-base">
-                    Quản lý các mẫu xe điện và thông số kỹ thuật của chúng
+                <div className="space-y-1.5">
+                  <CardTitle className="text-foreground text-4xl font-semibold">
+                    Quản lý Xe Điện
+                  </CardTitle>
+                  <CardDescription className="text-muted-foreground/90 text-base font-medium">
+                    Quản lý và theo dõi các mẫu xe điện và thông số kỹ thuật một
+                    cách hiệu quả
                   </CardDescription>
                 </div>
               </div>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
-              <Button size="lg" className="w-full sm:w-auto">
-                <Plus className="mr-2 h-5 w-5" />
-                Thêm Xe Mới
+              <Button
+                size="lg"
+                className="group/btn bg-primary shadow-primary/30 hover:bg-primary/90 hover:shadow-primary/40 relative w-full overflow-hidden shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl sm:w-auto"
+              >
+                <Plus className="relative mr-2 h-5 w-5 transition-transform duration-300 group-hover/btn:rotate-90" />
+                <span className="relative font-semibold">Thêm Xe Mới</span>
               </Button>
             </div>
           </div>
@@ -81,20 +79,12 @@ export default async function CarModelsPage() {
       </Card>
 
       {/* Data Table Card */}
-      <Card>
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-lg">Danh sách xe điện</CardTitle>
-              <CardDescription>
-                Tất cả các mẫu xe điện trong hệ thống
-              </CardDescription>
-            </div>
-            <div className="bg-muted rounded-full px-3 py-1.5">
-              <span className="text-sm font-medium">{carModels.length}</span>
-              <span className="text-muted-foreground ml-1 text-xs">mẫu xe</span>
-            </div>
-          </div>
+      <Card className="overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg">
+        <CardHeader className="border-b">
+          <CardTitle>Danh sách xe điện</CardTitle>
+          <CardDescription>
+            Tất cả các mẫu xe điện trong hệ thống với thông tin chi tiết
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <CarModelsTable data={carModels} />

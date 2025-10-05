@@ -4,27 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { getBackendUrl } from "@/lib/utils";
 import { Filter, MapPin, RotateCcw, Search } from "lucide-react";
-import { Suspense } from "react";
-import MapLoadingSpinner from "./loading";
-
-export interface Station {
-  id: number;
-  name: string;
-  coordinates: [number, number];
-  type: string;
-  address: string;
-  available: boolean;
-  available_connectors: number;
-  total_connectors: number;
-  distance?: number;
-}
+import type { Station } from "@/types";
 
 export default async function FindStationsPage() {
   const response = await fetch(getBackendUrl("api/stations"));
@@ -34,28 +20,20 @@ export default async function FindStationsPage() {
     <div className="container mx-auto mt-4 space-y-6">
       {/* Header Card */}
       <Card>
-        <CardHeader className="pt-2 pb-2">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div className="space-y-3">
-              <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-green-500 to-green-600 shadow-lg">
-                  <MapPin className="h-6 w-6 text-white" />
+        <CardHeader className="pt-8 pb-8">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="space-y-4">
+              <div className="flex items-center gap-5">
+                <div className="bg-primary ring-primary/10 flex h-16 w-16 items-center justify-center rounded-2xl shadow-xl ring-4">
+                  <MapPin className="text-primary-foreground h-8 w-8" />
                 </div>
-                <div className="space-y-1">
-                  <CardTitle className="text-2xl sm:text-3xl">
+                <div className="space-y-1.5">
+                  <CardTitle className="text-foreground text-4xl font-semibold">
                     Tìm Điểm Sạc
                   </CardTitle>
-                  <CardDescription className="text-sm sm:text-base">
+                  <CardDescription className="text-muted-foreground/90 text-base font-medium">
                     Danh sách các trạm sạc khả dụng
                   </CardDescription>
-                </div>
-              </div>
-              <div className="text-muted-foreground flex items-center gap-6 text-sm">
-                <div className="flex items-center gap-2">
-                  <span className="text-foreground font-medium">
-                    {chargingStations.length}
-                  </span>
-                  <span>trạm sạc</span>
                 </div>
               </div>
             </div>

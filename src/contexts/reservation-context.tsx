@@ -1,8 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import { Station } from "@/app/dashboard/find-stations/page";
-import { CarModel, ChargingPort, Reservation } from "@/types/reservation";
+import type { Station, CarModel, ChargingPort, Reservation } from "@/types";
 
 // Types
 export interface ReservationState {
@@ -103,7 +102,10 @@ export function ReservationProvider({
   );
 
   const selectedCarModelData = carModels.find(
-    (car) => car.id.toString() === selectedCarModel,
+    (car) =>
+      car.id !== undefined &&
+      car.id !== null &&
+      car.id.toString() === selectedCarModel,
   );
 
   const selectedChargingPortData = chargingPorts.find(

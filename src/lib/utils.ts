@@ -7,7 +7,8 @@ export function cn(...inputs: ClassValue[]) {
 
 export function getBackendUrl(path: string) {
   const url = new URL(path, process.env.BACKEND_URL);
-  if (process.env.NODE_ENV === "development") {
+  // Add teamId for development or when TEST_TEAM_ID is explicitly set
+  if (process.env.NODE_ENV === "development" || process.env.TEST_TEAM_ID) {
     url.searchParams.append("teamId", process.env.TEST_TEAM_ID || "");
   }
 

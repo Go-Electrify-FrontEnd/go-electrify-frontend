@@ -4,15 +4,17 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/shared/theme-provider";
 import { Toaster } from "sonner";
 import { UserProvider } from "@/contexts/user-context";
+import { cookies } from "next/headers";
+import * as jose from "jose";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
 });
 
 export const metadata: Metadata = {
@@ -20,16 +22,29 @@ export const metadata: Metadata = {
   description: "A tool to help you find electric vehicle incentives.",
 };
 
-export default function RootLayout({
+import type { User } from "@/types";
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = {
-    name: "John Doe",
-    email: "john.doe@example.com",
-    avatar: "/avatar.png",
-  };
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken")?.value || null;
+  const secret = new TextEncoder().encode(process.env.AUTH_SECRET_KEY);
+  let user: User | null = null;
+
+  if (accessToken != null) {
+    const { payload, protectedHeader } = await jose.jwtVerify(
+      accessToken,
+      secret,
+    );
+
+    console.log(JSON.stringify(payload, null, 2));
+    console.log(JSON.stringify(protectedHeader, null, 2));
+    user = { email: payload.email as string };
+  }
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body

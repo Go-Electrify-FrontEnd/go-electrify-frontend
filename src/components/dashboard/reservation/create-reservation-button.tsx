@@ -14,7 +14,7 @@ import {
 import { Station } from "@/app/dashboard/find-stations/page";
 import { ReservationForm } from "./reservation-form";
 import { BookingSummary } from "./booking-summary";
-import { getCarModels } from "@/lib/actions/car-models";
+import { getCarModels } from "@/actions/car-models";
 import { ChargingPort, Reservation } from "@/types/reservation";
 import {
   ReservationProvider,
