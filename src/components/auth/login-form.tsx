@@ -13,26 +13,26 @@ const initialState = {
   msg: "",
 };
 
-export function LoginForm({
-  className,
-  ...props
-}: React.ComponentProps<"form">) {
+interface LoginFormProps extends React.ComponentProps<"form"> {}
+
+export function LoginForm({ className, ...props }: LoginFormProps) {
   const [email, setEmail] = useState<string>("");
-  const [loginState, loginAction] = useActionState(handleLogin, initialState);
+  const [loginState, loginAction, isPending] = useActionState(
+    handleLogin,
+    initialState,
+  );
   const [otpSent, setOtpSent] = useState(false);
 
   useEffect(() => {
     if (loginState.success) {
-      toast("Email Sent!", {
+      toast("Email đã được gửi!", {
         description: loginState.msg,
       });
       setOtpSent(true);
-    } else {
-      if (loginState.msg) {
-        toast.error("Error", {
-          description: loginState.msg,
-        });
-      }
+    } else if (loginState.msg) {
+      toast.error("Lỗi", {
+        description: loginState.msg,
+      });
     }
   }, [loginState]);
 
@@ -47,9 +47,9 @@ export function LoginForm({
       {...props}
     >
       <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-3xl">Authentication</h1>
+        <h1 className="text-3xl">Đăng nhập</h1>
         <p className="text-muted-foreground text-balance">
-          Enter your credentials below to continue
+          Nhập thông tin của bạn ở bên dưới để tiếp tục
         </p>
       </div>
       <div className="grid gap-6">
@@ -62,28 +62,33 @@ export function LoginForm({
             type="email"
             name="email"
             className="h-[45px]"
-            placeholder="m@example.com"
+            placeholder="ten@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            disabled={isPending}
           />
         </div>
-        <Button type="submit" className="w-full" size="lg">
-          <div className="text-base font-medium">Login</div>
+        <Button type="submit" className="w-full" size="lg" disabled={isPending}>
+          <div className="text-base font-medium">
+            {isPending ? "Đang gửi..." : "Đăng nhập"}
+          </div>
         </Button>
         <div className="after:border-border relative text-center after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
           <span className="bg-background text-muted-foreground relative z-10 px-2">
-            Or continue with
+            Hoặc tiếp tục với
           </span>
         </div>
         <Button
           variant="outline"
           className="flex h-11 items-center justify-center gap-2 transition-colors hover:border-red-200 hover:bg-red-50"
+          disabled
         >
           <svg
             className="h-5 w-5"
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
           >
             <path
               fill="#4285F4"
@@ -102,7 +107,7 @@ export function LoginForm({
               d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
             />
           </svg>
-          <span className="text-base font-medium">Google</span>
+          <span className="text-base font-medium">Đăng nhập với Google</span>
         </Button>
       </div>
     </form>

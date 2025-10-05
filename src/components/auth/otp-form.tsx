@@ -69,8 +69,8 @@ export function OTPForm({ email }: OTPFormProps) {
           <input type="hidden" id="email" name="email" value={email} />
           <div className="flex w-full justify-center">
             <InputOTP
-              id="otp"
-              name="otp"
+              id="code"
+              name="code"
               maxLength={6}
               pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
               className="gap-3"
