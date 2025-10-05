@@ -1,4 +1,3 @@
-import NavbarClient from "@/components/home/NavbarClient";
 import PurposeWarning from "@/components/shared/purpose-warning";
 
 export default function LandingLayout({
@@ -6,10 +5,5 @@ export default function LandingLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <main>
-      <NavbarClient />
-      {children}
-    </main>
-  );
+  return <main>{children}</main>;
 }
