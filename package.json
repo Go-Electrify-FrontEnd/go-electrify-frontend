@@ -48,6 +48,7 @@
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
+    "framer-motion": "^12.23.22",
     "gsap": "^3.13.0",
     "input-otp": "^1.4.2",
     "jose": "^6.1.0",
@@ -63,6 +64,7 @@
     "react-resizable-panels": "^3.0.5",
     "recharts": "^2.15.4",
     "sonner": "^2.0.7",
+    "swiper": "^12.0.2",
     "tailwind-merge": "^3.3.1",
     "three": "^0.180.0",
     "three-globe": "^2.44.0",
@@ -86,6 +88,5 @@
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.8",
     "typescript": "^5"
-  },
-  "packageManager": "pnpm@9.7.0+sha512.dc09430156b427f5ecfc79888899e1c39d2d690f004be70e05230b72cb173d96839587545d09429b55ac3c429c801b4dc3c0e002f653830a420fa2dd4e3cf9cf"
+  }
 }
