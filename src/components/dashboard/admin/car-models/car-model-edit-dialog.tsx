@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { Edit2Icon, Trash2Icon } from "lucide-react";
+import { Edit2Icon } from "lucide-react";
 
 interface UpdateCarModelProps {
   id: number;
