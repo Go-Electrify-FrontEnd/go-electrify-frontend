@@ -19,12 +19,12 @@ export default function LoginPage() {
       <div className="bg-muted relative hidden lg:flex lg:flex-col lg:items-center lg:justify-center lg:p-12">
         <div className="max-w-md space-y-6 text-center">
           <blockquote className="text-foreground text-2xl leading-relaxed font-medium italic">
-            The green transition and digital transformation are inevitable
-            trends for sustainable development.
+            Chuyển đổi xanh và chuyển đổi số là xu thế tất yếu để phát triển bền
+            vững.
           </blockquote>
           <div className="flex flex-col items-center space-y-2">
             <p className="text-muted-foreground text-sm">
-              Socialist Republic of Viet Nam – Government News
+              Báo Điện tử Chính phủ
             </p>
           </div>
           <div className="pt-6">

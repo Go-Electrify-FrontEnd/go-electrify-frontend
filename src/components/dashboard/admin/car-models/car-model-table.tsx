@@ -3,7 +3,7 @@
 import * as React from "react";
 import { toast } from "sonner";
 import { SharedDataTable } from "@/components/shared/shared-data-table";
-import { columns, type CarModel } from "./columns";
+import { columns, type CarModel } from "./car-model-table-columns";
 
 interface CarModelsTableProps {
   data: CarModel[];

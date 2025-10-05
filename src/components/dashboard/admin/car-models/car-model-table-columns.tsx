@@ -4,22 +4,9 @@ import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { ActionsCell } from "./actions-cell";
+import { ActionsCell } from "./car-model-actions";
 
-export interface ConnectorType {
-  id: number;
-  name: string;
-  description: string;
-  maxPowerKw: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import type { CarModel } from "@/types";
 
 const formatDate = (date: Date) => {
   return new Intl.DateTimeFormat("vi-VN", {
@@ -33,7 +20,11 @@ const formatPower = (power: number) => {
   return `${power} kW`;
 };
 
-export const columns: ColumnDef<ConnectorType>[] = [
+const formatBattery = (capacity: number) => {
+  return `${capacity} kWh`;
+};
+
+export const columns: ColumnDef<CarModel>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -64,32 +55,11 @@ export const columns: ColumnDef<ConnectorType>[] = [
     cell: ({ row }) => <div className="font-medium">#{row.getValue("id")}</div>,
   },
   {
-    accessorKey: "name",
-    header: "Tên Cổng Kết Nối",
+    accessorKey: "modelName",
+    header: "Tên Mẫu Xe",
     cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("name")}</div>
+      <div className="font-medium">{row.getValue("modelName")}</div>
     ),
-  },
-  {
-    accessorKey: "description",
-    header: "Mô Tả",
-    cell: ({ row }) => {
-      const description = row.getValue("description") as string;
-      return (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="text-muted-foreground max-w-[200px] cursor-help truncate">
-                {description}
-              </div>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="max-w-[300px]">
-              <p className="whitespace-normal">{description}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      );
-    },
   },
   {
     accessorKey: "maxPowerKw",
@@ -99,6 +69,18 @@ export const columns: ColumnDef<ConnectorType>[] = [
       return (
         <Badge variant="secondary" className="font-mono">
           {formatPower(power)}
+        </Badge>
+      );
+    },
+  },
+  {
+    accessorKey: "batteryCapacityKwh",
+    header: "Dung Lượng Pin",
+    cell: ({ row }) => {
+      const capacity = row.getValue("batteryCapacityKwh") as number;
+      return (
+        <Badge variant="outline" className="font-mono">
+          {formatBattery(capacity)}
         </Badge>
       );
     },
@@ -125,8 +107,8 @@ export const columns: ColumnDef<ConnectorType>[] = [
     id: "actions",
     header: "Hành Động",
     cell: ({ row }) => {
-      const connectorType = row.original;
-      return <ActionsCell connectorType={connectorType} />;
+      const carModel = row.original;
+      return <ActionsCell carModel={carModel} />;
     },
   },
 ];

@@ -1,13 +1,10 @@
 "use client";
 
 interface UserProviderProps extends React.PropsWithChildren {
-  user: {
-    name: string;
-    email: string;
-    avatar: string;
-  } | null;
+  user: User | null;
 }
 
+import { User } from "@/app/layout";
 import React, { createContext, useContext } from "react";
 
 const UserContext = createContext<UserProviderProps["user"]>(null);

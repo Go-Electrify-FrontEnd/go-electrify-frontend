@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Subscription } from "./columns";
+import { Subscription } from "@/types";
 
 interface DeleteSubscriptionProps {
   subscription: Subscription;
@@ -45,9 +45,6 @@ export function DeleteSubscription({
 
       toast.success("Xóa gói đăng ký thành công!");
       onOpenChange(false);
-
-      // Refresh the page or update the data
-      window.location.reload();
     } catch (error) {
       toast.error("Có lỗi xảy ra khi xóa gói đăng ký");
     } finally {
@@ -70,15 +67,16 @@ export function DeleteSubscription({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Bạn có chắc chắn muốn xóa?</AlertDialogTitle>
-          <AlertDialogDescription className="space-y-2">
-            <p>
+          <AlertDialogDescription>
+            <span className="block">
               Hành động này không thể hoàn tác. Gói đăng ký{" "}
               <span className="font-semibold">{subscription.name}</span> sẽ bị
               xóa vĩnh viễn khỏi hệ thống.
-            </p>
-            <p>
+            </span>
+            <br />
+            <span className="block">
               Điều này có thể ảnh hưởng đến các người dùng đang sử dụng gói này.
-            </p>
+            </span>
           </AlertDialogDescription>
         </AlertDialogHeader>
 
