@@ -1,7 +1,14 @@
 "use client";
 
-import { Station } from "@/app/dashboard/find-stations/page";
+import { Station } from "@/types";
 import { StationCard } from "./station-card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 interface NearestStationsListProps {
   stations: Station[];
@@ -10,18 +17,16 @@ interface NearestStationsListProps {
 
 export const NearestStationsList = ({ stations }: NearestStationsListProps) => {
   return (
-    <div className="bg-card border-border/50 no-scrollbar h-[60vh] overflow-hidden rounded-xl border lg:h-[65vh]">
-      <div className="border-border/50 border-b p-4">
-        <h3 className="text-sm font-medium">Danh sách trạm</h3>
-        <p className="text-muted-foreground mt-1 text-xs">
-          {stations.length} kết quả
-        </p>
-      </div>
-      <div className="no-scrollbar h-full space-y-3 overflow-y-auto p-4">
+    <Card className="h-[60vh] overflow-hidden lg:h-[65vh]">
+      <CardHeader className="border-b">
+        <CardTitle className="text-sm font-medium">Danh sách trạm</CardTitle>
+        <CardDescription>{stations.length} kết quả</CardDescription>
+      </CardHeader>
+      <CardContent className="no-scrollbar h-full space-y-4 overflow-y-auto">
         {stations.map((station, index) => (
           <StationCard key={station.id} station={station} index={index} />
         ))}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };

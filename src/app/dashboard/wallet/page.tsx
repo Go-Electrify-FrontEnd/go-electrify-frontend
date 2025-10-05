@@ -1,8 +1,7 @@
 import { PenaltyTable } from "@/components/dashboard/wallet/penalty-table";
-import { TransactionTable } from "@/components/dashboard/wallet/transasction-table";
+import TransactionTable from "../../../components/dashboard/wallet/transaction-table";
+import WalletDepositButton from "@/components/dashboard/wallet/wallet-deposit-button";
 import { WalletOverview } from "@/components/dashboard/wallet/wallet-overview";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 
 export default async function DonatePage() {
   return (
@@ -17,10 +16,7 @@ export default async function DonatePage() {
           </p>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
-          <Button size="sm" className="w-full sm:w-auto">
-            <Plus className="mr-2 h-4 w-4" />
-            Nạp Tiền
-          </Button>
+          <WalletDepositButton />
         </div>
       </div>
 

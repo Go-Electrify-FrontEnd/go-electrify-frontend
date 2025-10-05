@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import {
   AudioWaveform,
   BookOpen,
@@ -144,9 +143,6 @@ const secondary = [
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { state } = useSidebar();
-  const isCollapsed = state === "collapsed";
-
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>

@@ -2,7 +2,6 @@
 
 import { CarModel } from "@/types/reservation";
 
-// Mock data for demonstration - replace with actual API call
 const mockCarModels: CarModel[] = [
   {
     id: 1,

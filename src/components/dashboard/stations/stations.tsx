@@ -10,11 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
   Activity,
-  Battery,
   Zap,
   Users,
-  TrendingUp,
-  TrendingDown,
   AlertTriangle,
   CheckCircle,
   Clock,
@@ -52,19 +49,6 @@ export async function StationsContent() {
     sessions: station.total_connectors - station.available_connectors,
   }));
 
-  // Calculate metrics
-  const activeStations = stations.filter((s) => s.available).length;
-  const totalEnergyDelivered = stations.reduce(
-    (sum, station) =>
-      sum + (station.total_connectors - station.available_connectors) * 50,
-    0,
-  ); // Mock: 50kWh per session
-  const activeSessions = stations.reduce(
-    (sum, station) =>
-      sum + (station.total_connectors - station.available_connectors),
-    0,
-  );
-  const revenueToday = (activeSessions * 125750) / 1000;
   return (
     <div className="space-y-4 p-4 sm:space-y-6 sm:p-6">
       {/* Header */}

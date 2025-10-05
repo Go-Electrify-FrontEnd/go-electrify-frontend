@@ -3,17 +3,9 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ActionsCell } from "./actions-cell";
+import { ActionsCell } from "./subscription-actions";
 
-export interface Subscription {
-  id: number;
-  name: string;
-  price: number;
-  totalKwh: number;
-  durationDays: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import type { Subscription } from "@/types";
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat("vi-VN", {

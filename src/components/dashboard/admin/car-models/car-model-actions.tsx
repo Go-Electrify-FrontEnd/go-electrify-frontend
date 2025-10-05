@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import React, { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,15 +9,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { UpdateSubscription } from "./update-subscription";
-import { DeleteSubscription } from "./delete-subscription";
-import { Subscription } from "./columns";
+import { Button } from "@/components/ui/button";
+import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import UpdateCarModel from "./car-model-edit-dialog";
+import DeleteCarModel from "./car-model-delete-dialog";
+import { CarModel } from "./car-model-table-columns";
 
-interface ActionsProps {
-  subscription: Subscription;
+interface ActionsCellProps {
+  carModel: CarModel;
 }
 
-export function ActionsCell({ subscription }: ActionsProps) {
+export function ActionsCell({ carModel }: ActionsCellProps) {
   const [showUpdateDialog, setShowUpdateDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
@@ -49,17 +49,17 @@ export function ActionsCell({ subscription }: ActionsProps) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <UpdateSubscription
-        subscription={subscription}
-        open={showUpdateDialog}
-        onOpenChange={setShowUpdateDialog}
-      />
+      {showUpdateDialog && (
+        <UpdateCarModel
+          {...carModel}
+          createdAt={carModel.createdAt.toISOString()}
+          updatedAt={carModel.updatedAt.toISOString()}
+        />
+      )}
 
-      <DeleteSubscription
-        subscription={subscription}
-        open={showDeleteDialog}
-        onOpenChange={setShowDeleteDialog}
-      />
+      {showDeleteDialog && (
+        <DeleteCarModel id={carModel.id} modelName={carModel.modelName} />
+      )}
     </>
   );
 }

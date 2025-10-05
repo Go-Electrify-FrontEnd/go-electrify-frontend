@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,17 +11,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
-import { ConnectorType } from "./columns";
-import { UpdateConnectorType } from "./update-connector-type";
-import { DeleteConnectorType } from "./delete-connector-type";
+import { UpdateSubscription } from "./subscription-edit-dialog";
+import { DeleteSubscription } from "./subscription-delete-dialog";
+import type { Subscription } from "@/types";
 
-interface ActionsCellProps {
-  connectorType: ConnectorType;
+interface ActionsProps {
+  subscription: Subscription;
 }
 
-export function ActionsCell({ connectorType }: ActionsCellProps) {
+export function ActionsCell({ subscription }: ActionsProps) {
   const [showUpdateDialog, setShowUpdateDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
@@ -49,14 +49,14 @@ export function ActionsCell({ connectorType }: ActionsCellProps) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <UpdateConnectorType
-        connectorType={connectorType}
+      <UpdateSubscription
+        subscription={subscription}
         open={showUpdateDialog}
         onOpenChange={setShowUpdateDialog}
       />
 
-      <DeleteConnectorType
-        connectorType={connectorType}
+      <DeleteSubscription
+        subscription={subscription}
         open={showDeleteDialog}
         onOpenChange={setShowDeleteDialog}
       />
