@@ -21,17 +21,17 @@ export default function AppLogo(props: AppLogoProps) {
       className={cn(
         { [comfortaa.className]: true },
         props.className,
-        "text-foreground flex items-center align-middle font-bold",
+        "flex items-center align-middle font-bold",
       )}
     >
       <Image
         src="/assets/images/logo01.png"
         alt="Electrify Logo"
-        width={40}
-        height={40}
+        width={60}
+        height={60}
         className="object-contain"
       />
-      <span className="text-foreground text-2xl font-bold">Electrify</span>
+      <span className="text-2xl font-bold tracking-widest">Electrify</span>
     </Link>
   );
 }

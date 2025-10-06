@@ -8,6 +8,14 @@ const nextConfig: NextConfig = {
         search: "",
       },
     ],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        port: "",
+        pathname: "/**",
+      },
+    ],
   },
 };
 
