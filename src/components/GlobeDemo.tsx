@@ -1,6 +1,4 @@
 "use client";
-
-import React from "react";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 
@@ -396,26 +394,23 @@ export default function GlobeDemo() {
   ];
 
   return (
-    <div className="relative flex h-full flex-row items-center justify-center bg-white py-20 **:w-full md:h-auto dark:bg-black">
-      <div className="relative mx-auto h-full w-full max-w-7xl overflow-hidden px-4 md:h-[40rem]">
-        <motion.div
-          initial={{
-            opacity: 0,
-            y: 20,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-          transition={{
-            duration: 1,
-          }}
-          className="div"
-        ></motion.div>
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-40 h-40 w-full bg-gradient-to-b from-transparent to-white select-none dark:to-black" />
-        <div className="absolute -bottom-20 z-10 h-72 w-full md:h-full">
-          <World data={sampleArcs} globeConfig={globeConfig} />
-        </div>
+    <div className="absolute inset-0">
+      <motion.div
+        initial={{
+          opacity: 0,
+          y: 20,
+        }}
+        animate={{
+          opacity: 1,
+          y: 0,
+        }}
+        transition={{
+          duration: 1,
+        }}
+        className="hidden"
+      />
+      <div className="absolute inset-0">
+        <World data={sampleArcs} globeConfig={globeConfig} />
       </div>
     </div>
   );

@@ -23,7 +23,6 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import { DashboardLogo } from "./dashboard-logo";
 import { NavUser } from "./nav-user";
