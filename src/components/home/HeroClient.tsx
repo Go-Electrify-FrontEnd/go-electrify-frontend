@@ -4,7 +4,6 @@ import Image from "next/image";
 import { useState } from "react";
 
 export default function HeroClient() {
-  const [isDark, setIsDark] = useState(false);
   const [email, setEmail] = useState("");
 
   const handleSubmit = () => {
