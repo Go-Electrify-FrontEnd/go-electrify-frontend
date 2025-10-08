@@ -7,8 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { CarModel } from "@/types/car";
 import { Plus, Car } from "lucide-react";
-import type { CarModel } from "@/types";
 
 async function getData(): Promise<CarModel[]> {
   // Mock data - replace with actual API call

@@ -11,9 +11,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getBackendUrl } from "@/lib/utils";
-import { Station } from "../find-stations/page";
 import { Plus, Calendar } from "lucide-react";
 import CreateReservationButton from "@/components/dashboard/reservation/create-reservation-button";
+import { Station } from "@/types/station";
 
 async function getData() {
   const reservationsResponse = await fetch(getBackendUrl("api/reservations"));

@@ -1,6 +1,6 @@
 "use client";
 
-import { Station } from "@/types";
+import { Station } from "@/types/station";
 import { StationCard } from "./station-card";
 import {
   Card,

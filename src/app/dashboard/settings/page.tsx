@@ -3,12 +3,6 @@ import { Separator } from "@/components/ui/separator";
 import FullNameUpdate from "@/components/dashboard/settings/fullname-update";
 import AvatarUpdate from "@/components/dashboard/settings/avatar-update";
 
-const mockUser = {
-  fullName: "Người dùng",
-  email: "user@example.com",
-  avatarUrl: "",
-};
-
 export default async function SettingsPage() {
   return (
     <div className="container">
