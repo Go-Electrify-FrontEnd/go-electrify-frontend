@@ -221,14 +221,14 @@ export function ReservationForm({ onContinue }: ReservationFormProps) {
                       key={car.id}
                       value={`${car.brand} ${car.model}`}
                       onSelect={() => {
-                        setSelectedCarModel(car.id.toString());
+                        setSelectedCarModel(car.id!.toString());
                         setOpenCarModel(false);
                       }}
                     >
                       <Check
                         className={cn(
                           "mr-2 h-4 w-4",
-                          selectedCarModel === car.id.toString()
+                          selectedCarModel === car.id!.toString()
                             ? "opacity-100"
                             : "opacity-0",
                         )}

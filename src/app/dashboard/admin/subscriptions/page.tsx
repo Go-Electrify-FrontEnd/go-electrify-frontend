@@ -7,8 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Subscription } from "@/types/subscription";
 import { Plus, CreditCard } from "lucide-react";
-import type { Subscription } from "@/types";
 
 async function getData(): Promise<Subscription[]> {
   return [

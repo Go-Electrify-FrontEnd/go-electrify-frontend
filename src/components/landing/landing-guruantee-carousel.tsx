@@ -3,7 +3,7 @@
 import React from "react";
 import { Carousel, Card } from "@/components/ui/apple-cards-carousel";
 
-export function AppleCardsCarouselDemo() {
+export function LandingGuaranteeCarousel() {
   const cards = data.map((card, index) => (
     <Card key={card.src} card={card} index={index} />
   ));

@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { getBackendUrl } from "@/lib/utils";
 import { Filter, MapPin, RotateCcw, Search } from "lucide-react";
-import type { Station } from "@/types";
+import { Station } from "@/types/station";
 
 export default async function FindStationsPage() {
   const response = await fetch(getBackendUrl("api/stations"));

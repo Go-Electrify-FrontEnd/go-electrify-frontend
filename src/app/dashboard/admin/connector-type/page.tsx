@@ -7,8 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ConnectorType } from "@/types/connector";
 import { Plus, Plug } from "lucide-react";
-import type { ConnectorType } from "@/types";
 
 async function getData(): Promise<ConnectorType[]> {
   return [
