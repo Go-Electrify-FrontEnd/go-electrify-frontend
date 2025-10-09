@@ -13,19 +13,16 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { type PutBlobResult } from "@vercel/blob";
 import { upload } from "@vercel/blob/client";
+import { useUser } from "@/contexts/user-context";
 
 export default function AvatarUpdate() {
+  const { user } = useUser();
   const fileRef = React.useRef<HTMLInputElement | null>(null);
   const [preview, setPreview] = React.useState<string | null>(null);
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   const [blob, setBlob] = React.useState<PutBlobResult | null>(null);
   const [isUploading, setIsUploading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
-
-  const mockUser = {
-    fullName: "Người dùng",
-    email: "user@example.com",
-  };
 
   const handleClickAvatar = () => {
     fileRef.current?.click();
@@ -99,10 +96,10 @@ export default function AvatarUpdate() {
         <div className="absolute top-4 right-4">
           <Avatar className="h-16 w-16">
             {preview ? (
-              <AvatarImage src={preview} alt={mockUser.fullName} />
+              <AvatarImage src={preview} alt={user!.name} />
             ) : (
               <AvatarFallback className="text-lg font-semibold">
-                {mockUser.fullName
+                {user?.name
                   ?.split(" ")
                   .filter((w) => w.length > 0)
                   .map((w) => w[0]?.toUpperCase() ?? "")

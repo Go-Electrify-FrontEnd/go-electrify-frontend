@@ -1,9 +1,9 @@
+import { getUser } from "@/lib/auth/auth-server";
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request): Promise<NextResponse> {
   const body = (await request.json()) as HandleUploadBody;
-
   try {
     const jsonResponse = await handleUpload({
       body,
@@ -15,7 +15,10 @@ export async function POST(request: Request): Promise<NextResponse> {
         // Generate a client token for the browser to upload the file
         // ⚠️ Authenticate and authorize users before generating the token.
         // Otherwise, you're allowing anonymous uploads.
-
+        const { user } = await getUser();
+        if (!user) {
+          throw new Error("Unauthorized");
+        }
         return {
           allowedContentTypes: [
             "image/jpeg",
@@ -26,6 +29,7 @@ export async function POST(request: Request): Promise<NextResponse> {
           tokenPayload: JSON.stringify({
             // optional, sent to your server on upload completion
             // you could pass a user id from auth, or a value from clientPayload
+            clientId: user?.email,
           }),
         };
       },
@@ -40,7 +44,7 @@ export async function POST(request: Request): Promise<NextResponse> {
           // Run any logic after the file upload completed
           // const { userId } = JSON.parse(tokenPayload);
           // await db.update({ avatar: blob.url, userId });
-        } catch (error) {
+        } catch {
           throw new Error("Could not update user");
         }
       },

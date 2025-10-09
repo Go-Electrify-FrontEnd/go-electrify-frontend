@@ -1,7 +1,6 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { getBackendUrl } from "@/lib/utils";
 import { redirect } from "next/navigation";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -9,7 +8,7 @@ export async function handleLogin(prevState: any, data: FormData) {
   const email = data.get("email")?.toString();
 
   if (!email) {
-    return { success: false, msg: "Email is required" };
+    return { success: false, msg: "Email là bắt buộc" };
   }
 
   //const url = getBackendUrl("auth/register-email");
@@ -24,7 +23,10 @@ export async function handleLogin(prevState: any, data: FormData) {
   });
 
   const success = response.ok;
-  return { success, msg: success ? "OTP sent to email" : "Failed to send OTP" };
+  return {
+    success,
+    msg: success ? "Đã gửi mã OTP đến email" : "Gửi mã OTP thất bại",
+  };
 }
 
 interface VerifyOTPResponse {
@@ -40,12 +42,12 @@ export async function handleVerifyOTP(prevState: any, data: FormData) {
   const code = data.get("code")?.toString();
 
   if (!email || !code) {
-    return { success: false, msg: "Email and code are required" };
+    return { success: false, msg: "Email và mã OTP là bắt buộc" };
   }
 
   const cookieStore = await cookies();
   if (cookieStore.get("accessToken") && cookieStore.get("refreshToken")) {
-    return { success: true, msg: "Already logged in" };
+    return { success: true, msg: "Đã đăng nhập" };
   }
 
   const url = "https://api.go-electrify.com/api/v1/auth/verify-otp";
@@ -61,7 +63,7 @@ export async function handleVerifyOTP(prevState: any, data: FormData) {
   if (!success) {
     return {
       success: false,
-      msg: "Invalid OTP or email",
+      msg: "OTP hoặc email không hợp lệ",
       user: null,
       tokens: null,
     };
@@ -86,5 +88,5 @@ export async function handleVerifyOTP(prevState: any, data: FormData) {
     });
   }
 
-  redirect("/");
+  redirect("/dashboard");
 }

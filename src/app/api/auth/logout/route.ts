@@ -15,6 +15,8 @@ export async function GET(request: Request) {
     }),
   });
 
+  console.log("Logout response status: " + (await response.text()));
+
   if (cookieStore.has("accessToken")) {
     cookieStore.delete("accessToken");
   }

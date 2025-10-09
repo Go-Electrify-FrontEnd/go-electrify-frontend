@@ -35,14 +35,17 @@ function extractTokens(data: RefreshApiResponse) {
   };
 }
 
-export async function handleAuthRefresh(request: NextRequest) {
-  const response = NextResponse.next();
+export async function handleAuthRefresh(
+  request: NextRequest,
+  incomingResponse?: NextResponse,
+) {
+  const response = incomingResponse || NextResponse.next();
 
   const accessToken = request.cookies.get("accessToken")?.value;
   const refreshToken = request.cookies.get("refreshToken")?.value;
   const encoder = new TextEncoder().encode(process.env.AUTH_SECRET_KEY);
-  let needRefresh = false;
 
+  let needRefresh = false;
   if (accessToken) {
     try {
       await jose.jwtVerify(accessToken, encoder, {
@@ -71,7 +74,6 @@ export async function handleAuthRefresh(request: NextRequest) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${refreshToken}`,
       },
       body: JSON.stringify({
         RefreshToken: refreshToken,

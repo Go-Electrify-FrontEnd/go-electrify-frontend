@@ -1,0 +1,310 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search",
+    "filter": "Filter",
+    "refresh": "Refresh",
+    "create": "Create",
+    "update": "Update",
+    "submit": "Submit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "close": "Close",
+    "confirm": "Confirm"
+  },
+  "auth": {
+    "login": "Log in",
+    "logout": "Log out",
+    "email": "Email",
+    "password": "Password",
+    "emailRequired": "Email is required",
+    "otpSent": "OTP sent to email",
+    "otpFailed": "Failed to send OTP",
+    "emailAndCodeRequired": "Email and OTP are required",
+    "alreadyLoggedIn": "Already logged in",
+    "invalidOtp": "Invalid OTP or email",
+    "enterOtp": "Enter OTP",
+    "verifyOtp": "Verify OTP",
+    "requestOtp": "Request OTP"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "start-charging": "Start Charging",
+    "stations-nearby": "Stations Nearby",
+    "reservations": "Reservations",
+    "charging-history": "Charging History",
+    "wallet": "Wallet",
+    "transactions": "Transactions",
+    "plans-billing": "Plans & Billing",
+    "settings": "Settings",
+    "profile": "Profile",
+    "admin": "Admin",
+    "stations": "Stations",
+    "users": "Users",
+    "subscriptions": "Subscriptions",
+    "connector-type": "Connector Types",
+    "car-models": "Car Models",
+    "test": "Test",
+    "loading": "Loading",
+    "manage-stations": "Manage Stations",
+    "manage-users": "Manage Users",
+    "manage-subscriptions": "Manage Subscriptions",
+    "manage-connector-types": "Manage Connector Types",
+    "manage-car-models": "Manage Car Models",
+    "find-stations": "Find Stations",
+    "create-reservation": "Create Reservation"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back",
+    "overview": "Overview",
+    "startCharging": "Start Charging",
+    "stationsNearby": "Stations Nearby",
+    "stationsSubtitle": "Find nearby charging stations and manage reservations",
+    "reservations": "Reservations",
+    "reservationsSubtitle": "Your upcoming and past reservations",
+    "wallet": "Wallet",
+    "walletBalance": "Balance",
+    "transactions": "Transactions",
+    "topUp": "Top up",
+    "settings": "Settings",
+    "searchPlaceholder": "Search...",
+    "noData": "No data available",
+    "table": {
+      "name": "Name",
+      "status": "Status",
+      "address": "Address",
+      "connectors": "Connectors",
+      "distance": "Distance",
+      "actions": "Actions",
+      "createdAt": "Created at",
+      "updatedAt": "Updated at"
+    },
+    "station": {
+      "create": "Create Station",
+      "edit": "Edit Station",
+      "delete": "Delete Station",
+      "viewDetails": "View details",
+      "reserve": "Reserve",
+      "available": "Available",
+      "busy": "Busy",
+      "maintenance": "Maintenance"
+    },
+    "reservation": {
+      "create": "Create reservation",
+      "cancel": "Cancel reservation",
+      "startTime": "Start time",
+      "endTime": "End time",
+      "noReservations": "You have no reservations"
+    },
+    "admin": {
+      "users": "Users",
+      "stations": "Stations",
+      "subscriptions": "Subscriptions",
+      "connectorTypes": "Connector types",
+      "carModels": "Car models"
+    }
+  },
+  "stations": {
+    "title": "Find Charging Stations",
+    "subtitle": "List of available charging stations",
+    "searchPlaceholder": "Search stations...",
+    "available": "Available",
+    "busy": "Busy",
+    "maintenance": "Maintenance",
+    "inactive": "Inactive",
+    "active": "Active",
+    "map": "Map",
+    "list": "Station List",
+    "results": "results",
+    "noStations": "No stations found",
+    "viewDetails": "View Details",
+    "getDirections": "Get Directions",
+    "reserve": "Reserve",
+    "connectors": "connectors",
+    "distance": "Distance",
+    "address": "Address"
+  },
+  "reservations": {
+    "title": "Reservations",
+    "noReservations": "No reservations",
+    "noReservationsDescription": "You currently have no reservations.",
+    "createReservation": "Create Reservation",
+    "viewReservation": "View Reservation",
+    "cancelReservation": "Cancel Reservation",
+    "upcomingReservations": "Upcoming Reservations",
+    "pastReservations": "Past Reservations"
+  },
+  "user": {
+    "profile": "Profile",
+    "account": "Account",
+    "billing": "Billing",
+    "notifications": "Notifications",
+    "upgradeToPro": "Upgrade to Pro",
+    "darkMode": "Dark Mode",
+    "lightMode": "Light Mode",
+    "systemMode": "System Mode"
+  },
+  "landing": {
+    "title": "Electrify Your Journey",
+    "subtitle": "Find and charge at thousands of stations nationwide",
+    "getStarted": "Get Started",
+    "learnMore": "Learn More",
+    "featuresLabel": "Features",
+    "pricingLabel": "Pricing",
+    "aboutLabel": "About",
+    "nav": {
+      "features": "Features",
+      "pricing": "Pricing",
+      "testimonials": "Testimonials",
+      "contact": "Contact"
+    },
+    "header": {
+      "helpAria": "Help center",
+      "accountAria": "User account"
+    },
+    "hero": {
+      "highlight": "Power Every Journey",
+      "headline": "Always Ready",
+      "description": "Join the largest network of EV charging stations. Fast, reliable, and wherever you need it.",
+      "primaryCta": "Get Started",
+      "secondaryCta": "Learn More",
+      "stats": {
+        "locations": {
+          "value": "100+",
+          "label": "Stations across Ho Chi Minh City"
+        },
+        "averageSession": {
+          "value": "30m",
+          "label": "Average session"
+        },
+        "savings": {
+          "value": "60%",
+          "label": "Energy savings"
+        }
+      }
+    },
+    "locations": {
+      "tagline": "Ho Chi Minh City",
+      "heading": "Charging across the city",
+      "subheading": "Go anywhere with our extensive charging network",
+      "description": "We operate one of the most comprehensive EV charging networks. Strategically located along major routes and near essential amenities.",
+      "primaryCta": "Find the nearest station",
+      "secondaryCta": "View map",
+      "statusLabel": "Operational",
+      "statusCaption": "1,247 stations"
+    },
+    "pricing": {
+      "title": "Plans that fit your charging profile",
+      "description": "Choose the plan that matches your charging needs. Save more with monthly subscriptions.",
+      "disclaimer": "Every plan includes full access to our nationwide network.",
+      "contactLink": "Contact us",
+      "disclaimerSuffix": "for tailored pricing guidance.",
+      "plans": {
+        "payg": {
+          "name": "Pay as you go",
+          "tagline": "Flexible, no commitments",
+          "price": "₫4,500",
+          "unit": "/kWh",
+          "note": "Unlimited usage",
+          "features": [
+            "Pay only for the energy you use",
+            "No monthly fees",
+            "Access every charging station",
+            "24/7 customer support"
+          ],
+          "ctaLabel": "Get Started",
+          "ctaVariant": "outline"
+        },
+        "basic": {
+          "name": "Basic",
+          "tagline": "Ideal for frequent drivers",
+          "price": "₫299,000",
+          "unit": "/month",
+          "note": "200 kWh • ₫3,500/kWh thereafter",
+          "features": [
+            "200 kWh per month (~₫1,495/kWh)",
+            "₫3,500/kWh beyond allowance",
+            "Priority customer support",
+            "Monthly usage reports"
+          ],
+          "ctaLabel": "Subscribe",
+          "ctaVariant": "default"
+        },
+        "pro": {
+          "name": "Professional",
+          "tagline": "Best for small fleets",
+          "price": "₫799,000",
+          "unit": "/month",
+          "note": "600 kWh • ₫3,200/kWh thereafter",
+          "features": [
+            "600 kWh per month (~₫1,332/kWh)",
+            "₫3,200/kWh beyond allowance",
+            "Priority access at busy stations",
+            "Advanced usage analytics",
+            "Premier 24/7 support"
+          ],
+          "ctaLabel": "Subscribe",
+          "ctaVariant": "default",
+          "highlightLabel": "Most popular"
+        },
+        "enterprise": {
+          "name": "Enterprise",
+          "tagline": "Built for large fleets",
+          "price": "₫1,999,000",
+          "unit": "/month",
+          "note": "1,800 kWh • ₫2,800/kWh thereafter",
+          "features": [
+            "1,800 kWh per month (~₫1,111/kWh)",
+            "₫2,800/kWh beyond allowance",
+            "Multi-asset management",
+            "Enterprise API integrations",
+            "Dedicated account management",
+            "Centralized invoicing & custom reports"
+          ],
+          "ctaLabel": "Talk to sales",
+          "ctaVariant": "outline"
+        }
+      }
+    },
+    "carousel": {
+      "title": "We’re committed to the best charging experience"
+    },
+    "footer": {
+      "tagline": "The future of EV charging is here.",
+      "columns": [
+        {
+          "title": "Charging services",
+          "links": [
+            { "label": "Find a charger", "href": "#" },
+            { "label": "Pricing plans", "href": "#" },
+            { "label": "Business solutions", "href": "#" }
+          ]
+        },
+        {
+          "title": "About Electrify",
+          "links": [
+            { "label": "Our story", "href": "#" },
+            { "label": "Careers", "href": "#" },
+            { "label": "Contact", "href": "#" }
+          ]
+        },
+        {
+          "title": "Customer support",
+          "links": [
+            { "label": "Help center", "href": "#" },
+            { "label": "Mobile app", "href": "#" },
+            { "label": "24/7 assistance", "href": "#" }
+          ]
+        }
+      ],
+      "copyright": "© 2025 Go Electrify. All rights reserved."
+    }
+  }
+}

@@ -1,7 +1,17 @@
 import { LoginForm } from "@/components/login/login-form";
 import AppLogo from "@/components/shared/logo";
+import { redirect } from "@/i18n/navigation";
+import { getUser } from "@/lib/auth/auth-server";
+import { getLocale } from "next-intl/server";
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const { user } = await getUser();
+  if (user) {
+    // If the user is already logged in, you might want to redirect them
+    // to the dashboard or another appropriate page.
+    const locale = await getLocale();
+    redirect({ href: "/dashboard", locale });
+  }
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="flex flex-col gap-4 p-6 md:p-10">

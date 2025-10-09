@@ -1,5 +1,5 @@
-import { PenaltyTable } from "@/components/dashboard/wallet/penalty-table";
-import TransactionTable from "../../../components/dashboard/wallet/transaction-table";
+import { PenaltyTable } from "@/components/dashboard/wallet/wallet-penalty-table";
+import TransactionTable from "@/components/dashboard/wallet/transaction-table";
 import WalletDepositButton from "@/components/dashboard/wallet/wallet-deposit-button";
 import { WalletOverview } from "@/components/dashboard/wallet/wallet-overview";
 

@@ -4,8 +4,13 @@ import Link from "next/link";
 import { HelpCircle, UserCircle } from "lucide-react";
 import AppLogo from "@/components/shared/logo";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
+import { LanguageSwitcher } from "../shared/language-switcher";
 
 export default function LandingHeader() {
+  const nav = useTranslations("landing.nav");
+  const labels = useTranslations("landing.header");
+
   return (
     <motion.header
       initial={{ y: -12, opacity: 0 }}
@@ -26,44 +31,45 @@ export default function LandingHeader() {
             href="#features"
             className="group relative text-sm font-semibold transition-colors duration-200"
           >
-            Tính năng
+            {nav("features")}
             <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-white transition-all duration-200 group-hover:w-full" />
           </Link>
           <Link
             href="#pricing"
             className="group relative text-sm font-semibold transition-colors duration-200"
           >
-            Giá cả
+            {nav("pricing")}
             <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-white transition-all duration-200 group-hover:w-full" />
           </Link>
           <Link
             href="#testimonials"
             className="group relative text-sm font-semibold transition-colors duration-200"
           >
-            Phản hồi
+            {nav("testimonials")}
             <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-white transition-all duration-200 group-hover:w-full" />
           </Link>
           <Link
             href="#contact"
             className="group relative text-sm font-semibold transition-colors duration-200"
           >
-            Liên hệ
+            {nav("contact")}
             <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-white transition-all duration-200 group-hover:w-full" />
           </Link>
         </nav>
 
         {/* Action Icons & CTA */}
         <div className="flex items-center gap-3">
+          <LanguageSwitcher />
           <button
             className="hover:text-foreground hover:bg-accent flex h-9 w-9 items-center justify-center rounded-full text-white transition-all duration-200"
-            aria-label="Help"
+            aria-label={labels("helpAria")}
           >
             <HelpCircle className="h-4.5 w-4.5" />
           </button>
           <Link
             href="/login"
             className="hover:text-foreground hover:bg-accent flex h-9 w-9 items-center justify-center rounded-full text-white transition-all duration-200"
-            aria-label="User Account"
+            aria-label={labels("accountAria")}
           >
             <UserCircle className="h-4.5 w-4.5" />
           </Link>
