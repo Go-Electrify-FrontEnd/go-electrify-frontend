@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Calendar, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,7 +12,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ReservationForm } from "./reservation-form";
-import { BookingSummary } from "./booking-summary";
+import { BookingSummary } from "./reservation-summary";
 import { Reservation } from "@/types/reservation";
 import {
   ReservationProvider,

@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import FullNameUpdate from "@/components/dashboard/settings/fullname-update";
-import AvatarUpdate from "@/components/dashboard/settings/avatar-update";
+import FullNameUpdate from "@/components/dashboard/settings/settings-fullname-update";
+import AvatarUpdate from "@/components/dashboard/settings/settings-avatar-update";
 
 export default async function SettingsPage() {
   return (

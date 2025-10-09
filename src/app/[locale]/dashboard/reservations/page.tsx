@@ -1,9 +1,9 @@
 import {
   columns,
   Reservation,
-} from "@/components/dashboard/reservation/columns";
-import { DataTable } from "@/components/dashboard/reservation/data-table";
-import { EmptyTable } from "@/components/dashboard/reservation/empty-table";
+} from "@/components/dashboard/reservation/reservation-table-columns";
+import { DataTable } from "@/components/dashboard/reservation/reservation-table";
+import { EmptyTable } from "@/components/dashboard/reservation/reservation-table-empty";
 import {
   Card,
   CardDescription,
@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { getBackendUrl } from "@/lib/utils";
 import { Plus, Calendar } from "lucide-react";
-import CreateReservationButton from "@/components/dashboard/reservation/create-reservation-button";
+import CreateReservationButton from "@/components/dashboard/reservation/reservation-create-button";
 import { Station } from "@/types/station";
 
 async function getData() {

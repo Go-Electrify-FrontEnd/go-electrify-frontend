@@ -3,8 +3,10 @@
 import React from "react";
 import { Carousel, Card } from "@/components/ui/apple-cards-carousel";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 export function LandingGuaranteeCarousel() {
+  const carousel = useTranslations("landing.carousel");
   const cards = data.map((card, index) => (
     <Card key={card.src} card={card} index={index} />
   ));
@@ -12,7 +14,7 @@ export function LandingGuaranteeCarousel() {
   return (
     <div className="container mx-auto px-6 py-20">
       <h2 className="text-foreground text-3xl font-bold md:text-4xl lg:text-5xl">
-        Cam kết mang đến trải nghiệm tốt nhất
+        {carousel("title")}
       </h2>
       <div>
         <Carousel items={cards} />

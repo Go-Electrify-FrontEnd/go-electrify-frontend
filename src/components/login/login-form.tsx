@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useActionState, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { OTPForm } from "./otp-form";
+import { OTPForm } from "./login-otp-form";
 import { handleLogin } from "@/actions/login-actions";
 
 const initialState = {

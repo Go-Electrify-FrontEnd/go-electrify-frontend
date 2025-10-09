@@ -44,7 +44,7 @@ export function DeleteSubscription({
 
       toast.success("Xóa gói đăng ký thành công!");
       onOpenChange(false);
-    } catch (error) {
+    } catch {
       toast.error("Có lỗi xảy ra khi xóa gói đăng ký");
     } finally {
       setIsLoading(false);
