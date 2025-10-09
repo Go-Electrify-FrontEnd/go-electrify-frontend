@@ -13,23 +13,21 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Edit2Icon } from "lucide-react";
+import { CarModel } from "@/types/car";
 
 interface UpdateCarModelProps {
-  id: number;
-  modelName: string;
-  maxPowerKw: number;
-  batteryCapacityKwh: number;
-  createdAt: string;
-  updatedAt: string;
+  carModel: CarModel;
 }
 
 export default function UpdateCarModel({
-  id,
-  modelName,
-  maxPowerKw,
-  batteryCapacityKwh,
-  createdAt,
-  updatedAt,
+  carModel: {
+    id,
+    modelName,
+    maxPowerKw,
+    batteryCapacityKwh,
+    createdAt,
+    updatedAt,
+  },
 }: UpdateCarModelProps) {
   // Individual state variables instead of object state
   const [carModelName, setCarModelName] = useState(modelName);

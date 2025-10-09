@@ -11,9 +11,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
-import { ConnectorType } from "./connector-type-table-columns";
 import { UpdateConnectorType } from "./connector-type-edit-dialog";
 import { DeleteConnectorType } from "./connector-type-delete-dialog";
+import { ConnectorType } from "@/types/connector";
 
 interface ActionsCellProps {
   connectorType: ConnectorType;

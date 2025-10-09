@@ -4,18 +4,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useActionState, useEffect, useState } from "react";
-import { handleLogin } from "@/app/login/actions";
 import { toast } from "sonner";
 import { OTPForm } from "./otp-form";
+import { handleLogin } from "@/actions/login-actions";
 
 const initialState = {
   success: false,
   msg: "",
 };
 
-interface LoginFormProps extends React.ComponentProps<"form"> {}
-
-export function LoginForm({ className, ...props }: LoginFormProps) {
+export function LoginForm({
+  className,
+  ...props
+}: React.ComponentProps<"form">) {
   const [email, setEmail] = useState<string>("");
   const [loginState, loginAction, isPending] = useActionState(
     handleLogin,

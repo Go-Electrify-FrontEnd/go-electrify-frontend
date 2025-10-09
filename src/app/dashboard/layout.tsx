@@ -8,6 +8,8 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 
+export const dynamic = "force-dynamic";
+
 interface User {
   email: string;
 }

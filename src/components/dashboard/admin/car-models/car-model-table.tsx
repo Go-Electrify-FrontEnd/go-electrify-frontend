@@ -1,16 +1,17 @@
 "use client";
 
-import * as React from "react";
 import { toast } from "sonner";
 import { SharedDataTable } from "@/components/shared/shared-data-table";
-import { columns, type CarModel } from "./car-model-table-columns";
+import { columns } from "./car-model-table-columns";
+import { CarModel } from "@/types/car";
+import { useCallback } from "react";
 
 interface CarModelsTableProps {
   data: CarModel[];
 }
 
 export function CarModelsTable({ data }: CarModelsTableProps) {
-  const handleMassDelete = React.useCallback(async (selected: CarModel[]) => {
+  const handleMassDelete = useCallback(async (selected: CarModel[]) => {
     // TODO: Replace with actual deletion logic when API is available
     await new Promise((resolve) => setTimeout(resolve, 600));
     toast.success("Đã xóa mẫu xe (mô phỏng)", {

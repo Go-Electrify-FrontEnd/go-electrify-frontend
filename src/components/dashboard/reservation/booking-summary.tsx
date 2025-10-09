@@ -47,7 +47,7 @@ export function BookingSummary({ onBack, onConfirm }: BookingSummaryProps) {
                     {selectedStationData.address}
                   </p>
                   <p className="text-muted-foreground text-sm">
-                    Khoảng cách: {selectedStationData.distance}
+                    Mô tả: {selectedStationData.description}
                   </p>
                 </div>
               </div>

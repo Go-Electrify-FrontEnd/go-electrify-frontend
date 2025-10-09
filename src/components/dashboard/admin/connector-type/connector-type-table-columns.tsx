@@ -11,8 +11,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ActionsCell } from "./connector-type-actions";
-
-import type { ConnectorType } from "@/types";
+import { ConnectorType } from "@/types/connector";
 
 const formatDate = (date: Date) => {
   return new Intl.DateTimeFormat("vi-VN", {

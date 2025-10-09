@@ -1,5 +1,5 @@
-import { NearestStationsList } from "@/components/dashboard/find-stations/nearest-stations-list";
-import { StationMap } from "@/components/dashboard/find-stations/station-map";
+import { NearestStationsList } from "@/components/dashboard/stations-nearby/nearest-stations-list";
+import { StationMap } from "@/components/dashboard/stations-nearby/station-map";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {

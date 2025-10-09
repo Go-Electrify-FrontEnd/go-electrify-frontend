@@ -3,17 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import "mapbox-gl/dist/mapbox-gl.css";
 import mapboxgl from "mapbox-gl";
+import { Station } from "@/types/station";
 
 interface StationMapProps {
-  stations?:
-    | {
-        id: number;
-        name: string;
-        coordinates: [number, number];
-        type: string;
-        available: boolean;
-      }[]
-    | null;
+  stations: Station[];
   onUserLocationUpdate?: (coordinates: [number, number]) => void;
 }
 
@@ -47,19 +40,20 @@ export function StationMap({
         });
 
         stations!.forEach((station) => {
-          const markerColor = station.available ? "#10B981" : "#EF4444";
+          const markerColor =
+            station.status == "active" ? "#10B981" : "#EF4444";
 
           new mapboxgl.Marker({ color: markerColor })
-            .setLngLat(station.coordinates)
+            .setLngLat([station.longitude, station.latitude]) // [longitude, latitude]
             .setPopup(
               new mapboxgl.Popup({ offset: 25 }).setHTML(`
             <div class="p-2">
               <h3 class="font-bold text-sm mb-2 text-black">${station.name}</h3>
-              <p class="text-xs mb-1 text-black">⚡ Loại: ${station.type}</p>
+              <p class="text-xs mb-1 text-black">Địa Chỉ: ${station.address}</p>
               <p class="text-xs mb-1" style="color: ${
-                station.available ? "#10B981" : "#EF4444"
+                station.status == "active" ? "#10B981" : "#EF4444"
               }">
-                ${station.available ? "✅ Khả dụng" : "❌ Không khả dụng"}
+                ${station.status == "active" ? "✅ Khả dụng" : "❌ Không khả dụng"}
               </p>
             </div>
           `),

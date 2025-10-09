@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Station } from "@/types";
+import { Station } from "@/types/station";
 import { MapPin, Navigation, Phone, Zap } from "lucide-react";
 import Link from "next/link";
 
@@ -41,7 +41,7 @@ export function StationCard({ station }: StationCardProps) {
     return url;
   };
 
-  const typeInfo = getStationTypeInfo(station.type);
+  const typeInfo = getStationTypeInfo(station.status);
 
   return (
     <div className="rounded-lg transition-colors">
@@ -52,7 +52,7 @@ export function StationCard({ station }: StationCardProps) {
             <Badge variant="default">{typeInfo.label}</Badge>
             <div
               className={`h-2 w-2 rounded-full ${
-                station.available ? "bg-green-500" : "bg-red-500"
+                station.status === "active" ? "bg-green-500" : "bg-red-500"
               }`}
             ></div>
           </div>
@@ -67,9 +67,7 @@ export function StationCard({ station }: StationCardProps) {
         <br />
         <span className="inline-flex items-center gap-2">
           <Zap className="h-3 w-3 flex-shrink-0" />
-          <span>
-            {station.available_connectors}/{station.total_connectors} cổng
-          </span>
+          <span>4/10 cổng</span>
         </span>
       </p>
 
@@ -81,7 +79,10 @@ export function StationCard({ station }: StationCardProps) {
             size: "sm",
             className: "h-8 flex-1 text-xs",
           })}
-          href={generateURL(station.coordinates, station.name)}
+          href={generateURL(
+            [station.latitude, station.longitude],
+            station.name,
+          )}
           target="_blank"
         >
           <Navigation className="mr-1 h-3 w-3" />

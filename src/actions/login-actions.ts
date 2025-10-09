@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { getBackendUrl } from "@/lib/utils";
+import { redirect } from "next/navigation";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export async function handleLogin(prevState: any, data: FormData) {
@@ -13,7 +14,7 @@ export async function handleLogin(prevState: any, data: FormData) {
 
   //const url = getBackendUrl("auth/register-email");
 
-  const url = "https://9a575a72a9f9.ngrok-free.app/api/v1/auth/request-otp";
+  const url = "https://api.go-electrify.com/api/v1/auth/request-otp";
   const response = await fetch(url, {
     method: "POST",
     headers: {
@@ -23,7 +24,6 @@ export async function handleLogin(prevState: any, data: FormData) {
   });
 
   const success = response.ok;
-
   return { success, msg: success ? "OTP sent to email" : "Failed to send OTP" };
 }
 
@@ -44,17 +44,11 @@ export async function handleVerifyOTP(prevState: any, data: FormData) {
   }
 
   const cookieStore = await cookies();
-
   if (cookieStore.get("accessToken") && cookieStore.get("refreshToken")) {
     return { success: true, msg: "Already logged in" };
   }
 
-  const url = getBackendUrl(
-    "https://9a575a72a9f9.ngrok-free.app/api/v1/auth/verify-otp",
-  );
-
-  console.log("URL: " + url);
-
+  const url = "https://api.go-electrify.com/api/v1/auth/verify-otp";
   const response = await fetch(url, {
     method: "POST",
     headers: {
@@ -92,8 +86,5 @@ export async function handleVerifyOTP(prevState: any, data: FormData) {
     });
   }
 
-  return {
-    success,
-    msg: "OTP verified, logged in",
-  };
+  redirect("/");
 }

@@ -5,10 +5,9 @@ import { Button } from "../ui/button";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "../ui/input-otp";
 import { Label } from "../ui/label";
 import { useActionState, useEffect } from "react";
-import { handleVerifyOTP } from "@/app/login/actions";
 import { toast } from "sonner";
 import { Shield } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { handleVerifyOTP } from "@/actions/login-actions";
 
 interface OTPFormProps {
   email: string;
@@ -20,8 +19,7 @@ const initialState = {
 };
 
 export function OTPForm({ email }: OTPFormProps) {
-  const { push, refresh } = useRouter();
-  const [otpVerifyState, otpVerifyAction] = useActionState(
+  const [otpVerifyState, otpVerifyAction, verifyActionPending] = useActionState(
     handleVerifyOTP,
     initialState,
   );
@@ -32,9 +30,6 @@ export function OTPForm({ email }: OTPFormProps) {
         toast.success("Đăng nhập thành công", {
           description: otpVerifyState.msg,
         });
-
-        refresh();
-        push("/dashboard");
       }
     } else {
       if (otpVerifyState.msg) {
@@ -107,7 +102,11 @@ export function OTPForm({ email }: OTPFormProps) {
             Nhập 6 chữ số bạn nhận được qua email
           </p>
         </div>
-        <Button type="submit" className="h-12 w-full text-lg font-medium">
+        <Button
+          type="submit"
+          className="h-12 w-full text-lg font-medium"
+          disabled={verifyActionPending}
+        >
           <Shield className="mr-2 h-5 w-5" />
           Xác thực OTP
         </Button>
