@@ -178,7 +178,7 @@ export function ReservationForm({ onContinue }: ReservationFormProps) {
                 {selectedStationData.address}
               </p>
               <p className="text-muted-foreground text-sm">
-                Khoảng cách: {selectedStationData.distance}
+                Mô tả: {selectedStationData.description}
               </p>
             </div>
           </CardContent>

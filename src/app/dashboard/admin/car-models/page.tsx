@@ -12,32 +12,7 @@ import { Plus, Car } from "lucide-react";
 
 async function getData(): Promise<CarModel[]> {
   // Mock data - replace with actual API call
-  return [
-    {
-      id: 1,
-      modelName: "Tesla Model 3",
-      maxPowerKw: 480,
-      batteryCapacityKwh: 75,
-      createdAt: new Date("2023-10-01"),
-      updatedAt: new Date("2023-10-01"),
-    },
-    {
-      id: 2,
-      modelName: "BMW iX3",
-      maxPowerKw: 210,
-      batteryCapacityKwh: 74,
-      createdAt: new Date("2023-10-02"),
-      updatedAt: new Date("2023-10-02"),
-    },
-    {
-      id: 3,
-      modelName: "Audi e-tron GT",
-      maxPowerKw: 350,
-      batteryCapacityKwh: 85,
-      createdAt: new Date("2023-10-03"),
-      updatedAt: new Date("2023-10-03"),
-    },
-  ];
+  return [];
 }
 
 export default async function CarModelsPage() {

@@ -3,7 +3,8 @@
 import * as React from "react";
 import { toast } from "sonner";
 import { SharedDataTable } from "@/components/shared/shared-data-table";
-import { columns, type ConnectorType } from "./connector-type-table-columns";
+import { columns } from "./connector-type-table-columns";
+import { ConnectorType } from "@/types/connector";
 
 interface ConnectorTypesTableProps {
   data: ConnectorType[];

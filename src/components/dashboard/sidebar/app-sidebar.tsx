@@ -28,12 +28,7 @@ import { DashboardLogo } from "./dashboard-logo";
 import { NavUser } from "./nav-user";
 import { NavSection } from "./nav-section";
 import { NavSecondary } from "./nav-secondary";
-
-const user = {
-  name: "shadcn",
-  email: "m@example.com",
-  avatar: "/avatars/shadcn.jpg",
-};
+import { useUser } from "@/contexts/user-context";
 
 const overview = {
   title: "Tổng quan",
@@ -42,13 +37,11 @@ const overview = {
       title: "Bảng điều khiển",
       url: "/dashboard",
       icon: House,
-      isActive: false,
     },
     {
       title: "Bắt đầu sạc",
       url: "/dashboard/start-charging",
       icon: Zap,
-      isActive: false,
     },
   ],
 };
@@ -57,22 +50,19 @@ const charging = {
   title: "Sạc",
   items: [
     {
-      title: "Bản đồ trạm",
-      url: "/dashboard/find-stations",
+      title: "Trạm sạc gần đây",
+      url: "/dashboard/stations-nearby",
       icon: Map,
-      isActive: false,
     },
     {
       title: "Đặt chỗ",
       url: "/dashboard/reservations",
       icon: TicketCheckIcon,
-      isActive: false,
     },
     {
       title: "Lịch sử sạc",
       url: "/dashboard/charging-history",
       icon: PieChart,
-      isActive: false,
     },
   ],
 };
@@ -84,13 +74,11 @@ const payment = {
       title: "Ví",
       url: "/dashboard/wallet",
       icon: Wallet2Icon,
-      isActive: false,
     },
     {
       title: "Gói & Thanh toán",
       url: "/dashboard/plans-billing",
       icon: BookOpen,
-      isActive: false,
     },
   ],
 };
@@ -102,13 +90,11 @@ const admin = {
       title: "Quản lý trạm",
       url: "/dashboard/admin/stations",
       icon: Command,
-      isActive: false,
     },
     {
       title: "Quản lý người dùng",
       url: "/dashboard/admin/users",
       icon: GalleryVerticalEnd,
-      isActive: false,
     },
     {
       title: "Quản lý gói nạp",
@@ -142,6 +128,7 @@ const secondary = [
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user } = useUser();
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -155,7 +142,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={secondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={user} />
+        <NavUser user={user!} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

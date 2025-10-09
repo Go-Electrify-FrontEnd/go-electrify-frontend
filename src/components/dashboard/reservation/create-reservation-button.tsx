@@ -11,15 +11,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Station } from "@/app/dashboard/find-stations/page";
 import { ReservationForm } from "./reservation-form";
 import { BookingSummary } from "./booking-summary";
-import { getCarModels } from "@/actions/car-models";
-import { ChargingPort, Reservation } from "@/types/reservation";
+import { Reservation } from "@/types/reservation";
 import {
   ReservationProvider,
   useReservation,
 } from "@/contexts/reservation-context";
+import { Station } from "@/types/station";
+import { ChargingPort } from "@/types/charging-port";
 
 const chargingPorts: ChargingPort[] = [
   {
@@ -50,19 +50,6 @@ interface CreateReservationButtonProps {
 function ReservationDialog() {
   const { currentStep, setCarModels, setCurrentStep, resetForm } =
     useReservation();
-
-  useEffect(() => {
-    const loadCarModels = async () => {
-      try {
-        const models = await getCarModels();
-        setCarModels(models);
-      } catch (error) {
-        console.error("Failed to load car models:", error);
-      }
-    };
-
-    loadCarModels();
-  }, [setCarModels]);
 
   const handleContinue = () => {
     setCurrentStep("summary");

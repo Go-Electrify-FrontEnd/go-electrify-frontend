@@ -20,7 +20,6 @@ export function NavSection({
       title: string;
       url: string;
       icon?: LucideIcon;
-      isActive?: boolean;
     }[];
   };
 }) {
@@ -32,11 +31,7 @@ export function NavSection({
       <SidebarMenu>
         {items.items.map((item) => (
           <SidebarMenuItem key={item.title}>
-            <SidebarMenuButton
-              tooltip={item.title}
-              isActive={item.isActive}
-              asChild
-            >
+            <SidebarMenuButton tooltip={item.title} asChild>
               <Link prefetch={false} href={item.url}>
                 {item.icon && <item.icon />}
                 <span>{item.title}</span>

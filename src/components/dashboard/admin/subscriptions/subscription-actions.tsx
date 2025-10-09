@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { UpdateSubscription } from "./subscription-edit-dialog";
 import { DeleteSubscription } from "./subscription-delete-dialog";
-import type { Subscription } from "@/types";
+import { Subscription } from "@/types/subscription";
 
 interface ActionsProps {
   subscription: Subscription;
