@@ -11,6 +11,7 @@ import {
   Sparkles,
   Sun,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -29,18 +30,18 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useTheme } from "next-themes";
+import { User } from "@/types/user";
+import { Link } from "@/i18n/navigation";
 
-export function NavUser({
-  user,
-}: {
-  user: {
-    name: string;
-    email: string;
-    avatar: string;
-  };
-}) {
+interface NavUserProps {
+  user: User;
+}
+
+export function NavUser({ user }: NavUserProps) {
   const { isMobile } = useSidebar();
   const { setTheme } = useTheme();
+  const t = useTranslations("user");
+  const tAuth = useTranslations("auth");
 
   return (
     <SidebarMenu>
@@ -52,11 +53,18 @@ export function NavUser({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarImage
+                  src={user.avatar || undefined}
+                  alt={user.name || "User"}
+                />
+                <AvatarFallback className="rounded-lg">
+                  {(user.name || "User").charAt(0).toUpperCase()}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
+                <span className="truncate font-medium">
+                  {user.name || "User"}
+                </span>
                 <span className="truncate text-xs">{user.email}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
@@ -71,11 +79,18 @@ export function NavUser({
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarImage
+                    src={user.avatar || undefined}
+                    alt={user.name || "User"}
+                  />
+                  <AvatarFallback className="rounded-lg">
+                    {(user.name || "User").charAt(0).toUpperCase()}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
+                  <span className="truncate font-medium">
+                    {user.name || "User"}
+                  </span>
                   <span className="truncate text-xs">{user.email}</span>
                 </div>
               </div>
@@ -84,41 +99,47 @@ export function NavUser({
             <DropdownMenuGroup>
               <DropdownMenuItem>
                 <Sparkles />
-                Upgrade to Pro
+                {t("upgradeToPro")}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => setTheme("dark")}>
               <Moon />
-              Dark Mode
+              {t("darkMode")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setTheme("light")}>
               <Sun />
-              Light Mode
+              {t("lightMode")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setTheme("system")}>
               <Computer />
-              System Mode
+              {t("systemMode")}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
                 <BadgeCheck />
-                Account
+                {t("account")}
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <CreditCard />
-                Billing
+                {t("billing")}
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Bell />
-                Notifications
+                {t("notifications")}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <LogOut />
-              Log out
+            <DropdownMenuItem asChild>
+              <Link
+                href="/api/auth/logout"
+                className="flex h-full w-full cursor-pointer items-center gap-2"
+                prefetch={false}
+              >
+                <LogOut />
+                {tAuth("logout")}
+              </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

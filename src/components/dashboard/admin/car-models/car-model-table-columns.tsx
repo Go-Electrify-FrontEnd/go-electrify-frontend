@@ -5,8 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ActionsCell } from "./car-model-actions";
-
-import type { CarModel } from "@/types";
+import { CarModel } from "@/types/car";
 
 const formatDate = (date: Date) => {
   return new Intl.DateTimeFormat("vi-VN", {

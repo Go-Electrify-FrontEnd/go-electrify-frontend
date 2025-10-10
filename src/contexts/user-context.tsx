@@ -1,11 +1,11 @@
 "use client";
 
-interface UserProviderProps extends React.PropsWithChildren {
-  user: User | null;
-}
-
-import { User } from "@/app/layout";
+import { User } from "@/types/user";
 import React, { createContext, useContext } from "react";
+
+interface UserProviderProps extends React.PropsWithChildren {
+  user: User | null | undefined;
+}
 
 const UserContext = createContext<UserProviderProps["user"]>(null);
 
@@ -14,5 +14,6 @@ export function UserProvider({ user, children }: UserProviderProps) {
 }
 
 export function useUser() {
-  return useContext(UserContext);
+  const user = useContext(UserContext);
+  return { user };
 }

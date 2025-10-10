@@ -4,8 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ActionsCell } from "./subscription-actions";
-
-import type { Subscription } from "@/types";
+import { Subscription } from "@/types/subscription";
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat("vi-VN", {

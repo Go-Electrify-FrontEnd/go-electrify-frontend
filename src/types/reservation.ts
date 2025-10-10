@@ -1,32 +1,16 @@
-// Car model interface - shared between client and server
-export interface CarModel {
-  id: number;
-  brand: string;
-  model: string;
-  year: string;
-  batteryCapacity: number; // in kWh
-  supportedPorts: string[]; // e.g., ["CCS2", "CHAdeMO"]
-}
+import { z } from "zod";
 
-// Charging port interface
-export interface ChargingPort {
-  id: string; // e.g., "CCS2"
-  name: string; // e.g., "CCS2 (Combined Charging System)"
-  type: string; // e.g., "DC Fast Charging"
-  maxPower: string; // e.g., "350kW"
-}
-
-// Reservation interface
-export interface Reservation {
-  id: number;
-  userId: number;
-  pointId: number;
-  scheduledStart: string | Date;
-  scheduledEnd: string | Date;
-  initialSoc: number;
-  type: string;
-  status: string;
-  estimatedCost: number;
-  createdAt: string | Date;
-  updatedAt: string | Date;
-}
+export const ReservationSchema = z.object({
+  id: z.number(),
+  userId: z.number(),
+  pointId: z.number(),
+  scheduledStart: z.union([z.string(), z.date()]),
+  scheduledEnd: z.union([z.string(), z.date()]),
+  initialSoc: z.number(),
+  type: z.string(),
+  status: z.string(),
+  estimatedCost: z.number(),
+  createdAt: z.union([z.string(), z.date()]),
+  updatedAt: z.union([z.string(), z.date()]),
+});
+export type Reservation = z.infer<typeof ReservationSchema>;

@@ -3,7 +3,8 @@
 import * as React from "react";
 import { toast } from "sonner";
 import { SharedDataTable } from "@/components/shared/shared-data-table";
-import { columns, type Subscription } from "./subscription-table-columns";
+import { columns } from "./subscription-table-columns";
+import { Subscription } from "@/types/subscription";
 
 interface SubscriptionsTableProps {
   data: Subscription[];
