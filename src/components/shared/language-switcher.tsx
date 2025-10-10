@@ -10,15 +10,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Globe } from "lucide-react";
 import { usePathname, useRouter } from "@/i18n/navigation";
+import { useTransition } from "react";
 
-// Client Component for interactive language switching
 export function LanguageSwitcher() {
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
+  const [isPending, startTransition] = useTransition();
 
   const handleLocaleChange = (newLocale: "en" | "vi") => {
-    router.replace(pathname, { locale: newLocale });
+    startTransition(() => {
+      if (newLocale === locale) return;
+      router.replace(pathname, { locale: newLocale });
+    });
   };
 
   return (
@@ -32,15 +36,15 @@ export function LanguageSwitcher() {
       <DropdownMenuContent align="end">
         <DropdownMenuItem
           onClick={() => handleLocaleChange("vi")}
-          className={locale === "vi" ? "bg-accent" : ""}
+          className="p-2"
         >
-          🇻🇳 Tiếng Việt
+          Tiếng Việt
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => handleLocaleChange("en")}
-          className={locale === "en" ? "bg-accent" : ""}
+          className="p-2"
         >
-          🇬🇧 English
+          English
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

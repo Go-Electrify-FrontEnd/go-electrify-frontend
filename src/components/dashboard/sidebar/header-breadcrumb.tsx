@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import {
   Breadcrumb,
@@ -14,17 +14,10 @@ import { Link } from "@/i18n/navigation";
 
 export default function HeaderBreadcrumb() {
   const pathname = usePathname();
+  console.log("Current pathname:" + pathname);
   const t = useTranslations("navigation");
 
-  // Skip the language segment (locale prefix)
-  let normalizedPath = pathname;
-  if (pathname.startsWith("/en/")) {
-    normalizedPath = pathname.slice(4);
-  } else if (pathname.startsWith("/vi/")) {
-    normalizedPath = pathname.slice(4);
-  }
-
-  const paths = normalizedPath.split("/");
+  const paths = pathname.split("/").filter((seg) => seg.length > 0);
 
   const breadcrumbItems = paths.map((segment, index) => {
     const href = "/" + paths.slice(0, index + 1).join("/");

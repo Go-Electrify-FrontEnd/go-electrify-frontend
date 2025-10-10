@@ -1,24 +1,17 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { HelpCircle, UserCircle } from "lucide-react";
 import AppLogo from "@/components/shared/logo";
-import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { LanguageSwitcher } from "../shared/language-switcher";
+import { LanguageSwitcher } from "@/components/shared/language-switcher";
 
 export default function LandingHeader() {
   const nav = useTranslations("landing.nav");
   const labels = useTranslations("landing.header");
 
   return (
-    <motion.header
-      initial={{ y: -12, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.32, ease: "easeOut" }}
-      style={{ willChange: "transform, opacity" }}
-      className="absolute inset-x-0 top-0 z-50 border-b border-transparent bg-transparent"
-    >
+    <header className="absolute inset-x-0 top-0 z-50 border-b border-transparent bg-transparent">
       <div className="relative container mx-auto flex items-center justify-between px-6 py-3">
         {/* Logo */}
         <div className="flex items-center gap-2.5">
@@ -75,6 +68,6 @@ export default function LandingHeader() {
           </Link>
         </div>
       </div>
-    </motion.header>
+    </header>
   );
 }

@@ -1,11 +1,14 @@
-import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { getBackendUrl } from "@/lib/utils";
+import { redirect } from "@/i18n/navigation";
+import { getLocale } from "next-intl/server";
 
 export async function GET(request: Request) {
   const cookieStore = await cookies();
+  const locale = await getLocale();
 
-  const response = await fetch(getBackendUrl("auth/logout"), {
+  // Call the backend to invalidate the refresh token
+  await fetch(getBackendUrl("auth/logout"), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -15,8 +18,6 @@ export async function GET(request: Request) {
     }),
   });
 
-  console.log("Logout response status: " + (await response.text()));
-
   if (cookieStore.has("accessToken")) {
     cookieStore.delete("accessToken");
   }
@@ -25,5 +26,5 @@ export async function GET(request: Request) {
     cookieStore.delete("refreshToken");
   }
 
-  return NextResponse.redirect(new URL("/login", request.url));
+  redirect({ href: "/login", locale });
 }
