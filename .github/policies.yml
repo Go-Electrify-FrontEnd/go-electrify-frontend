@@ -1,0 +1,26 @@
+policies:
+  - name: "Server Page Enforcement"
+    description: "All page.tsx files must be Server Components."
+    rules:
+      - when: "file.name ends_with 'page.tsx'"
+        then:
+          - reject_if_contains: '"use client"'
+          - message: "❌ page.tsx must be a Server Component (start with 'use server' or have no directive)."
+
+  - name: "React Hook Restriction"
+    description: "Disallow React hooks in server components."
+    rules:
+      - when: "file.name ends_with 'page.tsx'"
+        then:
+          - reject_if_contains_any:
+              - "useState("
+              - "useEffect("
+              - "useRef("
+              - "useContext("
+          - message: "❌ React hooks are not allowed in server components."
+
+  - name: "No Inline Image Domains"
+    description: "Ensure image optimization uses Next/Image with configured domains."
+    rules:
+      - reject_if_contains: "<img src="
+      - message: "⚠️ Use Next/Image component for optimized image loading."
