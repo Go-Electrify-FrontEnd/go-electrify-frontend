@@ -13,8 +13,7 @@ import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import UpdateCarModel from "./car-model-edit-dialog";
 import DeleteCarModel from "./car-model-delete-dialog";
-import { CarModel } from "./car-model-table-columns";
-
+import { CarModel } from "@/types/car";
 interface ActionsCellProps {
   carModel: CarModel;
 }
@@ -49,13 +48,7 @@ export function ActionsCell({ carModel }: ActionsCellProps) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {showUpdateDialog && (
-        <UpdateCarModel
-          {...carModel}
-          createdAt={carModel.createdAt.toISOString()}
-          updatedAt={carModel.updatedAt.toISOString()}
-        />
-      )}
+      {showUpdateDialog && <UpdateCarModel carModel={carModel} />}
 
       {showDeleteDialog && (
         <DeleteCarModel id={carModel.id} modelName={carModel.modelName} />

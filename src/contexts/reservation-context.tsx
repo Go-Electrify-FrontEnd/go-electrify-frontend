@@ -1,7 +1,10 @@
 "use client";
 
+import { CarModel } from "@/types/car";
+import { ChargingPort } from "@/types/charging-port";
+import { Reservation } from "@/types/reservation";
+import { Station } from "@/types/station";
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import type { Station, CarModel, ChargingPort, Reservation } from "@/types";
 
 // Types
 export interface ReservationState {

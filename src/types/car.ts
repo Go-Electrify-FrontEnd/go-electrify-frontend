@@ -1,16 +1,16 @@
 import { z } from "zod";
 
 export const CarModelSchema = z.object({
-  id: z.number().optional(),
-  modelName: z.string().optional(),
-  brand: z.string().optional(),
-  model: z.string().optional(),
+  id: z.number(),
+  modelName: z.string(),
+  brand: z.string(),
+  model: z.string(),
   year: z.string().optional(),
-  maxPowerKw: z.number().optional(),
-  batteryCapacityKwh: z.number().optional(),
-  batteryCapacity: z.number().optional(),
-  supportedPorts: z.array(z.string()).optional(),
-  createdAt: z.union([z.string(), z.date()]).optional(),
-  updatedAt: z.union([z.string(), z.date()]).optional(),
+  maxPowerKw: z.number(),
+  batteryCapacityKwh: z.number(),
+  batteryCapacity: z.number(),
+  supportedPorts: z.array(z.string()),
+  createdAt: z.union([z.string(), z.date()]),
+  updatedAt: z.union([z.string(), z.date()]),
 });
 export type CarModel = z.infer<typeof CarModelSchema>;

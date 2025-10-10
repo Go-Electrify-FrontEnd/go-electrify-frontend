@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,38 +10,27 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-
-// URL o ben trai con ten hien thi o ben phai
-const pathNameMap = new Map([
-  ["dashboard", "Bảng điều khiển"],
-  ["find-stations", "Tìm trạm sạc"],
-  ["reservations", "Đặt chỗ"],
-  ["charging-history", "Lịch sử sạc"],
-  ["wallet", "Ví điện tử"],
-  ["transactions", "Giao dịch"],
-  ["plans-billing", "Gói & Thanh toán"],
-  ["settings", "Cài đặt"],
-  ["profile", "Hồ sơ"],
-  ["admin", "Quản trị"],
-  ["car-models", "Mẫu xe"],
-  ["connector-type", "Loại cổng sạc"],
-  ["create-reservation", "Tạo đặt chỗ"],
-  ["subscriptions", "Gói đăng ký"],
-  ["start-charging", "Bắt đầu sạc"],
-  ["users", "Người dùng"],
-]);
+import { Link } from "@/i18n/navigation";
 
 export default function HeaderBreadcrumb() {
   const pathname = usePathname();
+  const t = useTranslations("navigation");
 
-  const paths = pathname.split("/").filter(Boolean);
+  // Skip the language segment (locale prefix)
+  let normalizedPath = pathname;
+  if (pathname.startsWith("/en/")) {
+    normalizedPath = pathname.slice(4);
+  } else if (pathname.startsWith("/vi/")) {
+    normalizedPath = pathname.slice(4);
+  }
+
+  const paths = normalizedPath.split("/");
 
   const breadcrumbItems = paths.map((segment, index) => {
     const href = "/" + paths.slice(0, index + 1).join("/");
     const isLast = index === paths.length - 1;
     const displayName =
-      pathNameMap.get(segment) ||
-      segment.charAt(0).toUpperCase() + segment.slice(1);
+      t(segment) || segment.charAt(0).toUpperCase() + segment.slice(1);
 
     return {
       href,
