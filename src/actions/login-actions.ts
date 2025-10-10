@@ -1,7 +1,8 @@
 "use server";
 
+import { redirect } from "@/i18n/navigation";
+import { getLocale } from "next-intl/server";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export async function handleLogin(prevState: any, data: FormData) {
@@ -38,6 +39,7 @@ interface VerifyOTPResponse {
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export async function handleVerifyOTP(prevState: any, data: FormData) {
+  const locale = await getLocale();
   const email = data.get("email")?.toString();
   const code = data.get("code")?.toString();
 
@@ -88,5 +90,5 @@ export async function handleVerifyOTP(prevState: any, data: FormData) {
     });
   }
 
-  redirect("/dashboard");
+  redirect({ href: "/dashboard", locale });
 }

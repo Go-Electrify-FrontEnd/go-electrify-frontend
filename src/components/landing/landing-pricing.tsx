@@ -3,8 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Battery } from "lucide-react";
-import Link from "next/link";
-import { motion } from "framer-motion";
+import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 
 type PlanKey = "payg" | "basic" | "pro" | "enterprise";
@@ -31,44 +30,18 @@ export default function LandingPricing() {
 
   return (
     <section id="pricing" className="container mx-auto px-6 py-24">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.6 }}
-        className="mb-16 text-center"
-      >
+      <div className="mb-16 text-center">
         <h2 className="mb-4 text-3xl font-bold md:text-4xl lg:text-5xl">
           {pricing("title")}
         </h2>
         <p className="text-muted-foreground mx-auto max-w-2xl text-lg">
           {pricing("description")}
         </p>
-      </motion.div>
+      </div>
 
-      <motion.div
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
-        variants={{
-          hidden: { opacity: 0 },
-          visible: {
-            opacity: 1,
-            transition: {
-              staggerChildren: 0.15,
-            },
-          },
-        }}
-        className="grid gap-8 md:grid-cols-2 lg:grid-cols-4"
-      >
+      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
         {plans.map(({ key, content }) => (
-          <motion.div
-            key={key}
-            variants={{
-              hidden: { opacity: 0, y: 30 },
-              visible: { opacity: 1, y: 0 },
-            }}
-          >
+          <div key={key}>
             <Card
               className={
                 key === "pro"
@@ -121,9 +94,9 @@ export default function LandingPricing() {
                 {content.ctaLabel}
               </Button>
             </Card>
-          </motion.div>
+          </div>
         ))}
-      </motion.div>
+      </div>
 
       <div className="mt-12 text-center">
         <p className="text-muted-foreground text-sm">

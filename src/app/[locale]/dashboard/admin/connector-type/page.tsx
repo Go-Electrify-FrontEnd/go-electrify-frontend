@@ -1,5 +1,4 @@
 import { ConnectorTypesTable } from "@/components/dashboard/admin/connector-type/connector-type-table";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -7,44 +6,29 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ConnectorType } from "@/types/connector";
-import { Plus, Plug } from "lucide-react";
+import { ConnectorType, ConnectorTypeSchema } from "@/types/connector";
+import { z } from "zod";
+import ConnectorTypeCreateDialog from "@/components/dashboard/admin/connector-type/connector-type-create-dialog";
+import { Plug } from "lucide-react";
 
 async function getData(): Promise<ConnectorType[]> {
-  return [
-    {
-      id: 1,
-      name: "Type 1 (J1772)",
-      description: "Connector tiêu chuẩn cho xe điện AC tại Bắc Mỹ và Nhật Bản",
-      maxPowerKw: 22,
-      createdAt: new Date("2023-10-01"),
-      updatedAt: new Date("2023-10-01"),
-    },
-    {
-      id: 2,
-      name: "Type 2 (Mennekes)",
-      description: "Connector tiêu chuẩn cho xe điện AC tại châu Âu",
-      maxPowerKw: 43,
-      createdAt: new Date("2023-10-02"),
-      updatedAt: new Date("2023-10-02"),
-    },
-    {
-      id: 3,
-      name: "CCS Combo 1",
-      description: "Connector DC tốc độ cao cho thị trường Bắc Mỹ",
-      maxPowerKw: 350,
-      createdAt: new Date("2023-10-03"),
-      updatedAt: new Date("2023-10-03"),
-    },
-    {
-      id: 4,
-      name: "CCS Combo 2",
-      description: "Connector DC tốc độ cao cho thị trường châu Âu",
-      maxPowerKw: 350,
-      createdAt: new Date("2023-10-04"),
-      updatedAt: new Date("2023-10-04"),
-    },
-  ];
+  const url = "https://api.go-electrify.com/api/v1/connector-types";
+  const response = await fetch(url, {
+    method: "GET",
+    next: { revalidate: 3600, tags: ["connector-types"] },
+  });
+  try {
+    const data = await response.json();
+    const parsed = z.array(ConnectorTypeSchema).safeParse(data);
+    if (!parsed.success) {
+      console.error("Invalid connector types data:", parsed.error);
+      return [];
+    }
+    return parsed.data;
+  } catch (error) {
+    console.error("Error fetching connector types:", error);
+    return [];
+  }
 }
 
 export default async function ConnectorTypePage() {
@@ -72,13 +56,7 @@ export default async function ConnectorTypePage() {
               </div>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
-              <Button
-                size="lg"
-                className="group/btn bg-primary shadow-primary/30 hover:bg-primary/90 hover:shadow-primary/40 relative w-full overflow-hidden shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl sm:w-auto"
-              >
-                <Plus className="relative mr-2 h-5 w-5 transition-transform duration-300 group-hover/btn:rotate-90" />
-                <span className="relative font-semibold">Thêm Cổng Mới</span>
-              </Button>
+              <ConnectorTypeCreateDialog />
             </div>
           </div>
         </CardHeader>

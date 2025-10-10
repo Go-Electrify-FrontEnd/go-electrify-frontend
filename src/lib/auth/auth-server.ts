@@ -10,7 +10,7 @@ export async function getUser() {
     const accessTokenCookie = cookieStore.get("accessToken");
 
     if (!accessTokenCookie || !accessTokenCookie.value) {
-      return { user: null };
+      return { user: null, token: null };
     }
 
     const secret = new TextEncoder().encode(process.env.AUTH_SECRET_KEY);
@@ -37,14 +37,14 @@ export async function getUser() {
         }
       } catch (jwtError) {
         console.error("JWT verification failed:", jwtError);
-        return { user: null };
+        return { user: null, token: null };
       }
     }
 
-    return { user };
+    return { user, token: accessTokenCookie.value };
   } catch (error) {
     console.error("Error in getUser:", error);
-    return { user: null };
+    return { user: null, token: null };
   }
 }
 
