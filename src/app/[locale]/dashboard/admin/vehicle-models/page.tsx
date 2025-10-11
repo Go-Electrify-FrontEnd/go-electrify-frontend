@@ -1,5 +1,5 @@
+import VehicleModelCreateDialog from "@/components/dashboard/admin/vehicle-models/vehicle-model-create-dialog";
 import { VehicleModelTable } from "@/components/dashboard/admin/vehicle-models/vehicle-model-table";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,43 +9,78 @@ import {
 } from "@/components/ui/card";
 import { getUser } from "@/lib/auth/auth-server";
 import { CarModel, CarModelSchema } from "@/types/car";
-import { Plus, Car } from "lucide-react";
+import { ConnectorType, ConnectorTypeSchema } from "@/types/connector";
+import { Car } from "lucide-react";
 
-async function getData(token: string): Promise<CarModel[]> {
+type VehicleModelData = {
+  vehicleModels: CarModel[];
+  connectorTypes: ConnectorType[];
+};
+
+async function getData(token: string): Promise<VehicleModelData> {
+  const headers = { Authorization: `Bearer ${token}` };
+  const requestConfig = { headers, next: { revalidate: 60 } };
+
   try {
-    const url = "https://api.go-electrify.com/api/v1/vehicle-models";
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      next: { revalidate: 60 },
-    });
+    const [vehicleModelsResponse, connectorTypesResponse] = await Promise.all([
+      fetch("https://api.go-electrify.com/api/v1/vehicle-models", {
+        ...requestConfig,
+        method: "GET",
+      }),
+      fetch(
+        "https://api.go-electrify.com/api/v1/connector-types",
+        requestConfig,
+      ),
+    ]);
 
-    if (!response.ok) {
-      console.log("Failed to fetch vehicle models, status: " + response.status);
-      return [];
+    let vehicleModels: CarModel[] = [];
+    if (vehicleModelsResponse.ok) {
+      const jsonData = await vehicleModelsResponse.json();
+      const vehicleModelsArraySchema = CarModelSchema.array();
+      const parsedVehicleModels = vehicleModelsArraySchema.safeParse(jsonData);
+      if (parsedVehicleModels.success) {
+        vehicleModels = parsedVehicleModels.data;
+      } else {
+        console.log("Invalid vehicle model data format");
+      }
+    } else {
+      console.log(
+        "Failed to fetch vehicle models, status: " +
+          vehicleModelsResponse.status,
+      );
     }
 
-    const jsonData = await response.json();
-    const vehicleModelsArraySchema = CarModelSchema.array();
-    const { success, data } = vehicleModelsArraySchema.safeParse(jsonData);
-    if (!success) {
-      console.log("Invalid vehicle model data format");
-      return [];
+    let connectorTypes: ConnectorType[] = [];
+    if (connectorTypesResponse.ok) {
+      const connectorJson = await connectorTypesResponse.json();
+      const connectorTypeArraySchema = ConnectorTypeSchema.array();
+      const parsedConnectorTypes =
+        connectorTypeArraySchema.safeParse(connectorJson);
+      if (parsedConnectorTypes.success) {
+        connectorTypes = parsedConnectorTypes.data;
+      } else {
+        console.log("Invalid connector type data format");
+      }
+    } else {
+      console.log(
+        "Failed to fetch connector types, status: " +
+          connectorTypesResponse.status,
+      );
     }
-    return data;
+
+    return { vehicleModels, connectorTypes };
   } catch (error: unknown) {
-    console.log("Error fetching vehicle models: " + JSON.stringify(error));
+    console.log(
+      "Error fetching vehicle models or connector types: " +
+        JSON.stringify(error),
+    );
+    return { vehicleModels: [], connectorTypes: [] };
   }
-
-  return [];
 }
 
 export default async function VehicleModelsPage() {
   const { token } = await getUser();
-  const vehicleModels = await getData(token!);
-
+  const { vehicleModels, connectorTypes } = await getData(token!);
   return (
     <div className="container mx-auto mt-4 space-y-6">
       {/* Header Card */}
@@ -68,10 +103,7 @@ export default async function VehicleModelsPage() {
                 </div>
               </div>
             </div>
-            <Button size="lg">
-              <Plus />
-              <span className="font-semibold">Thêm Xe Mới</span>
-            </Button>
+            <VehicleModelCreateDialog connectorTypes={connectorTypes} />
           </div>
         </CardHeader>
       </Card>
