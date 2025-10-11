@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useActionState, useEffect } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { ConnectorType } from "@/types/connector";
+import { handleDeleteConnectorType } from "@/actions/connector-type-actions";
+import { Loader2 } from "lucide-react";
 
 interface DeleteConnectorTypeProps {
   connectorType: ConnectorType;
@@ -25,13 +27,25 @@ export const DeleteConnectorType = ({
   open,
   onOpenChange,
 }: DeleteConnectorTypeProps) => {
-  const handleDelete = () => {
-    // Here you would typically make an API call to delete the connector type
-    console.log("Deleting connector type:", connectorType.id);
+  const [deleteState, deleteAction, pending] = useActionState(
+    handleDeleteConnectorType,
+    {
+      success: false,
+      msg: "",
+    },
+  );
 
-    toast.success("Xóa cổng kết nối thành công!");
-    onOpenChange(false);
-  };
+  useEffect(() => {
+    if (!deleteState) return;
+    if (!deleteState.msg) return;
+    if (deleteState.success) {
+      toast.success("Cổng kết nối đã được xóa thành công.");
+      onOpenChange(false);
+    } else {
+      toast.error("Đã xảy ra lỗi khi xóa cổng kết nối.");
+      onOpenChange(false);
+    }
+  }, [deleteState]);
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -46,12 +60,17 @@ export const DeleteConnectorType = ({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Hủy</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={handleDelete}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-          >
-            Xóa
-          </AlertDialogAction>
+          <form action={deleteAction}>
+            <input type="hidden" name="id" value={connectorType.id} />
+            <AlertDialogAction
+              type="submit"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={pending}
+            >
+              {pending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Xóa
+            </AlertDialogAction>
+          </form>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
