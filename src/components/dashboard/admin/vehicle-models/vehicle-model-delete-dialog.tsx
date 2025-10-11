@@ -14,34 +14,22 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { CarModel } from "@/types/car";
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
 
-interface DeleteCarModelProps {
-  id: number;
-  modelName: string;
+interface VehicleModelDeleteProps {
+  carModel: CarModel;
 }
 
-export default function DeleteCarModel({ id, modelName }: DeleteCarModelProps) {
+export default function VehicleModelDeleteDialog({
+  carModel: { id, modelName },
+}: VehicleModelDeleteProps) {
   const [confirmationText, setConfirmationText] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 
   const handleDelete = () => {
-    // TODO: Implement actual delete logic
     console.log("Deleting car model:", { id, modelName });
-
-    // Here you would typically make an API call to delete the car model
-    // fetch(`/api/car-models/${id}`, { method: 'DELETE' })
-    //   .then(() => {
-    //     // Refresh the data or remove from UI
-    //     setIsOpen(false);
-    //     setConfirmationText("");
-    //   })
-    //   .catch((error) => {
-    //     console.error('Error deleting car model:', error);
-    //   });
-
-    // Close dialog and reset form after successful deletion
     setIsOpen(false);
     setConfirmationText("");
   };

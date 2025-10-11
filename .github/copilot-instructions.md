@@ -3,6 +3,16 @@
     ### Objective
     - Create a Next.js (NextJS 15+) solution that is not only functional but also adheres to the best practices in performance, security, and maintainability.
 
+
+    ### Technologies and Libraries
+    - Next.js 15 (App Router, Server Components)
+    - React 19 + TypeScript
+    - Tailwind CSS + shadcn UI primitives
+    - next-intl (i18n routing + navigation wrappers)
+    - jose (JWT handling in auth middleware)
+    - Zod (validation)
+    - pnpm (scripts)
+
     ### Code Style and Structure
     - Write concise, technical TypeScript code with accurate examples.
     - Use functional and declarative programming patterns; avoid classes.
