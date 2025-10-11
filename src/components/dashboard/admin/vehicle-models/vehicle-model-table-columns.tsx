@@ -4,16 +4,8 @@ import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ActionsCell } from "./car-model-actions";
 import { CarModel } from "@/types/car";
-
-const formatDate = (date: Date) => {
-  return new Intl.DateTimeFormat("vi-VN", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date(date));
-};
+import { VehicleModelActionsCell } from "./vehicle-model-actions";
 
 const formatPower = (power: number) => {
   return `${power} kW`;
@@ -85,29 +77,27 @@ export const columns: ColumnDef<CarModel>[] = [
     },
   },
   {
-    accessorKey: "createdAt",
-    header: "Ngày Tạo",
-    cell: ({ row }) => (
-      <div className="text-muted-foreground">
-        {formatDate(row.getValue("createdAt"))}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "updatedAt",
-    header: "Cập Nhật Lần Cuối",
-    cell: ({ row }) => (
-      <div className="text-muted-foreground">
-        {formatDate(row.getValue("updatedAt"))}
-      </div>
-    ),
+    accessorKey: "connectorTypeIds",
+    header: "Loại Cổng Kết Nối",
+    cell: ({ row }) => {
+      const connectorTypeIds = row.getValue("connectorTypeIds") as string[];
+      return (
+        <div className="flex flex-wrap gap-1">
+          {connectorTypeIds.map((id) => (
+            <Badge key={id} variant="outline" className="font-mono">
+              CT#{id}
+            </Badge>
+          ))}
+        </div>
+      );
+    },
   },
   {
     id: "actions",
     header: "Hành Động",
     cell: ({ row }) => {
       const carModel = row.original;
-      return <ActionsCell carModel={carModel} />;
+      return <VehicleModelActionsCell carModel={carModel} />;
     },
   },
 ];

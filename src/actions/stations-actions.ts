@@ -1,7 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
+import { getLocale } from "next-intl/server";
 import { CreateStationSchema } from "@/types/station";
 
 // Server action for creating a station
@@ -74,9 +75,10 @@ export async function createStation(formData: FormData) {
     //   headers: { 'Content-Type': 'application/json' }
     // });
 
-    // Revalidate and redirect
+    // Revalidate and redirect (locale-aware)
     revalidatePath("/dashboard/stations");
-    redirect("/dashboard/stations");
+    const locale = await getLocale();
+    redirect({ href: "/dashboard/stations", locale });
   } catch (error) {
     console.error("Station creation failed:", error);
     // In a real app, you might want to return an error response

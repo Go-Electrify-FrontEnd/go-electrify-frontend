@@ -13,14 +13,6 @@ import {
 import { ActionsCell } from "./connector-type-actions";
 import { ConnectorType } from "@/types/connector";
 
-const formatDate = (date: Date) => {
-  return new Intl.DateTimeFormat("vi-VN", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date(date));
-};
-
 const formatPower = (power: number) => {
   return `${power} kW`;
 };
@@ -94,24 +86,6 @@ export const columns: ColumnDef<ConnectorType>[] = [
         </Badge>
       );
     },
-  },
-  {
-    accessorKey: "createdAt",
-    header: "Ngày Tạo",
-    cell: ({ row }) => (
-      <div className="text-muted-foreground">
-        {formatDate(row.getValue("createdAt"))}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "updatedAt",
-    header: "Cập Nhật Lần Cuối",
-    cell: ({ row }) => (
-      <div className="text-muted-foreground">
-        {formatDate(row.getValue("updatedAt"))}
-      </div>
-    ),
   },
   {
     id: "actions",

@@ -25,6 +25,8 @@ export function OTPForm({ email }: OTPFormProps) {
   );
 
   useEffect(() => {
+    if (!otpVerifyState) return;
+
     if (otpVerifyState.success) {
       if (otpVerifyState.msg) {
         toast.success("Đăng nhập thành công", {

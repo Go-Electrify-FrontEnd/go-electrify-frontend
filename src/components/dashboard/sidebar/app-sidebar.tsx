@@ -112,7 +112,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       },
       {
         title: t("manage-car-models"),
-        url: "/dashboard/admin/car-models",
+        url: "/dashboard/admin/vehicle-models",
         icon: Car,
       },
     ],

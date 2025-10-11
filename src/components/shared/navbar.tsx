@@ -9,7 +9,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Menu } from "lucide-react";
 import { useState } from "react";
 import AppLogo from "./logo";
