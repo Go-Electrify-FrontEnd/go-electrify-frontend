@@ -11,14 +11,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
-import UpdateCarModel from "./car-model-edit-dialog";
-import DeleteCarModel from "./car-model-delete-dialog";
 import { CarModel } from "@/types/car";
-interface ActionsCellProps {
+import VehicleModelEditDialog from "./vehicle-model-edit-dialog";
+import VehicleModelDeleteDialog from "./vehicle-model-delete-dialog";
+
+interface VehicleModelActionsCellProps {
   carModel: CarModel;
 }
 
-export function ActionsCell({ carModel }: ActionsCellProps) {
+export function VehicleModelActionsCell({
+  carModel,
+}: VehicleModelActionsCellProps) {
   const [showUpdateDialog, setShowUpdateDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
@@ -48,11 +51,8 @@ export function ActionsCell({ carModel }: ActionsCellProps) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {showUpdateDialog && <UpdateCarModel carModel={carModel} />}
-
-      {showDeleteDialog && (
-        <DeleteCarModel id={carModel.id} modelName={carModel.modelName} />
-      )}
+      {showUpdateDialog && <VehicleModelEditDialog carModel={carModel} />}
+      {showDeleteDialog && <VehicleModelDeleteDialog carModel={carModel} />}
     </>
   );
 }

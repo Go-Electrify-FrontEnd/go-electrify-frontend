@@ -2,15 +2,15 @@
 
 import { toast } from "sonner";
 import { SharedDataTable } from "@/components/shared/shared-data-table";
-import { columns } from "./car-model-table-columns";
+import { columns } from "./vehicle-model-table-columns";
 import { CarModel } from "@/types/car";
 import { useCallback } from "react";
 
-interface CarModelsTableProps {
+interface VehicleModelTableProps {
   data: CarModel[];
 }
 
-export function CarModelsTable({ data }: CarModelsTableProps) {
+export function VehicleModelTable({ data }: VehicleModelTableProps) {
   const handleMassDelete = useCallback(async (selected: CarModel[]) => {
     // TODO: Replace with actual deletion logic when API is available
     await new Promise((resolve) => setTimeout(resolve, 600));
