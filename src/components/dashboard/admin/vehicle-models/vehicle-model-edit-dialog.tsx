@@ -15,21 +15,13 @@ import { useState } from "react";
 import { Edit2Icon } from "lucide-react";
 import { CarModel } from "@/types/car";
 
-interface UpdateCarModelProps {
+interface VehicleModelEditDialogProps {
   carModel: CarModel;
 }
 
-export default function UpdateCarModel({
-  carModel: {
-    id,
-    modelName,
-    maxPowerKw,
-    batteryCapacityKwh,
-    createdAt,
-    updatedAt,
-  },
-}: UpdateCarModelProps) {
-  // Individual state variables instead of object state
+export default function VehicleModelEditDialog({
+  carModel: { id, modelName, maxPowerKw, batteryCapacityKwh },
+}: VehicleModelEditDialogProps) {
   const [carModelName, setCarModelName] = useState(modelName);
   const [carMaxPowerKw, setCarMaxPowerKw] = useState(maxPowerKw.toString());
   const [carBatteryCapacityKwh, setCarBatteryCapacityKwh] = useState(
@@ -43,8 +35,6 @@ export default function UpdateCarModel({
       modelName: carModelName,
       maxPowerKw: parseInt(carMaxPowerKw),
       batteryCapacityKwh: parseFloat(carBatteryCapacityKwh),
-      createdAt,
-      updatedAt: new Date().toISOString(), // Update timestamp
     };
     console.log("Updated car model:", updatedData);
   };
@@ -108,36 +98,6 @@ export default function UpdateCarModel({
               className="w-full"
               min="0"
               step="0.1"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label
-              htmlFor="createdAt"
-              className="text-muted-foreground text-sm font-medium"
-            >
-              Created At (Read-only)
-            </Label>
-            <Input
-              id="createdAt"
-              value={new Date(createdAt).toLocaleString()}
-              readOnly
-              className="bg-muted w-full cursor-not-allowed"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label
-              htmlFor="updatedAt"
-              className="text-muted-foreground text-sm font-medium"
-            >
-              Updated At (Read-only)
-            </Label>
-            <Input
-              id="updatedAt"
-              value={new Date(updatedAt).toLocaleString()}
-              readOnly
-              className="bg-muted w-full cursor-not-allowed"
             />
           </div>
 

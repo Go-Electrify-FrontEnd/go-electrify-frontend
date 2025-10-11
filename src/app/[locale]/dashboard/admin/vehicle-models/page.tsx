@@ -1,4 +1,4 @@
-import { CarModelsTable } from "@/components/dashboard/admin/car-models/car-model-table";
+import { VehicleModelTable } from "@/components/dashboard/admin/vehicle-models/vehicle-model-table";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -7,16 +7,44 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CarModel } from "@/types/car";
+import { getUser } from "@/lib/auth/auth-server";
+import { CarModel, CarModelSchema } from "@/types/car";
 import { Plus, Car } from "lucide-react";
 
-async function getData(): Promise<CarModel[]> {
-  // Mock data - replace with actual API call
+async function getData(token: string): Promise<CarModel[]> {
+  try {
+    const url = "https://api.go-electrify.com/api/v1/vehicle-models";
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      next: { revalidate: 60 },
+    });
+
+    if (!response.ok) {
+      console.log("Failed to fetch vehicle models, status: " + response.status);
+      return [];
+    }
+
+    const jsonData = await response.json();
+    const vehicleModelsArraySchema = CarModelSchema.array();
+    const { success, data } = vehicleModelsArraySchema.safeParse(jsonData);
+    if (!success) {
+      console.log("Invalid vehicle model data format");
+      return [];
+    }
+    return data;
+  } catch (error: unknown) {
+    console.log("Error fetching vehicle models: " + JSON.stringify(error));
+  }
+
   return [];
 }
 
-export default async function CarModelsPage() {
-  const carModels = await getData();
+export default async function VehicleModelsPage() {
+  const { token } = await getUser();
+  const vehicleModels = await getData(token!);
 
   return (
     <div className="container mx-auto mt-4 space-y-6">
@@ -40,21 +68,16 @@ export default async function CarModelsPage() {
                 </div>
               </div>
             </div>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Button
-                size="lg"
-                className="group/btn bg-primary shadow-primary/30 hover:bg-primary/90 hover:shadow-primary/40 relative w-full overflow-hidden shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl sm:w-auto"
-              >
-                <Plus className="relative mr-2 h-5 w-5 transition-transform duration-300 group-hover/btn:rotate-90" />
-                <span className="relative font-semibold">Thêm Xe Mới</span>
-              </Button>
-            </div>
+            <Button size="lg">
+              <Plus />
+              <span className="font-semibold">Thêm Xe Mới</span>
+            </Button>
           </div>
         </CardHeader>
       </Card>
 
       {/* Data Table Card */}
-      <Card className="overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg">
+      <Card>
         <CardHeader className="border-b">
           <CardTitle>Danh sách xe điện</CardTitle>
           <CardDescription>
@@ -62,7 +85,7 @@ export default async function CarModelsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <CarModelsTable data={carModels} />
+          <VehicleModelTable data={vehicleModels} />
         </CardContent>
       </Card>
     </div>

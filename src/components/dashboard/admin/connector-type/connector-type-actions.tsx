@@ -36,14 +36,14 @@ export function ActionsCell({ connectorType }: ActionsCellProps) {
           <DropdownMenuLabel>Hành động</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setShowUpdateDialog(true)}>
-            <Pencil className="mr-2 h-4 w-4" />
+            <Pencil className="h-4 w-4" />
             Chỉnh sửa
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => setShowDeleteDialog(true)}
             className="text-red-600 focus:text-red-600"
           >
-            <Trash2 className="mr-2 h-4 w-4" />
+            <Trash2 className="h-4 w-4" />
             Xóa
           </DropdownMenuItem>
         </DropdownMenuContent>
