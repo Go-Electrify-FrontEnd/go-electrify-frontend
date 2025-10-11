@@ -81,15 +81,12 @@ export const columns: ColumnDef<CarModel>[] = [
     header: "Loại Cổng Kết Nối",
     cell: ({ row }) => {
       const connectorTypeIds = row.getValue("connectorTypeIds") as string[];
-      return (
-        <div className="flex flex-wrap gap-1">
-          {connectorTypeIds.map((id) => (
-            <Badge key={id} variant="outline" className="font-mono">
-              CT#{id}
-            </Badge>
-          ))}
-        </div>
-      );
+      let connectorTypes = "Không có";
+
+      if (connectorTypeIds != null && connectorTypeIds.length > 0) {
+        connectorTypes = connectorTypeIds.map((id) => `CT${id}`).join(", ");
+      }
+      return <div className="text-muted-foreground">{connectorTypes}</div>;
     },
   },
   {
