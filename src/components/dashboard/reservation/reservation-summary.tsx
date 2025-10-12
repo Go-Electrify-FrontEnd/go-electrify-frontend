@@ -63,13 +63,14 @@ export function BookingSummary({ onBack, onConfirm }: BookingSummaryProps) {
                 <Car className="text-primary mt-0.5 h-5 w-5" />
                 <div className="flex-1">
                   <h4 className="font-medium">
-                    {selectedCarModelData.brand} {selectedCarModelData.model}
+                    {selectedCarModelData.modelName}
                   </h4>
                   <p className="text-muted-foreground text-sm">
-                    Năm: {selectedCarModelData.year}
+                    Max Power: {selectedCarModelData.maxPowerKw} kW
                   </p>
                   <p className="text-muted-foreground text-sm">
-                    Dung lượng pin: {selectedCarModelData.batteryCapacity} kWh
+                    Dung lượng pin: {selectedCarModelData.batteryCapacityKwh}{" "}
+                    kWh
                   </p>
                 </div>
               </div>

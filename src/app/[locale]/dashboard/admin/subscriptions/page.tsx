@@ -7,43 +7,32 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Subscription } from "@/types/subscription";
+import { Subscription, SubscriptionSchema } from "@/types/subscription";
 import { Plus, CreditCard } from "lucide-react";
 
-async function getData(): Promise<Subscription[]> {
-  return [
-    {
-      id: 1,
-      name: "Gói Cơ Bản",
-      price: 199000,
-      totalKwh: 100,
-      durationDays: 30,
-      createdAt: new Date("2023-10-01"),
-      updatedAt: new Date("2023-10-01"),
-    },
-    {
-      id: 2,
-      name: "Gói Tiêu Chuẩn",
-      price: 399000,
-      totalKwh: 250,
-      durationDays: 30,
-      createdAt: new Date("2023-10-02"),
-      updatedAt: new Date("2023-10-02"),
-    },
-    {
-      id: 3,
-      name: "Gói Premium",
-      price: 799000,
-      totalKwh: 500,
-      durationDays: 30,
-      createdAt: new Date("2023-10-03"),
-      updatedAt: new Date("2023-10-03"),
-    },
-  ];
+async function getSubscriptions(): Promise<Subscription[]> {
+  const url = "https://api.go-electrify.com/api/v1/subscriptions";
+  const response = await fetch(url, {
+    method: "GET",
+    next: { revalidate: 60, tags: ["subscriptions"] },
+  });
+
+  if (!response.ok) {
+    console.error("Failed to fetch subscriptions, status: " + response.status);
+    return [];
+  }
+
+  const parsed = SubscriptionSchema.array().safeParse(await response.json());
+  if (!parsed.success) {
+    console.error("Failed to parse subscriptions:", parsed.error);
+    return [];
+  }
+
+  return parsed.data;
 }
 
 export default async function SubscriptionsPage() {
-  const subscriptions = await getData();
+  const subscriptions = await getSubscriptions();
   return (
     <div className="container mx-auto mt-4 space-y-6">
       <Card>
@@ -51,7 +40,7 @@ export default async function SubscriptionsPage() {
           <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-4">
               <div className="flex items-center gap-5">
-                <div className="bg-primary ring-primary/10 flex h-16 w-16 items-center justify-center rounded-2xl shadow-xl ring-4">
+                <div className="bg-primary ring-primary/10 flex h-16 w-16 items-center justify-center rounded-2xl ring-4">
                   <CreditCard className="text-primary-foreground h-8 w-8" />
                 </div>
                 <div className="space-y-1.5">

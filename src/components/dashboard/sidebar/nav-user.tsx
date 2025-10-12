@@ -6,12 +6,13 @@ import {
   ChevronsUpDown,
   Computer,
   CreditCard,
+  Languages,
   LogOut,
   Moon,
   Sparkles,
   Sun,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -31,17 +32,32 @@ import {
 } from "@/components/ui/sidebar";
 import { useTheme } from "next-themes";
 import { User } from "@/types/user";
-import { Link } from "@/i18n/navigation";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import { useTransition } from "react";
 
 interface NavUserProps {
   user: User;
 }
 
 export function NavUser({ user }: NavUserProps) {
-  const { isMobile } = useSidebar();
-  const { setTheme } = useTheme();
+  const locale = useLocale();
   const t = useTranslations("user");
   const tAuth = useTranslations("auth");
+
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const { isMobile } = useSidebar();
+  const { setTheme } = useTheme();
+
+  const [, startTransition] = useTransition();
+
+  const handleLocaleChange = (newLocale: "en" | "vi") => {
+    startTransition(() => {
+      if (newLocale === locale) return;
+      router.replace(pathname, { locale: newLocale });
+    });
+  };
 
   return (
     <SidebarMenu>
@@ -114,6 +130,15 @@ export function NavUser({ user }: NavUserProps) {
             <DropdownMenuItem onClick={() => setTheme("system")}>
               <Computer />
               {t("systemMode")}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => handleLocaleChange("en")}>
+              <Languages />
+              English
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleLocaleChange("vi")}>
+              <Languages />
+              Tiếng Việt
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>

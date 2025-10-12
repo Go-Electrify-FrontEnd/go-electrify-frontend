@@ -48,8 +48,7 @@ interface CreateReservationButtonProps {
 }
 
 function ReservationDialog() {
-  const { currentStep, setCarModels, setCurrentStep, resetForm } =
-    useReservation();
+  const { currentStep, setCurrentStep, resetForm } = useReservation();
 
   const handleContinue = () => {
     setCurrentStep("summary");

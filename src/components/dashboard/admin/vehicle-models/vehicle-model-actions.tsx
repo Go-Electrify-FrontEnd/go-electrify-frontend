@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,8 +12,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { CarModel } from "@/types/car";
-import VehicleModelEditDialog from "./vehicle-model-edit-dialog";
 import VehicleModelDeleteDialog from "./vehicle-model-delete-dialog";
+import { useVehicleModelUpdate } from "@/contexts/vehicle-model-action-context";
 
 interface VehicleModelActionsCellProps {
   carModel: CarModel;
@@ -22,37 +22,44 @@ interface VehicleModelActionsCellProps {
 export function VehicleModelActionsCell({
   carModel,
 }: VehicleModelActionsCellProps) {
-  const [showUpdateDialog, setShowUpdateDialog] = useState(false);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const { setVehicleModel, setEditDialogOpen } = useVehicleModelUpdate();
 
   return (
-    <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0">
-            <span className="sr-only">Mở menu</span>
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Hành động</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => setShowUpdateDialog(true)}>
-            <Pencil className="mr-2 h-4 w-4" />
-            Chỉnh sửa
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() => setShowDeleteDialog(true)}
-            className="text-red-600 focus:text-red-600"
-          >
-            <Trash2 className="mr-2 h-4 w-4" />
-            Xóa
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="h-8 w-8 p-0">
+          <span className="sr-only">Mở menu</span>
+          <MoreHorizontal className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuLabel>Hành động</DropdownMenuLabel>
+        <DropdownMenuSeparator />
 
-      {showUpdateDialog && <VehicleModelEditDialog carModel={carModel} />}
-      {showDeleteDialog && <VehicleModelDeleteDialog carModel={carModel} />}
-    </>
+        <DropdownMenuItem
+          onSelect={(event) => {
+            event.preventDefault();
+            setVehicleModel(carModel);
+            setEditDialogOpen(true);
+          }}
+        >
+          <Pencil className="h-4 w-4" />
+          Chỉnh sửa
+        </DropdownMenuItem>
+
+        <VehicleModelDeleteDialog
+          carModel={carModel}
+          trigger={
+            <DropdownMenuItem
+              onSelect={(event) => event.preventDefault()}
+              className="text-red-600 focus:text-red-600"
+            >
+              <Trash2 className="h-4 w-4" />
+              Xóa
+            </DropdownMenuItem>
+          }
+        />
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

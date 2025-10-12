@@ -3,26 +3,11 @@
 import { getUser } from "@/lib/auth/auth-server";
 import { revalidateTag } from "next/cache";
 import { forbidden } from "next/navigation";
+import {
+  connectorTypeCreateSchema,
+  connectorTypeUpdateSchema,
+} from "@/schemas/connector-type.schema";
 import { z } from "zod";
-
-const connectorTypeCreateSchema = z.object({
-  name: z.string().trim().min(1, "Tên cổng kết nối là bắt buộc"),
-  description: z
-    .string()
-    .trim()
-    .max(200, "Mô tả tối đa 200 ký tự")
-    .optional()
-    .transform((v) => (v === "" ? undefined : v)),
-  maxPowerKw: z.coerce
-    .number()
-    .refine((v) => !Number.isNaN(v), { message: "Công suất phải là số" })
-    .min(1, "Công suất phải lớn hơn 0")
-    .max(1000, "Công suất vượt quá giới hạn cho phép"),
-});
-
-const connectorTypeUpdateSchema = connectorTypeCreateSchema.extend({
-  id: z.string().trim().min(1, "ID cổng kết nối là bắt buộc"),
-});
 
 export async function handleCreateConnectorType(
   prev: unknown,

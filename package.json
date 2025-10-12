@@ -9,6 +9,10 @@
     "start": "next start",
     "lint": "eslint"
   },
+  "engines": {
+    "npm": "Please use pnpm",
+    "yarn": "Please use pnpm"
+  },
   "dependencies": {
     "@gsap/react": "^2.1.2",
     "@hookform/resolvers": "^5.2.1",

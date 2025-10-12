@@ -1,5 +1,4 @@
-import { VehicleModelTable } from "@/components/dashboard/admin/vehicle-models/vehicle-model-table";
-import { Button } from "@/components/ui/button";
+import VehicleModelCreateDialog from "@/components/dashboard/admin/vehicle-models/vehicle-model-create-dialog";
 import {
   Card,
   CardContent,
@@ -9,18 +8,26 @@ import {
 } from "@/components/ui/card";
 import { getUser } from "@/lib/auth/auth-server";
 import { CarModel, CarModelSchema } from "@/types/car";
-import { Plus, Car } from "lucide-react";
+import { Car } from "lucide-react";
+import { getConnectorTypes } from "../connector-type/page";
+import { ConnectorTypeProvider } from "@/contexts/connector-type-context";
+import { setRequestLocale } from "next-intl/server";
+import { VehicleModelTable } from "@/components/dashboard/admin/vehicle-models/vehicle-model-table";
+import { VehicleModelUpdateProvider } from "@/contexts/vehicle-model-action-context";
+import VehicleModelEditDialog from "@/components/dashboard/admin/vehicle-models/vehicle-model-edit-dialog";
 
-async function getData(token: string): Promise<CarModel[]> {
+async function getVehicleModels(token: string): Promise<CarModel[]> {
+  const headers = { Authorization: `Bearer ${token}` };
+
   try {
-    const url = "https://api.go-electrify.com/api/v1/vehicle-models";
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
+    const response = await fetch(
+      "https://api.go-electrify.com/api/v1/vehicle-models",
+      {
+        method: "GET",
+        headers,
+        next: { revalidate: 60, tags: ["vehicle-models"] },
       },
-      next: { revalidate: 60 },
-    });
+    );
 
     if (!response.ok) {
       console.log("Failed to fetch vehicle models, status: " + response.status);
@@ -28,66 +35,75 @@ async function getData(token: string): Promise<CarModel[]> {
     }
 
     const jsonData = await response.json();
-    const vehicleModelsArraySchema = CarModelSchema.array();
-    const { success, data } = vehicleModelsArraySchema.safeParse(jsonData);
-    if (!success) {
+    const parsed = CarModelSchema.array().safeParse(jsonData);
+
+    if (parsed.success) {
+      return parsed.data;
+    } else {
       console.log("Invalid vehicle model data format");
       return [];
     }
-    return data;
   } catch (error: unknown) {
     console.log("Error fetching vehicle models: " + JSON.stringify(error));
+    return [];
   }
-
-  return [];
 }
 
-export default async function VehicleModelsPage() {
+type Props = {
+  params: Promise<{ locale: string }>;
+};
+
+export default async function VehicleModelsPage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale as "en" | "vi");
+
   const { token } = await getUser();
-  const vehicleModels = await getData(token!);
+  const vehicleModels = await getVehicleModels(token!);
+  const connectorTypes = await getConnectorTypes();
 
   return (
-    <div className="container mx-auto mt-4 space-y-6">
-      {/* Header Card */}
-      <Card>
-        <CardHeader className="relative pt-8 pb-8">
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-            <div className="space-y-4">
-              <div className="flex items-center gap-5">
-                <div className="bg-primary ring-primary/10 relative flex h-16 w-16 items-center justify-center rounded-2xl shadow-xl ring-4 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-                  <Car className="text-primary-foreground h-8 w-8 drop-shadow-lg" />
-                </div>
-                <div className="space-y-1.5">
-                  <CardTitle className="text-foreground text-4xl font-semibold">
-                    Quản lý Xe Điện
-                  </CardTitle>
-                  <CardDescription className="text-muted-foreground/90 text-base font-medium">
-                    Quản lý và theo dõi các mẫu xe điện và thông số kỹ thuật một
-                    cách hiệu quả
-                  </CardDescription>
+    <ConnectorTypeProvider connectorTypes={connectorTypes}>
+      <div className="container mx-auto mt-4 space-y-6">
+        {/* Header Card */}
+        <Card>
+          <CardHeader className="relative pt-8 pb-8">
+            <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+              <div className="space-y-4">
+                <div className="flex items-center gap-5">
+                  <div className="bg-primary ring-primary/10 relative flex h-16 w-16 items-center justify-center rounded-2xl shadow-xl ring-4 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+                    <Car className="text-primary-foreground h-8 w-8" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <CardTitle className="text-foreground text-4xl font-semibold">
+                      Quản lý Xe Điện
+                    </CardTitle>
+                    <CardDescription className="text-muted-foreground/90 text-base font-medium">
+                      Quản lý và theo dõi các mẫu xe điện và thông số kỹ thuật
+                      một cách hiệu quả
+                    </CardDescription>
+                  </div>
                 </div>
               </div>
+              <VehicleModelCreateDialog />
             </div>
-            <Button size="lg">
-              <Plus />
-              <span className="font-semibold">Thêm Xe Mới</span>
-            </Button>
-          </div>
-        </CardHeader>
-      </Card>
+          </CardHeader>
+        </Card>
 
-      {/* Data Table Card */}
-      <Card>
-        <CardHeader className="border-b">
-          <CardTitle>Danh sách xe điện</CardTitle>
-          <CardDescription>
-            Tất cả các mẫu xe điện trong hệ thống với thông tin chi tiết
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <VehicleModelTable data={vehicleModels} />
-        </CardContent>
-      </Card>
-    </div>
+        <Card>
+          <CardHeader className="border-b">
+            <CardTitle>Danh sách xe điện</CardTitle>
+            <CardDescription>
+              Tất cả các mẫu xe điện trong hệ thống với thông tin chi tiết
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <VehicleModelUpdateProvider>
+              <VehicleModelTable data={vehicleModels} />
+              <VehicleModelEditDialog />
+            </VehicleModelUpdateProvider>
+          </CardContent>
+        </Card>
+      </div>
+    </ConnectorTypeProvider>
   );
 }
