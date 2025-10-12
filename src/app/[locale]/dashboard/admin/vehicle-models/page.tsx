@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/card";
 import { getUser } from "@/lib/auth/auth-server";
 import { CarModel, CarModelSchema } from "@/types/car";
-import { ConnectorType, ConnectorTypeSchema } from "@/types/connector";
 import { Car } from "lucide-react";
 import { getConnectorTypes } from "../connector-type/page";
 import { ConnectorTypeProvider } from "@/contexts/connector-type-context";

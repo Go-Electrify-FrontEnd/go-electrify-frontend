@@ -22,6 +22,8 @@ interface DeleteConnectorTypeProps {
   onOpenChange: (open: boolean) => void;
 }
 
+const initialState = { success: false, msg: "" };
+
 export const DeleteConnectorType = ({
   connectorType,
   open,
@@ -29,14 +31,10 @@ export const DeleteConnectorType = ({
 }: DeleteConnectorTypeProps) => {
   const [deleteState, deleteAction, pending] = useActionState(
     handleDeleteConnectorType,
-    {
-      success: false,
-      msg: "",
-    },
+    initialState,
   );
 
   useEffect(() => {
-    if (!deleteState) return;
     if (!deleteState.msg) return;
     if (deleteState.success) {
       toast.success("Cổng kết nối đã được xóa thành công.");
