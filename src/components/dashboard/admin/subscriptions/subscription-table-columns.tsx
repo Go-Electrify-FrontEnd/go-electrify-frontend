@@ -1,25 +1,30 @@
 "use client";
 
+import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ActionsCell } from "./subscription-actions";
 import { Subscription } from "@/types/subscription";
+import { useFormatter } from "next-intl";
 
-const formatPrice = (price: number) => {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-  }).format(price);
-};
+function PriceCell({ value }: { value: number }) {
+  const format = useFormatter();
+  return (
+    <div className="font-medium">
+      {format.number(value, { style: "currency", currency: "VND" })}
+    </div>
+  );
+}
 
-const formatDate = (date: Date) => {
-  return new Intl.DateTimeFormat("vi-VN", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date(date));
-};
+function KwhCell({ value }: { value: number }) {
+  const format = useFormatter();
+  return (
+    <div className="font-medium">
+      {format.number(value, { style: "decimal" })} kWh
+    </div>
+  );
+}
 
 export const columns: ColumnDef<Subscription>[] = [
   {
@@ -67,7 +72,7 @@ export const columns: ColumnDef<Subscription>[] = [
     header: "Giá",
     cell: ({ row }) => {
       const price = row.getValue("price") as number;
-      return <div className="font-medium">{formatPrice(price)}</div>;
+      return <PriceCell value={price} />;
     },
   },
   {
@@ -75,7 +80,7 @@ export const columns: ColumnDef<Subscription>[] = [
     header: "Tổng kWh",
     cell: ({ row }) => {
       const kwh = row.getValue("totalKwh") as number;
-      return <div className="font-medium">{kwh.toLocaleString()} kWh</div>;
+      return <KwhCell value={kwh} />;
     },
   },
   {
@@ -84,14 +89,6 @@ export const columns: ColumnDef<Subscription>[] = [
     cell: ({ row }) => {
       const days = row.getValue("durationDays") as number;
       return <Badge variant="secondary">{days} ngày</Badge>;
-    },
-  },
-  {
-    accessorKey: "createdAt",
-    header: "Ngày tạo",
-    cell: ({ row }) => {
-      const date = row.getValue("createdAt") as Date;
-      return <div className="text-muted-foreground">{formatDate(date)}</div>;
     },
   },
   {

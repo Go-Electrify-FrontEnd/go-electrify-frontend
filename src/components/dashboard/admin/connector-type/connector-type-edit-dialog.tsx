@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useActionState, useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -10,9 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ConnectorType } from "@/types/connector";
 import { Controller, useForm } from "react-hook-form";
-import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Field,
@@ -29,68 +27,70 @@ import {
 import { handleUpdateConnectorType } from "@/actions/connector-type-actions";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { useConnectorTypeUpdate } from "@/contexts/connector-type-update-context";
+import {
+  connectorTypeUpdateSchema,
+  type ConnectorTypeUpdateFormData,
+} from "@/schemas/connector-type.schema";
+import { useServerAction } from "@/hooks/use-server-action";
 
-const formSchema = z.object({
-  id: z.number(),
-  name: z.string().min(1, "Tên cổng kết nối là bắt buộc"),
-  description: z.string().max(200, "Mô tả tối đa 200 ký tự").optional(),
-  maxPowerKw: z.coerce
-    .number()
-    .refine((value) => !Number.isNaN(value), {
-      message: "Công suất phải là số",
-    })
-    .min(1, "Công suất phải lớn hơn 0")
-    .max(1000, "Công suất vượt quá giới hạn cho phép"),
-});
-
-interface UpdateConnectorTypeProps {
-  connectorType: ConnectorType;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
-
-export const UpdateConnectorType = ({
-  connectorType,
-  open,
-  onOpenChange,
-}: UpdateConnectorTypeProps) => {
-  const [updateState, updateAction, pending] = useActionState(
+export const UpdateConnectorType = () => {
+  const { connectorType, isEditDialogOpen, setEditDialogOpen } =
+    useConnectorTypeUpdate();
+  const initialState = { success: false, msg: "" };
+  const { execute, pending } = useServerAction(
     handleUpdateConnectorType,
+    initialState,
     {
-      success: false,
-      msg: "",
+      onSuccess: (result) => {
+        toast.success(result.msg);
+        setEditDialogOpen(false);
+        form.reset();
+      },
+      onError: (result) => {
+        if (result.msg) {
+          toast.error(result.msg);
+        }
+      },
     },
   );
-
-  useEffect(() => {
-    if (updateState.msg) {
-      if (updateState.success) {
-        toast.success(updateState.msg);
-        onOpenChange(false);
-      } else {
-        toast.error(updateState.msg);
-      }
-    }
-  }, [updateState]);
-
-  const [name, setName] = useState(connectorType.name);
-  const [description, setDescription] = useState(connectorType.description);
-  const [maxPowerKw, setMaxPowerKw] = useState(
-    connectorType.maxPowerKw.toString(),
-  );
-
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(connectorTypeUpdateSchema),
     defaultValues: {
-      id: connectorType.id,
-      name: connectorType.name,
-      description: connectorType.description,
-      maxPowerKw: connectorType.maxPowerKw,
+      id: connectorType?.id?.toString() ?? "",
+      name: connectorType?.name || "",
+      description: connectorType?.description || "",
+      maxPowerKw: connectorType?.maxPowerKw || 0,
     },
   });
 
+  // Reset form when connectorType changes
+  useEffect(() => {
+    if (connectorType) {
+      form.reset({
+        id: connectorType.id.toString(),
+        name: connectorType.name,
+        description: connectorType.description,
+        maxPowerKw: connectorType.maxPowerKw,
+      });
+    }
+  }, [connectorType, form]);
+
+  const onSubmit = (data: ConnectorTypeUpdateFormData) => {
+    if (!connectorType) return;
+
+    const formData = new FormData();
+    formData.append("id", data.id);
+    formData.append("name", data.name);
+    formData.append("description", data.description || "");
+    formData.append("maxPowerKw", data.maxPowerKw.toString());
+    execute(formData);
+  };
+
+  if (!connectorType) return null;
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={isEditDialogOpen} onOpenChange={setEditDialogOpen}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Chỉnh sửa cổng kết nối</DialogTitle>
@@ -98,9 +98,13 @@ export const UpdateConnectorType = ({
             Cập nhật thông tin cổng kết nối. Nhấn lưu để thay đổi.
           </DialogDescription>
         </DialogHeader>
-        <form className="space-y-4" action={updateAction}>
-          <input type="hidden" name="id" value={connectorType.id} />
-          <FieldGroup>
+
+        <form
+          id="connector-type-form"
+          className="space-y-6"
+          onSubmit={form.handleSubmit(onSubmit)}
+        >
+          <FieldGroup className="my-4">
             <Controller
               name="name"
               control={form.control}
@@ -110,11 +114,9 @@ export const UpdateConnectorType = ({
                   <Input
                     {...field}
                     id="name"
+                    placeholder="Nhập tên cổng kết nối"
                     aria-invalid={fieldState.invalid}
                     autoComplete="off"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="VD: Test AC"
                   />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
@@ -132,21 +134,16 @@ export const UpdateConnectorType = ({
                   <InputGroup>
                     <InputGroupTextarea
                       {...field}
-                      id="form-rhf-demo-description"
-                      placeholder="Mô tả ngắn về loại cổng kết nối (tối đa 200 ký tự)"
+                      id="description"
+                      placeholder="Nhập mô tả cổng kết nối (tùy chọn)"
                       aria-invalid={fieldState.invalid}
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      rows={6}
-                      className="min-h-24 resize-none"
+                      autoComplete="off"
+                      rows={3}
                     />
-                    <InputGroupAddon align="block-end">
-                      <InputGroupText className="tabular-nums">
-                        {field.value == null ? 0 : field.value.length}/100
-                        characters
-                      </InputGroupText>
-                    </InputGroupAddon>
                   </InputGroup>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
                 </Field>
               )}
             />
@@ -159,15 +156,25 @@ export const UpdateConnectorType = ({
                   <FieldLabel htmlFor="maxPowerKw">
                     Công suất tối đa (kW)
                   </FieldLabel>
-                  <Input
-                    {...field}
-                    id="maxPowerKw"
-                    type="number"
-                    aria-invalid={fieldState.invalid}
-                    value={maxPowerKw}
-                    onChange={(e) => setMaxPowerKw(e.target.value)}
-                    placeholder="VD: 50"
-                  />
+                  <InputGroup>
+                    <Input
+                      {...field}
+                      type="number"
+                      id="maxPowerKw"
+                      placeholder="Nhập công suất tối đa"
+                      aria-invalid={fieldState.invalid}
+                      autoComplete="off"
+                      value={
+                        typeof field.value === "number" ||
+                        typeof field.value === "string"
+                          ? field.value
+                          : ""
+                      }
+                    />
+                    <InputGroupAddon>
+                      <InputGroupText>kW</InputGroupText>
+                    </InputGroupAddon>
+                  </InputGroup>
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}
@@ -175,21 +182,22 @@ export const UpdateConnectorType = ({
               )}
             />
           </FieldGroup>
-
-          <div className="flex justify-end space-x-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => form.reset()}
-            >
-              Hủy
-            </Button>
-            <Button disabled={pending} type="submit">
-              {pending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Lưu
-              thay đổi
-            </Button>
-          </div>
         </form>
+
+        <div className="flex justify-end gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setEditDialogOpen(false)}
+            disabled={pending}
+          >
+            Hủy
+          </Button>
+          <Button type="submit" form="connector-type-form" disabled={pending}>
+            {pending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {pending ? "Đang cập nhật..." : "Cập nhật"}
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );

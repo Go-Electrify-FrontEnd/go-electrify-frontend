@@ -53,10 +53,19 @@ export function MultiSelect({
 }) {
   const [open, setOpen] = useState(false);
   const [internalValues, setInternalValues] = useState(
-    new Set<string>(values ?? defaultValues),
+    new Set<string>(defaultValues ?? []),
   );
+
+  // Use controlled values if provided, otherwise use internal state
   const selectedValues = values ? new Set(values) : internalValues;
   const [items, setItems] = useState<Map<string, ReactNode>>(new Map());
+
+  // Sync internal values with controlled values on change
+  useEffect(() => {
+    if (values !== undefined) {
+      setInternalValues(new Set(values));
+    }
+  }, [values]);
 
   function toggleValue(value: string) {
     const getNewSet = (prev: Set<string>) => {
@@ -68,8 +77,10 @@ export function MultiSelect({
       }
       return newSet;
     };
-    setInternalValues(getNewSet);
-    onValuesChange?.([...getNewSet(selectedValues)]);
+
+    const newSelectedValues = getNewSet(selectedValues);
+    setInternalValues(newSelectedValues);
+    onValuesChange?.([...newSelectedValues]);
   }
 
   const onItemAdded = useCallback((value: string, label: ReactNode) => {

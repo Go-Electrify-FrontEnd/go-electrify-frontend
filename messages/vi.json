@@ -16,7 +16,12 @@
     "next": "Tiếp theo",
     "previous": "Trước đó",
     "close": "Đóng",
-    "confirm": "Xác nhận"
+    "confirm": "Xác nhận",
+    "noData": "Không có dữ liệu."
+  },
+  "app": {
+    "name": "Go Electrify",
+    "tagline": "Nền tảng sạc xe điện"
   },
   "auth": {
     "login": "Đăng nhập",
@@ -31,7 +36,19 @@
     "invalidOtp": "OTP hoặc email không hợp lệ",
     "enterOtp": "Nhập mã OTP",
     "verifyOtp": "Xác thực OTP",
-    "requestOtp": "Yêu cầu OTP"
+    "requestOtp": "Yêu cầu OTP",
+    "requestOtpMessages": {
+      "emailRequired": "Email là bắt buộc",
+      "success": "Đã gửi mã OTP đến email",
+      "failure": "Gửi mã OTP thất bại",
+      "networkError": "Không thể gửi yêu cầu. Vui lòng thử lại sau."
+    },
+    "verifyOtpMessages": {
+      "emailOtpRequired": "Email và mã OTP là bắt buộc",
+      "alreadyAuthenticated": "Đã đăng nhập",
+      "invalid": "OTP hoặc email không hợp lệ",
+      "networkError": "Không thể xác thực OTP. Vui lòng thử lại sau."
+    }
   },
   "navigation": {
     "dashboard": "Bảng điều khiển",
@@ -42,6 +59,7 @@
     "wallet": "Ví",
     "transactions": "Giao dịch",
     "plans-billing": "Gói & Thanh toán",
+    "vehicle-models": "Mẫu xe",
     "settings": "Cài đặt",
     "profile": "Hồ sơ",
     "admin": "Quản trị",
@@ -282,29 +300,199 @@
         {
           "title": "Dịch vụ sạc",
           "links": [
-            { "label": "Tìm trạm sạc", "href": "#" },
-            { "label": "Gói giá", "href": "#" },
-            { "label": "Giải pháp doanh nghiệp", "href": "#" }
+            {
+              "label": "Tìm trạm sạc",
+              "href": "#"
+            },
+            {
+              "label": "Gói giá",
+              "href": "#"
+            },
+            {
+              "label": "Giải pháp doanh nghiệp",
+              "href": "#"
+            }
           ]
         },
         {
           "title": "Về Electrify",
           "links": [
-            { "label": "Giới thiệu", "href": "#" },
-            { "label": "Nghề nghiệp", "href": "#" },
-            { "label": "Liên hệ", "href": "#" }
+            {
+              "label": "Giới thiệu",
+              "href": "#"
+            },
+            {
+              "label": "Nghề nghiệp",
+              "href": "#"
+            },
+            {
+              "label": "Liên hệ",
+              "href": "#"
+            }
           ]
         },
         {
           "title": "Hỗ trợ khách hàng",
           "links": [
-            { "label": "Trung tâm trợ giúp", "href": "#" },
-            { "label": "Ứng dụng di động", "href": "#" },
-            { "label": "Hỗ trợ 24/7", "href": "#" }
+            {
+              "label": "Trung tâm trợ giúp",
+              "href": "#"
+            },
+            {
+              "label": "Ứng dụng di động",
+              "href": "#"
+            },
+            {
+              "label": "Hỗ trợ 24/7",
+              "href": "#"
+            }
           ]
         }
       ],
-      "copyright": "© 2025 Go Electrify. Tất cả quyền được bảo lưu."
+      "copyright": "© 2025 Go Electrify. Tất cả quyền được bảo lưu.",
+      "rightsReserved": "Quyền được bảo lưu",
+      "about": "Giới Thiệu",
+      "privacy": "Quyền Riêng Tư",
+      "contact": "Liên Lạc"
     }
+  },
+  "vehicleModel": {
+    "edit": {
+      "title": "Sửa Mẫu Xe",
+      "description": "Cập nhật thông tin mẫu xe"
+    },
+    "create": {
+      "title": "Tạo Mẫu Xe",
+      "description": "Thêm mẫu xe mới vào hệ thống"
+    },
+    "delete": {
+      "title": "Xóa Mẫu Xe",
+      "description": "Bạn có chắc chắn muốn xóa mẫu xe này?",
+      "confirmText": "Nhập 'DELETE' để xác nhận",
+      "placeholder": "Nhập DELETE ở đây",
+      "deleting": "Đang xóa...",
+      "deleteButton": "Xóa Mẫu Xe",
+      "common": {
+        "cancel": "Huỷ"
+      }
+    },
+    "form": {
+      "modelName": "Tên Mẫu Xe",
+      "modelNamePlaceholder": "Nhập tên mẫu xe",
+      "maxPowerKw": "Công Suất (kW)",
+      "maxPowerPlaceholder": "Công suất tối đa (kW)",
+      "batteryCapacityKwh": "Dung Lượng Pin (kWh)",
+      "batteryCapacityPlaceholder": "Dung lượng pin (kWh)",
+      "connectorTypes": "Loại Cổng Kết Nối",
+      "connectorTypesPlaceholder": "Chọn cổng sạc...",
+      "creating": "Đang tạo...",
+      "createButton": "Tạo Mẫu Xe",
+      "updating": "Đang cập nhật...",
+      "updateButton": "Cập Nhật Mẫu Xe"
+    },
+    "table": {
+      "modelName": "Tên Mẫu Xe",
+      "maxPower": "Công Suất",
+      "batteryCapacity": "Dung Lượng Pin",
+      "connectorTypes": "Loại Cổng Sạc",
+      "actions": "Hành Động"
+    }
+  },
+  "connectorType": {
+    "create": {
+      "title": "Tạo Loại Cổng Sạc",
+      "description": "Thêm loại cổng sạc mới vào hệ thống"
+    },
+    "edit": {
+      "title": "Sửa Loại Cổng Sạc",
+      "description": "Cập nhật thông tin loại cổng sạc"
+    },
+    "delete": {
+      "title": "Xóa Loại Cổng Sạc",
+      "description": "Bạn có chắc chắn muốn xóa loại cổng sạc này?",
+      "confirmText": "Nhập 'DELETE' để xác nhận",
+      "placeholder": "Nhập DELETE ở đây",
+      "deleting": "Đang xóa...",
+      "deleteButton": "Xóa Loại Cổng"
+    },
+    "form": {
+      "name": "Tên",
+      "namePlaceholder": "Nhập tên cổng sạc",
+      "maxPowerKw": "Công Suất (kW)",
+      "maxPowerPlaceholder": "Công suất tối đa (kW)",
+      "creating": "Đang tạo...",
+      "createButton": "Tạo Loại Cổng",
+      "updating": "Đang cập nhật...",
+      "updateButton": "Cập Nhật Loại Cổng"
+    },
+    "table": {
+      "name": "Tên",
+      "maxPower": "Công Suất",
+      "actions": "Hành Động"
+    },
+    "common": {
+      "cancel": "Huỷ"
+    }
+  },
+  "station": {
+    "create": {
+      "title": "Tạo Trạm Sạc",
+      "description": "Thêm trạm sạc mới"
+    },
+    "edit": {
+      "title": "Sửa Trạm Sạc",
+      "description": "Cập nhật thông tin trạm"
+    },
+    "delete": {
+      "title": "Xóa Trạm Sạc",
+      "description": "Bạn có chắc chắn muốn xóa trạm này?",
+      "confirmText": "Nhập 'DELETE' để xác nhận"
+    },
+    "form": {
+      "name": "Tên Trạm",
+      "namePlaceholder": "Nhập tên trạm",
+      "address": "Địa Chỉ",
+      "addressPlaceholder": "Nhập địa chỉ",
+      "latitude": "Vĩ Độ",
+      "longitude": "Kinh Độ",
+      "status": "Trạng Thái",
+      "connectors": "Cổng Sạc"
+    }
+  },
+  "subscription": {
+    "create": {
+      "title": "Tạo Gói Đăng Ký",
+      "description": "Thêm gói đăng ký mới"
+    },
+    "edit": {
+      "title": "Sửa Gói Đăng Ký",
+      "description": "Cập nhật gói đăng ký"
+    },
+    "delete": {
+      "title": "Xóa Gói Đăng Ký",
+      "description": "Bạn có chắc chắn muốn xóa gói này?"
+    }
+  },
+  "wallet": {
+    "title": "Ví",
+    "balance": "Số Dư Hiện Tại",
+    "topUp": "Nạp Tiền",
+    "history": "Lịch Sử Giao Dịch",
+    "noTransactions": "Chưa có giao dịch nào"
+  },
+  "settings": {
+    "title": "Cài Đặt",
+    "profile": "Cài Đặt Hồ Sơ",
+    "account": "Cài Đặt Tài Khoản",
+    "notifications": "Thông Báo",
+    "language": "Ngôn Ngữ",
+    "theme": "Chủ Đề"
+  },
+  "table": {
+    "connectorTypes": "Cổng Hỗ Trợ",
+    "batteryCapacity": "Dung Lượng Pin",
+    "maxPower": "Công Suất Tối Đa (Kw)",
+    "modelName": "Tên Mẫu",
+    "actions": "Hành Động"
   }
 }

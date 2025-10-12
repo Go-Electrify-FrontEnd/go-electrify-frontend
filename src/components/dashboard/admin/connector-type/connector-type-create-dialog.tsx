@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -20,7 +19,7 @@ import {
   FieldError,
   FieldGroup,
 } from "@/components/ui/field";
-import { Circle, Loader2, Plug, Plus } from "lucide-react";
+import { Loader2, Plug, Plus } from "lucide-react";
 import {
   InputGroup,
   InputGroupAddon,
@@ -28,97 +27,104 @@ import {
   InputGroupTextarea,
 } from "@/components/ui/input-group";
 import { Controller, useForm } from "react-hook-form";
-import { useActionState, useEffect, useState } from "react";
+import { useState } from "react";
 import { handleCreateConnectorType } from "@/actions/connector-type-actions";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
+import {
+  connectorTypeCreateSchema,
+  type ConnectorTypeCreateFormData,
+} from "@/schemas/connector-type.schema";
+import { useServerAction } from "@/hooks/use-server-action";
 
-const formSchema = z.object({
-  name: z.string().trim().min(1, "Tên cổng kết nối là bắt buộc"),
-  description: z
-    .string()
-    .trim()
-    .max(200, "Mô tả tối đa 200 ký tự")
-    .optional()
-    .transform((value) => (value === "" ? undefined : value)),
-  maxPowerKw: z.coerce
-    .number()
-    .refine((value) => !Number.isNaN(value), {
-      message: "Công suất phải là số",
-    })
-    .min(1, "Công suất phải lớn hơn 0")
-    .max(1000, "Công suất vượt quá giới hạn cho phép"),
-});
+const initialState = { success: false, msg: "" };
 
 export default function ConnectorTypeCreateDialog() {
+  const t = useTranslations("connectorType");
   const [open, setOpen] = useState(false);
-  const [createActionResult, createAction, pending] = useActionState(
+  const { execute, pending } = useServerAction(
     handleCreateConnectorType,
+    initialState,
     {
-      success: false,
-      msg: "",
+      onSuccess: (result) => {
+        toast.success(
+          t("toast.createSuccess", { defaultValue: "Tạo thành công" }),
+          {
+            description: result.msg,
+          },
+        );
+        setOpen(false);
+        form.reset();
+      },
+      onError: (result) => {
+        if (result.msg) {
+          toast.error(
+            t("toast.createError", { defaultValue: "Tạo thất bại" }),
+            {
+              description: result.msg,
+            },
+          );
+        }
+      },
     },
   );
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(connectorTypeCreateSchema),
     defaultValues: {
       name: "",
       description: undefined,
       maxPowerKw: 0,
     },
   });
-
-  useEffect(() => {
-    if (!createActionResult) return;
-    if (createActionResult.success) {
-      setOpen(false);
-      form.reset();
-    }
-
-    if (createActionResult.msg) {
-      if (createActionResult.success) {
-        toast.success("Thành Công", {
-          description: createActionResult.msg,
-        });
-      } else {
-        toast.error("Thất Bại", {
-          description: createActionResult.msg,
+  const handleSubmit = form.handleSubmit(
+    (data: ConnectorTypeCreateFormData) => {
+      const formData = new FormData();
+      formData.append("name", data.name);
+      if (data.description) {
+        formData.append("description", data.description);
+      }
+      formData.append("maxPowerKw", data.maxPowerKw.toString());
+      execute(formData);
+    },
+    (errors) => {
+      const firstError = Object.values(errors)[0];
+      if (firstError?.message) {
+        toast.error(t("toast.createError", { defaultValue: "Tạo thất bại" }), {
+          description: firstError.message,
         });
       }
-    }
-  }, [createActionResult]);
+    },
+  );
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button size="lg" className="relative w-full sm:w-auto">
           <Plus className="mr-2 h-5 w-5" />
-          Thêm Cổng Mới
+          {t("create.title")}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader className="space-y-2">
           <DialogTitle className="flex items-center gap-2 text-xl">
             <Plug className="text-primary h-5 w-5" />
-            Thêm loại cổng kết nối
+            {t("create.title")}
           </DialogTitle>
-          <DialogDescription>
-            Nhập thông tin để tạo loại cổng sạc mới. Trường có dấu * là bắt
-            buộc.
-          </DialogDescription>
+          <DialogDescription>{t("create.description")}</DialogDescription>
         </DialogHeader>
 
-        <form className="space-y-6" action={createAction}>
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <FieldGroup>
             <Controller
               control={form.control}
               name="name"
               render={({ field, fieldState }) => (
                 <Field>
-                  <FieldLabel htmlFor="name">Tên cổng *</FieldLabel>
+                  <FieldLabel htmlFor="name">{t("form.name")}</FieldLabel>
                   <Input
                     {...field}
                     id="name"
-                    placeholder="Ví dụ: Type2-AC"
+                    placeholder={t("form.namePlaceholder")}
                     aria-invalid={fieldState.invalid}
                     autoComplete="off"
                     required
@@ -135,7 +141,7 @@ export default function ConnectorTypeCreateDialog() {
               name="description"
               render={({ field, fieldState }) => (
                 <Field>
-                  <FieldLabel htmlFor="description">Mô tả</FieldLabel>
+                  <FieldLabel htmlFor="description">Description</FieldLabel>
                   <InputGroup>
                     <InputGroupTextarea
                       {...field}
@@ -196,12 +202,12 @@ export default function ConnectorTypeCreateDialog() {
                 variant="outline"
                 onClick={() => form.reset()}
               >
-                Hủy
+                {t("common.cancel", { defaultValue: "Cancel" })}
               </Button>
             </DialogClose>
             <Button type="submit" disabled={pending}>
               {pending && <Loader2 className="h-4 w-4 animate-spin" />}
-              Tạo cổng
+              {pending ? t("form.creating") : t("form.createButton")}
             </Button>
           </DialogFooter>
         </form>

@@ -6,16 +6,36 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CarModel } from "@/types/car";
 import { VehicleModelActionsCell } from "./vehicle-model-actions";
+import { useConnectorTypes } from "@/contexts/connector-type-context";
 
-const formatPower = (power: number) => {
-  return `${power} kW`;
-};
+const formatPower = (power: number) => `${power} kW`;
+const formatBattery = (capacity: number) => `${capacity} kWh`;
 
-const formatBattery = (capacity: number) => {
-  return `${capacity} kWh`;
-};
+function ConnectorTypeNames({ ids }: { ids: string[] }) {
+  const connectorTypesAvailable = useConnectorTypes();
 
-export const columns: ColumnDef<CarModel>[] = [
+  const connectorTypeById = React.useMemo(() => {
+    const m = new Map<number, string>();
+    connectorTypesAvailable.forEach((ct) => m.set(ct.id, ct.name));
+    return m;
+  }, [connectorTypesAvailable]);
+
+  if (!ids || ids.length === 0)
+    return <div className="text-muted-foreground">N/A</div>;
+
+  const rendered = ids
+    .map((id) => {
+      const num = Number(id);
+      return connectorTypeById.get(num) ?? `CT${id}`;
+    })
+    .join(", ");
+
+  return <div className="text-muted-foreground">{rendered}</div>;
+}
+
+export const vehicleModelTableColumns = (
+  t: (key: string) => string,
+): ColumnDef<CarModel>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -47,14 +67,14 @@ export const columns: ColumnDef<CarModel>[] = [
   },
   {
     accessorKey: "modelName",
-    header: "Tên Mẫu Xe",
+    header: () => t("table.modelName"),
     cell: ({ row }) => (
       <div className="font-medium">{row.getValue("modelName")}</div>
     ),
   },
   {
     accessorKey: "maxPowerKw",
-    header: "Công Suất Tối Đa",
+    header: () => t("table.maxPower"),
     cell: ({ row }) => {
       const power = row.getValue("maxPowerKw") as number;
       return (
@@ -66,7 +86,7 @@ export const columns: ColumnDef<CarModel>[] = [
   },
   {
     accessorKey: "batteryCapacityKwh",
-    header: "Dung Lượng Pin",
+    header: () => t("table.batteryCapacity"),
     cell: ({ row }) => {
       const capacity = row.getValue("batteryCapacityKwh") as number;
       return (
@@ -78,20 +98,15 @@ export const columns: ColumnDef<CarModel>[] = [
   },
   {
     accessorKey: "connectorTypeIds",
-    header: "Loại Cổng Kết Nối",
+    header: () => t("table.connectorTypes"),
     cell: ({ row }) => {
       const connectorTypeIds = row.getValue("connectorTypeIds") as string[];
-      let connectorTypes = "Không có";
-
-      if (connectorTypeIds != null && connectorTypeIds.length > 0) {
-        connectorTypes = connectorTypeIds.map((id) => `CT${id}`).join(", ");
-      }
-      return <div className="text-muted-foreground">{connectorTypes}</div>;
+      return <ConnectorTypeNames ids={connectorTypeIds} />;
     },
   },
   {
     id: "actions",
-    header: "Hành Động",
+    header: () => t("table.actions"),
     cell: ({ row }) => {
       const carModel = row.original;
       return <VehicleModelActionsCell carModel={carModel} />;
