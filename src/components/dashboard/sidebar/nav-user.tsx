@@ -50,7 +50,7 @@ export function NavUser({ user }: NavUserProps) {
   const { isMobile } = useSidebar();
   const { setTheme } = useTheme();
 
-  const [_, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   const handleLocaleChange = (newLocale: "en" | "vi") => {
     startTransition(() => {

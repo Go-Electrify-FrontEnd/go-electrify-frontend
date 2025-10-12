@@ -1,12 +1,5 @@
 import { AppSidebar } from "@/components/dashboard/sidebar/app-sidebar";
-import HeaderBreadcrumb from "@/components/dashboard/sidebar/header-breadcrumb";
-import { NotificationButton } from "@/components/dashboard/header/notification-button";
-import { Separator } from "@/components/ui/separator";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { getUser } from "@/lib/auth/auth-server";
 import { UserProvider } from "@/contexts/user-context";
 import { forbidden } from "next/navigation";

@@ -63,7 +63,7 @@ export function UpdateSubscription({
       await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
       toast.success("Cập nhật gói đăng ký thành công!");
       onOpenChange(false);
-    } catch (error) {
+    } catch {
       toast.error("Có lỗi xảy ra khi cập nhật gói đăng ký");
     } finally {
       setIsLoading(false);
