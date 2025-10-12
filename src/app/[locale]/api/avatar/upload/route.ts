@@ -19,6 +19,8 @@ export async function POST(request: Request): Promise<NextResponse> {
         if (!user) {
           throw new Error("Unauthorized");
         }
+
+        console.log("Uploading to: " + pathname);
         return {
           allowedContentTypes: [
             "image/jpeg",

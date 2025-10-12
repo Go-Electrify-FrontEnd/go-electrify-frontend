@@ -16,9 +16,7 @@ export function StationMap({
 }: StationMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
-  const [userLocation, setUserLocation] = useState<[number, number] | null>(
-    null,
-  );
+  const [, setUserLocation] = useState<[number, number] | null>(null);
 
   useEffect(() => {
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_BOXMAP_API || "";

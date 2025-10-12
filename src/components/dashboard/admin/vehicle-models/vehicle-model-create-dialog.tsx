@@ -1,28 +1,14 @@
 "use client";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { startTransition, useActionState, useEffect } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  vehicleModelSchema,
-  type VehicleModelFormData,
-} from "@/schemas/vehicle-model.schema";
+import { Dialog, DialogFooter, DialogHeader } from "@/components/ui/dialog";
 import {
   Field,
   FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import {
   MultiSelect,
   MultiSelectContent,
@@ -31,60 +17,64 @@ import {
   MultiSelectTrigger,
   MultiSelectValue,
 } from "@/components/ui/multi-select";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Plus } from "lucide-react";
+import { startTransition, useActionState, useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { createVehicleModel } from "@/actions/vehicle-models-actions";
+import { toast } from "sonner";
+import {
+  vehicleModelSchema,
+  type VehicleModelFormData,
+} from "@/schemas/vehicle-model.schema";
 import { useConnectorTypes } from "@/contexts/connector-type-context";
 import { useTranslations } from "next-intl";
-import { updateVehicleModel } from "@/actions/vehicle-models-actions";
-import { toast } from "sonner";
-import { useVehicleModelUpdate } from "@/contexts/vehicle-model-action-context";
 
-export default function VehicleModelEditDialog() {
+const initialState = {
+  success: false,
+  msg: "",
+};
+
+export default function VehicleModelCreateDialog() {
   const t = useTranslations("vehicleModel");
   const connectorTypes = useConnectorTypes();
-  const { vehicleModel, isEditDialogOpen, setEditDialogOpen } =
-    useVehicleModelUpdate();
+  const [open, setOpen] = useState(false);
 
-  const [updateState, updateAction, updatePending] = useActionState(
-    updateVehicleModel,
-    { success: false, msg: "" },
+  const [createState, createAction, pending] = useActionState(
+    createVehicleModel,
+    initialState,
   );
 
   const form = useForm({
     resolver: zodResolver(vehicleModelSchema),
     defaultValues: {
-      modelName: vehicleModel?.modelName || "",
-      maxPowerKw: vehicleModel?.maxPowerKw || 0,
-      batteryCapacityKwh: vehicleModel?.batteryCapacityKwh || 0,
-      connectorTypeIds: vehicleModel?.connectorTypeIds || [],
+      modelName: "",
+      maxPowerKw: 50,
+      batteryCapacityKwh: 50,
+      connectorTypeIds: [],
     },
   });
 
   useEffect(() => {
-    if (vehicleModel) {
-      form.reset({
-        modelName: vehicleModel.modelName,
-        maxPowerKw: vehicleModel.maxPowerKw,
-        batteryCapacityKwh: vehicleModel.batteryCapacityKwh,
-        connectorTypeIds: vehicleModel.connectorTypeIds,
-      });
-    }
-  }, [vehicleModel, form]);
+    if (!createState.msg) return;
 
-  useEffect(() => {
-    if (!updateState.msg) return;
-    if (updateState.success) {
-      toast.success(updateState.msg);
-      setEditDialogOpen(false);
+    if (createState.success) {
       form.reset();
+      setOpen(false);
+      toast.success(createState.msg);
     } else {
-      toast.error(updateState.msg);
+      toast.error(createState.msg);
     }
-  }, [updateState]);
+  }, [createState, form]);
 
   function onSubmit(data: VehicleModelFormData) {
-    if (!vehicleModel) return;
-
     const formData = new FormData();
-    formData.append("id", vehicleModel.id.toString());
     formData.append("modelName", data.modelName);
     formData.append("maxPowerKw", data.maxPowerKw.toString());
     formData.append("batteryCapacityKwh", data.batteryCapacityKwh.toString());
@@ -94,23 +84,25 @@ export default function VehicleModelEditDialog() {
     });
 
     startTransition(() => {
-      updateAction(formData);
+      createAction(formData);
     });
   }
 
   return (
-    <Dialog open={isEditDialogOpen} onOpenChange={setEditDialogOpen}>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button size="lg">
+          <Plus />
+          <span className="font-semibold">{t("create.title")}</span>
+        </Button>
+      </DialogTrigger>
+
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{t("edit.title")}</DialogTitle>
-          <DialogDescription>{t("edit.description")}</DialogDescription>
+          <DialogTitle>{t("create.title")}</DialogTitle>
+          <DialogDescription>{t("create.description")}</DialogDescription>
         </DialogHeader>
-
-        <form
-          id="vehicle-model-form"
-          className="space-y-6"
-          onSubmit={form.handleSubmit(onSubmit)}
-        >
+        <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <FieldGroup className="my-4">
             <Controller
               name="modelName"
@@ -227,19 +219,14 @@ export default function VehicleModelEditDialog() {
                 </Field>
               )}
             />
+
+            <DialogFooter className="flex w-full">
+              <Button type="submit" className="self-end" disabled={pending}>
+                {pending ? t("form.creating") : t("form.createButton")}
+              </Button>
+            </DialogFooter>
           </FieldGroup>
         </form>
-
-        <DialogFooter className="flex w-full">
-          <Button
-            type="submit"
-            form="vehicle-model-form"
-            className="self-end"
-            disabled={updatePending}
-          >
-            {updatePending ? t("form.updating") : t("form.updateButton")}
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

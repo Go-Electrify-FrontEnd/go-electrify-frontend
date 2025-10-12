@@ -10,13 +10,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Globe } from "lucide-react";
 import { usePathname, useRouter } from "@/i18n/navigation";
-import { useTransition } from "react";
+import { startTransition } from "react";
 
 export function LanguageSwitcher() {
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
-  const [isPending, startTransition] = useTransition();
 
   const handleLocaleChange = (newLocale: "en" | "vi") => {
     startTransition(() => {

@@ -24,6 +24,11 @@ export const metadata: Metadata = {
   description: "A tool to help you find electric vehicle incentives.",
 };
 
+// Enable static rendering for all locale segments
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
+
 export default async function LocaleLayout({
   children,
   params,
@@ -36,7 +41,8 @@ export default async function LocaleLayout({
     notFound();
   }
 
-  setRequestLocale(locale);
+  // Type assertion after validation
+  setRequestLocale(locale as (typeof routing.locales)[number]);
 
   // Load messages for the current locale on the server and pass to the client provider
   const messages = await getMessages();
@@ -46,7 +52,13 @@ export default async function LocaleLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <NextIntlClientProvider locale={locale} messages={messages}>
+        <NextIntlClientProvider
+          locale={locale}
+          messages={messages}
+          // Explicitly provide timeZone and now for static rendering
+          timeZone="Asia/Ho_Chi_Minh"
+          now={new Date()}
+        >
           <ThemeProvider
             attribute="class"
             defaultTheme="system"

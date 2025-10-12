@@ -3,7 +3,7 @@ import { getBackendUrl } from "@/lib/utils";
 import { redirect } from "@/i18n/navigation";
 import { getLocale } from "next-intl/server";
 
-export async function GET(request: Request) {
+export async function GET() {
   const cookieStore = await cookies();
   const locale = await getLocale();
 
