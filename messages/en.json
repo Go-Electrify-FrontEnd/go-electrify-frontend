@@ -16,7 +16,12 @@
     "next": "Next",
     "previous": "Previous",
     "close": "Close",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "noData": "No data."
+  },
+  "app": {
+    "name": "Go Electrify",
+    "tagline": "EV Charging Platform"
   },
   "auth": {
     "login": "Log in",
@@ -31,7 +36,19 @@
     "invalidOtp": "Invalid OTP or email",
     "enterOtp": "Enter OTP",
     "verifyOtp": "Verify OTP",
-    "requestOtp": "Request OTP"
+    "requestOtp": "Request OTP",
+    "requestOtpMessages": {
+      "emailRequired": "Email is required",
+      "success": "OTP sent to your email",
+      "failure": "Failed to send OTP",
+      "networkError": "Unable to send request. Please try again later."
+    },
+    "verifyOtpMessages": {
+      "emailOtpRequired": "Email and OTP are required",
+      "alreadyAuthenticated": "Already logged in",
+      "invalid": "Invalid OTP or email",
+      "networkError": "Unable to verify OTP. Please try again later."
+    }
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -109,7 +126,12 @@
       "stations": "Stations",
       "subscriptions": "Subscriptions",
       "connectorTypes": "Connector types",
-      "carModels": "Car models"
+      "carModels": "Car models",
+      "vehicleModels": {
+        "edit": {
+          "title": "Adding new vehicle model"
+        }
+      }
     }
   },
   "stations": {
@@ -283,29 +305,199 @@
         {
           "title": "Charging services",
           "links": [
-            { "label": "Find a charger", "href": "#" },
-            { "label": "Pricing plans", "href": "#" },
-            { "label": "Business solutions", "href": "#" }
+            {
+              "label": "Find a charger",
+              "href": "#"
+            },
+            {
+              "label": "Pricing plans",
+              "href": "#"
+            },
+            {
+              "label": "Business solutions",
+              "href": "#"
+            }
           ]
         },
         {
           "title": "About Electrify",
           "links": [
-            { "label": "Our story", "href": "#" },
-            { "label": "Careers", "href": "#" },
-            { "label": "Contact", "href": "#" }
+            {
+              "label": "Our story",
+              "href": "#"
+            },
+            {
+              "label": "Careers",
+              "href": "#"
+            },
+            {
+              "label": "Contact",
+              "href": "#"
+            }
           ]
         },
         {
           "title": "Customer support",
           "links": [
-            { "label": "Help center", "href": "#" },
-            { "label": "Mobile app", "href": "#" },
-            { "label": "24/7 assistance", "href": "#" }
+            {
+              "label": "Help center",
+              "href": "#"
+            },
+            {
+              "label": "Mobile app",
+              "href": "#"
+            },
+            {
+              "label": "24/7 assistance",
+              "href": "#"
+            }
           ]
         }
       ],
-      "copyright": "© 2025 Go Electrify. All rights reserved."
+      "copyright": "© 2025 Go Electrify. All rights reserved.",
+      "rightsReserved": "Right reserved",
+      "about": "About",
+      "privacy": "Privacy",
+      "contact": "Contact"
     }
+  },
+  "vehicleModel": {
+    "edit": {
+      "title": "Edit Vehicle Model",
+      "description": "Update vehicle model information"
+    },
+    "create": {
+      "title": "Create Vehicle Model",
+      "description": "Add a new vehicle model to the system"
+    },
+    "delete": {
+      "title": "Delete Vehicle Model",
+      "description": "Are you sure you want to delete this vehicle model?",
+      "confirmText": "Type 'DELETE' to confirm",
+      "placeholder": "Type DELETE here",
+      "deleting": "Deleting...",
+      "deleteButton": "Delete Model",
+      "common": {
+        "cancel": "Cancel"
+      }
+    },
+    "form": {
+      "modelName": "Model Name",
+      "modelNamePlaceholder": "Enter model name",
+      "maxPowerKw": "Max Power (kW)",
+      "maxPowerPlaceholder": "Max power (kW)",
+      "batteryCapacityKwh": "Battery Capacity (kWh)",
+      "batteryCapacityPlaceholder": "Battery capacity (kWh)",
+      "connectorTypes": "Connector Types",
+      "connectorTypesPlaceholder": "Select connector types...",
+      "creating": "Creating...",
+      "createButton": "Create Model",
+      "updating": "Updating...",
+      "updateButton": "Update Model"
+    },
+    "table": {
+      "modelName": "Model Name",
+      "maxPower": "Max Power",
+      "batteryCapacity": "Battery Capacity",
+      "connectorTypes": "Connector Types",
+      "actions": "Actions"
+    }
+  },
+  "connectorType": {
+    "create": {
+      "title": "Create Connector Type",
+      "description": "Add a new connector type to the system"
+    },
+    "edit": {
+      "title": "Edit Connector Type",
+      "description": "Update connector type information"
+    },
+    "delete": {
+      "title": "Delete Connector Type",
+      "description": "Are you sure you want to delete this connector type?",
+      "confirmText": "Type 'DELETE' to confirm",
+      "placeholder": "Type DELETE here",
+      "deleting": "Deleting...",
+      "deleteButton": "Delete Type"
+    },
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "Enter connector name",
+      "maxPowerKw": "Max Power (kW)",
+      "maxPowerPlaceholder": "Max power (kW)",
+      "creating": "Creating...",
+      "createButton": "Create Type",
+      "updating": "Updating...",
+      "updateButton": "Update Type"
+    },
+    "table": {
+      "name": "Name",
+      "maxPower": "Max Power",
+      "actions": "Actions"
+    },
+    "common": {
+      "cancel": "Cancel"
+    }
+  },
+  "station": {
+    "create": {
+      "title": "Create Station",
+      "description": "Add a new charging station"
+    },
+    "edit": {
+      "title": "Edit Station",
+      "description": "Update station information"
+    },
+    "delete": {
+      "title": "Delete Station",
+      "description": "Are you sure you want to delete this station?",
+      "confirmText": "Type 'DELETE' to confirm"
+    },
+    "form": {
+      "name": "Station Name",
+      "namePlaceholder": "Enter station name",
+      "address": "Address",
+      "addressPlaceholder": "Enter address",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "status": "Status",
+      "connectors": "Connectors"
+    }
+  },
+  "subscription": {
+    "create": {
+      "title": "Create Subscription",
+      "description": "Add a new subscription plan"
+    },
+    "edit": {
+      "title": "Edit Subscription",
+      "description": "Update subscription plan"
+    },
+    "delete": {
+      "title": "Delete Subscription",
+      "description": "Are you sure you want to delete this subscription?"
+    }
+  },
+  "wallet": {
+    "title": "Wallet",
+    "balance": "Current Balance",
+    "topUp": "Top Up",
+    "history": "Transaction History",
+    "noTransactions": "No transactions yet"
+  },
+  "settings": {
+    "title": "Settings",
+    "profile": "Profile Settings",
+    "account": "Account Settings",
+    "notifications": "Notifications",
+    "language": "Language",
+    "theme": "Theme"
+  },
+  "table": {
+    "connectorTypes": "Support Connectors",
+    "batteryCapacity": "Battery Capacity",
+    "maxPower": "Max Power (Kw)",
+    "modelName": "Model Name",
+    "actions": "Actions"
   }
 }

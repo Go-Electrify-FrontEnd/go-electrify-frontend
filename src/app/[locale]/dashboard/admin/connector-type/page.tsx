@@ -10,8 +10,10 @@ import { ConnectorType, ConnectorTypeSchema } from "@/types/connector";
 import { z } from "zod";
 import ConnectorTypeCreateDialog from "@/components/dashboard/admin/connector-type/connector-type-create-dialog";
 import { Plug } from "lucide-react";
+import { ConnectorTypeUpdateProvider } from "@/contexts/connector-type-update-context";
+import { UpdateConnectorType } from "@/components/dashboard/admin/connector-type/connector-type-edit-dialog";
 
-async function getData(): Promise<ConnectorType[]> {
+export async function getConnectorTypes(): Promise<ConnectorType[]> {
   const url = "https://api.go-electrify.com/api/v1/connector-types";
   const response = await fetch(url, {
     method: "GET",
@@ -32,7 +34,7 @@ async function getData(): Promise<ConnectorType[]> {
 }
 
 export default async function ConnectorTypePage() {
-  const connectorTypes = await getData();
+  const connectorTypes = await getConnectorTypes();
   return (
     <div className="container mx-auto mt-4 space-y-6">
       {/* Header Card */}
@@ -62,7 +64,7 @@ export default async function ConnectorTypePage() {
         </CardHeader>
       </Card>
 
-      <Card className="dark:bg-card/50 overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg">
+      <Card>
         <CardHeader className="border-b">
           <CardTitle>Danh sách cổng kết nối</CardTitle>
           <CardDescription>
@@ -70,7 +72,10 @@ export default async function ConnectorTypePage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ConnectorTypesTable data={connectorTypes} />
+          <ConnectorTypeUpdateProvider>
+            <ConnectorTypesTable data={connectorTypes} />
+            <UpdateConnectorType />
+          </ConnectorTypeUpdateProvider>
         </CardContent>
       </Card>
     </div>

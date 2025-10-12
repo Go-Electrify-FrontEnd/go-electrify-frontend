@@ -2,15 +2,23 @@ import { LoginForm } from "@/components/login/login-form";
 import AppLogo from "@/components/shared/logo";
 import { redirect } from "@/i18n/navigation";
 import { getUser } from "@/lib/auth/auth-server";
-import { getLocale } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
 
-export default async function LoginPage() {
+type Props = {
+  params: Promise<{ locale: string }>;
+};
+
+export default async function LoginPage({ params }: Props) {
+  const { locale } = await params;
+
+  // Enable static rendering (but getUser() will make it dynamic)
+  setRequestLocale(locale as "en" | "vi");
+
   const { user } = await getUser();
   if (user) {
     // If the user is already logged in, you might want to redirect them
     // to the dashboard or another appropriate page.
-    const locale = await getLocale();
-    redirect({ href: "/dashboard", locale });
+    redirect({ href: "/dashboard", locale: locale as "en" | "vi" });
   }
   return (
     <div className="grid min-h-svh lg:grid-cols-2">

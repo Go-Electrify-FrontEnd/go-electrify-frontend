@@ -1,116 +1,246 @@
 "use client";
 
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import { Edit2Icon } from "lucide-react";
-import { CarModel } from "@/types/car";
+import { startTransition, useActionState, useEffect } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  vehicleModelSchema,
+  type VehicleModelFormData,
+} from "@/schemas/vehicle-model.schema";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import {
+  MultiSelect,
+  MultiSelectContent,
+  MultiSelectGroup,
+  MultiSelectItem,
+  MultiSelectTrigger,
+  MultiSelectValue,
+} from "@/components/ui/multi-select";
+import { useConnectorTypes } from "@/contexts/connector-type-context";
+import { useTranslations } from "next-intl";
+import { updateVehicleModel } from "@/actions/vehicle-models-actions";
+import { toast } from "sonner";
+import { useVehicleModelUpdate } from "@/contexts/vehicle-model-action-context";
 
-interface VehicleModelEditDialogProps {
-  carModel: CarModel;
-}
+export default function VehicleModelEditDialog() {
+  const t = useTranslations("vehicleModel");
+  const connectorTypes = useConnectorTypes();
+  const { vehicleModel, isEditDialogOpen, setEditDialogOpen } =
+    useVehicleModelUpdate();
 
-export default function VehicleModelEditDialog({
-  carModel: { id, modelName, maxPowerKw, batteryCapacityKwh },
-}: VehicleModelEditDialogProps) {
-  const [carModelName, setCarModelName] = useState(modelName);
-  const [carMaxPowerKw, setCarMaxPowerKw] = useState(maxPowerKw.toString());
-  const [carBatteryCapacityKwh, setCarBatteryCapacityKwh] = useState(
-    batteryCapacityKwh.toString(),
+  const [updateState, updateAction, updatePending] = useActionState(
+    updateVehicleModel,
+    { success: false, msg: "" },
   );
 
-  const handleSubmit = () => {
-    // TODO: Implement update logic
-    const updatedData = {
-      id,
-      modelName: carModelName,
-      maxPowerKw: parseInt(carMaxPowerKw),
-      batteryCapacityKwh: parseFloat(carBatteryCapacityKwh),
-    };
-    console.log("Updated car model:", updatedData);
-  };
+  const form = useForm({
+    resolver: zodResolver(vehicleModelSchema),
+    defaultValues: {
+      modelName: vehicleModel?.modelName || "",
+      maxPowerKw: vehicleModel?.maxPowerKw || 0,
+      batteryCapacityKwh: vehicleModel?.batteryCapacityKwh || 0,
+      connectorTypeIds: vehicleModel?.connectorTypeIds || [],
+    },
+  });
+
+  useEffect(() => {
+    if (vehicleModel) {
+      form.reset({
+        modelName: vehicleModel.modelName,
+        maxPowerKw: vehicleModel.maxPowerKw,
+        batteryCapacityKwh: vehicleModel.batteryCapacityKwh,
+        connectorTypeIds: vehicleModel.connectorTypeIds,
+      });
+    }
+  }, [vehicleModel, form]);
+
+  useEffect(() => {
+    if (!updateState.msg) return;
+    if (updateState.success) {
+      toast.success(updateState.msg);
+      setEditDialogOpen(false);
+      form.reset();
+    } else {
+      toast.error(updateState.msg);
+    }
+  }, [updateState]);
+
+  function onSubmit(data: VehicleModelFormData) {
+    if (!vehicleModel) return;
+
+    const formData = new FormData();
+    formData.append("id", vehicleModel.id.toString());
+    formData.append("modelName", data.modelName);
+    formData.append("maxPowerKw", data.maxPowerKw.toString());
+    formData.append("batteryCapacityKwh", data.batteryCapacityKwh.toString());
+
+    data.connectorTypeIds.forEach((id: string) => {
+      formData.append("connectorTypeIds", id);
+    });
+
+    startTransition(() => {
+      updateAction(formData);
+    });
+  }
 
   return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-          <Edit2Icon className="h-4 w-4" />
-        </Button>
-      </SheetTrigger>
-      <SheetContent className="w-[400px] sm:w-[540px]">
-        <SheetHeader>
-          <SheetTitle>Update Car Model</SheetTitle>
-          <SheetDescription>
-            Update the car model information. Fields marked as read-only cannot
-            be modified.
-          </SheetDescription>
-        </SheetHeader>
+    <Dialog open={isEditDialogOpen} onOpenChange={setEditDialogOpen}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>{t("edit.title")}</DialogTitle>
+          <DialogDescription>{t("edit.description")}</DialogDescription>
+        </DialogHeader>
 
-        <div className="space-y-6 p-4">
-          <div className="space-y-2">
-            <Label htmlFor="modelName" className="text-sm font-medium">
-              Model Name
-            </Label>
-            <Input
-              id="modelName"
-              value={carModelName}
-              onChange={(e) => setCarModelName(e.target.value)}
-              placeholder="Enter car model name"
-              className="w-full"
+        <form
+          id="vehicle-model-form"
+          className="space-y-6"
+          onSubmit={form.handleSubmit(onSubmit)}
+        >
+          <FieldGroup className="my-4">
+            <Controller
+              name="modelName"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="modelName">
+                    {t("form.modelName")}
+                  </FieldLabel>
+                  <Input
+                    {...field}
+                    id="modelName"
+                    placeholder={t("form.modelNamePlaceholder")}
+                    aria-invalid={fieldState.invalid}
+                    autoComplete="off"
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
             />
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="maxPowerKw" className="text-sm font-medium">
-              Max Power (kW)
-            </Label>
-            <Input
-              id="maxPowerKw"
-              type="number"
-              value={carMaxPowerKw}
-              onChange={(e) => setCarMaxPowerKw(e.target.value)}
-              placeholder="Enter maximum power in kW"
-              className="w-full"
-              min="0"
-              step="1"
+            <Controller
+              name="maxPowerKw"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="maxPowerKw">
+                    {t("form.maxPowerKw")}
+                  </FieldLabel>
+                  <Input
+                    {...field}
+                    type="number"
+                    id="maxPowerKw"
+                    placeholder={t("form.maxPowerPlaceholder")}
+                    aria-invalid={fieldState.invalid}
+                    autoComplete="off"
+                    value={
+                      typeof field.value === "number" ||
+                      typeof field.value === "string"
+                        ? field.value
+                        : ""
+                    }
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
             />
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="batteryCapacityKwh" className="text-sm font-medium">
-              Battery Capacity (kWh)
-            </Label>
-            <Input
-              id="batteryCapacityKwh"
-              type="number"
-              value={carBatteryCapacityKwh}
-              onChange={(e) => setCarBatteryCapacityKwh(e.target.value)}
-              placeholder="Enter battery capacity in kWh"
-              className="w-full"
-              min="0"
-              step="0.1"
+            <Controller
+              name="batteryCapacityKwh"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="batteryCapacityKwh">
+                    {t("form.batteryCapacityKwh")}
+                  </FieldLabel>
+                  <Input
+                    {...field}
+                    type="number"
+                    id="batteryCapacityKwh"
+                    placeholder={t("form.batteryCapacityPlaceholder")}
+                    aria-invalid={fieldState.invalid}
+                    autoComplete="off"
+                    value={
+                      typeof field.value === "number" ||
+                      typeof field.value === "string"
+                        ? field.value
+                        : ""
+                    }
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
             />
-          </div>
 
-          <div className="flex gap-3 pt-6">
-            <Button onClick={handleSubmit} className="flex-1">
-              Update Car Model
-            </Button>
-            <Button variant="outline" className="flex-1">
-              Cancel
-            </Button>
-          </div>
-        </div>
-      </SheetContent>
-    </Sheet>
+            <Controller
+              name="connectorTypeIds"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="connectorTypeIds">
+                    {t("form.connectorTypes")}
+                  </FieldLabel>
+                  <MultiSelect
+                    onValuesChange={field.onChange}
+                    values={field.value}
+                    aria-invalid={fieldState.invalid}
+                  >
+                    <MultiSelectTrigger className="w-full max-w-[400px]">
+                      <MultiSelectValue
+                        placeholder={t("form.connectorTypesPlaceholder")}
+                        overflowBehavior="wrap"
+                      />
+                    </MultiSelectTrigger>
+                    <MultiSelectContent>
+                      <MultiSelectGroup>
+                        {connectorTypes.map((ct) => (
+                          <MultiSelectItem key={ct.id} value={ct.id.toString()}>
+                            {ct.name}
+                          </MultiSelectItem>
+                        ))}
+                      </MultiSelectGroup>
+                    </MultiSelectContent>
+                  </MultiSelect>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+          </FieldGroup>
+        </form>
+
+        <DialogFooter className="flex w-full">
+          <Button
+            type="submit"
+            form="vehicle-model-form"
+            className="self-end"
+            disabled={updatePending}
+          >
+            {updatePending ? t("form.updating") : t("form.updateButton")}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

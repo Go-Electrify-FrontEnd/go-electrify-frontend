@@ -17,7 +17,6 @@ import {
   MultiSelectTrigger,
   MultiSelectValue,
 } from "@/components/ui/multi-select";
-import { ConnectorType } from "@/types/connector";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   DialogContent,
@@ -26,48 +25,32 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
-import { startTransition, useActionState, useEffect } from "react";
+import { startTransition, useActionState, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import * as z from "zod";
 import { createVehicleModel } from "@/actions/vehicle-models-actions";
 import { toast } from "sonner";
-import { on } from "events";
+import {
+  vehicleModelSchema,
+  type VehicleModelFormData,
+} from "@/schemas/vehicle-model.schema";
+import { useConnectorTypes } from "@/contexts/connector-type-context";
+import { useTranslations } from "next-intl";
 
-// Define the schema for vehicle model creation
-const vehicleModelSchema = z.object({
-  modelName: z.string().trim().min(1, "Tên mẫu xe là bắt buộc"),
-  maxPowerKw: z.coerce
-    .number()
-    .refine((value) => !Number.isNaN(value), {
-      message: "Công suất phải là số",
-    })
-    .min(1, "Công suất phải lớn hơn 0")
-    .max(1000, "Công suất vượt quá giới hạn cho phép"),
-  batteryCapacityKwh: z.coerce
-    .number()
-    .refine((value) => !Number.isNaN(value), {
-      message: "Công suất phải là số",
-    })
-    .min(1, "Dung lượng pin tối thiểu là 1 kWh"),
-  connectorTypeIds: z
-    .array(z.string())
-    .min(1, "Phải có ít nhất một loại cổng kết nối"),
-});
+const initialState = {
+  success: false,
+  msg: "",
+};
 
-interface VehicleModelCreateDialogProps {
-  connectorTypes: ConnectorType[];
-}
+export default function VehicleModelCreateDialog() {
+  const t = useTranslations("vehicleModel");
+  const connectorTypes = useConnectorTypes();
+  const [open, setOpen] = useState(false);
 
-export default function VehicleModelCreateDialog({
-  connectorTypes,
-}: VehicleModelCreateDialogProps) {
   const [createState, createAction, pending] = useActionState(
     createVehicleModel,
-    {
-      success: false,
-      msg: "",
-    },
+    initialState,
   );
+
   const form = useForm({
     resolver: zodResolver(vehicleModelSchema),
     defaultValues: {
@@ -83,18 +66,22 @@ export default function VehicleModelCreateDialog({
 
     if (createState.success) {
       form.reset();
+      setOpen(false);
       toast.success(createState.msg);
     } else {
       toast.error(createState.msg);
     }
   }, [createState, form]);
 
-  function onSubmit(data: z.infer<typeof vehicleModelSchema>) {
+  function onSubmit(data: VehicleModelFormData) {
     const formData = new FormData();
     formData.append("modelName", data.modelName);
     formData.append("maxPowerKw", data.maxPowerKw.toString());
     formData.append("batteryCapacityKwh", data.batteryCapacityKwh.toString());
-    formData.append("connectorTypeIds", data.connectorTypeIds.join(","));
+
+    data.connectorTypeIds.forEach((id: string) => {
+      formData.append("connectorTypeIds", id);
+    });
 
     startTransition(() => {
       createAction(formData);
@@ -102,20 +89,18 @@ export default function VehicleModelCreateDialog({
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button size="lg">
           <Plus />
-          <span className="font-semibold">Thêm Xe Mới</span>
+          <span className="font-semibold">{t("create.title")}</span>
         </Button>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Thêm Mẫu Xe Điện Mới</DialogTitle>
-          <DialogDescription>
-            Thêm thông tin cho mẫu xe điện mới cho hệ thống.
-          </DialogDescription>
+          <DialogTitle>{t("create.title")}</DialogTitle>
+          <DialogDescription>{t("create.description")}</DialogDescription>
         </DialogHeader>
         <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <FieldGroup className="my-4">
@@ -124,11 +109,13 @@ export default function VehicleModelCreateDialog({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="modelName">Tên Mẫu Xe</FieldLabel>
+                  <FieldLabel htmlFor="modelName">
+                    {t("form.modelName")}
+                  </FieldLabel>
                   <Input
                     {...field}
                     id="modelName"
-                    placeholder="Tên mẫu xe"
+                    placeholder={t("form.modelNamePlaceholder")}
                     aria-invalid={fieldState.invalid}
                     autoComplete="off"
                   />
@@ -144,12 +131,14 @@ export default function VehicleModelCreateDialog({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="maxPowerKw">Công Suất (kW)</FieldLabel>
+                  <FieldLabel htmlFor="maxPowerKw">
+                    {t("form.maxPowerKw")}
+                  </FieldLabel>
                   <Input
                     {...field}
                     type="number"
                     id="maxPowerKw"
-                    placeholder="Công suất tối đa (kW)"
+                    placeholder={t("form.maxPowerPlaceholder")}
                     aria-invalid={fieldState.invalid}
                     autoComplete="off"
                     value={
@@ -172,13 +161,13 @@ export default function VehicleModelCreateDialog({
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="batteryCapacityKwh">
-                    Dung Lượng Pin (kWh)
+                    {t("form.batteryCapacityKwh")}
                   </FieldLabel>
                   <Input
                     {...field}
                     type="number"
                     id="batteryCapacityKwh"
-                    placeholder="Dung lượng pin (kWh)"
+                    placeholder={t("form.batteryCapacityPlaceholder")}
                     aria-invalid={fieldState.invalid}
                     autoComplete="off"
                     value={
@@ -201,7 +190,7 @@ export default function VehicleModelCreateDialog({
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="connectorTypeIds">
-                    Loại Cổng Kết Nối
+                    {t("form.connectorTypes")}
                   </FieldLabel>
                   <MultiSelect
                     onValuesChange={field.onChange}
@@ -210,8 +199,8 @@ export default function VehicleModelCreateDialog({
                   >
                     <MultiSelectTrigger className="w-full max-w-[400px]">
                       <MultiSelectValue
-                        placeholder="Chọn cổng sạc..."
-                        overflowBehavior="wrap-when-open"
+                        placeholder={t("form.connectorTypesPlaceholder")}
+                        overflowBehavior="wrap"
                       />
                     </MultiSelectTrigger>
                     <MultiSelectContent>
@@ -233,7 +222,7 @@ export default function VehicleModelCreateDialog({
 
             <DialogFooter className="flex w-full">
               <Button type="submit" className="self-end" disabled={pending}>
-                {pending ? "Đang thêm..." : "Thêm Mẫu Xe"}
+                {pending ? t("form.creating") : t("form.createButton")}
               </Button>
             </DialogFooter>
           </FieldGroup>

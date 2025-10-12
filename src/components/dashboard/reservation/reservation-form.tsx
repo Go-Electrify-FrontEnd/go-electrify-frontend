@@ -202,7 +202,7 @@ export function ReservationForm({ onContinue }: ReservationFormProps) {
             >
               {selectedCarModel
                 ? selectedCarModelData
-                  ? `${selectedCarModelData.brand} ${selectedCarModelData.model}`
+                  ? selectedCarModelData.modelName
                   : "Chọn mẫu xe của bạn"
                 : carModels.length === 0
                   ? "Đang tải mẫu xe..."
@@ -219,7 +219,7 @@ export function ReservationForm({ onContinue }: ReservationFormProps) {
                   {carModels.map((car) => (
                     <CommandItem
                       key={car.id}
-                      value={`${car.brand} ${car.model}`}
+                      value={car.modelName}
                       onSelect={() => {
                         setSelectedCarModel(car.id!.toString());
                         setOpenCarModel(false);
@@ -233,7 +233,7 @@ export function ReservationForm({ onContinue }: ReservationFormProps) {
                             : "opacity-0",
                         )}
                       />
-                      {car.brand} {car.model}
+                      {car.modelName}
                     </CommandItem>
                   ))}
                 </CommandGroup>
