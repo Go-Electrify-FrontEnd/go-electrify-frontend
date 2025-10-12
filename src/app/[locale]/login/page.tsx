@@ -8,16 +8,13 @@ type Props = {
   params: Promise<{ locale: string }>;
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function LoginPage({ params }: Props) {
   const { locale } = await params;
 
-  // Enable static rendering (but getUser() will make it dynamic)
-  setRequestLocale(locale as "en" | "vi");
-
   const { user } = await getUser();
   if (user) {
-    // If the user is already logged in, you might want to redirect them
-    // to the dashboard or another appropriate page.
     redirect({ href: "/dashboard", locale: locale as "en" | "vi" });
   }
   return (
