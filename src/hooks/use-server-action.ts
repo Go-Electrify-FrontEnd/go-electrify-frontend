@@ -27,20 +27,27 @@ export function useServerAction<
     initialState as Awaited<TState>,
   );
   const initialRef = useRef(initialState);
+  const optionsRef = useRef(options);
+
+  useEffect(() => {
+    optionsRef.current = options;
+  }, [options]);
 
   useEffect(() => {
     if (state === initialRef.current) {
       return;
     }
+    const currentOptions = optionsRef.current;
 
-    options.onSettled?.(state);
+    currentOptions.onSettled?.(state);
 
     if (state.success) {
-      options.onSuccess?.(state);
-    } else {
-      options.onError?.(state);
+      currentOptions.onSuccess?.(state);
+      return;
     }
-  }, [state, options.onError, options.onSettled, options.onSuccess]);
+
+    currentOptions.onError?.(state);
+  }, [state]);
 
   const execute = useCallback(
     (payload: TPayload) => {

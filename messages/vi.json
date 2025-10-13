@@ -48,7 +48,12 @@
       "alreadyAuthenticated": "Đã đăng nhập",
       "invalid": "OTP hoặc email không hợp lệ",
       "networkError": "Không thể xác thực OTP. Vui lòng thử lại sau."
-    }
+    },
+    "darkMode": "Chế độ tối",
+    "lightMode": "Chế độ ánh sáng",
+    "systemMode": "Chế độ hệ thống",
+    "billing": "Thanh toán",
+    "notifications": "Thông báo"
   },
   "navigation": {
     "dashboard": "Bảng điều khiển",
@@ -432,6 +437,11 @@
     },
     "common": {
       "cancel": "Huỷ"
+    },
+    "toast": {
+      "createSuccess": "Hành động được thực hiện thành công",
+      "createSuccessDesc": "Loại trình kết nối mới đã được tạo",
+      "createError": "Hành động không thành công"
     }
   },
   "station": {
@@ -460,9 +470,29 @@
     }
   },
   "subscription": {
+    "page": {
+      "title": "Quản lý Gói Đăng Ký",
+      "description": "Quản lý và theo dõi các gói đăng ký sạc xe điện một cách hiệu quả",
+      "listTitle": "Danh sách gói đăng ký",
+      "listDescription": "Tất cả các gói đăng ký trong hệ thống với thông tin chi tiết"
+    },
     "create": {
       "title": "Tạo Gói Đăng Ký",
-      "description": "Thêm gói đăng ký mới"
+      "description": "Thêm gói đăng ký mới",
+      "success": "Gói đăng ký đã được tạo",
+      "failure": "Tạo gói đăng ký thất bại"
+    },
+    "form": {
+      "name": "Tên",
+      "namePlaceholder": "Nhập tên",
+      "price": "Giá",
+      "pricePlaceholder": "0",
+      "totalKwh": "Tổng kWh",
+      "totalKwhPlaceholder": "Tùy chọn",
+      "durationDays": "Thời hạn (ngày)",
+      "durationDaysPlaceholder": "30",
+      "creating": "Đang tạo...",
+      "createButton": "Tạo"
     },
     "edit": {
       "title": "Sửa Gói Đăng Ký",
@@ -486,7 +516,11 @@
     "account": "Cài Đặt Tài Khoản",
     "notifications": "Thông Báo",
     "language": "Ngôn Ngữ",
-    "theme": "Chủ Đề"
+    "theme": "Chủ Đề",
+    "fullName": "Tên đầy đủ",
+    "fullNameDescription": "Vui lòng điền tên của bạn vào trường này",
+    "fullNameImportant": "Vui lòng sử dụng tên thật của bạn vì tên này sẽ được sử dụng trong hóa đơn.",
+    "saveChanges": "Lưu"
   },
   "table": {
     "connectorTypes": "Cổng Hỗ Trợ",
@@ -494,5 +528,72 @@
     "maxPower": "Công Suất Tối Đa (Kw)",
     "modelName": "Tên Mẫu",
     "actions": "Hành Động"
+  },
+  "admin": {
+    "subscription": {
+      "create": {
+        "missingFields": "Vui lòng gửi tất cả các trường bắt buộc để tiếp tục",
+        "success": "Gói đăng ký đã được tạo.",
+        "failure": "Tạo đăng ký không thành công.",
+        "networkError": "Lỗi kết nối, vui lòng thử lại hoặc liên hệ với quản trị viên nếu lỗi vẫn còn",
+        "title": "Tạo đăng ký mới",
+        "description": "Chỉ định thông tin đăng ký mới tại đây"
+      },
+      "form": {
+        "name": "Tên",
+        "namePlaceholder": "Thanh toán khi bạn sạc",
+        "price": "Giá",
+        "pricePlaceholder": "199000",
+        "totalKwh": "Tổng số KwH",
+        "totalKwhPlaceholder": "100",
+        "durationDays": "Thời lượng (Ngày)",
+        "durationDaysPlaceholder": "30",
+        "creating": "Đang Tạo",
+        "createButton": "Tạo",
+        "updating": "Đang cập nhật...",
+        "updateButton": "Cập nhật"
+      },
+      "common": {
+        "cancel": "Hủy bỏ"
+      },
+      "edit": {
+        "title": "Chỉnh sửa gói đăng ký",
+        "description": "Cập nhật thông tin gói đăng ký",
+        "missingFields": "Vui lòng điền đầy đủ các trường bắt buộc",
+        "invalidNumbers": "Vui lòng nhập giá trị số hợp lệ",
+        "success": "Gói đăng ký đã được cập nhật thành công",
+        "failure": "Cập nhật gói đăng ký thất bại, vui lòng thử lại",
+        "networkError": "Lỗi mạng, vui lòng thử lại hoặc liên hệ hỗ trợ",
+        "toast": {
+          "success": "Cập nhật thành công",
+          "failure": "Cập nhật thất bại"
+        }
+      },
+      "delete": {
+        "networkError": "Lỗi mạng, vui lòng thử lại hoặc liên hệ với quản trị viên nếu vẫn còn lỗi",
+        "success": "Đăng ký đã được xóa thành công",
+        "failure": "Xóa đăng ký không thành công, vui lòng thử lại.",
+        "missingId": "Vui lòng cung cấp id để tiếp tục",
+        "toast": {
+          "success": "Xóa thành công"
+        },
+        "delete": {
+          "failure": "Xóa không thành công"
+        },
+        "dialog": {
+          "title": "Bạn có chắc chắn xóa?",
+          "description": {
+            "1": "Hành động này không thể hoàn tác. Gói đăng ký",
+            "2": "sẽ bị xóa vĩnh viễn khỏi hệ thống",
+            "3": "Hành động này có thể ảnh hưởng đến những người đang sử dụng đăng ký này"
+          },
+          "confirm": "Để xác nhận, vui lòng nhập tên người đăng ký",
+          "button": {
+            "loading": "Đang xóa",
+            "delete": "Xóa bỏ"
+          }
+        }
+      }
+    }
   }
 }

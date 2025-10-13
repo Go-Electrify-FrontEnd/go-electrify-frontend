@@ -47,23 +47,17 @@ export default function ConnectorTypeCreateDialog() {
     initialState,
     {
       onSuccess: (result) => {
-        toast.success(
-          t("toast.createSuccess", { defaultValue: "Tạo thành công" }),
-          {
-            description: result.msg,
-          },
-        );
+        toast.success(t("toast.createSuccess"), {
+          description: result.msg,
+        });
         setOpen(false);
         form.reset();
       },
       onError: (result) => {
         if (result.msg) {
-          toast.error(
-            t("toast.createError", { defaultValue: "Tạo thất bại" }),
-            {
-              description: result.msg,
-            },
-          );
+          toast.error(t("toast.createError"), {
+            description: result.msg,
+          });
         }
       },
     },
@@ -76,6 +70,7 @@ export default function ConnectorTypeCreateDialog() {
       maxPowerKw: 0,
     },
   });
+
   const handleSubmit = form.handleSubmit(
     (data: ConnectorTypeCreateFormData) => {
       const formData = new FormData();
@@ -123,7 +118,6 @@ export default function ConnectorTypeCreateDialog() {
                   <FieldLabel htmlFor="name">{t("form.name")}</FieldLabel>
                   <Input
                     {...field}
-                    id="name"
                     placeholder={t("form.namePlaceholder")}
                     aria-invalid={fieldState.invalid}
                     autoComplete="off"
@@ -145,7 +139,6 @@ export default function ConnectorTypeCreateDialog() {
                   <InputGroup>
                     <InputGroupTextarea
                       {...field}
-                      id="form-rhf-demo-description"
                       placeholder="Mô tả ngắn về loại cổng kết nối (tối đa 200 ký tự)"
                       aria-invalid={fieldState.invalid}
                       rows={6}
@@ -175,7 +168,6 @@ export default function ConnectorTypeCreateDialog() {
                   </FieldLabel>
                   <Input
                     {...field}
-                    id="maxPowerKw"
                     type="number"
                     aria-invalid={fieldState.invalid}
                     placeholder="Ví dụ: 350"

@@ -17,21 +17,10 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarRail,
-} from "@/components/ui/sidebar";
-import { DashboardLogo } from "./dashboard-logo";
-import { NavUser } from "./nav-user";
+import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
 import { NavSection } from "./nav-section";
-import { NavSecondary } from "./nav-secondary";
-import { useUser } from "@/contexts/user-context";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { user } = useUser();
   const t = useTranslations("navigation");
 
   const overview = {
@@ -126,21 +115,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     },
   ];
   return (
-    <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        <DashboardLogo />
-      </SidebarHeader>
-      <SidebarContent>
+    <Sidebar
+      className="!bg-background !border-none"
+      collapsible="icon"
+      {...props}
+    >
+      <SidebarContent className="!bg-background !border-0">
         <NavSection items={overview} />
         <NavSection items={charging} />
         <NavSection items={payment} />
         <NavSection items={admin} />
-        <NavSecondary items={secondary} className="mt-auto" />
       </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={user!} />
-      </SidebarFooter>
-      <SidebarRail />
     </Sidebar>
   );
 }

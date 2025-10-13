@@ -3,27 +3,30 @@ import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 
 interface AppLogoProps {
+  width?: number;
+  height?: number;
   className?: string;
 }
 
-export default function AppLogo(props: AppLogoProps) {
+export default function AppLogo({
+  width = 60,
+  height = 60,
+  className,
+}: AppLogoProps) {
   return (
     <Link
       href="/"
       prefetch={false}
-      className={cn(
-        props.className,
-        "flex items-center align-middle font-bold",
-      )}
+      className={cn(className, "flex items-center align-middle font-bold")}
     >
       <Image
         src="/assets/images/logo01.png"
         alt="Electrify Logo"
-        width={60}
-        height={60}
+        width={width}
+        height={height}
         className="object-contain"
       />
-      <span className="text-2xl font-bold">Electrify</span>
+      <span className="text-foreground text-2xl font-bold">Electrify</span>
     </Link>
   );
 }
