@@ -48,7 +48,12 @@
       "alreadyAuthenticated": "Already logged in",
       "invalid": "Invalid OTP or email",
       "networkError": "Unable to verify OTP. Please try again later."
-    }
+    },
+    "darkMode": "Dark mode",
+    "lightMode": "Light mode",
+    "systemMode": "System mode",
+    "billing": "Billing",
+    "notifications": "Notifications"
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -437,6 +442,11 @@
     },
     "common": {
       "cancel": "Cancel"
+    },
+    "toast": {
+      "createSuccess": "Action Performed Successfully",
+      "createSuccessDesc": "New connector type has been created",
+      "createError": "Action Failed"
     }
   },
   "station": {
@@ -465,9 +475,29 @@
     }
   },
   "subscription": {
+    "page": {
+      "title": "Subscription Management",
+      "description": "Manage and track electric vehicle charging subscription plans efficiently",
+      "listTitle": "Subscription List",
+      "listDescription": "All subscription plans in the system with detailed information"
+    },
     "create": {
       "title": "Create Subscription",
-      "description": "Add a new subscription plan"
+      "description": "Add a new subscription plan",
+      "success": "Subscription created",
+      "failure": "Subscription creation failed"
+    },
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "Enter name",
+      "price": "Price",
+      "pricePlaceholder": "0",
+      "totalKwh": "Total kWh",
+      "totalKwhPlaceholder": "Optional",
+      "durationDays": "Duration (days)",
+      "durationDaysPlaceholder": "30",
+      "creating": "Creating...",
+      "createButton": "Create"
     },
     "edit": {
       "title": "Edit Subscription",
@@ -491,7 +521,11 @@
     "account": "Account Settings",
     "notifications": "Notifications",
     "language": "Language",
-    "theme": "Theme"
+    "theme": "Theme",
+    "fullName": "Full Name",
+    "fullNameDescription": "Please fill in your name in this field",
+    "fullNameImportant": "Please use your real name because this will be used in the bills.",
+    "saveChanges": "Save"
   },
   "table": {
     "connectorTypes": "Support Connectors",
@@ -499,5 +533,72 @@
     "maxPower": "Max Power (Kw)",
     "modelName": "Model Name",
     "actions": "Actions"
+  },
+  "admin": {
+    "subscription": {
+      "create": {
+        "missingFields": "Please submit all required fields to continue",
+        "success": "Subscription has been created.",
+        "failure": "Subscription creation was fail.",
+        "networkError": "Error connection, please try again or contact administrator if the error is persist",
+        "title": "Create new subscription",
+        "description": "Specify new subscription information here"
+      },
+      "form": {
+        "name": "Name",
+        "namePlaceholder": "VIP",
+        "price": "Price",
+        "pricePlaceholder": "199000",
+        "totalKwh": "Total KwH",
+        "totalKwhPlaceholder": "100",
+        "durationDays": "Duration (Days)",
+        "durationDaysPlaceholder": "30",
+        "creating": "Creating",
+        "createButton": "Create",
+        "updating": "Updating...",
+        "updateButton": "Update"
+      },
+      "common": {
+        "cancel": "Cancel"
+      },
+      "edit": {
+        "title": "Edit Subscription",
+        "description": "Update subscription plan details",
+        "missingFields": "Please provide all required fields to continue",
+        "invalidNumbers": "Please enter valid numeric values",
+        "success": "Subscription has been updated successfully",
+        "failure": "Subscription update failed, please try again",
+        "networkError": "Network error, please try again or contact support",
+        "toast": {
+          "success": "Update Successful",
+          "failure": "Update Failed"
+        }
+      },
+      "delete": {
+        "networkError": "Network error, please try again or contact admin if the error still persist",
+        "success": "Subscription has been deleted successfully",
+        "failure": "Subscription deletion fail, please try again.",
+        "missingId": "Please provide id to continue",
+        "toast": {
+          "success": "Delete Successful"
+        },
+        "delete": {
+          "failure": "Delete failed"
+        },
+        "dialog": {
+          "title": "Are you sure to delete?",
+          "description": {
+            "1": "This action cannot undo. The subscription",
+            "2": "will be permanantly deleted from the system",
+            "3": "This action can affect people that are using this subscription"
+          },
+          "confirm": "To confirm, please type in the subscription's name",
+          "button": {
+            "loading": "Deleting",
+            "delete": "Delete"
+          }
+        }
+      }
+    }
   }
 }

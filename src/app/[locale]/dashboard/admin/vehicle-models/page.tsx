@@ -63,31 +63,26 @@ export default async function VehicleModelsPage({ params }: Props) {
 
   return (
     <ConnectorTypeProvider connectorTypes={connectorTypes}>
-      <div className="container mx-auto mt-4 space-y-6">
-        {/* Header Card */}
-        <Card>
-          <CardHeader className="relative pt-8 pb-8">
-            <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-              <div className="space-y-4">
-                <div className="flex items-center gap-5">
-                  <div className="bg-primary ring-primary/10 relative flex h-16 w-16 items-center justify-center rounded-2xl shadow-xl ring-4 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-                    <Car className="text-primary-foreground h-8 w-8" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <CardTitle className="text-foreground text-4xl font-semibold">
-                      Quản lý Xe Điện
-                    </CardTitle>
-                    <CardDescription className="text-muted-foreground/90 text-base font-medium">
-                      Quản lý và theo dõi các mẫu xe điện và thông số kỹ thuật
-                      một cách hiệu quả
-                    </CardDescription>
-                  </div>
+      <div className="flex flex-col gap-4 py-4 md:gap-6">
+        {/* Header (plain text, not a card) */}
+        <div className="pb-4">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-4">
+              <div className="flex items-center gap-5">
+                <div className="space-y-1.5">
+                  <h1 className="text-foreground text-4xl font-semibold">
+                    Quản lý Xe Điện
+                  </h1>
+                  <p className="text-muted-foreground/90 text-base font-medium">
+                    Quản lý và theo dõi các mẫu xe điện và thông số kỹ thuật một
+                    cách hiệu quả
+                  </p>
                 </div>
               </div>
-              <VehicleModelCreateDialog />
             </div>
-          </CardHeader>
-        </Card>
+            <VehicleModelCreateDialog />
+          </div>
+        </div>
 
         <Card>
           <CardHeader className="border-b">

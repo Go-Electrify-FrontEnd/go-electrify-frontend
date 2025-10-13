@@ -55,7 +55,6 @@ export default async function LocaleLayout({
         <NextIntlClientProvider
           locale={locale}
           messages={messages}
-          // Explicitly provide timeZone and now for static rendering
           timeZone="Asia/Ho_Chi_Minh"
           now={new Date()}
         >

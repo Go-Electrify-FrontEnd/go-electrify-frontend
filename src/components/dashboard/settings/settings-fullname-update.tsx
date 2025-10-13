@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,27 +9,31 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { useUser } from "@/contexts/user-context";
+import { useTranslations } from "next-intl";
 
 export default function FullNameUpdate() {
+  const { user } = useUser();
+  const t = useTranslations("settings");
   return (
     <Card className="max-w-[1000px]">
       <CardHeader>
-        <CardTitle>Tên đầy đủ</CardTitle>
-        <CardDescription>Thay đổi tên đầy đủ của bạn</CardDescription>
+        <CardTitle>{t("fullName")}</CardTitle>
+        <CardDescription>{t("fullNameDescription")}</CardDescription>
       </CardHeader>
       <CardContent>
         <Input
+          defaultValue={user?.name || ""}
           className="w-full max-w-md sm:max-w-lg"
-          placeholder="Nhập tên đầy đủ"
         />
       </CardContent>
       <CardFooter className="flex h-12 w-full flex-col gap-2 border-t sm:flex-row sm:items-center sm:justify-between">
         <p className="text-muted-foreground text-center text-sm sm:text-left">
-          Hãy chọn tên thật của bạn vì hoá đơn sẽ được in theo tên này.
+          {t("fullNameImportant")}
         </p>
         <div className="flex w-full justify-center sm:w-auto sm:justify-end">
           <Button className="w-full sm:w-auto" size="sm">
-            Lưu thay đổi
+            {t("saveChanges")}
           </Button>
         </div>
       </CardFooter>

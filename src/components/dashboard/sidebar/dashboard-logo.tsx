@@ -12,7 +12,7 @@ export function DashboardLogo() {
   const t = useTranslations("app");
 
   return (
-    <SidebarMenu>
+    <SidebarMenu className="bg-background">
       <SidebarMenuItem>
         <SidebarMenuButton size="lg" className="cursor-default">
           <Image
