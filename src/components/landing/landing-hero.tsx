@@ -28,6 +28,8 @@ export default function LandingHero() {
           fill
           priority
           className="object-cover"
+          decoding="async"
+          quality={85}
         />
         <div className="absolute inset-0 bg-black/50" />
       </div>

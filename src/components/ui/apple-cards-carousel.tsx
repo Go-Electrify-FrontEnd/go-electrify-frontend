@@ -1,5 +1,6 @@
 "use client";
 import React, {
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -157,6 +158,23 @@ export const Card = ({
   const containerRef = useRef<HTMLDivElement>(null!);
   const { onCardClose } = useContext(CarouselContext);
 
+  const handleClose = useCallback(() => {
+    setOpen(false);
+    onCardClose(index);
+  }, [index, onCardClose]);
+
+  const handleOpen = useCallback(() => {
+    setOpen(true);
+  }, []);
+
+  // Stable outside click handler that calls the modal close
+  const handleOutsideClick = useCallback(
+    (_: MouseEvent | TouchEvent) => {
+      handleClose();
+    },
+    [handleClose],
+  );
+
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
@@ -164,6 +182,7 @@ export const Card = ({
       }
     }
 
+    // Lock scroll when modal is open
     if (open) {
       document.body.style.overflow = "hidden";
     } else {
@@ -171,19 +190,14 @@ export const Card = ({
     }
 
     window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [open]);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      // Ensure overflow is reset on unmount
+      document.body.style.overflow = "auto";
+    };
+  }, [open, handleClose]);
 
-  useOutsideClick(containerRef, () => handleClose());
-
-  const handleOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-    onCardClose(index);
-  };
+  useOutsideClick(containerRef, handleOutsideClick);
 
   return (
     <>
@@ -258,15 +272,27 @@ export const Card = ({
   );
 };
 
-export const BlurImage = ({
-  height,
-  width,
-  src,
-  className,
-  alt,
-  ...rest
-}: ImageProps) => {
+export const BlurImage = (props: ImageProps) => {
+  const {
+    height,
+    width,
+    src,
+    className,
+    alt,
+    priority,
+    loading,
+    decoding,
+    quality,
+    ...rest
+  } = props;
+
   const [isLoading, setLoading] = useState(true);
+  // Determine if the image should be lazy-loaded (non-priority)
+  const isPriority = priority === true;
+  const loadingValue = loading ?? (isPriority ? undefined : "lazy");
+  const decodingValue = decoding ?? "async";
+  const qualityValue = quality ?? (isPriority ? 85 : 75);
+
   return (
     <Image
       className={cn(
@@ -281,6 +307,9 @@ export const BlurImage = ({
       alt={alt ? alt : "Background of a beautiful view"}
       placeholder="blur"
       blurDataURL={typeof src === "string" ? src : undefined}
+      loading={loadingValue}
+      decoding={decodingValue}
+      quality={qualityValue}
       {...rest}
     />
   );

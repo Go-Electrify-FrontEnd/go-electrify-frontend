@@ -145,6 +145,7 @@ export default function LandingPricing() {
         <p className="text-muted-foreground text-sm">
           Có thể có điều kiện áp dụng.{" "}
           <Link
+            prefetch={false}
             href="#contact"
             className="text-primary font-semibold hover:underline"
           >

@@ -84,7 +84,7 @@ export function TransactionTable({
           </div>
           {showViewAll && totalCount && totalCount > transactions.length && (
             <Button variant="outline" size="sm" asChild>
-              <Link href="/dashboard/wallet/transactions">
+              <Link prefetch={false} href="/dashboard/wallet/transactions">
                 Xem tất cả
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
