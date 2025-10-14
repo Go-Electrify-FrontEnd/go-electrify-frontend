@@ -17,7 +17,7 @@ import { Loader2 } from "lucide-react";
 import { useActionState, useEffect, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { Field, FieldGroup } from "@/components/ui/field";
-import { useTranslations } from "next-intl";
+// Translations removed; using Vietnamese literals
 
 interface VehicleModelDeleteProps {
   carModel: CarModel;
@@ -33,7 +33,15 @@ export default function VehicleModelDeleteDialog({
   carModel: { id, modelName },
   trigger,
 }: VehicleModelDeleteProps) {
-  const t = useTranslations("vehicleModel.delete");
+  const t = {
+    title: "Xóa mẫu xe",
+    description: "Bạn sắp xóa mẫu xe",
+    confirmText: "Nhập tên mẫu xe để xác nhận",
+    placeholder: "Nhập tên mẫu xe",
+    "common.cancel": "Hủy",
+    deleting: "Đang xóa...",
+    deleteButton: "Xóa",
+  };
   const [open, setOpen] = useState(false);
   const [confirmationText, setConfirmationText] = useState("");
   const [deleteState, deleteAction, pending] = useActionState(
@@ -68,9 +76,9 @@ export default function VehicleModelDeleteDialog({
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{t("title")}</DialogTitle>
+          <DialogTitle>{t.title}</DialogTitle>
           <DialogDescription>
-            {t("description")}
+            {t.description}
             <span className="font-semibold"> &ldquo;{modelName}&rdquo;</span>
           </DialogDescription>
         </DialogHeader>
@@ -81,13 +89,13 @@ export default function VehicleModelDeleteDialog({
             <Field>
               <div className="border-destructive/20 bg-destructive/5 rounded-lg border p-4">
                 <p className="text-muted-foreground mb-2 text-sm">
-                  {t("confirmText")}:{" "}
+                  {t.confirmText}:{" "}
                   <span className="text-foreground font-semibold">
                     {modelName}
                   </span>
                 </p>
                 <Input
-                  placeholder={t("placeholder")}
+                  placeholder={t.placeholder}
                   onChange={(e) => setConfirmationText(e.target.value)}
                   value={confirmationText}
                   disabled={pending}
@@ -103,7 +111,7 @@ export default function VehicleModelDeleteDialog({
                 onClick={handleCancel}
                 disabled={pending}
               >
-                {t("common.cancel", { defaultValue: "Cancel" })}
+                {t["common.cancel"]}
               </Button>
               <Button
                 type="submit"
@@ -111,7 +119,7 @@ export default function VehicleModelDeleteDialog({
                 disabled={!isConfirmationValid || pending}
               >
                 {pending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {pending ? t("deleting") : t("deleteButton")}
+                {pending ? t.deleting : t.deleteButton}
               </Button>
             </DialogFooter>
           </FieldGroup>

@@ -34,6 +34,7 @@ function ConnectorTypeNames({ ids }: { ids: string[] }) {
 }
 
 export const vehicleModelTableColumns = (
+  // t parameter kept for compatibility but translations are inlined
   t: (key: string) => string,
 ): ColumnDef<CarModel>[] => [
   {
@@ -67,14 +68,14 @@ export const vehicleModelTableColumns = (
   },
   {
     accessorKey: "modelName",
-    header: () => t("table.modelName"),
+    header: "Mẫu xe",
     cell: ({ row }) => (
       <div className="font-medium">{row.getValue("modelName")}</div>
     ),
   },
   {
     accessorKey: "maxPowerKw",
-    header: () => t("table.maxPower"),
+    header: "Công suất tối đa",
     cell: ({ row }) => {
       const power = row.getValue("maxPowerKw") as number;
       return (
@@ -86,7 +87,7 @@ export const vehicleModelTableColumns = (
   },
   {
     accessorKey: "batteryCapacityKwh",
-    header: () => t("table.batteryCapacity"),
+    header: "Dung lượng pin",
     cell: ({ row }) => {
       const capacity = row.getValue("batteryCapacityKwh") as number;
       return (
@@ -98,7 +99,7 @@ export const vehicleModelTableColumns = (
   },
   {
     accessorKey: "connectorTypeIds",
-    header: () => t("table.connectorTypes"),
+    header: "Loại cổng",
     cell: ({ row }) => {
       const connectorTypeIds = row.getValue("connectorTypeIds") as string[];
       return <ConnectorTypeNames ids={connectorTypeIds} />;
@@ -106,7 +107,7 @@ export const vehicleModelTableColumns = (
   },
   {
     id: "actions",
-    header: () => t("table.actions"),
+    header: "Thao tác",
     cell: ({ row }) => {
       const carModel = row.original;
       return <VehicleModelActionsCell carModel={carModel} />;

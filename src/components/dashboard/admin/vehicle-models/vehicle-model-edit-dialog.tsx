@@ -32,13 +32,28 @@ import {
   MultiSelectValue,
 } from "@/components/ui/multi-select";
 import { useConnectorTypes } from "@/contexts/connector-type-context";
-import { useTranslations } from "next-intl";
+// Translations removed; using Vietnamese literals
 import { updateVehicleModel } from "@/actions/vehicle-models-actions";
 import { toast } from "sonner";
 import { useVehicleModelUpdate } from "@/contexts/vehicle-model-action-context";
 
 export default function VehicleModelEditDialog() {
-  const t = useTranslations("vehicleModel");
+  const t = {
+    editTitle: "Chỉnh sửa mẫu xe",
+    editDescription: "Cập nhật thông tin mẫu xe",
+    form: {
+      modelName: "Tên mẫu xe",
+      modelNamePlaceholder: "Nhập tên mẫu xe",
+      maxPowerKw: "Công suất tối đa (kW)",
+      maxPowerPlaceholder: "Nhập công suất tối đa",
+      batteryCapacityKwh: "Dung lượng pin (kWh)",
+      batteryCapacityPlaceholder: "Nhập dung lượng pin",
+      connectorTypes: "Loại cổng",
+      connectorTypesPlaceholder: "Chọn loại cổng",
+      updating: "Đang cập nhật...",
+      updateButton: "Cập nhật",
+    },
+  };
   const connectorTypes = useConnectorTypes();
   const { vehicleModel, isEditDialogOpen, setEditDialogOpen } =
     useVehicleModelUpdate();
@@ -102,8 +117,8 @@ export default function VehicleModelEditDialog() {
     <Dialog open={isEditDialogOpen} onOpenChange={setEditDialogOpen}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{t("edit.title")}</DialogTitle>
-          <DialogDescription>{t("edit.description")}</DialogDescription>
+          <DialogTitle>{t.editTitle}</DialogTitle>
+          <DialogDescription>{t.editDescription}</DialogDescription>
         </DialogHeader>
 
         <form
@@ -118,12 +133,12 @@ export default function VehicleModelEditDialog() {
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="modelName">
-                    {t("form.modelName")}
+                    {t.form.modelName}
                   </FieldLabel>
                   <Input
                     {...field}
                     id="modelName"
-                    placeholder={t("form.modelNamePlaceholder")}
+                    placeholder={t.form.modelNamePlaceholder}
                     aria-invalid={fieldState.invalid}
                     autoComplete="off"
                   />
@@ -140,13 +155,13 @@ export default function VehicleModelEditDialog() {
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="maxPowerKw">
-                    {t("form.maxPowerKw")}
+                    {t.form.maxPowerKw}
                   </FieldLabel>
                   <Input
                     {...field}
                     type="number"
                     id="maxPowerKw"
-                    placeholder={t("form.maxPowerPlaceholder")}
+                    placeholder={t.form.maxPowerPlaceholder}
                     aria-invalid={fieldState.invalid}
                     autoComplete="off"
                     value={
@@ -169,13 +184,13 @@ export default function VehicleModelEditDialog() {
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="batteryCapacityKwh">
-                    {t("form.batteryCapacityKwh")}
+                    {t.form.batteryCapacityKwh}
                   </FieldLabel>
                   <Input
                     {...field}
                     type="number"
                     id="batteryCapacityKwh"
-                    placeholder={t("form.batteryCapacityPlaceholder")}
+                    placeholder={t.form.batteryCapacityPlaceholder}
                     aria-invalid={fieldState.invalid}
                     autoComplete="off"
                     value={
@@ -198,7 +213,7 @@ export default function VehicleModelEditDialog() {
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="connectorTypeIds">
-                    {t("form.connectorTypes")}
+                    {t.form.connectorTypes}
                   </FieldLabel>
                   <MultiSelect
                     onValuesChange={field.onChange}
@@ -207,7 +222,7 @@ export default function VehicleModelEditDialog() {
                   >
                     <MultiSelectTrigger className="w-full max-w-[400px]">
                       <MultiSelectValue
-                        placeholder={t("form.connectorTypesPlaceholder")}
+                        placeholder={t.form.connectorTypesPlaceholder}
                         overflowBehavior="wrap"
                       />
                     </MultiSelectTrigger>
@@ -237,7 +252,7 @@ export default function VehicleModelEditDialog() {
             className="self-end"
             disabled={updatePending}
           >
-            {updatePending ? t("form.updating") : t("form.updateButton")}
+            {updatePending ? t.form.updating : t.form.updateButton}
           </Button>
         </DialogFooter>
       </DialogContent>
