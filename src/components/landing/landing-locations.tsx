@@ -4,11 +4,20 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import LandingGlobe from "@/components/landing/landing-globe";
 import { motion } from "framer-motion";
-import { useTranslations } from "next-intl";
+
+const locations = {
+  tagline: "Mở rộng mạng lưới",
+  heading: "Tìm trạm sạc gần bạn",
+  subheading: "Trạm sạc được đặt tại các vị trí chiến lược trên toàn quốc",
+  description:
+    "Sử dụng bản đồ tương tác để tìm trạm sạc, kiểm tra tình trạng và bắt đầu sạc chỉ với vài thao tác",
+  primaryCta: "Xem bản đồ",
+  secondaryCta: "Truy vấn trạm",
+  statusLabel: "Trạng thái kết nối",
+  statusCaption: "Hoạt động ổn định",
+};
 
 export default function LandingLocations() {
-  const locations = useTranslations("landing.locations");
-
   return (
     <section className="relative overflow-hidden pt-20">
       <div className="relative container mx-auto px-6">
@@ -30,20 +39,20 @@ export default function LandingLocations() {
                 className="bg-primary/10 text-primary inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
               >
                 <div className="h-2 w-2 animate-pulse rounded-full bg-green-400"></div>
-                {locations("tagline")}
+                {locations.tagline}
               </motion.div>
               <h2 className="text-foreground text-4xl font-bold lg:text-5xl">
-                {locations("heading")}
+                {locations.heading}
               </h2>
               <p className="text-muted-foreground text-xl leading-relaxed">
-                {locations("subheading")}
+                {locations.subheading}
               </p>
             </div>
 
             {/* Description */}
             <div className="space-y-6">
               <p className="text-muted-foreground leading-relaxed">
-                {locations("description")}
+                {locations.description}
               </p>
 
               <div className="flex flex-col gap-4 sm:flex-row">
@@ -51,7 +60,7 @@ export default function LandingLocations() {
                   size="lg"
                   className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg transition-all duration-300 hover:shadow-xl"
                 >
-                  {locations("primaryCta")}
+                  {locations.primaryCta}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
                 <Button
@@ -59,7 +68,7 @@ export default function LandingLocations() {
                   variant="outline"
                   className="border-primary/20 hover:bg-primary/5 transition-all duration-300"
                 >
-                  {locations("secondaryCta")}
+                  {locations.secondaryCta}
                 </Button>
               </div>
             </div>
@@ -86,10 +95,10 @@ export default function LandingLocations() {
                   <div className="h-3 w-3 animate-pulse rounded-full bg-green-500"></div>
                   <div>
                     <div className="text-sm font-medium">
-                      {locations("statusLabel")}
+                      {locations.statusLabel}
                     </div>
                     <div className="text-muted-foreground text-xs">
-                      {locations("statusCaption")}
+                      {locations.statusCaption}
                     </div>
                   </div>
                 </div>

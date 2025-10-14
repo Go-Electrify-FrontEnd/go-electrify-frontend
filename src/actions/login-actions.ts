@@ -1,15 +1,19 @@
 "use server";
 
-import { redirect } from "@/i18n/navigation";
-import { getLocale, getTranslations } from "next-intl/server";
+import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 
 export async function handleLogin(prevState: unknown, data: FormData) {
-  const t = await getTranslations("auth");
+  const t = {
+    "requestOtpMessages.emailRequired": "Email là bắt buộc",
+    "requestOtpMessages.success": "Mã OTP đã được gửi đến email của bạn",
+    "requestOtpMessages.failure": "Không thể gửi OTP. Vui lòng thử lại",
+    "requestOtpMessages.networkError": "Lỗi kết nối. Vui lòng thử lại",
+  };
   const email = data.get("email")?.toString();
 
   if (!email) {
-    return { success: false, msg: t("requestOtpMessages.emailRequired") };
+    return { success: false, msg: t["requestOtpMessages.emailRequired"] };
   }
 
   const url = "https://api.go-electrify.com/api/v1/auth/request-otp";
@@ -26,14 +30,14 @@ export async function handleLogin(prevState: unknown, data: FormData) {
     return {
       success,
       msg: success
-        ? t("requestOtpMessages.success")
-        : t("requestOtpMessages.failure"),
+        ? t["requestOtpMessages.success"]
+        : t["requestOtpMessages.failure"],
     };
   } catch (error) {
     console.error("handleLogin error", error);
     return {
       success: false,
-      msg: t("requestOtpMessages.networkError"),
+      msg: t["requestOtpMessages.networkError"],
     };
   }
 }
@@ -46,21 +50,28 @@ interface VerifyOTPResponse {
 }
 
 export async function handleVerifyOTP(prevState: unknown, data: FormData) {
-  const t = await getTranslations("auth");
-  const locale = await getLocale();
+  const t = {
+    "verifyOtpMessages.emailOtpRequired": "Email và mã OTP là bắt buộc",
+    "verifyOtpMessages.alreadyAuthenticated": "Bạn đã đăng nhập",
+    "verifyOtpMessages.invalid": "Mã OTP không hợp lệ hoặc đã hết hạn",
+    "verifyOtpMessages.networkError": "Lỗi kết nối. Vui lòng thử lại",
+  };
+
   const email = data.get("email")?.toString();
   const code = data.get("code")?.toString();
 
   if (!email || !code) {
-    return { success: false, msg: t("verifyOtpMessages.emailOtpRequired") };
+    return { success: false, msg: t["verifyOtpMessages.emailOtpRequired"] };
   }
 
   const cookieStore = await cookies();
   if (cookieStore.get("accessToken") && cookieStore.get("refreshToken")) {
-    return { success: true, msg: t("verifyOtpMessages.alreadyAuthenticated") };
+    return { success: true, msg: t["verifyOtpMessages.alreadyAuthenticated"] };
   }
 
   const url = "https://api.go-electrify.com/api/v1/auth/verify-otp";
+  let shouldRedirect = false;
+
   try {
     const response = await fetch(url, {
       method: "POST",
@@ -70,43 +81,60 @@ export async function handleVerifyOTP(prevState: unknown, data: FormData) {
       body: JSON.stringify({ Email: email, Otp: code }),
     });
 
-    const success = response.ok;
-    if (!success) {
+    if (!response.ok) {
       return {
         success: false,
-        msg: t("verifyOtpMessages.invalid"),
+        msg: t["verifyOtpMessages.invalid"],
         user: null,
         tokens: null,
       };
     }
 
-    const responseJson: VerifyOTPResponse = await response.json();
-    if (responseJson.AccessToken) {
-      cookieStore.set({
-        name: "accessToken",
-        value: responseJson.AccessToken,
-        httpOnly: true,
-        expires: new Date(responseJson.AccessExpires),
-        maxAge: 60 * 15,
-      });
+    const parsed = (await response.json()) as VerifyOTPResponse;
 
-      cookieStore.set({
-        name: "refreshToken",
-        value: responseJson.RefreshToken,
-        httpOnly: true,
-        expires: new Date(responseJson.RefreshExpires),
-        maxAge: 60 * 60 * 24 * 30,
-      });
+    // Validate response payload
+    if (!parsed?.AccessToken || !parsed?.RefreshToken) {
+      return {
+        success: false,
+        msg: t["verifyOtpMessages.invalid"],
+        user: null,
+        tokens: null,
+      };
     }
 
-    redirect({ href: "/dashboard", locale });
+    // Set cookies
+    cookieStore.set({
+      name: "accessToken",
+      value: parsed.AccessToken,
+      httpOnly: true,
+      expires: new Date(parsed.AccessExpires),
+      maxAge: 60 * 15,
+    });
+
+    cookieStore.set({
+      name: "refreshToken",
+      value: parsed.RefreshToken,
+      httpOnly: true,
+      expires: new Date(parsed.RefreshExpires),
+      maxAge: 60 * 60 * 24 * 30,
+    });
+
+    // Mark for redirect
+    shouldRedirect = true;
   } catch (error) {
-    console.error("handleVerifyOTP error", error);
+    console.error("handleVerifyOTP network/parsing error", error);
     return {
       success: false,
-      msg: t("verifyOtpMessages.networkError"),
+      msg: t["verifyOtpMessages.networkError"],
       user: null,
       tokens: null,
     };
+  } finally {
+    // Perform redirect in finally block to ensure it's never caught
+    if (shouldRedirect) {
+      redirect("/dashboard");
+    }
   }
+
+  return { success: true, msg: "" };
 }

@@ -29,7 +29,6 @@ import {
 import { useState } from "react";
 import { createSubscription } from "@/actions/subscriptions-actions";
 import { toast } from "sonner";
-import { useTranslations } from "next-intl";
 import { useServerAction } from "@/hooks/use-server-action";
 import {
   subscriptionCreateSchema,
@@ -39,7 +38,7 @@ import {
 const initialState = { success: false, msg: "" };
 
 export default function SubscriptionCreateDialog() {
-  const t = useTranslations("admin.subscription");
+  // Vietnamese text hardcoded
   const [open, setOpen] = useState(false);
 
   const { execute, pending } = useServerAction(
@@ -47,7 +46,7 @@ export default function SubscriptionCreateDialog() {
     initialState,
     {
       onSuccess: (result) => {
-        toast.success(t("create.success"), {
+        toast.success("Gói đăng ký đã được tạo", {
           description: result.msg,
         });
         setOpen(false);
@@ -55,7 +54,7 @@ export default function SubscriptionCreateDialog() {
       },
       onError: (result) => {
         if (result.msg) {
-          toast.error(t("create.failure"), {
+          toast.error("Tạo gói đăng ký thất bại", {
             description: result.msg,
           });
         }
@@ -89,13 +88,13 @@ export default function SubscriptionCreateDialog() {
       <DialogTrigger asChild>
         <Button size="lg" className="relative w-full sm:w-auto">
           <Plus className="mr-2 h-5 w-5" />
-          {t("create.title")}
+          Tạo Gói Đăng Ký
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
-          <DialogTitle className="text-xl">{t("create.title")}</DialogTitle>
-          <DialogDescription>{t("create.description")}</DialogDescription>
+          <DialogTitle className="text-xl">Tạo Gói Đăng Ký</DialogTitle>
+          <DialogDescription>Thêm gói đăng ký mới</DialogDescription>
         </DialogHeader>
 
         <form
@@ -109,7 +108,7 @@ export default function SubscriptionCreateDialog() {
               name="name"
               render={({ field, fieldState }) => (
                 <Field>
-                  <FieldLabel htmlFor="name">{t("form.name")}</FieldLabel>
+                  <FieldLabel htmlFor="name">Tên</FieldLabel>
                   <Input
                     {...field}
                     placeholder="VIP"
@@ -128,7 +127,7 @@ export default function SubscriptionCreateDialog() {
               name="price"
               render={({ field, fieldState }) => (
                 <Field>
-                  <FieldLabel htmlFor="price">{t("form.price")}</FieldLabel>
+                  <FieldLabel htmlFor="price">Giá</FieldLabel>
                   <Input
                     {...field}
                     type="number"
@@ -154,9 +153,7 @@ export default function SubscriptionCreateDialog() {
               name="totalKwH"
               render={({ field, fieldState }) => (
                 <Field>
-                  <FieldLabel htmlFor="totalKwH">
-                    {t("form.totalKwh")}
-                  </FieldLabel>
+                  <FieldLabel htmlFor="totalKwH">Tổng kWh</FieldLabel>
                   <Input
                     {...field}
                     type="number"
@@ -183,7 +180,7 @@ export default function SubscriptionCreateDialog() {
               render={({ field, fieldState }) => (
                 <Field>
                   <FieldLabel htmlFor="durationDays">
-                    {t("form.durationDays")}
+                    Thời hạn (ngày)
                   </FieldLabel>
                   <Input
                     {...field}
@@ -213,12 +210,12 @@ export default function SubscriptionCreateDialog() {
               variant="outline"
               onClick={() => form.reset()}
             >
-              {t("common.cancel")}
+              Huỷ
             </Button>
           </DialogClose>
           <Button form="subscription-form" type="submit" disabled={pending}>
             {pending && <Loader2 className="h-4 w-4 animate-spin" />}
-            {pending ? t("form.creating") : t("form.createButton")}
+            {pending ? "Đang tạo..." : "Tạo"}
           </Button>
         </DialogFooter>
       </DialogContent>

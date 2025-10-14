@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, type LucideIcon } from "lucide-react";
+import { type LucideIcon } from "lucide-react";
 
 import {
   SidebarGroup,
@@ -9,29 +9,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Link } from "@/i18n/navigation";
-import { ReactNode } from "react";
-
-function NavItem({
-  href,
-  icon: Icon,
-  children,
-}: {
-  href: string;
-  icon: typeof Home;
-  children: ReactNode;
-}) {
-  return (
-    <Link
-      prefetch={false}
-      href={href}
-      className="text-electrify-gray-900 hover:text-foreground hover:bg-muted flex items-center rounded-md px-2 py-2 text-sm transition-colors"
-    >
-      <Icon className="mr-2 h-4 w-4 flex-shrink-0" />
-      {children}
-    </Link>
-  );
-}
+import Link from "next/link";
 
 export function NavSection({
   items,
@@ -47,16 +25,24 @@ export function NavSection({
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel className="font-medium capitalize">
+      <SidebarGroupLabel className="font-bold uppercase">
         {items.title}
       </SidebarGroupLabel>
       <SidebarMenu>
         {items.items.map((item) => (
-          <SidebarMenuItem key={item.title}>
+          <SidebarMenuItem
+            className="!flex !items-center !justify-center !align-middle"
+            key={item.title}
+          >
             <SidebarMenuButton tooltip={item.title} asChild>
-              <NavItem href={item.url} icon={item.icon ?? Home}>
-                {item.title}
-              </NavItem>
+              <Link
+                prefetch={false}
+                href={item.url}
+                className="text-electrify-gray-900 hover:text-foreground hover:bg-muted flex items-center rounded-md text-sm transition-colors group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0"
+              >
+                {item.icon && <item.icon />}
+                <span>{item.title}</span>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         ))}

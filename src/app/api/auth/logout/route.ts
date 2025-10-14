@@ -1,11 +1,9 @@
 import { cookies } from "next/headers";
 import { getBackendUrl } from "@/lib/utils";
-import { redirect } from "@/i18n/navigation";
-import { getLocale } from "next-intl/server";
+import { redirect } from "next/navigation";
 
 export async function GET() {
   const cookieStore = await cookies();
-  const locale = await getLocale();
 
   // Call the backend to invalidate the refresh token
   await fetch(getBackendUrl("auth/logout"), {
@@ -26,5 +24,5 @@ export async function GET() {
     cookieStore.delete("refreshToken");
   }
 
-  redirect({ href: "/login", locale });
+  redirect("/");
 }

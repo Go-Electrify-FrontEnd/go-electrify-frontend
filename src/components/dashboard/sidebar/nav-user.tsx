@@ -12,7 +12,7 @@ import {
   Sparkles,
   Sun,
 } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+// Language switching removed — Vietnamese only
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -26,8 +26,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "next-themes";
 import { User } from "@/types/user";
-import { usePathname, useRouter } from "@/i18n/navigation";
-import { useTransition } from "react";
+// Navigation hooks removed for locale switching
 import Link from "next/link";
 
 interface NavUserProps {
@@ -35,21 +34,19 @@ interface NavUserProps {
 }
 
 export function NavUser({ user }: NavUserProps) {
-  const locale = useLocale();
-  const t = useTranslations("user");
-  const tAuth = useTranslations("auth");
-
-  const router = useRouter();
-  const pathname = usePathname();
-  const { setTheme } = useTheme();
-  const [, startTransition] = useTransition();
-
-  const handleLocaleChange = (newLocale: "en" | "vi") => {
-    startTransition(() => {
-      if (newLocale === locale) return;
-      router.replace(pathname, { locale: newLocale });
-    });
+  // Vietnamese-only UI; locale switching removed
+  const tUser = {
+    darkMode: "Chế độ tối",
+    lightMode: "Chế độ sáng",
+    systemMode: "Theo hệ thống",
+    billing: "Thanh toán",
+    notifications: "Thông báo",
   };
+  const tAuth = {
+    logout: "Đăng xuất",
+  };
+
+  const { setTheme } = useTheme();
 
   return (
     <DropdownMenu>
@@ -75,22 +72,18 @@ export function NavUser({ user }: NavUserProps) {
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => setTheme("dark")}>
           <Moon />
-          {t("darkMode")}
+          {tUser.darkMode}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme("light")}>
           <Sun />
-          {t("lightMode")}
+          {tUser.lightMode}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme("system")}>
           <Computer />
-          {t("systemMode")}
+          {tUser.systemMode}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => handleLocaleChange("en")}>
-          <Languages />
-          English
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleLocaleChange("vi")}>
+        <DropdownMenuItem className="p-2">
           <Languages />
           Tiếng Việt
         </DropdownMenuItem>
@@ -98,11 +91,11 @@ export function NavUser({ user }: NavUserProps) {
         <DropdownMenuGroup>
           <DropdownMenuItem>
             <CreditCard />
-            {t("billing")}
+            {tUser.billing}
           </DropdownMenuItem>
           <DropdownMenuItem>
             <Bell />
-            {t("notifications")}
+            {tUser.notifications}
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
@@ -112,7 +105,7 @@ export function NavUser({ user }: NavUserProps) {
             className="flex h-full w-full cursor-pointer items-center gap-2"
           >
             <LogOut />
-            {tAuth("logout")}
+            {tAuth.logout}
           </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>

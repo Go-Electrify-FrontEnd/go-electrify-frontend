@@ -1,7 +1,7 @@
 "use server";
 
 import { getUser } from "@/lib/auth/auth-server";
-import { getTranslations } from "next-intl/server";
+// Translations removed; using inline Vietnamese literals
 import { revalidateTag } from "next/cache";
 import { forbidden } from "next/navigation";
 
@@ -10,14 +10,17 @@ export async function createSubscription(prev: unknown, data: FormData) {
   if (!user || !token) {
     forbidden();
   }
-  const t = await getTranslations("admin");
+  // Vietnamese literals
   const name = data.get("name")?.toString();
   const price = data.get("price")?.toString();
   const totalKwH = data.get("totalKwH")?.toString();
   const durationDays = data.get("durationDays")?.toString();
 
   if (!name || !price || !durationDays) {
-    return { success: false, msg: t("subscription.create.missingFields") };
+    return {
+      success: false,
+      msg: "Vui lòng gửi tất cả các trường bắt buộc để tiếp tục",
+    };
   }
 
   const url = "https://api.go-electrify.com/api/v1/subscriptions";
@@ -43,14 +46,14 @@ export async function createSubscription(prev: unknown, data: FormData) {
     return {
       success,
       msg: success
-        ? t("subscription.create.success")
-        : t("subscription.create.failure"),
+        ? "Gói đăng ký đã được tạo"
+        : "Tạo gói đăng ký thất bại",
     };
   } catch (error) {
     console.error("createSubscription error", error);
     return {
       success: false,
-      msg: t("subscription.create.networkError"),
+      msg: "Lỗi kết nối. Vui lòng thử lại hoặc liên hệ quản trị viên nếu lỗi vẫn tiếp diễn",
     };
   }
 }
@@ -61,7 +64,7 @@ export async function updateSubscription(prev: unknown, data: FormData) {
     forbidden();
   }
 
-  const t = await getTranslations("admin");
+  // Vietnamese literals
   const id = data.get("id")?.toString();
   const name = data.get("name")?.toString();
   const price = data.get("price")?.toString();
@@ -69,7 +72,10 @@ export async function updateSubscription(prev: unknown, data: FormData) {
   const durationDays = data.get("durationDays")?.toString();
 
   if (!id || !name || !price || !durationDays) {
-    return { success: false, msg: t("subscription.edit.missingFields") };
+    return {
+      success: false,
+      msg: "Vui lòng cung cấp tất cả các trường bắt buộc để tiếp tục",
+    };
   }
 
   const parsedPrice = Number(price);
@@ -82,7 +88,7 @@ export async function updateSubscription(prev: unknown, data: FormData) {
     Number.isNaN(parsedDuration) ||
     (parsedTotalKwH !== undefined && Number.isNaN(parsedTotalKwH))
   ) {
-    return { success: false, msg: t("subscription.edit.invalidNumbers") };
+    return { success: false, msg: "Vui lòng nhập các giá trị số hợp lệ" };
   }
 
   const url = `https://api.go-electrify.com/api/v1/subscriptions/${id}`;
@@ -109,15 +115,13 @@ export async function updateSubscription(prev: unknown, data: FormData) {
 
     return {
       success,
-      msg: success
-        ? t("subscription.edit.success")
-        : t("subscription.edit.failure"),
+      msg: success ? "Gói đã được cập nhật thành công" : "Cập nhật gói thất bại",
     };
   } catch (error) {
     console.error("updateSubscription error", error);
     return {
       success: false,
-      msg: t("subscription.edit.networkError"),
+      msg: "Lỗi kết nối. Vui lòng thử lại",
     };
   }
 }
@@ -127,11 +131,11 @@ export async function deleteSubscription(prev: unknown, dataForm: FormData) {
   if (!user || !token) {
     forbidden();
   }
-  const t = await getTranslations("admin");
+  // Vietnamese literals
   const id = dataForm.get("id")?.toString();
 
   if (!id) {
-    return { success: false, msg: t("subscription.delete.missingId") };
+    return { success: false, msg: "Vui lòng cung cấp id để tiếp tục" };
   }
 
   const url = `https://api.go-electrify.com/api/v1/subscriptions/${id}`;
@@ -147,15 +151,13 @@ export async function deleteSubscription(prev: unknown, dataForm: FormData) {
     revalidateTag("subscriptions");
     return {
       success,
-      msg: success
-        ? t("subscription.delete.success")
-        : t("subscription.delete.failure"),
+      msg: success ? "Gói đã được xóa thành công" : "Xóa gói thất bại",
     };
   } catch (error) {
     console.error("deleteSubscription error", error);
     return {
       success: false,
-      msg: t("subscription.delete.networkError"),
+      msg: "Lỗi kết nối. Vui lòng thử lại",
     };
   }
 }

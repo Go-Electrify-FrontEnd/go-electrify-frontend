@@ -14,11 +14,25 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Wallet, Plus } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function WalletDepositButton() {
+  const t = {
+    "button.deposit": "Nạp tiền",
+    "dialog.title": "Nạp tiền vào ví",
+    "dialog.description": "Chọn số tiền để nạp vào ví của bạn",
+    "dialog.amountLabel": "Số tiền (VND)",
+    "dialog.quickAmountsLabel": "Số tiền nhanh",
+    "button.depositing": "Đang nạp...",
+  };
+
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+
+  const quickAmounts = [
+    50000, 100000, 200000, 500000, 1000000, 1500000, 2000000, 2500000, 3000000,
+  ];
 
   const handleDeposit = async () => {
     const depositAmount = parseFloat(amount);
@@ -46,33 +60,29 @@ export default function WalletDepositButton() {
     }
   };
 
-  const quickAmounts = [50000, 100000, 200000, 500000];
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="gap-2">
           <Plus className="h-4 w-4" />
-          Nạp tiền
+          {t["button.deposit"]}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Wallet className="h-5 w-5" />
-            Nạp tiền vào ví
+            {t["dialog.title"]}
           </DialogTitle>
-          <DialogDescription>
-            Nhập số tiền bạn muốn nạp vào ví của mình.
-          </DialogDescription>
+          <DialogDescription>{t["dialog.description"]}</DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="amount">Số tiền (VNĐ)</Label>
+            <Label htmlFor="amount">{t["dialog.amountLabel"]}</Label>
             <Input
               id="amount"
               type="number"
-              placeholder="Nhập số tiền"
+              placeholder="1000"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               min="0"
@@ -81,7 +91,7 @@ export default function WalletDepositButton() {
           </div>
 
           <div className="space-y-2">
-            <Label>Chọn nhanh</Label>
+            <Label>{t["dialog.quickAmountsLabel"]}</Label>
             <div className="grid grid-cols-2 gap-2">
               {quickAmounts.map((quickAmount) => (
                 <Button
@@ -91,7 +101,10 @@ export default function WalletDepositButton() {
                   onClick={() => setAmount(quickAmount.toString())}
                   className="justify-start"
                 >
-                  {quickAmount.toLocaleString("vi-VN")} đ
+                  {new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  }).format(quickAmount)}
                 </Button>
               ))}
             </div>
@@ -111,7 +124,13 @@ export default function WalletDepositButton() {
             onClick={handleDeposit}
             disabled={!amount || parseFloat(amount) <= 0 || isProcessing}
           >
-            {isProcessing ? "Đang xử lý..." : "Nạp tiền"}
+            {isProcessing ? (
+              <>
+                <Spinner /> {t["button.depositing"]}
+              </>
+            ) : (
+              t["button.deposit"]
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

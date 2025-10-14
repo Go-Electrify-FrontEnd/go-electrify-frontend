@@ -3,8 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Battery } from "lucide-react";
-import { Link } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
+import Link from "next/link";
 
 type PlanKey = "payg" | "basic" | "pro" | "enterprise";
 
@@ -20,11 +19,54 @@ type PlanContent = {
   highlightLabel?: string;
 };
 
+const plansVi: Record<PlanKey, PlanContent> = {
+  payg: {
+    name: "Trả theo lượt",
+    tagline: "Không cam kết, sạc khi cần",
+    price: "10.000",
+    unit: "VND/kWh",
+    note: "Thanh toán linh hoạt theo từng lần sạc",
+    features: ["Thanh toán nhanh", "Bản đồ trạm sạc", "Hỗ trợ 24/7"],
+    ctaLabel: "Sử dụng",
+    ctaVariant: "outline",
+  },
+  basic: {
+    name: "Cơ bản",
+    tagline: "Phù hợp cho cá nhân",
+    price: "199.000",
+    unit: "VND/tháng",
+    note: "Tiết kiệm chi phí cho người dùng thường xuyên",
+    features: ["Giảm giá trạm đối tác", "Hỗ trợ cơ bản"],
+    ctaLabel: "Đăng ký",
+    ctaVariant: "default",
+  },
+  pro: {
+    name: "Pro",
+    tagline: "Dành cho doanh nghiệp nhỏ",
+    price: "499.000",
+    unit: "VND/tháng",
+    note: "Quản lý nhiều xe và báo cáo chi tiết",
+    features: ["Quản lý đội xe", "Báo cáo nâng cao", "Ưu tiên hỗ trợ"],
+    ctaLabel: "Đăng ký ngay",
+    ctaVariant: "default",
+    highlightLabel: "Phổ biến",
+  },
+  enterprise: {
+    name: "Enterprise",
+    tagline: "Giải pháp cho doanh nghiệp lớn",
+    price: "Liên hệ",
+    unit: "",
+    note: "Tùy biến theo nhu cầu, hỗ trợ triển khai",
+    features: ["Tích hợp API", "Hỗ trợ chuyên dụng", "Đào tạo"],
+    ctaLabel: "Liên hệ",
+    ctaVariant: "outline",
+  },
+};
+
 export default function LandingPricing() {
-  const pricing = useTranslations("landing.pricing");
   const planOrder: PlanKey[] = ["payg", "basic", "pro", "enterprise"];
   const plans = planOrder.map((key) => {
-    const content = pricing.raw(`plans.${key}`) as PlanContent;
+    const content = plansVi[key] as PlanContent;
     return { key, content };
   });
 
@@ -32,10 +74,11 @@ export default function LandingPricing() {
     <section id="pricing" className="container mx-auto px-6 py-24">
       <div className="mb-16 text-center">
         <h2 className="mb-4 text-3xl font-bold md:text-4xl lg:text-5xl">
-          {pricing("title")}
+          Bảng giá
         </h2>
         <p className="text-muted-foreground mx-auto max-w-2xl text-lg">
-          {pricing("description")}
+          Các gói dịch vụ phù hợp cho cá nhân và doanh nghiệp — chọn gói phù hợp
+          với nhu cầu của bạn
         </p>
       </div>
 
@@ -100,14 +143,14 @@ export default function LandingPricing() {
 
       <div className="mt-12 text-center">
         <p className="text-muted-foreground text-sm">
-          {pricing("disclaimer")}{" "}
+          Có thể có điều kiện áp dụng.{" "}
           <Link
             href="#contact"
             className="text-primary font-semibold hover:underline"
           >
-            {pricing("contactLink")}
+            Liên hệ
           </Link>{" "}
-          {pricing("disclaimerSuffix")}
+          để biết thêm chi tiết.
         </p>
       </div>
     </section>

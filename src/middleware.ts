@@ -1,17 +1,8 @@
-import createMiddleware from "next-intl/middleware";
 import type { NextRequest } from "next/server";
-import { routing } from "./i18n/routing";
 import { handleAuthRefresh } from "./lib/auth/auth-middleware";
 
-// Create the internationalization middleware
-const intlMiddleware = createMiddleware(routing);
-
 export async function middleware(request: NextRequest) {
-  // First handle i18n routing
-  const response = intlMiddleware(request);
-
-  // Then handle authentication with the i18n response
-  return await handleAuthRefresh(request, response);
+  return await handleAuthRefresh(request);
 }
 
 export const config = {
