@@ -1,4 +1,45 @@
-    You are an expert full-stack developer proficient in TypeScript, React, Next.js, and modern UI/UX frameworks (e.g., Tailwind CSS, Shadcn UI, Radix UI). Your task is to produce the most optimized and maintainable Next.js code, following best practices and adhering to the principles of clean code and robust architecture.
+## Electrify — AI coding instructions (concise)
+
+You will work on a Next.js 15 (App Router) TypeScript frontend. Focus on practical, repo-specific rules that make you productive quickly.
+
+- Use pnpm (repo preinstall enforces it). Run: `pnpm install`, `pnpm dev` (Turbopack enabled). If dev fails, try `pnpm build` then `pnpm start`.
+- This project is server-first: prefer Server Components in `src/app` pages. Only add `"use client"` to small, focused client components (examples: `src/components/shared/address-search.tsx`, `src/components/login/*`).
+- Key scripts in `package.json`: `dev`, `build`, `start`, `lint`.
+
+- Important files and patterns to inspect before edits:
+  - `src/middleware.ts` — composes `next-intl` and `src/lib/auth/auth-middleware`. Changing it affects global routing+auth.
+  - `src/lib/utils.ts` — contains `getBackendUrl` which appends `teamId` in dev (check `TEST_TEAM_ID`).
+  - `src/lib/auth/*` — JWT and token refresh helpers (uses `jose`).
+  - `src/app/[locale]/*` — localization-aware routes and layouts.
+  - `src/components/ui/*` — shadcn/Tailwind UI primitives; follow their component patterns when adding UI.
+  - `src/contexts/*` — app contexts (user, reservation, connector-type). Use these to share state rather than global singletons.
+
+- Conventions and gotchas:
+  - Use Tailwind semantic tokens (e.g., `text-foreground`, `bg-background`). Use `cn()` util from `src/lib/utils.ts` for class merging.
+  - Keep client components minimal. Heavy logic should remain in server components or server actions (`src/app/[locale]/api/*`).
+  - Middleware matcher in `src/middleware.ts` excludes `api`, `_next/static`, image files. Add patterns carefully.
+  - Images live in `public/assets/images` (AVIF/WebP). Prefer optimized sizes.
+
+- Auth & API flow:
+  - Login/OTP flows are in `src/app/[locale]/api/auth` and client login components in `src/components/login`.
+  - `getBackendUrl` uses `process.env.BACKEND_URL` / `NEXT_PUBLIC_BACKEND_URL`. Supply `.env.local` with those values locally.
+
+- Testing, linting, debugging:
+  - Lint: `pnpm lint` (ESLint + Prettier + Tailwind plugin).
+  - Debugging build issues: Turbopack flags are used; if build errors are unclear, re-run without `--turbopack` by editing `package.json` locally or use `NODE_ENV=production pnpm build`.
+
+- When making changes:
+  1. Search for related components/usages (`grep` / VS Code workspace search). Many patterns live under `src/components/ui` and `src/components/shared`.
+  2. Prefer small, focused PRs. Update `src/contexts` usage when adding global state.
+  3. Run `pnpm dev` and smoke-test affected pages (especially auth, dashboard, and map pages).
+
+- Example quick checks before PR:
+  - Did you add `"use client"` only where required? (Search for `use client`.)
+  - Did you use `getBackendUrl` for backend calls? (Search `getBackendUrl(`.)
+  - Did you update `src/middleware.ts` matcher if changing routes?
+
+If anything in this file is incomplete or you'd like a PR checklist / example PR for common changes (adding a new server page, wiring a client component, or updating auth), tell me which and I will expand it.
+You are an expert full-stack developer proficient in TypeScript, React, Next.js, and modern UI/UX frameworks (e.g., Tailwind CSS, Shadcn UI, Radix UI). Your task is to produce the most optimized and maintainable Next.js code, following best practices and adhering to the principles of clean code and robust architecture.
 
     ### Objective
     - Create a Next.js (NextJS 15+) solution that is not only functional but also adheres to the best practices in performance, security, and maintainability.

@@ -1,41 +1,40 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
+import Link from "next/link";
 
 export default function LandingFooter() {
-  const t = useTranslations("landing.footer");
   return (
     <footer className="border-border bg-background border-t">
       <div className="container mx-auto px-4 py-6">
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
           <p className="text-muted-foreground text-sm">
-            © {new Date().getFullYear()} GoElectrify. {t("rightsReserved")}
+            © {new Date().getFullYear()} GoElectrify. Bản quyền thuộc về
+            GoElectrify.
           </p>
           <nav className="flex gap-6">
             <Link
               href="/about"
               className="text-muted-foreground hover:text-foreground text-sm transition-colors"
             >
-              {t("about")}
+              Về chúng tôi
             </Link>
             <Link
               href="/privacy"
               className="text-muted-foreground hover:text-foreground text-sm transition-colors"
             >
-              {t("privacy")}
+              Chính sách bảo mật
             </Link>
             <Link
               href="/terms"
               className="text-muted-foreground hover:text-foreground text-sm transition-colors"
             >
-              Terms
+              Điều khoản
             </Link>
             <Link
               href="/contact"
               className="text-muted-foreground hover:text-foreground text-sm transition-colors"
             >
-              {t("contact")}
+              Liên hệ
             </Link>
           </nav>
         </div>

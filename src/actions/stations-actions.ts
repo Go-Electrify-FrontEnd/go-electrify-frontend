@@ -1,88 +1,148 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { redirect } from "@/i18n/navigation";
-import { getLocale } from "next-intl/server";
-import { CreateStationSchema } from "@/types/station";
+import { revalidateTag } from "next/cache";
+import { getUser } from "@/lib/auth/auth-server";
+import { stationCreateSchema, stationUpdateSchema } from "@/schemas/station.schema";
 
-// Server action for creating a station
-export async function createStation(formData: FormData) {
+const BASE_URL = "https://api.go-electrify.com/api/v1/stations";
+
+export async function createStation(prev: unknown, formData: FormData) {
+  const { user, token } = await getUser();
+  if (!user || !token) {
+    return { success: false, msg: "Người dùng chưa xác thực" };
+  }
+
+  const { success, data, error } = stationCreateSchema.safeParse({
+    name: formData.get("name"),
+    description: formData.get("description"),
+    address: formData.get("address"),
+    imageUrl: formData.get("imageUrl"),
+    latitude: formData.get("latitude"),
+    longitude: formData.get("longitude"),
+    status: formData.get("status"),
+  });
+
+  if (!success) {
+    console.error("Validation error:", error);
+    return { success: false, msg: "Dữ liệu không hợp lệ" };
+  }
+
   try {
-    const useManualCoords = formData.get("useManualCoords") === "true";
+    const response = await fetch(BASE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        Name: data.name,
+        Description: data.description,
+        Address: data.address,
+        ImageUrl: data.imageUrl,
+        Latitude: data.latitude ? Number(data.latitude) : undefined,
+        Longitude: data.longitude ? Number(data.longitude) : undefined,
+        Status: "ACTIVE",
+      }),
+    });
 
-    // If user uploaded a file, simulate upload and produce an image URL.
-    const file = formData.get("image") as File | null;
-    let imageUrl: string | undefined = undefined;
-    if (file && file.size > 0) {
-      // In production, upload the file to cloud storage and get a URL.
-      // For now we simulate by creating an object URL (not persistent) or a placeholder.
-      // Note: object URLs won't survive server-side redirects; replace with real upload.
-      imageUrl = `https://example.com/uploads/${encodeURIComponent(file.name)}`;
-    }
-
-    let latitude: number;
-    let longitude: number;
-    const address = formData.get("address") as string;
-
-    if (useManualCoords) {
-      // User entered coordinates manually
-      latitude = parseFloat(formData.get("latitude") as string);
-      longitude = parseFloat(formData.get("longitude") as string);
+    if (response.ok) {
+      revalidateTag("stations");
+      return { success: true, msg: "Trạm đã được tạo thành công" };
     } else {
-      // User entered address - you need to transform it to coordinates
-      // TODO: Implement address geocoding here
-      console.log("Address to geocode:", address);
-
-      // Example: Call your geocoding service/API
-      // const coords = await geocodeAddress(address);
-      // latitude = coords.lat;
-      // longitude = coords.lng;
-
-      // Placeholder coordinates (replace with actual geocoding)
-      latitude = 10.8231;
-      longitude = 106.6297;
-
-      console.log(
-        "⚠️  Address geocoding not implemented yet. Using default coordinates.",
-      );
+      return { success: false, msg: "Tạo trạm thất bại" };
     }
-
-    const rawData = {
-      name: formData.get("name") as string,
-      description: (formData.get("description") as string) || undefined,
-      address,
-      imageUrl,
-      latitude,
-      longitude,
-      status: formData.get("status") as "active" | "inactive" | "maintenance",
-    };
-
-    // Validate with Zod
-    const validatedData = CreateStationSchema.parse(rawData);
-
-    // TODO: Replace with actual database/API call
-    console.log("Creating station:", validatedData);
-
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    // In production, you would:
-    // const station = await db.station.create({ data: validatedData });
-    // or
-    // const response = await fetch('/api/stations', {
-    //   method: 'POST',
-    //   body: JSON.stringify(validatedData),
-    //   headers: { 'Content-Type': 'application/json' }
-    // });
-
-    // Revalidate and redirect (locale-aware)
-    revalidatePath("/dashboard/stations");
-    const locale = await getLocale();
-    redirect({ href: "/dashboard/stations", locale });
   } catch (error) {
-    console.error("Station creation failed:", error);
-    // In a real app, you might want to return an error response
-    // or redirect back with error state
-    throw new Error("Failed to create station");
+    console.error("Error creating station:", error);
+    return { success: false, msg: "Đã xảy ra lỗi khi tạo trạm" };
+  }
+}
+
+export async function updateStation(prev: unknown, formData: FormData) {
+  const { user, token } = await getUser();
+  if (!user || !token) {
+    return { success: false, msg: "Người dùng chưa xác thực" };
+  }
+
+  const id = formData.get("id")?.toString();
+  if (!id) {
+    return { success: false, msg: "Vui lòng cung cấp id trạm" };
+  }
+
+  const { success, data, error } = stationUpdateSchema.safeParse({
+    id: formData.get("id"),
+    name: formData.get("name"),
+    description: formData.get("description"),
+    address: formData.get("address"),
+    imageUrl: formData.get("imageUrl"),
+    latitude: formData.get("latitude"),
+    longitude: formData.get("longitude"),
+    status: formData.get("status"),
+  });
+
+  if (!success) {
+    console.error("Validation error:", error);
+    return { success: false, msg: "Dữ liệu không hợp lệ" };
+  }
+
+  try {
+    const url = `${BASE_URL}/${encodeURIComponent(id)}`;
+    const response = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        Name: data.name,
+        Description: data.description,
+        Address: data.address,
+        ImageUrl: data.imageUrl,
+        Latitude: data.latitude ? Number(data.latitude) : undefined,
+        Longitude: data.longitude ? Number(data.longitude) : undefined,
+        Status: data.status.toUpperCase(),
+      }),
+    });
+
+    if (response.ok) {
+      revalidateTag("stations");
+      return { success: true, msg: "Trạm đã được cập nhật thành công" };
+    } else {
+      return { success: false, msg: "Cập nhật trạm thất bại" };
+    }
+  } catch (error) {
+    console.error("Error updating station:", error);
+    return { success: false, msg: "Đã xảy ra lỗi khi cập nhật trạm" };
+  }
+}
+
+export async function deleteStation(prev: unknown, formData: FormData) {
+  const { user, token } = await getUser();
+  if (!user || !token) {
+    return { success: false, msg: "Người dùng chưa xác thực" };
+  }
+
+  const id = formData.get("id");
+  if (!id || Array.isArray(id)) {
+    return { success: false, msg: "ID trạm không hợp lệ" };
+  }
+
+  try {
+    const url = `${BASE_URL}/${encodeURIComponent(id as string)}`;
+    const response = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.ok) {
+      revalidateTag("stations");
+      return { success: true, msg: "Trạm đã được xóa thành công" };
+    } else {
+      return { success: false, msg: "Xóa trạm thất bại" };
+    }
+  } catch (error) {
+    console.error("Error deleting station:", error);
+    return { success: false, msg: "Đã xảy ra lỗi khi xóa trạm" };
   }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Subscription } from "@/types/subscription";
+import { deleteSubscription } from "@/actions/subscriptions-actions";
 
 interface DeleteSubscriptionProps {
   subscription: Subscription;
@@ -25,35 +26,30 @@ export function DeleteSubscription({
   open,
   onOpenChange,
 }: DeleteSubscriptionProps) {
+  // Vietnamese literals
   const [confirmText, setConfirmText] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleDelete = async () => {
-    if (confirmText !== subscription.name) {
-      toast.error("Tên gói đăng ký không khớp");
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      // Here you would make the API call to delete the subscription
-      // await deleteSubscription(subscription.id);
-
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
-
-      toast.success("Xóa gói đăng ký thành công!");
-      onOpenChange(false);
-    } catch {
-      toast.error("Có lỗi xảy ra khi xóa gói đăng ký");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const [deleteState, deleteAction, pending] = useActionState(
+    deleteSubscription,
+    { success: false, msg: "" },
+  );
 
   const resetForm = () => {
     setConfirmText("");
   };
+
+  useEffect(() => {
+    if (deleteState.success) {
+      toast.success("Loại đăng ký đã được xóa", {
+        description: deleteState.msg,
+      });
+      onOpenChange(false);
+      resetForm();
+    } else if (!deleteState.success && deleteState.msg) {
+      toast.error("Xóa không thành công", {
+        description: deleteState.msg,
+      });
+    }
+  }, [deleteState.msg, onOpenChange]);
 
   return (
     <AlertDialog
@@ -65,12 +61,11 @@ export function DeleteSubscription({
     >
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Bạn có chắc chắn muốn xóa?</AlertDialogTitle>
+          <AlertDialogTitle>Xóa gói đăng ký</AlertDialogTitle>
           <AlertDialogDescription>
             <span className="block">
-              Hành động này không thể hoàn tác. Gói đăng ký{" "}
-              <span className="font-semibold">{subscription.name}</span> sẽ bị
-              xóa vĩnh viễn khỏi hệ thống.
+              Bạn có chắc chắn muốn xóa gói{" "}
+              <span className="font-semibold">{subscription.name}</span>?
             </span>
             <br />
             <span className="block">
@@ -82,34 +77,38 @@ export function DeleteSubscription({
         <div className="space-y-3">
           <div className="border-destructive/20 bg-destructive/5 rounded-lg border p-4">
             <p className="text-muted-foreground mb-2 text-sm">
-              Để xác nhận, vui lòng nhập tên gói đăng ký:{" "}
+              Xác nhận xóa:{" "}
               <span className="text-foreground font-semibold">
                 {subscription.name}
               </span>
             </p>
             <Input
-              placeholder="Nhập tên gói đăng ký để xác nhận"
               value={confirmText}
               onChange={(e) => setConfirmText(e.target.value)}
-              disabled={isLoading}
+              disabled={pending}
             />
           </div>
         </div>
+
+        <form id="delete-form" action={deleteAction}>
+          <input type="hidden" name="id" value={subscription.id} />
+        </form>
 
         <AlertDialogFooter>
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
-            disabled={isLoading}
+            disabled={pending}
           >
             Hủy
           </Button>
           <Button
+            form="delete-form"
             variant="destructive"
-            onClick={handleDelete}
-            disabled={isLoading || confirmText !== subscription.name}
+            type="submit"
+            disabled={pending || confirmText !== subscription.name}
           >
-            {isLoading ? "Đang xóa..." : "Xóa gói đăng ký"}
+            {pending ? "Đang xóa..." : "Xóa"}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

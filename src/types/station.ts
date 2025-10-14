@@ -19,6 +19,34 @@ export const StationSchema = z.object({
 });
 export type Station = z.infer<typeof StationSchema>;
 
+// API response schema (maps PascalCase API fields to internal camelCase Station)
+export const StationApiSchema = z
+  .object({
+    Id: z.number(),
+    Name: z.string(),
+    Description: z.string().optional().nullable(),
+    Address: z.string(),
+    ImageUrl: z.string().optional().nullable(),
+    Latitude: z.number(),
+    Longitude: z.number(),
+    Status: z.enum(["ACTIVE", "INACTIVE", "MAINTENANCE"]),
+    CreatedAt: z.string(),
+    UpdatedAt: z.string(),
+  })
+  .transform((raw) => ({
+    id: raw.Id,
+    name: raw.Name,
+    description: raw.Description ?? undefined,
+    address: raw.Address,
+    imageUrl: raw.ImageUrl ?? undefined,
+    latitude: raw.Latitude,
+    longitude: raw.Longitude,
+    status: (raw.Status.toLowerCase() as StationStatusType),
+    createdAt: new Date(raw.CreatedAt),
+    updatedAt: new Date(raw.UpdatedAt),
+  }));
+
+
 // Station creation schema (for forms)
 export const CreateStationSchema = z.object({
   name: z

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,9 +12,22 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import { Controller, type Resolver, useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 import { Subscription } from "@/types/subscription";
+import { useServerAction } from "@/hooks/use-server-action";
+import {
+  subscriptionUpdateSchema,
+  type SubscriptionUpdateFormData,
+} from "@/schemas/subscription.schema";
+import { updateSubscription } from "@/actions/subscriptions-actions";
 
 interface UpdateSubscriptionProps {
   subscription: Subscription;
@@ -21,143 +35,253 @@ interface UpdateSubscriptionProps {
   onOpenChange: (open: boolean) => void;
 }
 
+const initialState = { success: false, msg: "" };
+
 export function UpdateSubscription({
   subscription,
   open,
   onOpenChange,
 }: UpdateSubscriptionProps) {
-  const [name, setName] = useState(subscription.name);
-  const [price, setPrice] = useState(subscription.price.toString());
-  const [totalKwh, setTotalKwh] = useState(subscription.totalKwh.toString());
-  const [durationDays, setDurationDays] = useState(
-    subscription.durationDays.toString(),
+  const { id, name, price, totalKwh, durationDays } = subscription;
+  const form = useForm<SubscriptionUpdateFormData>({
+    resolver: zodResolver(
+      subscriptionUpdateSchema,
+    ) as Resolver<SubscriptionUpdateFormData>,
+    defaultValues: {
+      id: id.toString(),
+      name,
+      price,
+      totalKwH: totalKwh,
+      durationDays,
+    },
+  });
+
+  const { execute, pending } = useServerAction(
+    updateSubscription,
+    initialState,
+    {
+      onSuccess: (result) => {
+        toast.success("Gói đã được cập nhật", {
+          description: result.msg,
+        });
+        onOpenChange(false);
+        form.reset();
+      },
+      onError: (result) => {
+        if (result.msg) {
+          toast.error("Cập nhật không thành công", {
+            description: result.msg,
+          });
+        }
+      },
+    },
   );
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!name.trim()) {
-      toast.error("Vui lòng nhập tên gói");
+  useEffect(() => {
+    if (!open) {
       return;
     }
 
-    if (!price || Number(price) <= 0) {
-      toast.error("Vui lòng nhập giá hợp lệ");
-      return;
-    }
+    form.reset({
+      id: id.toString(),
+      name,
+      price,
+      totalKwH: totalKwh,
+      durationDays,
+    });
+  }, [durationDays, form, id, name, open, price, totalKwh]);
 
-    if (!totalKwh || Number(totalKwh) <= 0) {
-      toast.error("Vui lòng nhập tổng kWh hợp lệ");
-      return;
-    }
-
-    if (!durationDays || Number(durationDays) <= 0) {
-      toast.error("Vui lòng nhập thời hạn hợp lệ");
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
-      toast.success("Cập nhật gói đăng ký thành công!");
-      onOpenChange(false);
-    } catch {
-      toast.error("Có lỗi xảy ra khi cập nhật gói đăng ký");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const resetForm = () => {
-    setName(subscription.name);
-    setPrice(subscription.price.toString());
-    setTotalKwh(subscription.totalKwh.toString());
-    setDurationDays(subscription.durationDays.toString());
-  };
+  const handleSubmit = form.handleSubmit((data) => {
+    const payload = new FormData();
+    payload.append("id", data.id);
+    payload.append("name", data.name);
+    payload.append("price", data.price.toString());
+    payload.append("totalKwH", data.totalKwH.toString());
+    payload.append("durationDays", data.durationDays.toString());
+    execute(payload);
+  });
 
   return (
     <Dialog
       open={open}
-      onOpenChange={(newOpen) => {
-        if (!newOpen) resetForm();
-        onOpenChange(newOpen);
+      onOpenChange={(nextOpen) => {
+        if (!nextOpen) {
+          form.reset({
+            id: id.toString(),
+            name,
+            price,
+            totalKwH: totalKwh,
+            durationDays,
+          });
+        }
+        onOpenChange(nextOpen);
       }}
     >
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
           <DialogTitle>Chỉnh sửa gói đăng ký</DialogTitle>
-          <DialogDescription>
-            Cập nhật thông tin gói đăng ký. Nhấn lưu khi hoàn tất.
-          </DialogDescription>
+          <DialogDescription>Cập nhật chi tiết gói đăng ký</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit}>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="name">Tên gói *</Label>
-              <Input
-                id="name"
-                placeholder="Nhập tên gói đăng ký"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="price">Giá (VNĐ) *</Label>
-              <Input
-                id="price"
-                type="number"
-                min="0"
-                step="1000"
-                placeholder="199000"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="totalKwh">Tổng kWh *</Label>
-              <Input
-                id="totalKwh"
-                type="number"
-                min="0"
-                step="0.1"
-                placeholder="100"
-                value={totalKwh}
-                onChange={(e) => setTotalKwh(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="durationDays">Thời hạn (ngày) *</Label>
-              <Input
-                id="durationDays"
-                type="number"
-                min="1"
-                step="1"
-                placeholder="30"
-                value={durationDays}
-                onChange={(e) => setDurationDays(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              disabled={isLoading}
-            >
-              Hủy
-            </Button>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Đang lưu..." : "Lưu thay đổi"}
-            </Button>
-          </DialogFooter>
+
+        <form
+          id="subscription-update-form"
+          className="space-y-6"
+          onSubmit={handleSubmit}
+        >
+          <input type="hidden" {...form.register("id")} />
+          <FieldGroup>
+            <Controller
+              control={form.control}
+              name="name"
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="subscription-name">Tên</FieldLabel>
+                  <Input
+                    {...field}
+                    id="subscription-name"
+                    placeholder={"Nhập tên gói"}
+                    aria-invalid={fieldState.invalid}
+                    autoComplete="off"
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+
+            <Controller
+              control={form.control}
+              name="price"
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="subscription-price">Giá</FieldLabel>
+                  <Input
+                    id="subscription-price"
+                    type="number"
+                    value={
+                      typeof field.value === "number" ||
+                      typeof field.value === "string"
+                        ? field.value
+                        : ""
+                    }
+                    onChange={(event) =>
+                      field.onChange(
+                        event.target.value === ""
+                          ? ""
+                          : Number(event.target.value),
+                      )
+                    }
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
+                    aria-invalid={fieldState.invalid}
+                    placeholder={"0"}
+                    autoComplete="off"
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+
+            <Controller
+              control={form.control}
+              name="totalKwH"
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="subscription-total-kwh">
+                    Tổng kWh
+                  </FieldLabel>
+                  <Input
+                    id="subscription-total-kwh"
+                    type="number"
+                    value={
+                      typeof field.value === "number" ||
+                      typeof field.value === "string"
+                        ? field.value
+                        : ""
+                    }
+                    onChange={(event) =>
+                      field.onChange(
+                        event.target.value === ""
+                          ? ""
+                          : Number(event.target.value),
+                      )
+                    }
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
+                    aria-invalid={fieldState.invalid}
+                    placeholder={"100"}
+                    autoComplete="off"
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+
+            <Controller
+              control={form.control}
+              name="durationDays"
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="subscription-duration-days">
+                    Thời hạn (ngày)
+                  </FieldLabel>
+                  <Input
+                    id="subscription-duration-days"
+                    type="number"
+                    value={
+                      typeof field.value === "number" ||
+                      typeof field.value === "string"
+                        ? field.value
+                        : ""
+                    }
+                    onChange={(event) =>
+                      field.onChange(
+                        event.target.value === ""
+                          ? ""
+                          : Number(event.target.value),
+                      )
+                    }
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
+                    aria-invalid={fieldState.invalid}
+                    placeholder={"30"}
+                    autoComplete="off"
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+          </FieldGroup>
         </form>
+
+        <DialogFooter className="flex flex-col gap-2 sm:flex-row sm:justify-end">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={pending}
+          >
+            Huỷ
+          </Button>
+          <Button
+            form="subscription-update-form"
+            type="submit"
+            disabled={pending}
+          >
+            {pending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {pending ? "Đang cập nhật..." : "Cập nhật"}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
