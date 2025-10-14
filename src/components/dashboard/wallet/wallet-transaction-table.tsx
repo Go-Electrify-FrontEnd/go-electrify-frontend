@@ -27,7 +27,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Transaction } from "@/types/wallet";
-import { transactionColumns } from "./transaction-table-columns";
+import { transactionColumns } from "./wallet-transaction-table-columns";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";

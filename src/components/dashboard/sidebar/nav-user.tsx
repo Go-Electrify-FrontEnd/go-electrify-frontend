@@ -101,6 +101,7 @@ export function NavUser({ user }: NavUserProps) {
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link
+            prefetch={false}
             href="/api/auth/logout"
             className="flex h-full w-full cursor-pointer items-center gap-2"
           >
