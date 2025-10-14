@@ -24,16 +24,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar";
 import { useTheme } from "next-themes";
 import { User } from "@/types/user";
-import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import { usePathname, useRouter } from "@/i18n/navigation";
 import { useTransition } from "react";
+import Link from "next/link";
 
 interface NavUserProps {
   user: User;
@@ -59,7 +54,7 @@ export function NavUser({ user }: NavUserProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Avatar className="h-10 w-10">
+        <Avatar className="h-8 w-8">
           <AvatarImage
             src={user.avatar || "https://avatar.vercel.sh/rauchg"}
             alt={user.name || "User"}
@@ -112,13 +107,13 @@ export function NavUser({ user }: NavUserProps) {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <a
+          <Link
             href="/api/auth/logout"
             className="flex h-full w-full cursor-pointer items-center gap-2"
           >
             <LogOut />
             {tAuth("logout")}
-          </a>
+          </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

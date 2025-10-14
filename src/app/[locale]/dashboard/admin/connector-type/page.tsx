@@ -36,7 +36,7 @@ export async function getConnectorTypes(): Promise<ConnectorType[]> {
 export default async function ConnectorTypePage() {
   const connectorTypes = await getConnectorTypes();
   return (
-    <div className="flex flex-col gap-4 py-4 md:gap-6">
+    <div className="flex flex-col gap-4 md:gap-6">
       {/* Header (plain text, not a card) */}
       <div className="relative pt-8 pb-8">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">

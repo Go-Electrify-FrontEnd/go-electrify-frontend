@@ -1,22 +1,30 @@
+"use client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CreditCard, TrendingUp, Wallet, Zap } from "lucide-react";
+import { Wallet } from "@/types/wallet";
+import { CreditCard, TrendingUp, WalletIcon, Zap } from "lucide-react";
+import { useFormatter } from "next-intl";
 
-export function WalletOverview() {
+interface WalletOverviewProps {
+  wallet: Wallet;
+}
+
+export function WalletOverview({ wallet }: WalletOverviewProps) {
+  const formatter = useFormatter();
   return (
     <div className="grid gap-4 sm:gap-6 md:grid-cols-3">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Số Dư Hiện Tại</CardTitle>
-          <Wallet className="text-muted-foreground h-4 w-4" />
+          <WalletIcon className="text-muted-foreground h-4 w-4" />
         </CardHeader>
         <CardContent>
-          <div className="text-primary text-2xl font-bold">2,847,500 đ</div>
-          <p className="text-muted-foreground mt-1 text-xs">
-            <span className="flex items-center gap-1">
-              <TrendingUp className="h-3 w-3" />
-              +145,000 đ hôm nay
-            </span>
-          </p>
+          <div className="text-primary text-2xl font-bold">
+            {formatter.number(wallet.balance, {
+              style: "currency",
+              currency: "VND",
+            })}
+          </div>
+          <p className="text-muted-foreground mt-1 text-xs"></p>
         </CardContent>
       </Card>
 

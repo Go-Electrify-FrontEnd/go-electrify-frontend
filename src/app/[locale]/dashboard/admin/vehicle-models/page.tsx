@@ -63,7 +63,7 @@ export default async function VehicleModelsPage({ params }: Props) {
 
   return (
     <ConnectorTypeProvider connectorTypes={connectorTypes}>
-      <div className="flex flex-col gap-4 py-4 md:gap-6">
+      <div className="flex flex-col gap-4 md:gap-6">
         {/* Header (plain text, not a card) */}
         <div className="pb-4">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">

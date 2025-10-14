@@ -123,7 +123,7 @@ export default async function FindStationsPage() {
   const t = await getTranslations("stations");
 
   return (
-    <div className="container mx-auto mt-4 space-y-6">
+    <div className="container mx-auto space-y-6">
       {/* Header Card */}
       <Card>
         <CardHeader className="pt-8 pb-8">

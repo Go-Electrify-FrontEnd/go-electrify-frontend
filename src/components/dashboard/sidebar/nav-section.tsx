@@ -25,7 +25,7 @@ function NavItem({
     <Link
       prefetch={false}
       href={href}
-      className="text-muted-foreground hover:text-foreground hover:bg-muted flex items-center rounded-md px-2 py-2 text-sm transition-colors"
+      className="text-electrify-gray-900 hover:text-foreground hover:bg-muted flex items-center rounded-md px-2 py-2 text-sm transition-colors"
     >
       <Icon className="mr-2 h-4 w-4 flex-shrink-0" />
       {children}

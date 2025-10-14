@@ -2,21 +2,18 @@ import { LoginForm } from "@/components/login/login-form";
 import AppLogo from "@/components/shared/logo";
 import { redirect } from "@/i18n/navigation";
 import { getUser } from "@/lib/auth/auth-server";
-import { setRequestLocale } from "next-intl/server";
-
-type Props = {
-  params: Promise<{ locale: string }>;
-};
+import { getLocale } from "next-intl/server";
 
 export const dynamic = "force-dynamic";
 
-export default async function LoginPage({ params }: Props) {
-  const { locale } = await params;
-
+export default async function LoginPage() {
+  const locale = await getLocale();
   const { user } = await getUser();
+
   if (user) {
-    redirect({ href: "/dashboard", locale: locale as "en" | "vi" });
+    redirect({ href: "/dashboard", locale: locale });
   }
+
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="flex flex-col gap-4 p-6 md:p-10">
