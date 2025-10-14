@@ -18,6 +18,8 @@ export function DashboardLogo() {
             width={30}
             height={30}
             className="object-contain"
+            decoding="async"
+            quality={75}
           />
           <div className="grid flex-1 text-left text-sm leading-tight">
             <span className="truncate font-semibold">GoElectrify</span>

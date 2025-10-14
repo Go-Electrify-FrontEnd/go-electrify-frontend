@@ -46,6 +46,9 @@ const DummyContent = () => {
               height="500"
               width="500"
               className="mx-auto h-full w-full object-contain md:h-1/2 md:w-1/2"
+              loading="lazy"
+              decoding="async"
+              quality={75}
             />
           </div>
         );

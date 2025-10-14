@@ -16,6 +16,7 @@ export default function LandingHeader() {
         {/* Navigation Menu - Absolutely centered */}
         <nav className="absolute left-1/2 hidden -translate-x-1/2 gap-10 text-white md:flex">
           <Link
+            prefetch={false}
             href="#features"
             className="group relative text-sm font-semibold transition-colors duration-200"
           >
@@ -23,6 +24,7 @@ export default function LandingHeader() {
             <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-white transition-all duration-200 group-hover:w-full" />
           </Link>
           <Link
+            prefetch={false}
             href="#pricing"
             className="group relative text-sm font-semibold transition-colors duration-200"
           >
@@ -30,6 +32,7 @@ export default function LandingHeader() {
             <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-white transition-all duration-200 group-hover:w-full" />
           </Link>
           <Link
+            prefetch={false}
             href="#testimonials"
             className="group relative text-sm font-semibold transition-colors duration-200"
           >
@@ -37,6 +40,7 @@ export default function LandingHeader() {
             <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-white transition-all duration-200 group-hover:w-full" />
           </Link>
           <Link
+            prefetch={false}
             href="#contact"
             className="group relative text-sm font-semibold transition-colors duration-200"
           >
@@ -56,6 +60,7 @@ export default function LandingHeader() {
           </button>
           <Link
             href="/login"
+            prefetch={false}
             className="hover:text-foreground hover:bg-accent flex h-9 w-9 items-center justify-center rounded-full text-white transition-all duration-200"
             aria-label="Tài khoản"
           >

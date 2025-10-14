@@ -13,24 +13,28 @@ export default function LandingFooter() {
           </p>
           <nav className="flex gap-6">
             <Link
+              prefetch={false}
               href="/about"
               className="text-muted-foreground hover:text-foreground text-sm transition-colors"
             >
               Về chúng tôi
             </Link>
             <Link
+              prefetch={false}
               href="/privacy"
               className="text-muted-foreground hover:text-foreground text-sm transition-colors"
             >
               Chính sách bảo mật
             </Link>
             <Link
+              prefetch={false}
               href="/terms"
               className="text-muted-foreground hover:text-foreground text-sm transition-colors"
             >
               Điều khoản
             </Link>
             <Link
+              prefetch={false}
               href="/contact"
               className="text-muted-foreground hover:text-foreground text-sm transition-colors"
             >

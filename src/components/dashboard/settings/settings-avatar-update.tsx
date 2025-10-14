@@ -21,7 +21,9 @@ import { AvatarCropDialog } from "./avatar-crop-dialog";
 export default function AvatarUpdate() {
   const { user } = useUser();
   const fileRef = React.useRef<HTMLInputElement | null>(null);
-  const [preview, setPreview] = React.useState<string | null>(null);
+  const [preview, setPreview] = React.useState<string | null>(
+    () => user?.avatar ?? null,
+  );
   const [originalImage, setOriginalImage] = React.useState<string | null>(null);
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   const [blob, setBlob] = React.useState<PutBlobResult | null>(null);
@@ -45,6 +47,12 @@ export default function AvatarUpdate() {
     setBlob(null);
     setError(null);
   };
+
+  React.useEffect(() => {
+    if (!preview && user?.avatar) {
+      setPreview(user.avatar);
+    }
+  }, [user?.avatar, preview]);
 
   const handleCropComplete = (croppedFile: File, previewUrl: string) => {
     // Revoke old preview URL
@@ -144,82 +152,149 @@ export default function AvatarUpdate() {
 
   return (
     <>
-      <Card className="max-w-[1000px]">
-        <CardHeader className="relative">
+      <Card className="max-w-4xl">
+        <CardHeader>
           <CardTitle>Ảnh đại diện</CardTitle>
-          <CardDescription>Đây là ảnh đại diện của bạn.</CardDescription>
-
-          {/* absolutely positioned avatar on the top-right */}
-          <div className="absolute top-4 right-4">
-            <Avatar className="h-16 w-16">
-              {preview ? (
-                <AvatarImage src={preview} alt={user!.name} />
-              ) : (
-                <AvatarFallback className="text-lg font-semibold">
-                  {user?.name
-                    ?.split(" ")
-                    .filter((w) => w.length > 0)
-                    .map((w) => w[0]?.toUpperCase() ?? "")
-                    .join("") || "ND"}
-                </AvatarFallback>
-              )}
-            </Avatar>
-          </div>
+          <CardDescription>
+            Tải lên và quản lý ảnh đại diện của bạn
+          </CardDescription>
         </CardHeader>
 
-        <CardContent className="space-y-4">
-          <p className="text-muted-foreground text-sm">
-            Nhấp vào nút bên dưới để chọn ảnh từ thiết bị của bạn, cắt ảnh theo
-            ý muốn, sau đó bấm &ldquo;Tải ảnh lên&rdquo; để lưu.
-          </p>
-          {(croppedFile || selectedFile) && (
-            <div className="text-sm">
-              <span className="text-muted-foreground">Ảnh đã chọn:</span>{" "}
-              <span className="text-foreground font-medium">
-                {croppedFile?.name || selectedFile?.name}
-              </span>
-              {croppedFile && (
-                <span className="text-muted-foreground ml-2">(đã cắt)</span>
-              )}
+        <CardContent>
+          <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
+            {/* Left side - Avatar Preview */}
+            <div className="flex flex-col items-center gap-4 lg:w-64">
+              <div className="relative">
+                <Avatar className="ring-background size-32 shadow-lg ring-4 lg:size-40">
+                  {preview ? (
+                    <AvatarImage src={preview} alt={user?.name ?? "Avatar"} />
+                  ) : (
+                    <AvatarFallback className="text-4xl font-semibold lg:text-5xl">
+                      {user?.name
+                        ?.split(" ")
+                        .filter((w) => w.length > 0)
+                        .map((w) => w[0]?.toUpperCase() ?? "")
+                        .join("") || "ND"}
+                    </AvatarFallback>
+                  )}
+                </Avatar>
+                {preview && (
+                  <div className="bg-primary text-primary-foreground absolute -right-2 -bottom-2 rounded-full p-2 shadow-md">
+                    <Crop className="size-4" />
+                  </div>
+                )}
+              </div>
+
+              <div className="text-center">
+                <p className="text-foreground font-medium">
+                  {user?.name || "Người dùng"}
+                </p>
+                <p className="text-muted-foreground text-sm">
+                  {user?.email || ""}
+                </p>
+              </div>
             </div>
-          )}
-          {error && <p className="text-destructive text-sm">{error}</p>}
-        </CardContent>
 
-        <CardFooter className="flex flex-col gap-4 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-muted-foreground text-sm">
-            Ảnh đại diện là tùy chọn nhưng nên thiết lập để hoàn thiện hồ sơ.
-          </p>
+            {/* Right side - Upload Controls */}
+            <div className="flex flex-1 flex-col gap-4">
+              {/* Instructions */}
+              <div className="bg-muted/50 space-y-2 rounded-lg border p-4">
+                <h4 className="text-foreground text-sm font-semibold">
+                  Hướng dẫn tải ảnh
+                </h4>
+                <ul className="text-muted-foreground space-y-1.5 text-sm">
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-0.5">•</span>
+                    <span>
+                      Nhấp &ldquo;Chọn ảnh&rdquo; để chọn ảnh từ thiết bị
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-0.5">•</span>
+                    <span>Cắt và điều chỉnh ảnh theo ý muốn</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-0.5">•</span>
+                    <span>Nhấp &ldquo;Tải ảnh lên&rdquo; để lưu thay đổi</span>
+                  </li>
+                </ul>
+              </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="hidden"
-            />
-            <Button variant="outline" onClick={handleClickAvatar} type="button">
-              <Crop className="mr-2 h-4 w-4" />
-              Chọn ảnh
-            </Button>
-            <Button
-              variant="secondary"
-              type="button"
-              onClick={handleRemove}
-              disabled={!preview && !blob && !croppedFile && !selectedFile}
-            >
-              Gỡ ảnh
-            </Button>
-            <Button
-              type="button"
-              onClick={handleUpload}
-              disabled={!croppedFile || isUploading}
-            >
-              {isUploading ? "Đang tải..." : "Tải ảnh lên"}
-            </Button>
+              {/* Selected File Info */}
+              {(croppedFile || selectedFile) && (
+                <div className="bg-primary/5 border-primary/20 rounded-lg border p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="bg-primary/10 text-primary rounded-lg p-2.5">
+                      <Crop className="size-5" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-foreground mb-1 font-medium">
+                        {croppedFile?.name || selectedFile?.name}
+                      </p>
+                      <p className="text-muted-foreground text-sm">
+                        {croppedFile
+                          ? "✓ Đã cắt và sẵn sàng tải lên"
+                          : "Vui lòng cắt ảnh trước khi tải lên"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Error Message */}
+              {error && (
+                <div className="bg-destructive/10 text-destructive border-destructive/20 rounded-lg border p-4">
+                  <p className="text-sm font-medium">{error}</p>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+                <Button
+                  variant="outline"
+                  onClick={handleClickAvatar}
+                  type="button"
+                  className="flex-1 sm:flex-none"
+                >
+                  <Crop className="mr-2 size-4" />
+                  Chọn ảnh
+                </Button>
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={handleRemove}
+                  disabled={!preview && !blob && !croppedFile && !selectedFile}
+                  className="flex-1 sm:flex-none"
+                >
+                  Gỡ ảnh
+                </Button>
+                <Button
+                  type="button"
+                  onClick={handleUpload}
+                  disabled={!croppedFile || isUploading}
+                  className="flex-1 sm:flex-auto"
+                >
+                  {isUploading ? "Đang tải..." : "Tải ảnh lên"}
+                </Button>
+              </div>
+
+              {/* File Requirements */}
+              <div className="bg-muted/30 rounded-lg p-3">
+                <p className="text-muted-foreground text-xs">
+                  <span className="font-medium">Yêu cầu:</span> JPG, PNG, GIF •
+                  Tối đa 5MB • Tỷ lệ khuyến nghị 1:1
+                </p>
+              </div>
+            </div>
           </div>
-        </CardFooter>
+        </CardContent>
       </Card>
 
       {/* Crop Dialog */}

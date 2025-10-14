@@ -38,6 +38,7 @@ export default function Navbar() {
               {navigationLinks.map((link) => (
                 <Link
                   key={link.name}
+                  prefetch={false}
                   href={link.href}
                   className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
                 >
@@ -50,7 +51,9 @@ export default function Navbar() {
 
         <div className="hidden w-48 flex-shrink-0 items-center justify-end md:flex">
           <Button asChild>
-            <Link href="/login">Đăng nhập</Link>
+            <Link prefetch={false} href="/login">
+              Đăng nhập
+            </Link>
           </Button>
         </div>
 
@@ -72,6 +75,7 @@ export default function Navbar() {
               {navigationLinks.map((link) => (
                 <Link
                   key={link.name}
+                  prefetch={false}
                   href={link.href}
                   className="text-muted-foreground hover:text-foreground block text-lg font-medium transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
@@ -81,7 +85,11 @@ export default function Navbar() {
               ))}
               <div className="border-t pt-4">
                 <Button asChild className="w-full" size="lg">
-                  <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                  <Link
+                    prefetch={false}
+                    href="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
                     Đăng nhập
                   </Link>
                 </Button>

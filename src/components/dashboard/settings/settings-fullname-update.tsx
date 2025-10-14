@@ -10,12 +10,11 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useUser } from "@/contexts/user-context";
-// Translations removed; using Vietnamese literals
 
 export default function FullNameUpdate() {
   const { user } = useUser();
   return (
-    <Card className="max-w-[1000px]">
+    <Card className="max-w-4xl">
       <CardHeader>
         <CardTitle>Họ và tên</CardTitle>
         <CardDescription>
