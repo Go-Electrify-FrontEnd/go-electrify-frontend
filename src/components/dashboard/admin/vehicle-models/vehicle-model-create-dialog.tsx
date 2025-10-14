@@ -34,7 +34,7 @@ import {
   type VehicleModelFormData,
 } from "@/schemas/vehicle-model.schema";
 import { useConnectorTypes } from "@/contexts/connector-type-context";
-import { useTranslations } from "next-intl";
+// Translations removed; using Vietnamese literals
 
 const initialState = {
   success: false,
@@ -42,7 +42,22 @@ const initialState = {
 };
 
 export default function VehicleModelCreateDialog() {
-  const t = useTranslations("vehicleModel");
+  const t = {
+    createTitle: "Tạo mẫu xe",
+    createDescription: "Thêm mẫu xe mới vào hệ thống",
+    form: {
+      modelName: "Tên mẫu xe",
+      modelNamePlaceholder: "Nhập tên mẫu xe",
+      maxPowerKw: "Công suất tối đa (kW)",
+      maxPowerPlaceholder: "Nhập công suất tối đa",
+      batteryCapacityKwh: "Dung lượng pin (kWh)",
+      batteryCapacityPlaceholder: "Nhập dung lượng pin",
+      connectorTypes: "Loại cổng",
+      connectorTypesPlaceholder: "Chọn loại cổng",
+      creating: "Đang tạo...",
+      createButton: "Tạo",
+    },
+  };
   const connectorTypes = useConnectorTypes();
   const [open, setOpen] = useState(false);
 
@@ -93,14 +108,14 @@ export default function VehicleModelCreateDialog() {
       <DialogTrigger asChild>
         <Button size="lg">
           <Plus />
-          <span className="font-semibold">{t("create.title")}</span>
+          <span className="font-semibold">{t.createTitle}</span>
         </Button>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{t("create.title")}</DialogTitle>
-          <DialogDescription>{t("create.description")}</DialogDescription>
+          <DialogTitle>{t.createTitle}</DialogTitle>
+          <DialogDescription>{t.createDescription}</DialogDescription>
         </DialogHeader>
         <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <FieldGroup className="my-4">
@@ -110,12 +125,12 @@ export default function VehicleModelCreateDialog() {
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="modelName">
-                    {t("form.modelName")}
+                    {t.form.modelName}
                   </FieldLabel>
                   <Input
                     {...field}
                     id="modelName"
-                    placeholder={t("form.modelNamePlaceholder")}
+                    placeholder={t.form.modelNamePlaceholder}
                     aria-invalid={fieldState.invalid}
                     autoComplete="off"
                   />
@@ -132,13 +147,13 @@ export default function VehicleModelCreateDialog() {
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="maxPowerKw">
-                    {t("form.maxPowerKw")}
+                    {t.form.maxPowerKw}
                   </FieldLabel>
                   <Input
                     {...field}
                     type="number"
                     id="maxPowerKw"
-                    placeholder={t("form.maxPowerPlaceholder")}
+                    placeholder={t.form.maxPowerPlaceholder}
                     aria-invalid={fieldState.invalid}
                     autoComplete="off"
                     value={
@@ -161,13 +176,13 @@ export default function VehicleModelCreateDialog() {
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="batteryCapacityKwh">
-                    {t("form.batteryCapacityKwh")}
+                    {t.form.batteryCapacityKwh}
                   </FieldLabel>
                   <Input
                     {...field}
                     type="number"
                     id="batteryCapacityKwh"
-                    placeholder={t("form.batteryCapacityPlaceholder")}
+                    placeholder={t.form.batteryCapacityPlaceholder}
                     aria-invalid={fieldState.invalid}
                     autoComplete="off"
                     value={
@@ -190,7 +205,7 @@ export default function VehicleModelCreateDialog() {
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="connectorTypeIds">
-                    {t("form.connectorTypes")}
+                    {t.form.connectorTypes}
                   </FieldLabel>
                   <MultiSelect
                     onValuesChange={field.onChange}
@@ -199,7 +214,7 @@ export default function VehicleModelCreateDialog() {
                   >
                     <MultiSelectTrigger className="w-full max-w-[400px]">
                       <MultiSelectValue
-                        placeholder={t("form.connectorTypesPlaceholder")}
+                        placeholder={t.form.connectorTypesPlaceholder}
                         overflowBehavior="wrap"
                       />
                     </MultiSelectTrigger>
@@ -222,7 +237,7 @@ export default function VehicleModelCreateDialog() {
 
             <DialogFooter className="flex w-full">
               <Button type="submit" className="self-end" disabled={pending}>
-                {pending ? t("form.creating") : t("form.createButton")}
+                {pending ? t.form.creating : t.form.createButton}
               </Button>
             </DialogFooter>
           </FieldGroup>

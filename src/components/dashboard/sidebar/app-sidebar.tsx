@@ -15,24 +15,22 @@ import {
   Wallet2Icon,
   Zap,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+// Translations removed: landing and admin UI converted to Vietnamese
 
 import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
 import { NavSection } from "./nav-section";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const t = useTranslations("navigation");
-
   const overview = {
-    title: t("dashboard"),
+    title: "Tổng quan",
     items: [
       {
-        title: t("dashboard"),
+        title: "Trang chính",
         url: "/dashboard",
         icon: House,
       },
       {
-        title: t("start-charging"),
+        title: "Bắt đầu sạc",
         url: "/dashboard/start-charging",
         icon: Zap,
       },
@@ -40,20 +38,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   };
 
   const charging = {
-    title: t("stations-nearby"),
+    title: "Trạm & Sạc",
     items: [
       {
-        title: t("stations-nearby"),
+        title: "Trạm gần đây",
         url: "/dashboard/stations-nearby",
         icon: Map,
       },
       {
-        title: t("reservations"),
+        title: "Đặt chỗ",
         url: "/dashboard/reservations",
         icon: TicketCheckIcon,
       },
       {
-        title: t("charging-history"),
+        title: "Lịch sử sạc",
         url: "/dashboard/charging-history",
         icon: PieChart,
       },
@@ -61,15 +59,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   };
 
   const payment = {
-    title: t("wallet"),
+    title: "Ví",
     items: [
       {
-        title: t("wallet"),
+        title: "Ví",
         url: "/dashboard/wallet",
         icon: Wallet2Icon,
       },
       {
-        title: t("plans-billing"),
+        title: "Gói & Thanh toán",
         url: "/dashboard/plans-billing",
         icon: BookOpen,
       },
@@ -77,50 +75,39 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   };
 
   const admin = {
-    title: t("admin"),
+    title: "Quản trị",
     items: [
       {
-        title: t("manage-stations"),
+        title: "Quản lý trạm",
         url: "/dashboard/admin/stations",
         icon: Command,
       },
       {
-        title: t("manage-users"),
+        title: "Quản lý người dùng",
         url: "/dashboard/admin/users",
         icon: GalleryVerticalEnd,
       },
       {
-        title: t("manage-subscriptions"),
+        title: "Quản lý gói",
         url: "/dashboard/admin/subscriptions",
         icon: AudioWaveform,
       },
       {
-        title: t("manage-connector-types"),
+        title: "Loại kết nối",
         url: "/dashboard/admin/connector-type",
         icon: Plug,
       },
       {
-        title: t("manage-car-models"),
+        title: "Mẫu xe",
         url: "/dashboard/admin/vehicle-models",
         icon: Car,
       },
     ],
   };
 
-  const secondary = [
-    {
-      title: t("settings"),
-      url: "/dashboard/settings",
-      icon: Settings2,
-    },
-  ];
   return (
-    <Sidebar
-      className="!bg-background !border-none"
-      collapsible="icon"
-      {...props}
-    >
-      <SidebarContent className="!bg-background !border-0">
+    <Sidebar collapsible="icon" {...props}>
+      <SidebarContent>
         <NavSection items={overview} />
         <NavSection items={charging} />
         <NavSection items={payment} />

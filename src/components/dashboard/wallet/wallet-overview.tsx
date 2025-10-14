@@ -2,14 +2,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Wallet } from "@/types/wallet";
 import { CreditCard, TrendingUp, WalletIcon, Zap } from "lucide-react";
-import { useFormatter } from "next-intl";
 
 interface WalletOverviewProps {
   wallet: Wallet;
 }
 
 export function WalletOverview({ wallet }: WalletOverviewProps) {
-  const formatter = useFormatter();
   return (
     <div className="grid gap-4 sm:gap-6 md:grid-cols-3">
       <Card>
@@ -19,10 +17,10 @@ export function WalletOverview({ wallet }: WalletOverviewProps) {
         </CardHeader>
         <CardContent>
           <div className="text-primary text-2xl font-bold">
-            {formatter.number(wallet.balance, {
+            {new Intl.NumberFormat("vi-VN", {
               style: "currency",
               currency: "VND",
-            })}
+            }).format(wallet.balance)}
           </div>
           <p className="text-muted-foreground mt-1 text-xs"></p>
         </CardContent>

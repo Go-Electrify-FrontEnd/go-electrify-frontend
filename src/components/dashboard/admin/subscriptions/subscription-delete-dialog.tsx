@@ -14,7 +14,6 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Subscription } from "@/types/subscription";
 import { deleteSubscription } from "@/actions/subscriptions-actions";
-import { useTranslations } from "next-intl";
 
 interface DeleteSubscriptionProps {
   subscription: Subscription;
@@ -27,7 +26,7 @@ export function DeleteSubscription({
   open,
   onOpenChange,
 }: DeleteSubscriptionProps) {
-  const t = useTranslations("admin.subscription");
+  // Vietnamese literals
   const [confirmText, setConfirmText] = useState("");
   const [deleteState, deleteAction, pending] = useActionState(
     deleteSubscription,
@@ -40,13 +39,13 @@ export function DeleteSubscription({
 
   useEffect(() => {
     if (deleteState.success) {
-      toast.success(t("delete.toast.success"), {
+      toast.success("Loại đăng ký đã được xóa", {
         description: deleteState.msg,
       });
       onOpenChange(false);
       resetForm();
     } else if (!deleteState.success && deleteState.msg) {
-      toast.error(t("delete.delete.failure"), {
+      toast.error("Xóa không thành công", {
         description: deleteState.msg,
       });
     }
@@ -62,17 +61,15 @@ export function DeleteSubscription({
     >
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{t("delete.dialog.title")}</AlertDialogTitle>
+          <AlertDialogTitle>Xóa gói đăng ký</AlertDialogTitle>
           <AlertDialogDescription>
             <span className="block">
-              {t("delete.dialog.description.1")}{" "}
-              <span className="font-semibold">{subscription.name}</span>{" "}
-              {t("delete.dialog.description.2")}
+              Bạn có chắc chắn muốn xóa gói{" "}
+              <span className="font-semibold">{subscription.name}</span>?
             </span>
             <br />
             <span className="block">
               Điều này có thể ảnh hưởng đến các người dùng đang sử dụng gói này.
-              {t("delete.dialog.description.3")}
             </span>
           </AlertDialogDescription>
         </AlertDialogHeader>
@@ -80,7 +77,7 @@ export function DeleteSubscription({
         <div className="space-y-3">
           <div className="border-destructive/20 bg-destructive/5 rounded-lg border p-4">
             <p className="text-muted-foreground mb-2 text-sm">
-              {t("delete.dialog.confirm")}:{" "}
+              Xác nhận xóa:{" "}
               <span className="text-foreground font-semibold">
                 {subscription.name}
               </span>
@@ -111,9 +108,7 @@ export function DeleteSubscription({
             type="submit"
             disabled={pending || confirmText !== subscription.name}
           >
-            {pending
-              ? t("delete.dialog.button.loading")
-              : t("delete.dialog.button.delete")}
+            {pending ? "Đang xóa..." : "Xóa"}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

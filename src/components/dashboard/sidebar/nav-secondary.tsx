@@ -10,7 +10,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { LucideIcon } from "lucide-react";
-import { Link } from "@/i18n/navigation";
+import Link from "next/link";
 
 interface NavSecondaryProps
   extends React.ComponentPropsWithoutRef<typeof SidebarGroup> {

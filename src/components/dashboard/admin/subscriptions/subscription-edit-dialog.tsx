@@ -21,7 +21,6 @@ import {
 import { Controller, type Resolver, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { Subscription } from "@/types/subscription";
 import { useServerAction } from "@/hooks/use-server-action";
 import {
@@ -43,7 +42,6 @@ export function UpdateSubscription({
   open,
   onOpenChange,
 }: UpdateSubscriptionProps) {
-  const t = useTranslations("admin.subscription");
   const { id, name, price, totalKwh, durationDays } = subscription;
   const form = useForm<SubscriptionUpdateFormData>({
     resolver: zodResolver(
@@ -63,7 +61,7 @@ export function UpdateSubscription({
     initialState,
     {
       onSuccess: (result) => {
-        toast.success(t("edit.toast.success", { defaultValue: "Updated" }), {
+        toast.success("Gói đã được cập nhật", {
           description: result.msg,
         });
         onOpenChange(false);
@@ -71,12 +69,9 @@ export function UpdateSubscription({
       },
       onError: (result) => {
         if (result.msg) {
-          toast.error(
-            t("edit.toast.failure", { defaultValue: "Update failed" }),
-            {
-              description: result.msg,
-            },
-          );
+          toast.error("Cập nhật không thành công", {
+            description: result.msg,
+          });
         }
       },
     },
@@ -124,14 +119,8 @@ export function UpdateSubscription({
     >
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
-          <DialogTitle>
-            {t("edit.title", { defaultValue: "Edit Subscription" })}
-          </DialogTitle>
-          <DialogDescription>
-            {t("edit.description", {
-              defaultValue: "Update subscription plan details",
-            })}
-          </DialogDescription>
+          <DialogTitle>Chỉnh sửa gói đăng ký</DialogTitle>
+          <DialogDescription>Cập nhật chi tiết gói đăng ký</DialogDescription>
         </DialogHeader>
 
         <form
@@ -146,15 +135,11 @@ export function UpdateSubscription({
               name="name"
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="subscription-name">
-                    {t("form.name", { defaultValue: "Name" })}
-                  </FieldLabel>
+                  <FieldLabel htmlFor="subscription-name">Tên</FieldLabel>
                   <Input
                     {...field}
                     id="subscription-name"
-                    placeholder={t("form.namePlaceholder", {
-                      defaultValue: "Enter subscription name",
-                    })}
+                    placeholder={"Nhập tên gói"}
                     aria-invalid={fieldState.invalid}
                     autoComplete="off"
                   />
@@ -170,9 +155,7 @@ export function UpdateSubscription({
               name="price"
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="subscription-price">
-                    {t("form.price", { defaultValue: "Price" })}
-                  </FieldLabel>
+                  <FieldLabel htmlFor="subscription-price">Giá</FieldLabel>
                   <Input
                     id="subscription-price"
                     type="number"
@@ -193,9 +176,7 @@ export function UpdateSubscription({
                     name={field.name}
                     ref={field.ref}
                     aria-invalid={fieldState.invalid}
-                    placeholder={t("form.pricePlaceholder", {
-                      defaultValue: "0",
-                    })}
+                    placeholder={"0"}
                     autoComplete="off"
                   />
                   {fieldState.invalid && (
@@ -211,7 +192,7 @@ export function UpdateSubscription({
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="subscription-total-kwh">
-                    {t("form.totalKwh", { defaultValue: "Total kWh" })}
+                    Tổng kWh
                   </FieldLabel>
                   <Input
                     id="subscription-total-kwh"
@@ -233,9 +214,7 @@ export function UpdateSubscription({
                     name={field.name}
                     ref={field.ref}
                     aria-invalid={fieldState.invalid}
-                    placeholder={t("form.totalKwhPlaceholder", {
-                      defaultValue: "100",
-                    })}
+                    placeholder={"100"}
                     autoComplete="off"
                   />
                   {fieldState.invalid && (
@@ -251,9 +230,7 @@ export function UpdateSubscription({
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="subscription-duration-days">
-                    {t("form.durationDays", {
-                      defaultValue: "Duration (Days)",
-                    })}
+                    Thời hạn (ngày)
                   </FieldLabel>
                   <Input
                     id="subscription-duration-days"
@@ -275,9 +252,7 @@ export function UpdateSubscription({
                     name={field.name}
                     ref={field.ref}
                     aria-invalid={fieldState.invalid}
-                    placeholder={t("form.durationDaysPlaceholder", {
-                      defaultValue: "30",
-                    })}
+                    placeholder={"30"}
                     autoComplete="off"
                   />
                   {fieldState.invalid && (
@@ -296,7 +271,7 @@ export function UpdateSubscription({
             onClick={() => onOpenChange(false)}
             disabled={pending}
           >
-            {t("common.cancel", { defaultValue: "Cancel" })}
+            Huỷ
           </Button>
           <Button
             form="subscription-update-form"
@@ -304,9 +279,7 @@ export function UpdateSubscription({
             disabled={pending}
           >
             {pending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {pending
-              ? t("form.updating", { defaultValue: "Updating..." })
-              : t("form.updateButton", { defaultValue: "Update" })}
+            {pending ? "Đang cập nhật..." : "Cập nhật"}
           </Button>
         </DialogFooter>
       </DialogContent>

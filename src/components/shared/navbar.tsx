@@ -9,15 +9,15 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Link } from "@/i18n/navigation";
+import Link from "next/link";
 import { Menu } from "lucide-react";
 import { useState } from "react";
 import AppLogo from "./logo";
 
 const navigationLinks = [
-  { name: "Products", href: "/products" },
-  { name: "Pricing", href: "/pricing" },
-  { name: "Documentation", href: "/docs" },
+  { name: "Sản phẩm", href: "/products" },
+  { name: "Báo giá", href: "/pricing" },
+  { name: "Tài liệu", href: "/docs" },
 ];
 
 export default function Navbar() {
@@ -50,7 +50,7 @@ export default function Navbar() {
 
         <div className="hidden w-48 flex-shrink-0 items-center justify-end md:flex">
           <Button asChild>
-            <Link href="/login">Login</Link>
+            <Link href="/login">Đăng nhập</Link>
           </Button>
         </div>
 
@@ -63,9 +63,9 @@ export default function Navbar() {
           </SheetTrigger>
           <SheetContent side="right" className="w-80">
             <SheetHeader>
-              <SheetTitle>Navigation</SheetTitle>
+              <SheetTitle>Điều hướng</SheetTitle>
               <SheetDescription>
-                Access all sections of our platform
+                Truy cập tất cả các phần của nền tảng
               </SheetDescription>
             </SheetHeader>
             <div className="grid auto-rows-min gap-6 px-4">
@@ -82,7 +82,7 @@ export default function Navbar() {
               <div className="border-t pt-4">
                 <Button asChild className="w-full" size="lg">
                   <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
-                    Login
+                    Đăng nhập
                   </Link>
                 </Button>
               </div>

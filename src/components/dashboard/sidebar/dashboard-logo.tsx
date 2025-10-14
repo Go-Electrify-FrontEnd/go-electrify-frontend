@@ -6,11 +6,8 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
 
 export function DashboardLogo() {
-  const t = useTranslations("app");
-
   return (
     <SidebarMenu className="bg-background">
       <SidebarMenuItem>
@@ -23,9 +20,9 @@ export function DashboardLogo() {
             className="object-contain"
           />
           <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-semibold">{t("name")}</span>
+            <span className="truncate font-semibold">GoElectrify</span>
             <span className="text-muted-foreground truncate text-xs">
-              {t("tagline")}
+              Nền tảng sạc xe điện toàn diện
             </span>
           </div>
         </SidebarMenuButton>

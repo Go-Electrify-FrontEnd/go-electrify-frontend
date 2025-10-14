@@ -15,12 +15,11 @@ export async function POST(request: Request): Promise<NextResponse> {
         // Generate a client token for the browser to upload the file
         // ⚠️ Authenticate and authorize users before generating the token.
         // Otherwise, you're allowing anonymous uploads.
-        const { user } = await getUser();
+        const { user, token } = await getUser();
         if (!user) {
           throw new Error("Unauthorized");
         }
-
-        console.log("Uploading to: " + pathname);
+        
         return {
           allowedContentTypes: [
             "image/jpeg",
@@ -29,9 +28,8 @@ export async function POST(request: Request): Promise<NextResponse> {
             "image/webp",
           ],
           tokenPayload: JSON.stringify({
-            // optional, sent to your server on upload completion
-            // you could pass a user id from auth, or a value from clientPayload
-            clientId: user?.email,
+            clientId: user.uid,
+            token,
           }),
         };
       },
@@ -46,6 +44,24 @@ export async function POST(request: Request): Promise<NextResponse> {
           // Run any logic after the file upload completed
           // const { userId } = JSON.parse(tokenPayload);
           // await db.update({ avatar: blob.url, userId });
+          const { clientId, token } = JSON.parse(tokenPayload || "{}");
+          if (!clientId) {
+            throw new Error("Could not find clientId in tokenPayload");
+          }
+          const url = "https://api.go-electrify.com/api/v1/profile/avatar";
+          const response = await fetch(url, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ avatarUrl: blob.url }),
+          });
+          if (!response.ok) {
+            throw new Error("Could not update user, status: " + response.status);
+          } else {
+            console.log(`User ${clientId} updated with new avatar: ${blob.url}`);
+          }
         } catch {
           throw new Error("Could not update user");
         }

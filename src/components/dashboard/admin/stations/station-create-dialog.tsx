@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createStation } from "@/actions/stations-actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +25,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import AddressSearch from "@/components/shared/address-search";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, type Resolver, useForm } from "react-hook-form";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import {
+  stationCreateSchema,
+  type StationCreateFormData,
+} from "@/schemas/station.schema";
+import { useServerAction } from "@/hooks/use-server-action";
 
 interface StationCreateProps {
   onCancel?: () => void;
@@ -32,11 +45,36 @@ interface StationCreateProps {
 
 export default function StationCreate({ onCancel }: StationCreateProps) {
   const [open, setOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
   const [useManualCoords, setUseManualCoords] = useState(false);
-  const [latitude, setLatitude] = useState("10.8231");
-  const [longitude, setLongitude] = useState("106.6297");
+
+  const initialState = { success: false, msg: "" };
+  const { execute, pending } = useServerAction(createStation, initialState, {
+    onSuccess: (result) => {
+      form.reset();
+      setOpen(false);
+      toast.success(result.msg);
+    },
+    onError: (result) => {
+      if (result.msg) {
+        toast.error(result.msg);
+      }
+    },
+  });
+
+  const form = useForm<StationCreateFormData>({
+    resolver: zodResolver(
+      stationCreateSchema,
+    ) as Resolver<StationCreateFormData>,
+    defaultValues: {
+      name: "",
+      description: "",
+      address: "",
+      latitude: "",
+      longitude: "",
+      status: "active",
+    },
+  });
 
   // Get current location using browser geolocation API
   const handleGetCurrentLocation = () => {
@@ -48,8 +86,10 @@ export default function StationCreate({ onCancel }: StationCreateProps) {
     setIsLocating(true);
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        setLatitude(position.coords.latitude.toFixed(6));
-        setLongitude(position.coords.longitude.toFixed(6));
+        const lat = position.coords.latitude.toFixed(6);
+        const lng = position.coords.longitude.toFixed(6);
+        form.setValue("latitude", lat);
+        form.setValue("longitude", lng);
         toast.success("Đã phát hiện vị trí thành công");
         setIsLocating(false);
       },
@@ -65,22 +105,32 @@ export default function StationCreate({ onCancel }: StationCreateProps) {
     );
   };
 
-  const handleSubmit = async (formData: FormData) => {
-    try {
-      setIsSubmitting(true);
-      await createStation(formData);
-      toast.success("Đã tạo trạm thành công!");
-      setOpen(false);
-    } catch (error) {
-      toast.error("Không thể tạo trạm. Vui lòng thử lại.");
-      console.error("Station creation error:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  // Note: success/error handling is performed via useServerAction callbacks
+
+  const handleSubmit = form.handleSubmit((data) => {
+    const payload = new FormData();
+    payload.append("name", data.name);
+    payload.append("description", data.description ?? "");
+    payload.append("address", data.address);
+    payload.append("imageUrl", ""); // Treat as null/empty for now
+    payload.append("status", data.status ?? "active");
+    if (data.latitude) payload.append("latitude", data.latitude);
+    if (data.longitude) payload.append("longitude", data.longitude);
+
+    execute(payload);
+  });
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (!nextOpen) {
+          form.reset();
+          onCancel?.();
+        }
+        setOpen(nextOpen);
+      }}
+    >
       <DialogTrigger asChild>
         <Button>
           <Plus className="mr-2 h-4 w-4" />
@@ -98,64 +148,56 @@ export default function StationCreate({ onCancel }: StationCreateProps) {
           </DialogDescription>
         </DialogHeader>
 
-        <form action={handleSubmit}>
+        <form
+          id="station-create-form"
+          onSubmit={handleSubmit}
+          className="space-y-6"
+        >
           <input
             type="hidden"
             name="useManualCoords"
             value={useManualCoords.toString()}
           />
-          <div className="space-y-6">
-            {/* Station Name */}
-            <div className="grid gap-3">
-              <label htmlFor="name" className="text-sm font-medium">
-                Tên Trạm *
-              </label>
-              <Input
-                id="name"
-                name="name"
-                placeholder="VD: Trạm Trung Tâm Thành Phố Hồ Chí Minh"
-                required
-              />
-            </div>
 
-            {/* Description */}
-            <div className="space-y-2">
-              <div className="grid gap-3">
-                <label htmlFor="description" className="text-sm font-medium">
-                  Mô tả
-                </label>
-                <Textarea
-                  id="description"
-                  name="description"
-                  placeholder="Mô tả ngắn gọn về vị trí trạm, địa danh lân cận, hoặc tính năng đặc biệt..."
-                  rows={4}
-                />
-              </div>
-              <p className="text-muted-foreground text-xs">
-                Chi tiết tùy chọn về trạm (tối đa 500 ký tự)
-              </p>
-            </div>
+          <FieldGroup>
+            <Controller
+              control={form.control}
+              name="name"
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="station-name">Tên Trạm *</FieldLabel>
+                  <Input
+                    id="station-name"
+                    {...field}
+                    placeholder="VD: Trạm Trung Tâm Thành Phố Hồ Chí Minh"
+                    aria-invalid={fieldState.invalid}
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
 
-            {/* Image Upload */}
-            <div className="space-y-2">
-              <div className="grid gap-3">
-                <label htmlFor="image" className="text-sm font-medium">
-                  Ảnh Trạm
-                </label>
-                <input
-                  id="image"
-                  name="image"
-                  type="file"
-                  accept="image/*"
-                  className="text-muted-foreground file:bg-muted block w-full text-sm file:mr-4 file:rounded-md file:border-0 file:px-4 file:py-2"
-                />
-              </div>
-              <p className="text-muted-foreground text-xs">
-                Tải lên ảnh cho trạm (tùy chọn). Chỉ chấp nhận tệp hình ảnh.
-              </p>
-            </div>
+            <Controller
+              control={form.control}
+              name="description"
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="station-description">Mô tả</FieldLabel>
+                  <Textarea
+                    id="station-description"
+                    {...field}
+                    rows={4}
+                    aria-invalid={fieldState.invalid}
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
 
-            {/* Location Section */}
             <div className="bg-muted/30 space-y-4 rounded-lg border p-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-semibold">Vị Trí Trạm *</h3>
@@ -170,41 +212,59 @@ export default function StationCreate({ onCancel }: StationCreateProps) {
               </div>
 
               {!useManualCoords ? (
-                /* Address Input Mode */
-                <div className="space-y-2">
-                  <div className="grid gap-3">
-                    <label htmlFor="address" className="text-sm font-medium">
-                      Địa Chỉ
-                    </label>
-                    <Input
-                      id="address"
-                      name="address"
-                      placeholder="VD: 123 Đường Nguyễn Huệ, Quận 1, Thành phố Hồ Chí Minh"
-                      required={!useManualCoords}
-                    />
-                  </div>
-                  <p className="text-muted-foreground text-xs">
-                    Nhập địa chỉ đầy đủ - tọa độ sẽ được xác định tự động
-                  </p>
-                </div>
-              ) : (
-                /* Manual Coordinates Mode */
-                <>
-                  <div className="space-y-2">
-                    <div className="grid gap-3">
-                      <label htmlFor="address" className="text-sm font-medium">
-                        Địa Chỉ (Tùy Chọn)
-                      </label>
-                      <Input
-                        id="address"
-                        name="address"
-                        placeholder="VD: 123 Đường Nguyễn Huệ, Quận 1, Thành phố Hồ Chí Minh"
+                <Controller
+                  control={form.control}
+                  name="address"
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="station-address">Địa Chỉ</FieldLabel>
+                      <AddressSearch
+                        placeholder="Nhập địa chỉ..."
+                        onSelect={(result) => {
+                          field.onChange(result.address);
+                          if (
+                            Number.isFinite(result.latitude) &&
+                            Number.isFinite(result.longitude)
+                          ) {
+                            form.setValue("latitude", String(result.latitude));
+                            form.setValue(
+                              "longitude",
+                              String(result.longitude),
+                            );
+                          }
+                        }}
                       />
-                    </div>
-                    <p className="text-muted-foreground text-xs">
-                      Tùy chọn: Bạn vẫn có thể cung cấp địa chỉ để tham khảo
-                    </p>
-                  </div>
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                      <p className="text-muted-foreground mt-2 text-xs">
+                        Nhập địa chỉ đầy đủ - tọa độ sẽ được xác định tự động
+                      </p>
+                    </Field>
+                  )}
+                />
+              ) : (
+                <>
+                  <Controller
+                    control={form.control}
+                    name="address"
+                    render={({ field, fieldState }) => (
+                      <Field data-invalid={fieldState.invalid}>
+                        <FieldLabel htmlFor="station-address">
+                          Địa Chỉ (Tùy Chọn)
+                        </FieldLabel>
+                        <Input
+                          id="station-address"
+                          {...field}
+                          placeholder="VD: 123 Đường Nguyễn Huệ, Quận 1, Thành phố Hồ Chí Minh"
+                          aria-invalid={fieldState.invalid}
+                        />
+                        {fieldState.invalid && (
+                          <FieldError errors={[fieldState.error]} />
+                        )}
+                      </Field>
+                    )}
+                  />
 
                   <div className="flex items-center justify-between">
                     <h4 className="text-sm font-medium">Tọa Độ</h4>
@@ -230,109 +290,99 @@ export default function StationCreate({ onCancel }: StationCreateProps) {
                   </div>
 
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <div className="space-y-2">
-                      <div className="grid gap-3">
-                        <label
-                          htmlFor="latitude"
-                          className="text-sm font-medium"
-                        >
-                          Vĩ Độ
-                        </label>
-                        <Input
-                          id="latitude"
-                          name="latitude"
-                          type="number"
-                          step="0.000001"
-                          placeholder="10.8231"
-                          value={latitude}
-                          onChange={(e) => setLatitude(e.target.value)}
-                          required={useManualCoords}
-                        />
-                      </div>
-                      <p className="text-muted-foreground text-xs">
-                        Phạm vi: -90 đến 90
-                      </p>
-                    </div>
+                    <Controller
+                      control={form.control}
+                      name="latitude"
+                      render={({ field, fieldState }) => (
+                        <Field data-invalid={fieldState.invalid}>
+                          <FieldLabel htmlFor="station-latitude">
+                            Vĩ Độ
+                          </FieldLabel>
+                          <Input
+                            id="station-latitude"
+                            {...field}
+                            type="number"
+                            step="0.000001"
+                            placeholder="10.8231"
+                            aria-invalid={fieldState.invalid}
+                            required={useManualCoords}
+                          />
+                          {fieldState.invalid && (
+                            <FieldError errors={[fieldState.error]} />
+                          )}
+                        </Field>
+                      )}
+                    />
 
-                    <div className="space-y-2">
-                      <div className="grid gap-3">
-                        <label
-                          htmlFor="longitude"
-                          className="text-sm font-medium"
-                        >
-                          Kinh Độ
-                        </label>
-                        <Input
-                          id="longitude"
-                          name="longitude"
-                          type="number"
-                          step="0.000001"
-                          placeholder="106.6297"
-                          value={longitude}
-                          onChange={(e) => setLongitude(e.target.value)}
-                          required={useManualCoords}
-                        />
-                      </div>
-                      <p className="text-muted-foreground text-xs">
-                        Phạm vi: -180 đến 180
-                      </p>
-                    </div>
+                    <Controller
+                      control={form.control}
+                      name="longitude"
+                      render={({ field, fieldState }) => (
+                        <Field data-invalid={fieldState.invalid}>
+                          <FieldLabel htmlFor="station-longitude">
+                            Kinh Độ
+                          </FieldLabel>
+                          <Input
+                            id="station-longitude"
+                            {...field}
+                            type="number"
+                            step="0.000001"
+                            placeholder="106.6297"
+                            aria-invalid={fieldState.invalid}
+                            required={useManualCoords}
+                          />
+                          {fieldState.invalid && (
+                            <FieldError errors={[fieldState.error]} />
+                          )}
+                        </Field>
+                      )}
+                    />
                   </div>
 
                   <p className="text-muted-foreground text-xs">
-                    💡 Mẹo: Nhấp &ldquo;Sử Dụng Vị Trí Hiện Tại&rdquo; hoặc lấy
-                    tọa độ từ Google Maps
+                    💡 Mẹo: Nhấp “Sử Dụng Vị Trí Hiện Tại” hoặc lấy tọa độ từ
+                    Google Maps
                   </p>
                 </>
               )}
             </div>
 
-            {/* Status */}
-            <div className="space-y-2">
-              <div className="grid gap-3">
-                <label htmlFor="status" className="text-sm font-medium">
-                  Trạng Thái Trạm *
-                </label>
-                <Select name="status" defaultValue="active" required>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Chọn trạng thái" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="active">Hoạt Động</SelectItem>
-                    <SelectItem value="inactive">Không Hoạt Động</SelectItem>
-                    <SelectItem value="maintenance">Bảo Trì</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <p className="text-muted-foreground text-xs">
-                Trạng thái hoạt động hiện tại của trạm sạc
-              </p>
-            </div>
-          </div>
+            <Controller
+              control={form.control}
+              name="status"
+              defaultValue="active"
+              render={({ field, fieldState }) => (
+                <Field>
+                  <FieldLabel htmlFor="station-status">
+                    Trạng Thái Trạm *
+                  </FieldLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Chọn trạng thái" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">Hoạt Động</SelectItem>
+                      <SelectItem value="inactive">Không Hoạt Động</SelectItem>
+                      <SelectItem value="maintenance">Bảo Trì</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+          </FieldGroup>
 
-          <div>
-            <AddressSearch />
-          </div>
-
-          <DialogFooter>
+          <DialogFooter className="flex flex-col gap-2 sm:flex-row sm:justify-end">
             <DialogClose asChild>
-              <Button type="button" variant="outline" disabled={isSubmitting}>
+              <Button type="button" variant="outline" disabled={pending}>
                 Hủy
               </Button>
             </DialogClose>
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="min-w-[120px]"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Đang Tạo...
-                </>
-              ) : (
-                <>Tạo Trạm</>
-              )}
+            <Button form="station-create-form" type="submit" disabled={pending}>
+              {pending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {pending ? "Đang Tạo..." : "Tạo Trạm"}
             </Button>
           </DialogFooter>
         </form>

@@ -6,24 +6,18 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ActionsCell } from "./subscription-actions";
 import { Subscription } from "@/types/subscription";
-import { useFormatter } from "next-intl";
-
 function PriceCell({ value }: { value: number }) {
-  const format = useFormatter();
-  return (
-    <div className="font-medium">
-      {format.number(value, { style: "currency", currency: "VND" })}
-    </div>
-  );
+  const nf = new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+    maximumFractionDigits: 0,
+  });
+  return <div className="font-medium">{nf.format(value)}</div>;
 }
 
 function KwhCell({ value }: { value: number }) {
-  const format = useFormatter();
-  return (
-    <div className="font-medium">
-      {format.number(value, { style: "decimal" })} kWh
-    </div>
-  );
+  const nf = new Intl.NumberFormat("vi-VN", { maximumFractionDigits: 0 });
+  return <div className="font-medium">{nf.format(value)} kWh</div>;
 }
 
 export const columns: ColumnDef<Subscription>[] = [

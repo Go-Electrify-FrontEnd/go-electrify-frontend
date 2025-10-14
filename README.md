@@ -1,6 +1,6 @@
 # Electrify — Frontend
 
-Electrify is a Next.js (App Router) frontend that helps users discover electric vehicle charging station and enhance the management experience for staffs.
+Electrify is a Next.js (App Router) frontend that serves as a charger platform helping drivers charge their electric cars easier, while enhancing the management experience for staffs.
 
 This repository contains the UI, client logic, and small server-side actions (OTP/login flows). The project uses a server-first approach: pages are implemented as server components where possible and interactive pieces are split into client components.
 
