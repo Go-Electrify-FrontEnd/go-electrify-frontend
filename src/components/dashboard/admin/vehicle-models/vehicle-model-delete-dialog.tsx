@@ -17,7 +17,6 @@ import { Loader2 } from "lucide-react";
 import { useActionState, useEffect, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { Field, FieldGroup } from "@/components/ui/field";
-// Translations removed; using Vietnamese literals
 
 interface VehicleModelDeleteProps {
   carModel: CarModel;
