@@ -5,7 +5,7 @@ import AvatarUpdate from "@/components/dashboard/settings/settings-avatar-update
 
 export default async function SettingsPage() {
   return (
-    <div className="flex flex-col gap-4 py-4 md:gap-6">
+    <div className="flex flex-col gap-4 md:gap-6">
       {/* Page Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Cài đặt</h1>

@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Card,
   CardContent,
@@ -6,100 +8,167 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+  ColumnFiltersState,
+  SortingState,
+  VisibilityState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Transaction } from "@/types/wallet";
+import { transactionColumns } from "./transaction-table-columns";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ArrowRight, Search } from "lucide-react";
 
-const invoices = [
-  {
-    invoice: "INV001",
-    paymentStatus: "Paid",
-    totalAmount: "$250.00",
-    transferDate: "2023-08-15",
-  },
-  {
-    invoice: "INV002",
-    paymentStatus: "Pending",
-    totalAmount: "$150.00",
-    transferDate: "2023-08-15",
-  },
-  {
-    invoice: "INV003",
-    paymentStatus: "Unpaid",
-    totalAmount: "$350.00",
-    transferDate: "2023-08-15",
-  },
-  {
-    invoice: "INV004",
-    paymentStatus: "Paid",
-    totalAmount: "$450.00",
-    transferDate: "2023-08-15",
-  },
-  {
-    invoice: "INV005",
-    paymentStatus: "Paid",
-    totalAmount: "$550.00",
-    transferDate: "2023-08-15",
-  },
-  {
-    invoice: "INV006",
-    paymentStatus: "Pending",
-    totalAmount: "$200.00",
-    transferDate: "2023-08-15",
-  },
-  {
-    invoice: "INV007",
-    paymentStatus: "Unpaid",
-    totalAmount: "$300.00",
-    transferDate: "2023-08-15",
-  },
-];
+type TransactionTableProps = {
+  transactions: Transaction[];
+  totalCount?: number;
+  showViewAll?: boolean;
+};
 
-export function TransactionTable() {
+export function TransactionTable({
+  transactions,
+  totalCount,
+  showViewAll = false,
+}: TransactionTableProps) {
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "CreatedAt", desc: true },
+  ]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [globalFilter, setGlobalFilter] = useState("");
+
+  const table = useReactTable({
+    data: transactions,
+    columns: transactionColumns,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: "includesString",
+    state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
+      globalFilter,
+    },
+  });
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">Lịch Sử Giao Dịch</CardTitle>
-        <CardDescription>
-          Chi tiết các giao dịch nạp tiền và chi tiêu gần đây
-        </CardDescription>
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex-1">
+            <CardTitle className="text-lg">Lịch Sử Giao Dịch</CardTitle>
+            <CardDescription>
+              Chi tiết các giao dịch nạp tiền và chi tiêu gần đây
+            </CardDescription>
+          </div>
+          {showViewAll && totalCount && totalCount > transactions.length && (
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/dashboard/wallet/transactions">
+                Xem tất cả
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          )}
+        </div>
       </CardHeader>
       <CardContent>
-        <Table className="container">
-          <TableCaption>A list of your recent invoices.</TableCaption>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[100px]">No.</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead className="text-right">Amount</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {invoices.map((invoice) => (
-              <TableRow key={invoice.invoice}>
-                <TableCell className="font-medium">{invoice.invoice}</TableCell>
-                <TableCell>{invoice.paymentStatus}</TableCell>
-                <TableCell>{invoice.transferDate}</TableCell>
-                <TableCell className="text-right">
-                  {invoice.totalAmount}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-          <TableFooter>
-            <TableRow>
-              <TableCell colSpan={3}>Total</TableCell>
-              <TableCell className="text-right">$2,500.00</TableCell>
-            </TableRow>
-          </TableFooter>
-        </Table>
+        {/* Search bar */}
+        <div className="mb-4 flex items-center gap-2">
+          <div className="relative flex-1">
+            <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+            <Input
+              placeholder="Tìm kiếm giao dịch (mã, ghi chú)..."
+              value={globalFilter ?? ""}
+              onChange={(event) => setGlobalFilter(event.target.value)}
+              className="pl-9"
+            />
+          </div>
+        </div>
+
+        {/* Table */}
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id} className="py-1">
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id} className="py-3">
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={transactionColumns.length}
+                    className="h-24 text-center"
+                  >
+                    Chưa có giao dịch nào
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+
+        {/* Footer info */}
+        <div className="text-muted-foreground mt-4 text-sm">
+          {totalCount ? (
+            <>
+              Hiển thị {transactions.length} giao dịch gần nhất trong tổng số{" "}
+              {totalCount}
+            </>
+          ) : (
+            <>Hiển thị 10 giao dịch gần nhất</>
+          )}
+        </div>
       </CardContent>
     </Card>
   );

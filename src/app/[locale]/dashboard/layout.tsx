@@ -25,7 +25,7 @@ export default async function DashboardLayout({
           <AppLogo
             width={40}
             height={40}
-            className="text-electrify-gray-900 h-max w-auto"
+            className="text-foreground h-max w-auto"
           />
           <div className="flex items-center justify-between gap-2 justify-self-end align-middle">
             <Button variant="outline" size="sm">
@@ -45,7 +45,7 @@ export default async function DashboardLayout({
                 <AppHeader />
               </div>
               <div className="no-scrollbar flex min-h-0 flex-1 flex-col overflow-auto">
-                <div className="@container/main flex flex-col gap-2 px-3 sm:px-4 md:px-8 lg:px-10">
+                <div className="@container/main flex flex-col gap-2 px-3 py-4 sm:px-4 md:px-8 md:py-6 lg:px-10">
                   {children}
                 </div>
               </div>

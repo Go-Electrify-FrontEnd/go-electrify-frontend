@@ -33,7 +33,7 @@ export default async function ReservationPage() {
   );
 
   return (
-    <div className="container mx-auto mt-4 space-y-6">
+    <div className="container mx-auto space-y-6">
       {/* Header Card */}
       <Card>
         <CardHeader className="pt-2 pb-2">
