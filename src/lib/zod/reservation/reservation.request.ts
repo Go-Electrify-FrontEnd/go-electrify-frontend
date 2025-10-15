@@ -4,8 +4,8 @@ export const reservationFormSchema = z.object({
   stationId: z.string().min(1, "Trạm sạc là bắt buộc"),
   vehicleModelId: z.string().min(1, "Mẫu xe là bắt buộc"),
   connectorTypeId: z.string().min(1, "Loại cổng là bắt buộc"),
-  initialSoc: z
-    .number()
+  initialSoc: z.coerce
+    .number<number>()
     .min(0, "Mức sạc ban đầu không được nhỏ hơn 0")
     .max(100, "Mức sạc ban đầu không được lớn hơn 100"),
 });

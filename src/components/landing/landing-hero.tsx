@@ -12,7 +12,7 @@ const hero = {
   primaryCta: "Bắt đầu ngay",
   secondaryCta: "Tìm hiểu thêm",
   stats: {
-    locations: { value: "1.200+", label: "Trạm trên toàn quốc" },
+    locations: { value: "10+", label: "Trạm trên toàn quốc" },
     averageSession: { value: "25 min", label: "Thời lượng trung bình" },
     savings: { value: "15%", label: "Tiết kiệm chi phí" },
   },
@@ -60,33 +60,6 @@ export default function LandingHero() {
             >
               {hero.secondaryCta}
             </Button>
-          </div>
-
-          <div className="mt-20 grid grid-cols-3 gap-12">
-            <div className="space-y-3">
-              <div className="text-4xl font-bold text-white drop-shadow-lg md:text-5xl">
-                {hero.stats.locations.value}
-              </div>
-              <div className="text-sm leading-relaxed font-medium text-white/90 drop-shadow-md md:text-base">
-                {hero.stats.locations.label}
-              </div>
-            </div>
-            <div className="space-y-3">
-              <div className="text-4xl font-bold text-white drop-shadow-lg md:text-5xl">
-                {hero.stats.averageSession.value}
-              </div>
-              <div className="text-sm leading-relaxed font-medium text-white/90 drop-shadow-md md:text-base">
-                {hero.stats.averageSession.label}
-              </div>
-            </div>
-            <div className="space-y-3">
-              <div className="text-4xl font-bold text-white drop-shadow-lg md:text-5xl">
-                {hero.stats.savings.value}
-              </div>
-              <div className="text-sm leading-relaxed font-medium text-white/90 drop-shadow-md md:text-base">
-                {hero.stats.savings.label}
-              </div>
-            </div>
           </div>
         </div>
       </div>

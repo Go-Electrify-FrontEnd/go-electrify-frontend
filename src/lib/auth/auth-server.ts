@@ -49,7 +49,7 @@ export async function getUserFromToken(accessToken: string) {
       };
       return { user };
     }
-  } catch (error) {
+  } catch {
     console.log("Error in jwt verify");
   }
 
