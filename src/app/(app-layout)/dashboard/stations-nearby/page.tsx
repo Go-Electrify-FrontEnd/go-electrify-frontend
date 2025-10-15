@@ -2,13 +2,7 @@ import { NearestStationsList } from "@/components/dashboard/stations-nearby/stat
 import { StationMap } from "@/components/dashboard/stations-nearby/stations-map";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Filter, MapPin, RotateCcw, Search } from "lucide-react";
+import { Filter, RotateCcw, Search } from "lucide-react";
 import type { Station } from "@/lib/zod/station/station.types";
 import { getStations } from "../admin/stations/page";
 import SectionHeader from "@/components/dashboard/shared/section-header";

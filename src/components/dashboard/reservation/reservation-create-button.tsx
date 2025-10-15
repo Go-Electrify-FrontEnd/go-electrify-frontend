@@ -365,19 +365,10 @@ export default function CreateReservationButton({
                   </FieldLabel>
                   <Input
                     {...field}
-                    type="number"
                     id="initialSoc"
                     placeholder="Nhập mức sạc ban đầu"
                     aria-invalid={fieldState.invalid}
                     autoComplete="off"
-                    min={0}
-                    max={100}
-                    value={
-                      typeof field.value === "number" ||
-                      typeof field.value === "string"
-                        ? field.value
-                        : ""
-                    }
                   />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />

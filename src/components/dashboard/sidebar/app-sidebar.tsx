@@ -10,7 +10,6 @@ import {
   Map,
   PieChart,
   Plug,
-  Settings2,
   TicketCheckIcon,
   Wallet2Icon,
   Zap,
@@ -19,8 +18,10 @@ import {
 
 import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
 import { NavSection } from "./nav-section";
+import { useUser } from "@/contexts/user-context";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user } = useUser();
   const overview = {
     title: "Tổng quan",
     items: [
@@ -111,7 +112,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSection items={overview} />
         <NavSection items={charging} />
         <NavSection items={payment} />
-        <NavSection items={admin} />
+        {user?.role.toLowerCase() === "admin" && <NavSection items={admin} />}
       </SidebarContent>
     </Sidebar>
   );

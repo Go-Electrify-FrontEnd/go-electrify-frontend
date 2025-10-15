@@ -1,4 +1,3 @@
-import { PenaltyTable } from "@/components/dashboard/wallet/wallet-penalty-table";
 import TransactionTable from "@/components/dashboard/wallet/wallet-transaction-table";
 import WalletDepositButton from "@/components/dashboard/wallet/wallet-deposit-button";
 import { WalletOverview } from "@/components/dashboard/wallet/wallet-overview";
@@ -9,7 +8,7 @@ import {
 import { getUser } from "@/lib/auth/auth-server";
 import SectionHeader from "@/components/dashboard/shared/section-header";
 
-async function getWallet() {
+export async function getWallet() {
   const { token } = await getUser();
   const url = "https://api.go-electrify.com/api/v1/wallet/me/balance";
   const response = await fetch(url, {
@@ -28,7 +27,7 @@ async function getWallet() {
   return wallet;
 }
 
-async function getTransactions(page: number = 1, pageSize: number = 20) {
+export async function getTransactions(page: number = 1, pageSize: number = 20) {
   const { token } = await getUser();
   const url = `https://api.go-electrify.com/api/v1/wallet/me/transactions?page=${page}&pageSize=${pageSize}`;
   const response = await fetch(url, {

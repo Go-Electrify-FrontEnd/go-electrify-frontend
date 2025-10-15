@@ -13,8 +13,9 @@ import { z } from "zod";
 import { BookingApiSchema } from "@/lib/zod/reservation/reservation.request";
 import type { Reservation } from "@/lib/zod/reservation/reservation.types";
 import type { ConnectorType } from "@/lib/zod/connector-type/connector-type.types";
+import { getVehicleModels } from "../admin/vehicle-models/page";
 
-async function getReservations(
+export async function getSelfReservations(
   token: string,
   connectorTypes: ConnectorType[],
   vehicleModels: CarModel[],
@@ -100,45 +101,12 @@ async function getReservations(
   }
 }
 
-async function getVehicleModels(token: string): Promise<CarModel[]> {
-  const headers = { Authorization: `Bearer ${token}` };
-
-  try {
-    const response = await fetch(
-      "https://api.go-electrify.com/api/v1/vehicle-models",
-      {
-        method: "GET",
-        headers,
-        next: { revalidate: 60, tags: ["vehicle-models"] },
-      },
-    );
-
-    if (!response.ok) {
-      console.log("Failed to fetch vehicle models, status: " + response.status);
-      return [];
-    }
-
-    const jsonData = await response.json();
-    const parsed = CarModelSchema.array().safeParse(jsonData);
-
-    if (parsed.success) {
-      return parsed.data;
-    } else {
-      console.log("Invalid vehicle model data format");
-      return [];
-    }
-  } catch (error: unknown) {
-    console.log("Error fetching vehicle models: " + JSON.stringify(error));
-    return [];
-  }
-}
-
 export default async function ReservationPage() {
   const { token } = await getUser();
   const stations = await getStations();
   const vehicleModels = await getVehicleModels(token!);
   const connectorTypes = await getConnectorTypes();
-  const reservations = await getReservations(
+  const reservations = await getSelfReservations(
     token!,
     connectorTypes,
     vehicleModels,

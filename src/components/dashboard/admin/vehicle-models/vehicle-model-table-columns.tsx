@@ -33,10 +33,7 @@ function ConnectorTypeNames({ ids }: { ids: string[] }) {
   return <div className="text-muted-foreground">{rendered}</div>;
 }
 
-export const vehicleModelTableColumns = (
-  // t parameter kept for compatibility but translations are inlined
-  t: (key: string) => string,
-): ColumnDef<CarModel>[] => [
+export const vehicleModelTableColumns: ColumnDef<CarModel>[] = [
   {
     id: "select",
     header: ({ table }) => (
