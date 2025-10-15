@@ -2,8 +2,12 @@ import { PenaltyTable } from "@/components/dashboard/wallet/wallet-penalty-table
 import TransactionTable from "@/components/dashboard/wallet/wallet-transaction-table";
 import WalletDepositButton from "@/components/dashboard/wallet/wallet-deposit-button";
 import { WalletOverview } from "@/components/dashboard/wallet/wallet-overview";
-import { WalletSchema, TransactionListSchema } from "@/types/wallet";
+import {
+  WalletSchema,
+  TransactionListApiSchema,
+} from "@/lib/zod/wallet/wallet.schema";
 import { getUser } from "@/lib/auth/auth-server";
+import SectionHeader from "@/components/dashboard/shared/section-header";
 
 async function getWallet() {
   const { token } = await getUser();
@@ -30,7 +34,6 @@ async function getTransactions(page: number = 1, pageSize: number = 20) {
   const response = await fetch(url, {
     method: "GET",
     headers: { Authorization: `Bearer ${token}` },
-    next: { revalidate: 30, tags: ["wallet-transactions"] },
   });
 
   if (!response.ok) {
@@ -39,14 +42,14 @@ async function getTransactions(page: number = 1, pageSize: number = 20) {
   }
 
   const data = await response.json();
-  const parsed = TransactionListSchema.safeParse(data);
 
-  if (!parsed.success) {
-    console.error("Failed to parse transactions:", parsed.error);
-    return null;
+  const parsedApi = TransactionListApiSchema.safeParse(data);
+
+  if (parsedApi.success) {
+    return parsedApi.data;
   }
 
-  return parsed.data;
+  return null;
 }
 
 export default async function WalletPage() {
@@ -60,23 +63,18 @@ export default async function WalletPage() {
   }
 
   return (
-    <div className="container mx-auto space-y-4">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-foreground text-2xl font-bold tracking-tight sm:text-3xl">
-            Ví
-          </h1>
-          <p className="text-muted-foreground text-sm sm:text-base">
-            Tiền gửi ví ảo của bạn và các giao dịch trước đó của bạn
-          </p>
-        </div>
-        <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
-          <WalletDepositButton />
-        </div>
-      </div>
+    <div className="flex flex-col gap-4 md:gap-6">
+      <SectionHeader
+        title="Ví của tôi"
+        subtitle="Quản lý số dư và giao dịch của bạn"
+      >
+        <WalletDepositButton />
+      </SectionHeader>
 
-      <WalletOverview wallet={wallet} />
-      <PenaltyTable />
+      <WalletOverview
+        wallet={wallet}
+        transactions={transactionsData?.data || []}
+      />
       <TransactionTable
         transactions={transactionsData?.data ?? []}
         totalCount={transactionsData?.total}

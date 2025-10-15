@@ -5,7 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ActionsCell } from "./subscription-actions";
-import { Subscription } from "@/types/subscription";
+import type { Subscription } from "@/lib/zod/subscription/subscription.types";
 function PriceCell({ value }: { value: number }) {
   const nf = new Intl.NumberFormat("vi-VN", {
     style: "currency",

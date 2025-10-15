@@ -31,7 +31,7 @@ import { useConnectorTypeUpdate } from "@/contexts/connector-type-update-context
 import {
   connectorTypeUpdateSchema,
   type ConnectorTypeUpdateFormData,
-} from "@/schemas/connector-type.schema";
+} from "@/lib/zod/connector-type/connector-type.request";
 import { useServerAction } from "@/hooks/use-server-action";
 
 export const UpdateConnectorType = () => {

@@ -1,117 +1,399 @@
 "use client";
 
-import { useState } from "react";
-import { Calendar, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogFooter, DialogHeader } from "@/components/ui/dialog";
 import {
-  Dialog,
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import {
   DialogContent,
   DialogDescription,
-  DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { ReservationForm } from "./reservation-form";
-import { BookingSummary } from "./reservation-summary";
-import { Reservation } from "@/types/reservation";
 import {
-  ReservationProvider,
-  useReservation,
-} from "@/contexts/reservation-context";
-import { Station } from "@/types/station";
-import { ChargingPort } from "@/types/charging-port";
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Calendar, Plus, Check, ChevronsUpDown } from "lucide-react";
+import { startTransition, useActionState, useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { createReservation } from "@/actions/reservation-actions";
+import { toast } from "sonner";
+import {
+  reservationFormSchema,
+  type ReservationFormData,
+} from "@/lib/zod/reservation/reservation.request";
+import type { Station } from "@/lib/zod/station/station.types";
+import type { CarModel } from "@/lib/zod/vehicle-model/vehicle-model.types";
+import type { ConnectorType } from "@/lib/zod/connector-type/connector-type.types";
+import { cn } from "@/lib/utils";
 
-const chargingPorts: ChargingPort[] = [
-  {
-    id: "CCS2",
-    name: "CCS2 (Combined Charging System)",
-    type: "DC Fast Charging",
-    maxPower: "350kW",
-  },
-  {
-    id: "CHAdeMO",
-    name: "CHAdeMO",
-    type: "DC Fast Charging",
-    maxPower: "100kW",
-  },
-  {
-    id: "Type2",
-    name: "Type 2 (AC)",
-    type: "AC Charging",
-    maxPower: "22kW",
-  },
-];
+const initialState = {
+  success: false,
+  msg: "",
+};
 
 interface CreateReservationButtonProps {
   stations: Station[];
-  reservations: Reservation[];
-}
-
-function ReservationDialog() {
-  const { currentStep, setCurrentStep, resetForm } = useReservation();
-
-  const handleContinue = () => {
-    setCurrentStep("summary");
-  };
-
-  const handleBack = () => {
-    setCurrentStep("form");
-  };
-
-  const handleSubmit = () => {
-    resetForm();
-  };
-
-  return (
-    <>
-      <DialogHeader>
-        <DialogTitle className="flex items-center gap-2">
-          <Calendar className="h-5 w-5" />
-          {currentStep === "form" ? "Tạo Đặt Chỗ Mới" : "Xác nhận đặt chỗ"}
-        </DialogTitle>
-        <DialogDescription>
-          {currentStep === "form"
-            ? "Chọn trạm sạc và thời gian cho đặt chỗ của bạn"
-            : "Kiểm tra thông tin và xác nhận đặt chỗ"}
-        </DialogDescription>
-      </DialogHeader>
-
-      {currentStep === "form" ? (
-        <ReservationForm onContinue={handleContinue} />
-      ) : (
-        <BookingSummary onBack={handleBack} onConfirm={handleSubmit} />
-      )}
-    </>
-  );
+  vehicleModels: CarModel[];
+  connectorTypes: ConnectorType[];
 }
 
 export default function CreateReservationButton({
   stations,
-  reservations,
+  vehicleModels,
+  connectorTypes,
 }: CreateReservationButtonProps) {
   const [open, setOpen] = useState(false);
+  const [openStation, setOpenStation] = useState(false);
+  const [openVehicleModel, setOpenVehicleModel] = useState(false);
+  const [openConnectorType, setOpenConnectorType] = useState(false);
 
-  const handleOpenChange = (newOpen: boolean) => {
-    setOpen(newOpen);
-  };
+  const [createState, createAction, pending] = useActionState(
+    createReservation,
+    initialState,
+  );
+
+  const form = useForm<ReservationFormData>({
+    resolver: zodResolver(reservationFormSchema),
+    defaultValues: {
+      stationId: "",
+      vehicleModelId: "",
+      connectorTypeId: "",
+      initialSoc: 20,
+    },
+  });
+
+  const selectedVehicleModelId = form.watch("vehicleModelId");
+
+  // Filter connector types based on selected vehicle model
+  const availableConnectorTypes = selectedVehicleModelId
+    ? connectorTypes.filter((ct) => {
+        const vehicleModel = vehicleModels.find(
+          (vm) => vm.id.toString() === selectedVehicleModelId,
+        );
+        return vehicleModel?.connectorTypeIds.includes(ct.id.toString());
+      })
+    : [];
+
+  useEffect(() => {
+    if (!createState.msg) return;
+
+    if (createState.success) {
+      form.reset();
+      setOpen(false);
+      toast.success(createState.msg);
+    } else {
+      toast.error(createState.msg);
+    }
+  }, [createState, form]);
+
+  // Reset connector type when vehicle model changes
+  useEffect(() => {
+    if (selectedVehicleModelId) {
+      const currentConnectorTypeId = form.getValues("connectorTypeId");
+      const isCurrentConnectorTypeAvailable = availableConnectorTypes.some(
+        (ct) => ct.id.toString() === currentConnectorTypeId,
+      );
+      if (!isCurrentConnectorTypeAvailable) {
+        form.setValue("connectorTypeId", "");
+      }
+    }
+  }, [selectedVehicleModelId, availableConnectorTypes, form]);
+
+  function onSubmit(data: ReservationFormData) {
+    const formData = new FormData();
+    formData.append("stationId", data.stationId);
+    formData.append("vehicleModelId", data.vehicleModelId);
+    formData.append("connectorTypeId", data.connectorTypeId);
+    formData.append("initialSoc", data.initialSoc.toString());
+
+    startTransition(() => {
+      createAction(formData);
+    });
+  }
 
   return (
-    <ReservationProvider
-      stations={stations}
-      chargingPorts={chargingPorts}
-      reservations={reservations}
-    >
-      <Dialog open={open} onOpenChange={handleOpenChange}>
-        <DialogTrigger asChild>
-          <Button size="lg" className="gap-2">
-            <Plus className="h-5 w-5" />
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button size="lg">
+          <Plus />
+          <span className="font-semibold">Tạo Đặt Chỗ Mới</span>
+        </Button>
+      </DialogTrigger>
+
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Calendar className="h-5 w-5" />
             Tạo Đặt Chỗ Mới
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="no-scrollbar max-h-[90vh] overflow-y-auto sm:max-w-md">
-          <ReservationDialog />
-        </DialogContent>
-      </Dialog>
-    </ReservationProvider>
+          </DialogTitle>
+          <DialogDescription>
+            Đặt chỗ sạc xe cho 60 phút kể từ bây giờ
+          </DialogDescription>
+        </DialogHeader>
+        <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+          <FieldGroup className="my-4">
+            {/* Station Selection */}
+            <Controller
+              name="stationId"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="stationId">Trạm sạc</FieldLabel>
+                  <Popover open={openStation} onOpenChange={setOpenStation}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={openStation}
+                        aria-invalid={fieldState.invalid}
+                        className={cn(
+                          "w-full justify-between",
+                          !field.value && "text-muted-foreground",
+                        )}
+                      >
+                        {field.value
+                          ? stations.find(
+                              (station) =>
+                                station.id.toString() === field.value,
+                            )?.name
+                          : "Chọn trạm sạc"}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0">
+                      <Command>
+                        <CommandInput placeholder="Tìm kiếm trạm sạc..." />
+                        <CommandList>
+                          <CommandEmpty>Không tìm thấy trạm sạc.</CommandEmpty>
+                          <CommandGroup>
+                            {stations.map((station) => (
+                              <CommandItem
+                                key={station.id}
+                                value={station.name}
+                                onSelect={() => {
+                                  field.onChange(station.id.toString());
+                                  setOpenStation(false);
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    field.value === station.id.toString()
+                                      ? "opacity-100"
+                                      : "opacity-0",
+                                  )}
+                                />
+                                {station.name}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+
+            {/* Vehicle Model Selection */}
+            <Controller
+              name="vehicleModelId"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="vehicleModelId">Mẫu xe</FieldLabel>
+                  <Popover
+                    open={openVehicleModel}
+                    onOpenChange={setOpenVehicleModel}
+                  >
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={openVehicleModel}
+                        aria-invalid={fieldState.invalid}
+                        className={cn(
+                          "w-full justify-between",
+                          !field.value && "text-muted-foreground",
+                        )}
+                      >
+                        {field.value
+                          ? vehicleModels.find(
+                              (vm) => vm.id.toString() === field.value,
+                            )?.modelName
+                          : "Chọn mẫu xe"}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0">
+                      <Command>
+                        <CommandInput placeholder="Tìm kiếm mẫu xe..." />
+                        <CommandList>
+                          <CommandEmpty>Không tìm thấy mẫu xe.</CommandEmpty>
+                          <CommandGroup>
+                            {vehicleModels.map((vm) => (
+                              <CommandItem
+                                key={vm.id}
+                                value={vm.modelName}
+                                onSelect={() => {
+                                  field.onChange(vm.id.toString());
+                                  setOpenVehicleModel(false);
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    field.value === vm.id.toString()
+                                      ? "opacity-100"
+                                      : "opacity-0",
+                                  )}
+                                />
+                                {vm.modelName}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+
+            {/* Connector Type Selection */}
+            <Controller
+              name="connectorTypeId"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="connectorTypeId">Loại cổng</FieldLabel>
+                  <Popover
+                    open={openConnectorType}
+                    onOpenChange={setOpenConnectorType}
+                  >
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={openConnectorType}
+                        aria-invalid={fieldState.invalid}
+                        disabled={!selectedVehicleModelId}
+                        className={cn(
+                          "w-full justify-between",
+                          !field.value && "text-muted-foreground",
+                        )}
+                      >
+                        {field.value
+                          ? connectorTypes.find(
+                              (ct) => ct.id.toString() === field.value,
+                            )?.name
+                          : selectedVehicleModelId
+                            ? "Chọn loại cổng"
+                            : "Vui lòng chọn mẫu xe trước"}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0">
+                      <Command>
+                        <CommandInput placeholder="Tìm kiếm loại cổng..." />
+                        <CommandList>
+                          <CommandEmpty>Không tìm thấy loại cổng.</CommandEmpty>
+                          <CommandGroup>
+                            {availableConnectorTypes.map((ct) => (
+                              <CommandItem
+                                key={ct.id}
+                                value={ct.name}
+                                onSelect={() => {
+                                  field.onChange(ct.id.toString());
+                                  setOpenConnectorType(false);
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    field.value === ct.id.toString()
+                                      ? "opacity-100"
+                                      : "opacity-0",
+                                  )}
+                                />
+                                {ct.name}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+
+            {/* Initial SOC */}
+            <Controller
+              name="initialSoc"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="initialSoc">
+                    Mức sạc ban đầu (%)
+                  </FieldLabel>
+                  <Input
+                    {...field}
+                    type="number"
+                    id="initialSoc"
+                    placeholder="Nhập mức sạc ban đầu"
+                    aria-invalid={fieldState.invalid}
+                    autoComplete="off"
+                    min={0}
+                    max={100}
+                    value={
+                      typeof field.value === "number" ||
+                      typeof field.value === "string"
+                        ? field.value
+                        : ""
+                    }
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+
+            <DialogFooter className="flex w-full">
+              <Button type="submit" className="self-end" disabled={pending}>
+                {pending ? "Đang tạo..." : "Tạo"}
+              </Button>
+            </DialogFooter>
+          </FieldGroup>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

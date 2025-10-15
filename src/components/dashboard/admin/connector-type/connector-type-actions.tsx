@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { DeleteConnectorType } from "./connector-type-delete-dialog";
-import { ConnectorType } from "@/types/connector";
+import type { ConnectorType } from "@/lib/zod/connector-type/connector-type.types";
 import { useConnectorTypeUpdate } from "@/contexts/connector-type-update-context";
 
 interface ActionsCellProps {

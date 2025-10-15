@@ -33,7 +33,7 @@ import { toast } from "sonner";
 import {
   connectorTypeCreateSchema,
   type ConnectorTypeCreateFormData,
-} from "@/schemas/connector-type.schema";
+} from "@/lib/zod/connector-type/connector-type.request";
 import { useServerAction } from "@/hooks/use-server-action";
 
 const initialState = { success: false, msg: "" };

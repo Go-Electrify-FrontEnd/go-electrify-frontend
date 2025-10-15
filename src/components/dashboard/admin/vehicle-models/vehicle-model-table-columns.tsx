@@ -4,7 +4,7 @@ import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CarModel } from "@/types/car";
+import type { CarModel } from "@/lib/zod/vehicle-model/vehicle-model.types";
 import { VehicleModelActionsCell } from "./vehicle-model-actions";
 import { useConnectorTypes } from "@/contexts/connector-type-context";
 

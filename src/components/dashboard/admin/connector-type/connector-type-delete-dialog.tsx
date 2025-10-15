@@ -12,7 +12,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { ConnectorType } from "@/types/connector";
+import type { ConnectorType } from "@/lib/zod/connector-type/connector-type.types";
 import { handleDeleteConnectorType } from "@/actions/connector-type-actions";
 import { Loader2 } from "lucide-react";
 

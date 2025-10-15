@@ -14,7 +14,7 @@ import { useUser } from "@/contexts/user-context";
 export default function FullNameUpdate() {
   const { user } = useUser();
   return (
-    <Card className="max-w-4xl">
+    <Card>
       <CardHeader>
         <CardTitle>Họ và tên</CardTitle>
         <CardDescription>

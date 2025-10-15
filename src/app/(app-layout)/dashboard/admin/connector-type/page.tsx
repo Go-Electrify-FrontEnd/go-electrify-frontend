@@ -6,7 +6,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ConnectorType, ConnectorTypeSchema } from "@/types/connector";
+import { ConnectorTypeSchema } from "@/lib/zod/connector-type/connector-type.schema";
+import type { ConnectorType } from "@/lib/zod/connector-type/connector-type.types";
 import { z } from "zod";
 import ConnectorTypeCreateDialog from "@/components/dashboard/admin/connector-type/connector-type-create-dialog";
 import SectionHeader from "@/components/dashboard/shared/section-header";

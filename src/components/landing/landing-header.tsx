@@ -33,14 +33,6 @@ export default function LandingHeader() {
           </Link>
           <Link
             prefetch={false}
-            href="#testimonials"
-            className="group relative text-sm font-semibold transition-colors duration-200"
-          >
-            Khách hàng
-            <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-white transition-all duration-200 group-hover:w-full" />
-          </Link>
-          <Link
-            prefetch={false}
             href="#contact"
             className="group relative text-sm font-semibold transition-colors duration-200"
           >

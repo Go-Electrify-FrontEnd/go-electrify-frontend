@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
-import { CarModel } from "@/types/car";
+import type { CarModel } from "@/lib/zod/vehicle-model/vehicle-model.types";
 import VehicleModelDeleteDialog from "./vehicle-model-delete-dialog";
 import { useVehicleModelUpdate } from "@/contexts/vehicle-model-action-context";
 

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Subscription } from "@/types/subscription";
+import type { Subscription } from "@/lib/zod/subscription/subscription.types";
 import { deleteSubscription } from "@/actions/subscriptions-actions";
 
 interface DeleteSubscriptionProps {

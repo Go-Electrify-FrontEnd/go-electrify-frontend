@@ -4,7 +4,7 @@ import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Station } from "@/types/station";
+import type { Station } from "@/lib/zod/station/station.types";
 import { StationActions } from "./station-actions";
 import { cn } from "@/lib/utils";
 import Link from "next/link";

@@ -32,7 +32,7 @@ import { toast } from "sonner";
 import {
   vehicleModelSchema,
   type VehicleModelFormData,
-} from "@/schemas/vehicle-model.schema";
+} from "@/lib/zod/vehicle-model/vehicle-model.request";
 import { useConnectorTypes } from "@/contexts/connector-type-context";
 // Translations removed; using Vietnamese literals
 

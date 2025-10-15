@@ -21,12 +21,12 @@ import {
 import { Controller, type Resolver, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-import { Station } from "@/types/station";
+import type { Station } from "@/lib/zod/station/station.types";
 import { useServerAction } from "@/hooks/use-server-action";
 import {
   stationUpdateSchema,
   type StationUpdateFormData,
-} from "@/schemas/station.schema";
+} from "@/lib/zod/station/station.request";
 import { updateStation } from "@/actions/stations-actions";
 
 interface UpdateStationProps {

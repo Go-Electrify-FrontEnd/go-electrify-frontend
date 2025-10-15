@@ -26,7 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Transaction } from "@/types/wallet";
+import type { Transaction } from "@/lib/zod/wallet/wallet.types";
 import { transactionColumns } from "./wallet-transaction-table-columns";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
@@ -46,7 +46,7 @@ export function TransactionTable({
   showViewAll = false,
 }: TransactionTableProps) {
   const [sorting, setSorting] = useState<SortingState>([
-    { id: "CreatedAt", desc: true },
+    { id: "createdAt", desc: true },
   ]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -107,7 +107,7 @@ export function TransactionTable({
         </div>
 
         {/* Table */}
-        <div className="rounded-md border">
+        <div className="mt-4 rounded-md border">
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
@@ -159,7 +159,7 @@ export function TransactionTable({
         </div>
 
         {/* Footer info */}
-        <div className="text-muted-foreground mt-4 text-sm">
+        <div className="text-muted-foreground mt-6 text-sm">
           {totalCount ? (
             <>
               Hiển thị {transactions.length} giao dịch gần nhất trong tổng số{" "}

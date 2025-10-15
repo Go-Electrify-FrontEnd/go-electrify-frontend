@@ -4,7 +4,7 @@ import * as React from "react";
 import { toast } from "sonner";
 import { SharedDataTable } from "@/components/shared/shared-data-table";
 import { columns } from "./station-table-columns";
-import { Station } from "@/types/station";
+import type { Station } from "@/lib/zod/station/station.types";
 
 interface StationsTableProps {
   data: Station[];

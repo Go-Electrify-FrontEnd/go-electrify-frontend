@@ -1,7 +1,4 @@
-"use client";
-
 import { useEffect, useState } from "react";
-import { useSearchParams, useRouter, useParams } from "next/navigation";
 import { CheckCircle, Copy, Loader, AlertCircle } from "lucide-react";
 
 interface TransactionData {
@@ -22,18 +19,17 @@ interface OrderDetails {
   productName?: string;
 }
 
-export default function SuccessPage() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const params = useParams();
-  const locale = params.locale as string;
-
-  const [transactionData, setTransactionData] =
-    useState<TransactionData | null>(null);
-  const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
+export default async function SuccessPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const params = await searchParams;
+  const code = params.code as string;
+  const id = params.id as string;
+  const orderCode = params.orderCode as string;
+  const cancel = params.cancel === "true";
+  const status = (params.status as string) || "UNKNOWN";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -128,7 +124,7 @@ export default function SuccessPage() {
             {error || "Không thể tải thông tin giao dịch"}
           </p>
           <button
-            onClick={() => router.push(`/${locale}/dashboard/wallet`)}
+            onClick={() => router.push(`/dashboard/wallet`)}
             className="w-full rounded-lg bg-red-600 px-6 py-3 font-semibold text-white transition hover:bg-red-700"
           >
             Quay lại trang chủ
@@ -310,7 +306,7 @@ export default function SuccessPage() {
 
           {/* Action Button */}
           <button
-            onClick={() => router.push(`/${locale}/dashboard/wallet`)}
+            onClick={() => router.push(`/dashboard/wallet`)}
             className="mt-8 w-full rounded-lg bg-red-600 px-6 py-3 font-bold text-white transition hover:bg-red-700"
           >
             Quay lại Trang chủ

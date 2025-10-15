@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Station } from "@/types/station";
+import type { Station } from "@/lib/zod/station/station.types";
 import { UpdateStation } from "./station-edit-dialog";
 import { DeleteStation } from "./station-delete-dialog";
 

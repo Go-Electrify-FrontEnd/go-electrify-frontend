@@ -11,7 +11,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ActionsCell } from "./connector-type-actions";
-import { ConnectorType } from "@/types/connector";
+import type { ConnectorType } from "@/lib/zod/connector-type/connector-type.types";
 
 const formatPower = (power: number) => {
   return `${power} kW`;
