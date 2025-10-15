@@ -1,23 +1,23 @@
 import { CheckCircle, Copy, AlertCircle, Loader } from "lucide-react";
 import Link from "next/link";
 
-interface TransactionData {
-  code: string;
-  id: string;
-  orderCode: string;
-  cancel: boolean;
-  status: string;
-}
+// interface TransactionData {
+//   code: string;
+//   id: string;
+//   orderCode: string;
+//   cancel: boolean;
+//   status: string;
+// }
 
-interface OrderDetails {
-  amount: number;
-  description?: string;
-  createdAt?: string;
-  customerName?: string;
-  customerPhone?: string;
-  customerEmail?: string;
-  productName?: string;
-}
+// interface OrderDetails {
+//   amount: number;
+//   description?: string;
+//   createdAt?: string;
+//   customerName?: string;
+//   customerPhone?: string;
+//   customerEmail?: string;
+//   productName?: string;
+// }
 
 async function getTransactionData(searchParams: Record<string, string>) {
   return {
@@ -76,15 +76,15 @@ export default async function Page({
         year: "numeric",
       });
 
-    return new Date(dateString).toLocaleString("vi-VN", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-  };
+//     return new Date(dateString).toLocaleString("vi-VN", {
+//       hour: "2-digit",
+//       minute: "2-digit",
+//       second: "2-digit",
+//       day: "2-digit",
+//       month: "2-digit",
+//       year: "numeric",
+//     });
+//   };
 
   if (!transactionData) {
     return (
@@ -165,7 +165,7 @@ export default async function Page({
                   </div>
                 </div>
 
-                <hr className="border-gray-200" />
+//                 <hr className="border-gray-200" />
 
                 <div className="space-y-4">
                   <DetailRow
