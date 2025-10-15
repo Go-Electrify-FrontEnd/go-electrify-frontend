@@ -2,7 +2,7 @@
 
 import { toast } from "sonner";
 import { SharedDataTable } from "@/components/shared/shared-data-table";
-import { CarModel } from "@/types/car";
+import type { CarModel } from "@/lib/zod/vehicle-model/vehicle-model.types";
 import { useCallback, useMemo } from "react";
 // Translations removed; using Vietnamese literals
 import { vehicleModelTableColumns } from "./vehicle-model-table-columns";

@@ -16,7 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   vehicleModelSchema,
   type VehicleModelFormData,
-} from "@/schemas/vehicle-model.schema";
+} from "@/lib/zod/vehicle-model/vehicle-model.request";
 import {
   Field,
   FieldError,

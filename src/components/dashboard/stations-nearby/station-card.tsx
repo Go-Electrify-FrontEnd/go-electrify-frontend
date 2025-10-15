@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Station } from "@/types/station";
+import type { Station } from "@/lib/zod/station/station.types";
 import { MapPin, Navigation, Phone, Zap } from "lucide-react";
 import Link from "next/link";
 

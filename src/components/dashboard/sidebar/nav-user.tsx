@@ -25,7 +25,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "next-themes";
-import { User } from "@/types/user";
+import type { User } from "@/lib/zod/user/user.types";
 // Navigation hooks removed for locale switching
 import Link from "next/link";
 

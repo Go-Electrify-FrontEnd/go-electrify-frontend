@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { CarModel } from "@/types/car";
+import type { CarModel } from "@/lib/zod/vehicle-model/vehicle-model.types";
 import { Loader2 } from "lucide-react";
 import { useActionState, useEffect, useState, type ReactNode } from "react";
 import { toast } from "sonner";

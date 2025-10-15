@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState } from "react";
-import { ConnectorType } from "@/types/connector";
+import type { ConnectorType } from "@/lib/zod/connector-type/connector-type.types";
 
 interface ConnectorTypeUpdateContextValue {
   setConnectorType: (connectorType: ConnectorType | null) => void;

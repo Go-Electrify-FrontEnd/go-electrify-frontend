@@ -8,7 +8,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getUser } from "@/lib/auth/auth-server";
-import { CarModel, CarModelSchema } from "@/types/car";
+import { CarModelSchema } from "@/lib/zod/vehicle-model/vehicle-model.schema";
+import type { CarModel } from "@/lib/zod/vehicle-model/vehicle-model.types";
 import { getConnectorTypes } from "../connector-type/page";
 import { ConnectorTypeProvider } from "@/contexts/connector-type-context";
 import { VehicleModelTable } from "@/components/dashboard/admin/vehicle-models/vehicle-model-table";

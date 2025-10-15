@@ -6,7 +6,7 @@ import Image from "next/image";
 
 const hero = {
   highlight: "Sạc dễ dàng",
-  headline: "Nền tảng sạc xe điện giúp tài xế sạc xe dễ dàng hơn",
+  headline: "Nền tảng sạc xe điện",
   description:
     "Tìm trạm sạc gần nhất, quản lý phiên sạc và thanh toán an toàn — tất cả trong một nền tảng",
   primaryCta: "Bắt đầu ngay",
@@ -29,7 +29,6 @@ export default function LandingHero() {
           priority
           className="object-cover"
           decoding="async"
-          quality={85}
         />
         <div className="absolute inset-0 bg-black/50" />
       </div>
@@ -37,9 +36,7 @@ export default function LandingHero() {
       <div className="relative z-10 container mx-auto">
         <div className="mx-auto max-w-[800px] space-y-12 text-center">
           <h1 className="text-5xl leading-tight font-bold tracking-tight text-white drop-shadow-2xl md:text-6xl lg:text-7xl">
-            <span className="bg-green-400 bg-gradient-to-r bg-clip-text text-transparent">
-              {hero.highlight}
-            </span>
+            <span className="text-green-400">{hero.highlight}</span>
             <br />
             <span className="text-white drop-shadow-lg">{hero.headline}</span>
           </h1>

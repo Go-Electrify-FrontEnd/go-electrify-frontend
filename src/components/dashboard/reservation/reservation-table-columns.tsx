@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type { Reservation } from "@/types/reservation";
+import type { Reservation } from "@/lib/zod/reservation/reservation.types";
 
 export type { Reservation };
 import {
@@ -63,6 +63,8 @@ const translateStatus = (status: string) => {
       return "Hoàn thành";
     case "cancelled":
       return "Đã hủy";
+    case "expired":
+      return "Đã hết hạn";
     default:
       return status;
   }
@@ -91,6 +93,13 @@ export const columns: ColumnDef<Reservation>[] = [
     ),
   },
   {
+    accessorKey: "code",
+    header: "Mã",
+    cell: ({ row }) => (
+      <div className="text-foreground font-medium">{row.getValue("code")}</div>
+    ),
+  },
+  {
     accessorKey: "pointId",
     header: "Trạm",
     cell: ({ row }) => (
@@ -100,6 +109,13 @@ export const columns: ColumnDef<Reservation>[] = [
       const pointId = row.getValue(id) as number;
       return pointId.toString().includes(value);
     },
+  },
+  {
+    accessorKey: "vehicleModelName",
+    header: "Mẫu xe",
+    cell: ({ row }) => (
+      <div className="text-foreground">{row.getValue("vehicleModelName")}</div>
+    ),
   },
   {
     accessorKey: "scheduledStart",
@@ -153,10 +169,12 @@ export const columns: ColumnDef<Reservation>[] = [
     accessorKey: "estimatedCost",
     header: "Chi phí ước tính",
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("estimatedCost"));
+      const raw = row.getValue("estimatedCost") as unknown;
+      const amount = Number(raw ?? 0);
+      const safeAmount = Number.isFinite(amount) ? amount : 0;
       return (
         <div className="text-foreground text-left font-semibold">
-          {formatCurrency(amount)}
+          {formatCurrency(safeAmount)}
         </div>
       );
     },

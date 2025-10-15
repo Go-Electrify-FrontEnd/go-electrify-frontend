@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Filter, MapPin, RotateCcw, Search } from "lucide-react";
-import { Station } from "@/types/station";
+import type { Station } from "@/lib/zod/station/station.types";
 import { getStations } from "../admin/stations/page";
 import SectionHeader from "@/components/dashboard/shared/section-header";
 

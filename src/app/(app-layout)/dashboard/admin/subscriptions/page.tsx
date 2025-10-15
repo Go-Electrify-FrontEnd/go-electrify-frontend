@@ -9,7 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Subscription, SubscriptionSchema } from "@/types/subscription";
+import { SubscriptionSchema } from "@/lib/zod/subscription/subscription.schema";
+import type { Subscription } from "@/lib/zod/subscription/subscription.types";
 
 async function getSubscriptions(): Promise<Subscription[]> {
   const url = "https://api.go-electrify.com/api/v1/subscriptions";

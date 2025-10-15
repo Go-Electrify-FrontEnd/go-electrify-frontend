@@ -33,7 +33,7 @@ import { useServerAction } from "@/hooks/use-server-action";
 import {
   subscriptionCreateSchema,
   type SubscriptionCreateFormData,
-} from "@/schemas/subscription.schema";
+} from "@/lib/zod/subscription/subscription.request";
 
 const initialState = { success: false, msg: "" };
 

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Station } from "@/types/station";
+import type { Station } from "@/lib/zod/station/station.types";
 import { deleteStation } from "@/actions/stations-actions";
 
 interface DeleteStationProps {

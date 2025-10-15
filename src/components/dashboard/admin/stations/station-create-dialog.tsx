@@ -36,7 +36,7 @@ import {
 import {
   stationCreateSchema,
   type StationCreateFormData,
-} from "@/schemas/station.schema";
+} from "@/lib/zod/station/station.request";
 import { useServerAction } from "@/hooks/use-server-action";
 
 interface StationCreateProps {

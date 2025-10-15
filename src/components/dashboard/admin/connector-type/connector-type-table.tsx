@@ -3,7 +3,7 @@
 import * as React from "react";
 import { SharedDataTable } from "@/components/shared/shared-data-table";
 import { columns } from "./connector-type-table-columns";
-import { ConnectorType } from "@/types/connector";
+import type { ConnectorType } from "@/lib/zod/connector-type/connector-type.types";
 
 interface ConnectorTypesTableProps {
   data: ConnectorType[];

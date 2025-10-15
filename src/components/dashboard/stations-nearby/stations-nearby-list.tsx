@@ -1,6 +1,6 @@
 "use client";
 
-import { Station } from "@/types/station";
+import type { Station } from "@/lib/zod/station/station.types";
 import { StationCard } from "./station-card";
 import {
   Card,

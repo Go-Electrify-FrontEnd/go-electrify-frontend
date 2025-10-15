@@ -6,7 +6,7 @@ import { forbidden } from "next/navigation";
 import {
   connectorTypeCreateSchema,
   connectorTypeUpdateSchema,
-} from "@/schemas/connector-type.schema";
+} from "@/lib/zod/connector-type/connector-type.request";
 import { z } from "zod";
 
 export async function handleCreateConnectorType(
@@ -20,10 +20,12 @@ export async function handleCreateConnectorType(
     forbidden();
   }
 
+  // Ensure values are strings when passed to Zod so that missing values
+  // trigger the custom validation messages (e.g. required name).
   const { success, data, error } = connectorTypeCreateSchema.safeParse({
-    name: formData.get("name"),
-    description: formData.get("description"),
-    maxPowerKw: formData.get("maxPowerKw"),
+    name: String(formData.get("name") ?? ""),
+    description: String(formData.get("description") ?? ""),
+    maxPowerKw: String(formData.get("maxPowerKw") ?? ""),
   });
 
   if (!success) {
@@ -78,7 +80,7 @@ export async function handleDeleteConnectorType(
   }
 
   const { success, data, error } = deleteSchema.safeParse({
-    id: formData.get("id"),
+    id: String(formData.get("id") ?? ""),
   });
 
   if (!success) {
@@ -123,10 +125,10 @@ export async function handleUpdateConnectorType(
   }
 
   const { success, data, error } = connectorTypeUpdateSchema.safeParse({
-    id: formData.get("id"),
-    name: formData.get("name"),
-    description: formData.get("description"),
-    maxPowerKw: formData.get("maxPowerKw"),
+    id: String(formData.get("id") ?? ""),
+    name: String(formData.get("name") ?? ""),
+    description: String(formData.get("description") ?? ""),
+    maxPowerKw: String(formData.get("maxPowerKw") ?? ""),
   });
 
   if (!success) {

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import "mapbox-gl/dist/mapbox-gl.css";
 import mapboxgl from "mapbox-gl";
-import { Station } from "@/types/station";
+import type { Station } from "@/lib/zod/station/station.types";
 
 interface StationMapProps {
   stations: Station[];

@@ -1,77 +1,161 @@
-import {
-  columns,
-  Reservation,
-} from "@/components/dashboard/reservation/reservation-table-columns";
+import { columns } from "@/components/dashboard/reservation/reservation-table-columns";
 import { DataTable } from "@/components/dashboard/reservation/reservation-table";
 import { EmptyTable } from "@/components/dashboard/reservation/reservation-table-empty";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { getBackendUrl } from "@/lib/utils";
-import { Plus, Calendar } from "lucide-react";
+import { Plus } from "lucide-react";
 import CreateReservationButton from "@/components/dashboard/reservation/reservation-create-button";
-import { Station } from "@/types/station";
+import { getStations } from "../admin/stations/page";
+import SectionHeader from "@/components/dashboard/shared/section-header";
+import { getUser } from "@/lib/auth/auth-server";
+import { CarModelSchema } from "@/lib/zod/vehicle-model/vehicle-model.schema";
+import type { CarModel } from "@/lib/zod/vehicle-model/vehicle-model.types";
+import { getConnectorTypes } from "../admin/connector-type/page";
+import { z } from "zod";
+import { BookingApiSchema } from "@/lib/zod/reservation/reservation.request";
+import type { Reservation } from "@/lib/zod/reservation/reservation.types";
+import type { ConnectorType } from "@/lib/zod/connector-type/connector-type.types";
 
-async function getData() {
-  const reservationsResponse = await fetch(getBackendUrl("api/reservations"));
-  const reservationsData: Reservation[] = await reservationsResponse.json();
+async function getReservations(
+  token: string,
+  connectorTypes: ConnectorType[],
+  vehicleModels: CarModel[],
+): Promise<Reservation[]> {
+  try {
+    const url = "https://api.go-electrify.com/api/v1/bookings/my";
+    const response = await fetch(url, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+      next: { revalidate: 60, tags: ["reservations"] },
+    });
 
-  const chargingStationsResponse = await fetch(getBackendUrl("api/stations"));
-  const chargingStations: Station[] = await chargingStationsResponse.json();
+    if (!response.ok) {
+      console.error("Failed to fetch reservations, status: " + response.status);
+      return [];
+    }
 
-  return { reservationsData, chargingStations };
+    const json = await response.json();
+
+    if (!json || !Array.isArray(json.data)) {
+      console.error("Invalid bookings response");
+      return [];
+    }
+
+    const parsed = z.array(BookingApiSchema).safeParse(json.data);
+    if (!parsed.success) {
+      console.error("Invalid booking items:", parsed.error);
+      return [];
+    }
+
+    // Map API shape -> internal Reservation shape
+    const mapped: Reservation[] = parsed.data.map((b) => {
+      const scheduledStart =
+        b.scheduledStart instanceof Date
+          ? b.scheduledStart
+          : new Date(b.scheduledStart);
+      // Reservations are 60 minutes long
+      const scheduledEnd = new Date(scheduledStart.getTime() + 60 * 60 * 1000);
+
+      // Map status values from API to client-friendly values
+      const statusMap: Record<string, string> = {
+        PENDING: "pending",
+        CONFIRMED: "confirmed",
+        CANCELED: "cancelled",
+        CANCELLED: "cancelled",
+        EXPIRED: "expired",
+        CONSUMED: "completed",
+      };
+
+      const normalizedStatus =
+        statusMap[b.status as string] || String(b.status).toLowerCase();
+
+      // Try to resolve connector type name for the table 'type' column
+      const connector = connectorTypes.find(
+        (ct) => ct.id === b.connectorTypeId,
+      );
+      const typeLabel = connector ? connector.name : "";
+
+      // Resolve vehicle model name for display (avoids unused variable and enriches the row)
+      const vehicleModelName =
+        vehicleModels.find((vm) => vm.id === b.vehicleModelId)?.modelName ?? "";
+
+      return {
+        id: b.id,
+        userId: 0,
+        pointId: b.stationId,
+        scheduledStart,
+        scheduledEnd,
+        initialSoc: b.initialSoc,
+        type: typeLabel,
+        status: normalizedStatus,
+        estimatedCost: b.estimatedCost ?? 0,
+        createdAt: scheduledStart,
+        updatedAt: scheduledStart,
+        vehicleModelName,
+      } as Reservation;
+    });
+
+    return mapped;
+  } catch (error) {
+    console.error("Error fetching reservations:", error);
+    return [];
+  }
+}
+
+async function getVehicleModels(token: string): Promise<CarModel[]> {
+  const headers = { Authorization: `Bearer ${token}` };
+
+  try {
+    const response = await fetch(
+      "https://api.go-electrify.com/api/v1/vehicle-models",
+      {
+        method: "GET",
+        headers,
+        next: { revalidate: 60, tags: ["vehicle-models"] },
+      },
+    );
+
+    if (!response.ok) {
+      console.log("Failed to fetch vehicle models, status: " + response.status);
+      return [];
+    }
+
+    const jsonData = await response.json();
+    const parsed = CarModelSchema.array().safeParse(jsonData);
+
+    if (parsed.success) {
+      return parsed.data;
+    } else {
+      console.log("Invalid vehicle model data format");
+      return [];
+    }
+  } catch (error: unknown) {
+    console.log("Error fetching vehicle models: " + JSON.stringify(error));
+    return [];
+  }
 }
 
 export default async function ReservationPage() {
-  const { reservationsData, chargingStations } = await getData();
-
-  const inComingReservations = reservationsData.filter(
-    (reservation) => new Date(reservation.scheduledStart) > new Date(),
+  const { token } = await getUser();
+  const stations = await getStations();
+  const vehicleModels = await getVehicleModels(token!);
+  const connectorTypes = await getConnectorTypes();
+  const reservations = await getReservations(
+    token!,
+    connectorTypes,
+    vehicleModels,
   );
 
   return (
     <div className="container mx-auto space-y-6">
-      {/* Header Card */}
-      <Card>
-        <CardHeader className="pt-2 pb-2">
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-            <div className="space-y-3">
-              <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 shadow-lg">
-                  <Calendar className="h-6 w-6 text-white" />
-                </div>
-                <div className="space-y-1">
-                  <CardTitle className="text-3xl">Đặt Chỗ</CardTitle>
-                  <CardDescription className="text-base">
-                    Quản lý và theo dõi các đặt chỗ sạc xe điện của bạn
-                  </CardDescription>
-                </div>
-              </div>
-              <div className="text-muted-foreground flex items-center gap-6 text-sm">
-                <div className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-green-500"></div>
-                  <span>Hoạt động</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-foreground font-medium">
-                    {reservationsData.length}
-                  </span>
-                  <span>đặt chỗ</span>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <CreateReservationButton
-                stations={chargingStations}
-                reservations={reservationsData}
-              />
-            </div>
-          </div>
-        </CardHeader>
-      </Card>
+      <SectionHeader
+        title="Quản lý Đặt Chỗ"
+        subtitle="Xem và quản lý các đặt chỗ trạm sạc xe điện của bạn"
+      >
+        <CreateReservationButton
+          stations={stations}
+          vehicleModels={vehicleModels}
+          connectorTypes={connectorTypes}
+        />
+      </SectionHeader>
 
       {/* Content Sections */}
       <div className="space-y-8">
@@ -87,18 +171,17 @@ export default async function ReservationPage() {
                   Đặt Chỗ Sắp Tới
                 </h2>
                 <p className="text-muted-foreground text-sm">
-                  Các đặt chỗ trong tương lai của bạn (
-                  {inComingReservations.length} đặt chỗ)
+                  Các đặt chỗ trong tương lai của bạn ({reservations.length} đặt
+                  chỗ)
                 </p>
               </div>
             </div>
           </div>
           <div className="p-6">
-            {inComingReservations == null ||
-            inComingReservations.length === 0 ? (
+            {reservations == null || reservations.length === 0 ? (
               <EmptyTable />
             ) : (
-              <DataTable columns={columns} data={inComingReservations} />
+              <DataTable columns={columns} data={reservations} />
             )}
           </div>
         </div>
@@ -128,13 +211,13 @@ export default async function ReservationPage() {
                   Lịch Sử Đặt Chỗ
                 </h2>
                 <p className="text-muted-foreground text-sm">
-                  Tất cả các đặt chỗ của bạn ({reservationsData.length} đặt chỗ)
+                  Tất cả các đặt chỗ của bạn ({reservations.length} đặt chỗ)
                 </p>
               </div>
             </div>
           </div>
           <div className="p-6">
-            <DataTable columns={columns} data={reservationsData} />
+            <DataTable columns={columns} data={reservations} />
           </div>
         </div>
       </div>

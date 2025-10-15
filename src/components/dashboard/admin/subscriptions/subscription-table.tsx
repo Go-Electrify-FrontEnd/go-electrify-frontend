@@ -4,7 +4,7 @@ import * as React from "react";
 import { toast } from "sonner";
 import { SharedDataTable } from "@/components/shared/shared-data-table";
 import { columns } from "./subscription-table-columns";
-import { Subscription } from "@/types/subscription";
+import type { Subscription } from "@/lib/zod/subscription/subscription.types";
 
 interface SubscriptionsTableProps {
   data: Subscription[];

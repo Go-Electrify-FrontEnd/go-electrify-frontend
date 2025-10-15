@@ -152,7 +152,7 @@ export default function AvatarUpdate() {
 
   return (
     <>
-      <Card className="max-w-4xl">
+      <Card>
         <CardHeader>
           <CardTitle>Ảnh đại diện</CardTitle>
           <CardDescription>
