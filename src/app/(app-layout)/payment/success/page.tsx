@@ -1,31 +1,36 @@
-import { CheckCircle, Copy, AlertCircle, Loader } from "lucide-react";
+import { CheckCircle, AlertCircle } from "lucide-react";
 import Link from "next/link";
 
-// interface TransactionData {
-//   code: string;
-//   id: string;
-//   orderCode: string;
-//   cancel: boolean;
-//   status: string;
-// }
+interface TransactionData {
+  code: string;
+  id: string;
+  orderCode: string;
+  cancel: boolean;
+  status: string;
+}
 
-// interface OrderDetails {
-//   amount: number;
-//   description?: string;
-//   createdAt?: string;
-//   customerName?: string;
-//   customerPhone?: string;
-//   customerEmail?: string;
-//   productName?: string;
-// }
+interface OrderDetails {
+  amount: number;
+  description?: string;
+  createdAt?: string;
+  customerName?: string;
+  customerPhone?: string;
+  customerEmail?: string;
+  productName?: string;
+}
 
-async function getTransactionData(searchParams: Record<string, string>) {
+async function getTransactionData(searchParams: {
+  [key: string]: string | string[] | undefined;
+}) {
+  const getString = (value: string | string[] | undefined) =>
+    Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
+
   return {
-    code: searchParams.code || "",
-    id: searchParams.id || "",
-    orderCode: searchParams.orderCode || "",
-    cancel: searchParams.cancel === "true",
-    status: searchParams.status || "UNKNOWN",
+    code: getString(searchParams.code),
+    id: getString(searchParams.id),
+    orderCode: getString(searchParams.orderCode),
+    cancel: getString(searchParams.cancel) === "true",
+    status: getString(searchParams.status) || "UNKNOWN",
   };
 }
 
@@ -36,7 +41,7 @@ async function getOrderDetails(
 
   try {
     const res = await fetch(
-      `${process.env.BACKEND_URL}/api/payment/order/${orderCode}`,
+      `https://api.go-electrify.com/api/payment/order/${orderCode}`,
       {
         cache: "no-store",
       },
@@ -53,20 +58,18 @@ async function getOrderDetails(
 
 export default async function Page({
   searchParams,
-  params,
 }: {
-  searchParams: Record<string, string>;
-  params: { locale: string };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const locale = params.locale;
-  const transactionData = await getTransactionData(searchParams);
+  const resolvedParams = await searchParams;
+  const transactionData = await getTransactionData(resolvedParams);
   const orderDetails = await getOrderDetails(transactionData.orderCode);
 
   const isSuccess =
     transactionData.status === "PAID" && !transactionData.cancel;
 
   const formatDateTime = (dateString?: string) => {
-    if (!dateString)
+    if (!dateString) {
       return new Date().toLocaleString("vi-VN", {
         hour: "2-digit",
         minute: "2-digit",
@@ -75,16 +78,17 @@ export default async function Page({
         month: "2-digit",
         year: "numeric",
       });
+    }
 
-//     return new Date(dateString).toLocaleString("vi-VN", {
-//       hour: "2-digit",
-//       minute: "2-digit",
-//       second: "2-digit",
-//       day: "2-digit",
-//       month: "2-digit",
-//       year: "numeric",
-//     });
-//   };
+    return new Date(dateString).toLocaleString("vi-VN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
 
   if (!transactionData) {
     return (
@@ -96,7 +100,8 @@ export default async function Page({
             Không thể tải thông tin giao dịch
           </p>
           <Link
-            href={`/${locale}/dashboard/wallet`}
+            href={`/dashboard/wallet`}
+            prefetch={false}
             className="inline-block w-full rounded-lg bg-red-600 px-6 py-3 font-semibold text-white transition hover:bg-red-700"
           >
             Quay lại trang chủ
@@ -165,7 +170,7 @@ export default async function Page({
                   </div>
                 </div>
 
-//                 <hr className="border-gray-200" />
+                {/* <hr className="border-gray-200" /> */}
 
                 <div className="space-y-4">
                   <DetailRow
@@ -243,7 +248,7 @@ export default async function Page({
 
           {/* Button */}
           <Link
-            href={`/${locale}/dashboard/wallet`}
+            href={`/dashboard/wallet`}
             className="mt-8 block w-full rounded-lg bg-red-600 px-6 py-3 text-center font-bold text-white transition hover:bg-red-700"
           >
             Quay lại Trang chủ
