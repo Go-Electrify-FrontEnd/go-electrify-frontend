@@ -27,6 +27,7 @@ interface PieChartProps {
 const chartConfig = {
   stations: {
     label: "Trạm Sạc",
+    color: "var(--chart-5)",
   },
   users: {
     label: "Người Dùng",

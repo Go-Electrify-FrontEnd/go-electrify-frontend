@@ -22,12 +22,11 @@ export async function createReservation(prev: unknown, formData: FormData) {
     return { success: false, msg: "Dữ liệu không hợp lệ" };
   }
 
-  // Calculate scheduledStart (current time + 60 minutes from now)
   const scheduledStart = new Date();
   scheduledStart.setMinutes(scheduledStart.getMinutes() + 60);
 
   try {
-    const url = "https://api.go-electrify.com/api/v1/reservations";
+    const url = "https://api.go-electrify.com/api/v1/bookings";
     const response = await fetch(url, {
       method: "POST",
       headers: {

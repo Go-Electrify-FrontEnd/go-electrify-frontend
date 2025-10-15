@@ -16,7 +16,7 @@ import { VehicleModelTable } from "@/components/dashboard/admin/vehicle-models/v
 import { VehicleModelUpdateProvider } from "@/contexts/vehicle-model-action-context";
 import VehicleModelEditDialog from "@/components/dashboard/admin/vehicle-models/vehicle-model-edit-dialog";
 
-async function getVehicleModels(token: string): Promise<CarModel[]> {
+export async function getVehicleModels(token: string): Promise<CarModel[]> {
   const headers = { Authorization: `Bearer ${token}` };
 
   try {

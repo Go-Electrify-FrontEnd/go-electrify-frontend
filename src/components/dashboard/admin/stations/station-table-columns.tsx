@@ -40,7 +40,7 @@ function DateCell({ value }: { value: Date }) {
     return (
       <div className="font-medium">{value.toLocaleDateString("vi-VN")}</div>
     );
-  } catch (e) {
+  } catch {
     return <div className="font-medium">-</div>;
   }
 }

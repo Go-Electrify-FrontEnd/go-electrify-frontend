@@ -1,32 +1,18 @@
 "use client";
 
 import { User } from "@/lib/zod/user/user.types";
-import {
-  MapPin,
-  Users,
-  Car,
-  Plug,
-  Package,
-  CheckCircle2,
-  ArrowUpRight,
-  TrendingUp,
-} from "lucide-react";
+import { MapPin, Users, Car, Plug, Package, ArrowUpRight } from "lucide-react";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import SectionHeader from "@/components/dashboard/shared/section-header";
+import StatCard from "@/components/dashboard/shared/stat-card";
 import { Badge } from "@/components/ui/badge";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from "@/components/ui/chart";
+import { type ChartConfig } from "@/components/ui/chart";
 import type { AdminStats } from "@/types/dashboard-stats";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
@@ -38,7 +24,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { PieChart, Pie, Cell, LabelList } from "recharts";
 import Link from "next/link";
 import { ResourceUtilizationPie } from "./resource-utilization";
 import { RoleDistributionCard } from "./role-distribution";
@@ -100,64 +85,38 @@ export function AdminDashboard({ user, token, stats }: AdminDashboardProps) {
 
       {/* Primary Stats */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Trạm Sạc</CardTitle>
-            <MapPin className="text-muted-foreground h-4 w-4" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalStations}</div>
-            <div className="text-muted-foreground flex items-center gap-2 text-xs">
-              <Badge variant="outline" className="text-xs">
-                <CheckCircle2 className="mr-1 h-3 w-3" />
-                {stats.activeStations} hoạt động
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
+        <StatCard
+          title="Trạm Sạc"
+          icon={<MapPin />}
+          value={stats.totalStations}
+        >
+          {stats.activeStations} hoạt động
+        </StatCard>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Người Dùng</CardTitle>
-            <Users className="text-muted-foreground h-4 w-4" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalUsers}</div>
-            <p className="text-muted-foreground text-xs">
-              {stats.roleBreakdown.driver} tài xế
-            </p>
-          </CardContent>
-        </Card>
+        <StatCard title="Người Dùng" icon={<Users />} value={stats.totalUsers}>
+          {stats.roleBreakdown.driver} tài xế
+        </StatCard>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Loại Cổng</CardTitle>
-            <Plug className="text-muted-foreground h-4 w-4" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {stats.totalConnectorTypes}
-            </div>
-            <p className="text-muted-foreground text-xs">Chuẩn kết nối</p>
-          </CardContent>
-        </Card>
+        <StatCard
+          title="Loại Cổng"
+          icon={<Plug />}
+          value={stats.totalConnectorTypes}
+        >
+          Chuẩn kết nối
+        </StatCard>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Mẫu Xe</CardTitle>
-            <Car className="text-muted-foreground h-4 w-4" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalVehicleModels}</div>
-            <p className="text-muted-foreground text-xs">Xe điện hỗ trợ</p>
-          </CardContent>
-        </Card>
+        <StatCard
+          title="Mẫu Xe"
+          icon={<Car />}
+          value={stats.totalVehicleModels}
+        >
+          Xe điện hỗ trợ
+        </StatCard>
       </div>
 
       {/* Charts & Stats */}
       <div className="grid gap-4 md:grid-cols-2">
         <ResourceUtilizationPie data={resourceData} />
-
         <RoleDistributionCard data={roleData} config={chartConfig} />
       </div>
 

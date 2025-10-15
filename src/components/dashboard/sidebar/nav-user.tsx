@@ -9,6 +9,7 @@ import {
   Languages,
   LogOut,
   Moon,
+  Settings2,
   Sparkles,
   Sun,
 } from "lucide-react";
@@ -91,14 +92,20 @@ export function NavUser({ user }: NavUserProps) {
         <DropdownMenuGroup>
           <DropdownMenuItem>
             <CreditCard />
-            {tUser.billing}
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Bell />
-            {tUser.notifications}
+            Thanh toán
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link
+            prefetch={false}
+            href="/dashboard/settings"
+            className="flex h-full w-full cursor-pointer items-center gap-2"
+          >
+            <Settings2 />
+            Cài đặt
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link
             prefetch={false}
@@ -106,7 +113,7 @@ export function NavUser({ user }: NavUserProps) {
             className="flex h-full w-full cursor-pointer items-center gap-2"
           >
             <LogOut />
-            {tAuth.logout}
+            Đăng xuất
           </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
