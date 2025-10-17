@@ -16,7 +16,12 @@ import {
 } from "lucide-react";
 // Translations removed: landing and admin UI converted to Vietnamese
 
-import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+} from "@/components/ui/sidebar";
 import { NavSection } from "./nav-section";
 import { useUser } from "@/contexts/user-context";
 
@@ -108,12 +113,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar collapsible="icon" {...props}>
+      <SidebarHeader></SidebarHeader>
       <SidebarContent>
         <NavSection items={overview} />
         <NavSection items={charging} />
         <NavSection items={payment} />
         {user?.role.toLowerCase() === "admin" && <NavSection items={admin} />}
       </SidebarContent>
+      <SidebarFooter></SidebarFooter>
     </Sidebar>
   );
 }

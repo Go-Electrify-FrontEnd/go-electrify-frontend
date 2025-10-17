@@ -6,8 +6,6 @@ import { getUserFromToken } from "./lib/auth/auth-server";
 const PUBLIC_PATHS = new Set(["/"]);
 
 export async function middleware(request: NextRequest) {
-  const { nextUrl } = request;
-  const pathname = nextUrl.pathname;
   const response = await handleAuthRefresh(request);
 
   const finalAccessToken =
@@ -16,21 +14,25 @@ export async function middleware(request: NextRequest) {
 
   const { user } = await getUserFromToken(finalAccessToken ?? "");
 
-  if (pathname === "/login") {
-    if (user) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
-    }
+  const { pathname } = request.nextUrl;
 
+  if (PUBLIC_PATHS.has(pathname)) {
     return response;
   }
 
-  if (PUBLIC_PATHS.has(pathname)) {
+  if (pathname === "/login") {
+    if (user) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/dashboard";
+      return NextResponse.redirect(url);
+    }
     return response;
   }
 
   if (!user) {
     const loginUrl = new URL("/login", request.url);
     const redirectResponse = NextResponse.redirect(loginUrl);
+
     redirectResponse.cookies.delete("accessToken");
     redirectResponse.cookies.delete("refreshToken");
     return redirectResponse;

@@ -16,15 +16,22 @@ import {
 } from "@/components/ui/dialog";
 import { MapPin, Loader2, Plus } from "lucide-react";
 import { toast } from "sonner";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import AddressSearch from "@/components/shared/address-search";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
+  InputGroupTextarea,
+} from "@/components/ui/input-group";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, type Resolver, useForm } from "react-hook-form";
 import {
@@ -70,9 +77,9 @@ export default function StationCreate({ onCancel }: StationCreateProps) {
       name: "",
       description: "",
       address: "",
-      latitude: "",
-      longitude: "",
-      status: "active",
+      latitude: 0,
+      longitude: 0,
+      status: "ACTIVE",
     },
   });
 
@@ -86,10 +93,8 @@ export default function StationCreate({ onCancel }: StationCreateProps) {
     setIsLocating(true);
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        const lat = position.coords.latitude.toFixed(6);
-        const lng = position.coords.longitude.toFixed(6);
-        form.setValue("latitude", lat);
-        form.setValue("longitude", lng);
+        form.setValue("latitude", position.coords.latitude);
+        form.setValue("longitude", position.coords.longitude);
         toast.success("Đã phát hiện vị trí thành công");
         setIsLocating(false);
       },
@@ -113,9 +118,9 @@ export default function StationCreate({ onCancel }: StationCreateProps) {
     payload.append("description", data.description ?? "");
     payload.append("address", data.address);
     payload.append("imageUrl", ""); // Treat as null/empty for now
-    payload.append("status", data.status ?? "active");
-    if (data.latitude) payload.append("latitude", data.latitude);
-    if (data.longitude) payload.append("longitude", data.longitude);
+    payload.append("status", data.status ?? "ACTIVE");
+    payload.append("latitude", data.latitude.toString());
+    payload.append("longitude", data.longitude.toString());
 
     execute(payload);
   });
@@ -185,12 +190,22 @@ export default function StationCreate({ onCancel }: StationCreateProps) {
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="station-description">Mô tả</FieldLabel>
-                  <Textarea
-                    id="station-description"
-                    {...field}
-                    rows={4}
-                    aria-invalid={fieldState.invalid}
-                  />
+                  <InputGroup>
+                    <InputGroupTextarea
+                      id="station-description"
+                      {...field}
+                      placeholder="Mô tả ngắn về trạm (tối đa 200 ký tự)"
+                      aria-invalid={fieldState.invalid}
+                      rows={4}
+                      maxLength={200}
+                      className="min-h-24 resize-none"
+                    />
+                    <InputGroupAddon align="block-end">
+                      <InputGroupText className="tabular-nums">
+                        {field.value == null ? 0 : field.value.length}/200 từ
+                      </InputGroupText>
+                    </InputGroupAddon>
+                  </InputGroup>
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}
@@ -226,11 +241,8 @@ export default function StationCreate({ onCancel }: StationCreateProps) {
                             Number.isFinite(result.latitude) &&
                             Number.isFinite(result.longitude)
                           ) {
-                            form.setValue("latitude", String(result.latitude));
-                            form.setValue(
-                              "longitude",
-                              String(result.longitude),
-                            );
+                            form.setValue("latitude", result.latitude);
+                            form.setValue("longitude", result.longitude);
                           }
                         }}
                       />
@@ -296,7 +308,7 @@ export default function StationCreate({ onCancel }: StationCreateProps) {
                       render={({ field, fieldState }) => (
                         <Field data-invalid={fieldState.invalid}>
                           <FieldLabel htmlFor="station-latitude">
-                            Vĩ Độ
+                            Vĩ Độ (Tùy Chọn)
                           </FieldLabel>
                           <Input
                             id="station-latitude"
@@ -305,7 +317,6 @@ export default function StationCreate({ onCancel }: StationCreateProps) {
                             step="0.000001"
                             placeholder="10.8231"
                             aria-invalid={fieldState.invalid}
-                            required={useManualCoords}
                           />
                           {fieldState.invalid && (
                             <FieldError errors={[fieldState.error]} />
@@ -320,7 +331,7 @@ export default function StationCreate({ onCancel }: StationCreateProps) {
                       render={({ field, fieldState }) => (
                         <Field data-invalid={fieldState.invalid}>
                           <FieldLabel htmlFor="station-longitude">
-                            Kinh Độ
+                            Kinh Độ (Tùy Chọn)
                           </FieldLabel>
                           <Input
                             id="station-longitude"
@@ -329,7 +340,6 @@ export default function StationCreate({ onCancel }: StationCreateProps) {
                             step="0.000001"
                             placeholder="106.6297"
                             aria-invalid={fieldState.invalid}
-                            required={useManualCoords}
                           />
                           {fieldState.invalid && (
                             <FieldError errors={[fieldState.error]} />
@@ -350,20 +360,31 @@ export default function StationCreate({ onCancel }: StationCreateProps) {
             <Controller
               control={form.control}
               name="status"
-              defaultValue="active"
               render={({ field, fieldState }) => (
-                <Field>
+                <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="station-status">
                     Trạng Thái Trạm *
                   </FieldLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger className="w-full">
+                  <Select
+                    name={field.name}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <SelectTrigger
+                      id="station-status"
+                      aria-invalid={fieldState.invalid}
+                    >
                       <SelectValue placeholder="Chọn trạng thái" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="active">Hoạt Động</SelectItem>
-                      <SelectItem value="inactive">Không Hoạt Động</SelectItem>
-                      <SelectItem value="maintenance">Bảo Trì</SelectItem>
+                      <SelectGroup>
+                        <SelectLabel>Chọn trạm</SelectLabel>
+                        <SelectItem value="ACTIVE">Hoạt Động</SelectItem>
+                        <SelectItem value="INACTIVE">
+                          Không Hoạt Động
+                        </SelectItem>
+                        <SelectItem value="MAINTENANCE">Bảo Trì</SelectItem>
+                      </SelectGroup>
                     </SelectContent>
                   </Select>
                   {fieldState.invalid && (

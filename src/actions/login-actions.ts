@@ -2,18 +2,15 @@
 
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
+import {
+  getUser,
+  refreshAccessToken,
+  refreshTokenSchema,
+} from "@/lib/auth/auth-server";
 
-export async function handleLogin(prevState: unknown, data: FormData) {
-  const t = {
-    "requestOtpMessages.emailRequired": "Email là bắt buộc",
-    "requestOtpMessages.success": "Mã OTP đã được gửi đến email của bạn",
-    "requestOtpMessages.failure": "Không thể gửi OTP. Vui lòng thử lại",
-    "requestOtpMessages.networkError": "Lỗi kết nối. Vui lòng thử lại",
-  };
-  const email = data.get("email")?.toString();
-
+export async function requestOtp(email: string) {
   if (!email) {
-    return { success: false, msg: t["requestOtpMessages.emailRequired"] };
+    return { success: false, msg: "Email là bắt buộc" };
   }
 
   const url = "https://api.go-electrify.com/api/v1/auth/request-otp";
@@ -26,50 +23,41 @@ export async function handleLogin(prevState: unknown, data: FormData) {
       body: JSON.stringify({ Email: email }),
     });
 
-    const success = response.ok;
-    return {
-      success,
-      msg: success
-        ? t["requestOtpMessages.success"]
-        : t["requestOtpMessages.failure"],
-    };
-  } catch (error) {
-    console.error("handleLogin error", error);
+    if (response.ok) {
+      return {
+        success: true,
+        msg: "Mã OTP đã được gửi đến email của bạn",
+      };
+    }
+
     return {
       success: false,
-      msg: t["requestOtpMessages.networkError"],
+      msg: "Không thể gửi OTP. Vui lòng thử lại",
+    };
+  } catch (error) {
+    console.error("requestOtp error", error);
+    return {
+      success: false,
+      msg: "Lỗi kết nối. Vui lòng thử lại",
     };
   }
 }
 
-interface VerifyOTPResponse {
-  AccessToken: string;
-  RefreshToken: string;
-  AccessExpires: string;
-  RefreshExpires: string;
+export async function handleLogin(prevState: unknown, data: FormData) {
+  const email = data.get("email")?.toString() ?? "";
+  return requestOtp(email);
 }
 
 export async function handleVerifyOTP(prevState: unknown, data: FormData) {
-  const t = {
-    "verifyOtpMessages.emailOtpRequired": "Email và mã OTP là bắt buộc",
-    "verifyOtpMessages.alreadyAuthenticated": "Bạn đã đăng nhập",
-    "verifyOtpMessages.invalid": "Mã OTP không hợp lệ hoặc đã hết hạn",
-    "verifyOtpMessages.networkError": "Lỗi kết nối. Vui lòng thử lại",
-  };
-
   const email = data.get("email")?.toString();
   const code = data.get("code")?.toString();
 
   if (!email || !code) {
-    return { success: false, msg: t["verifyOtpMessages.emailOtpRequired"] };
-  }
-
-  const cookieStore = await cookies();
-  if (cookieStore.get("accessToken") && cookieStore.get("refreshToken")) {
-    return { success: true, msg: t["verifyOtpMessages.alreadyAuthenticated"] };
+    return { success: false, msg: "Email và mã OTP là bắt buộc" };
   }
 
   const url = "https://api.go-electrify.com/api/v1/auth/verify-otp";
+  const cookieStore = await cookies();
   let shouldRedirect = false;
 
   try {
@@ -84,39 +72,38 @@ export async function handleVerifyOTP(prevState: unknown, data: FormData) {
     if (!response.ok) {
       return {
         success: false,
-        msg: t["verifyOtpMessages.invalid"],
+        msg: "Mã OTP không hợp lệ hoặc đã hết hạn",
         user: null,
         tokens: null,
       };
     }
 
-    const parsed = (await response.json()) as VerifyOTPResponse;
-
-    // Validate response payload
-    if (!parsed?.AccessToken || !parsed?.RefreshToken) {
+    const parsed = await response.json();
+    const { success, data, error } = refreshTokenSchema.safeParse(parsed);
+    if (error) {
+      console.log("handleVerifyOTP API error: " + JSON.stringify(error));
+    }
+    if (!success) {
       return {
         success: false,
-        msg: t["verifyOtpMessages.invalid"],
+        msg: "Lỗi xác thực OTP. Vui lòng thử lại",
         user: null,
         tokens: null,
       };
     }
 
-    // Set cookies
     cookieStore.set({
       name: "accessToken",
       value: parsed.AccessToken,
-      httpOnly: true,
-      expires: new Date(parsed.AccessExpires),
-      maxAge: 60 * 15,
+      httpOnly: process.env.NODE_ENV === "production",
+      expires: data.accessExpires,
     });
 
     cookieStore.set({
       name: "refreshToken",
       value: parsed.RefreshToken,
-      httpOnly: true,
-      expires: new Date(parsed.RefreshExpires),
-      maxAge: 60 * 60 * 24 * 30,
+      httpOnly: process.env.NODE_ENV === "production",
+      expires: data.refreshExpires,
     });
 
     // Mark for redirect
@@ -125,7 +112,7 @@ export async function handleVerifyOTP(prevState: unknown, data: FormData) {
     console.error("handleVerifyOTP network/parsing error", error);
     return {
       success: false,
-      msg: t["verifyOtpMessages.networkError"],
+      msg: "Lỗi xác thực OTP. Vui lòng thử lại",
       user: null,
       tokens: null,
     };
@@ -137,4 +124,9 @@ export async function handleVerifyOTP(prevState: unknown, data: FormData) {
   }
 
   return { success: true, msg: "" };
+}
+
+export async function refreshTokens() {
+  console.log("Refreshing tokens...");
+  await refreshAccessToken();
 }

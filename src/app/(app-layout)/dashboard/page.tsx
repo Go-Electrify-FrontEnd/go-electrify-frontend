@@ -8,11 +8,11 @@ import type {
   AdminStats,
 } from "@/types/dashboard-stats";
 import { redirect } from "next/navigation";
-import { getStations } from "./admin/stations/page";
-import { getConnectorTypes } from "./admin/connector-type/page";
-import { getVehicleModels } from "./admin/vehicle-models/page";
-import { getSubscriptions } from "./admin/subscriptions/page";
-import { getUsers } from "./admin/users/page";
+import { getStations } from "./(admin-layout)/admin/stations/page";
+import { getConnectorTypes } from "./(admin-layout)/admin/connector-type/page";
+import { getVehicleModels } from "./(admin-layout)/admin/vehicle-models/page";
+import { getSubscriptions } from "./(admin-layout)/admin/subscriptions/page";
+import { getUsers } from "./(admin-layout)/admin/users/page";
 import { getTransactions, getWallet } from "./wallet/page";
 
 export default async function DashboardPage() {
@@ -36,7 +36,7 @@ export default async function DashboardPage() {
     let activeStations = 0;
     if (stations) {
       totalStations = stations.length;
-      activeStations = stations.filter((s) => s.status === "active").length;
+      activeStations = stations.filter((s) => s.status === "ACTIVE").length;
     }
 
     const users = await getUsers();
@@ -117,7 +117,7 @@ export default async function DashboardPage() {
     let activeStations = 0;
     if (stations) {
       totalStations = stations.length;
-      activeStations = stations.filter((s) => s.status === "active").length;
+      activeStations = stations.filter((s) => s.status === "ACTIVE").length;
     }
 
     const totalCustomers = 0;

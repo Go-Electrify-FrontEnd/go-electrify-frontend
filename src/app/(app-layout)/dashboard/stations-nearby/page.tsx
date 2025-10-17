@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Filter, RotateCcw, Search } from "lucide-react";
 import type { Station } from "@/lib/zod/station/station.types";
-import { getStations } from "../admin/stations/page";
+import { getStations } from "../(admin-layout)/admin/stations/page";
 import SectionHeader from "@/components/dashboard/shared/section-header";
 
 export default async function FindStationsPage() {

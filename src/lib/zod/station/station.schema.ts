@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const StationStatus = z.enum(["active", "inactive", "maintenance"]);
+export const StationStatus = z.enum(["ACTIVE", "INACTIVE", "MAINTENANCE"]);
 export type StationStatusType = z.infer<typeof StationStatus>;
 
 export const StationSchema = z.object({
@@ -42,16 +42,3 @@ export const StationApiSchema = z
     createdAt: new Date(raw.CreatedAt),
     updatedAt: new Date(raw.UpdatedAt),
   }));
-
-export const LegacyStationSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  coordinates: z.tuple([z.number(), z.number()]),
-  type: z.string(),
-  address: z.string(),
-  available: z.boolean(),
-  available_connectors: z.number(),
-  total_connectors: z.number(),
-  distance: z.number().optional(),
-});
-export type LegacyStation = z.infer<typeof LegacyStationSchema>;

@@ -7,6 +7,7 @@ import { AppHeader } from "@/components/dashboard/sidebar/app-header";
 import AppLogo from "@/components/shared/logo";
 import { NavUser } from "@/components/dashboard/sidebar/nav-user";
 import { Button } from "@/components/ui/button";
+import { NotificationButton } from "@/components/dashboard/header/notification-button";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +20,7 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen-patched max-h-screen-patched flex flex-col">
+    <div className="min-h-screen-patched max-h-screen-patched flex flex-col overflow-y-auto">
       <UserProvider user={user}>
         <header className="@container/chat-header relative z-20 flex h-16 w-full shrink-0 items-center justify-between gap-2 px-3 align-middle">
           <AppLogo
@@ -28,9 +29,10 @@ export default async function DashboardLayout({
             className="text-foreground h-max w-auto"
           />
           <div className="flex items-center justify-between gap-2 justify-self-end align-middle">
-            <Button variant="outline" size="sm">
+            {/* <Button variant="outline" size="sm">
               Notification
-            </Button>
+            </Button> */}
+            <NotificationButton />
             <NavUser user={user} />
           </div>
         </header>
@@ -38,7 +40,7 @@ export default async function DashboardLayout({
           <SidebarProvider className="flex min-h-0 flex-1 overflow-hidden">
             <AppSidebar
               variant="inset"
-              className="sticky top-0 hidden origin-left sm:block"
+              className="no-scrollbar sticky top-0 hidden origin-left sm:block"
             />
             <SidebarInset className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border">
               <div className="shrink-0">

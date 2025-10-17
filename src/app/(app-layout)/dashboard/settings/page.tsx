@@ -26,38 +26,6 @@ export default async function SettingsPage() {
           <AvatarUpdate />
           <FullNameUpdate />
         </div>
-
-        {/* Info Banner */}
-        <div className="bg-muted/50 rounded-lg border p-6">
-          <div className="flex items-start gap-4">
-            <div className="bg-primary/10 text-primary flex size-10 shrink-0 items-center justify-center rounded-full">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="size-5"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 16v-4" />
-                <path d="M12 8h.01" />
-              </svg>
-            </div>
-            <div className="flex-1 space-y-1">
-              <h3 className="text-foreground font-semibold">
-                Bảo mật thông tin
-              </h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                Thông tin cá nhân của bạn được bảo vệ và mã hóa. Chúng tôi chỉ
-                sử dụng dữ liệu này để cải thiện trải nghiệm dịch vụ và không
-                chia sẻ với bên thứ ba.
-              </p>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

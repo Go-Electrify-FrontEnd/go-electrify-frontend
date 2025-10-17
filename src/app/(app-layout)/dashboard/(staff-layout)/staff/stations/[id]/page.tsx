@@ -22,6 +22,7 @@ import {
   TrendingUp,
   Zap,
 } from "lucide-react";
+import { forbidden } from "next/navigation";
 
 async function getStationById(id: string, token: string) {
   const url = `https://api.go-electrify.com/api/v1/stations/${encodeURIComponent(id)}`;
@@ -46,7 +47,15 @@ export default async function StationPage({
   params: { id: Promise<string> };
 }) {
   const id = await params.id;
-  const { token } = await getUser();
+  const { user, token } = await getUser();
+  if (!user) {
+    forbidden();
+  }
+
+  const role = user.role.toLowerCase();
+  if (role !== "admin" && role !== "staff") {
+    forbidden();
+  }
 
   const station = await getStationById(id, token ?? "");
   const chargers = await getStationChargers(id, token ?? "");

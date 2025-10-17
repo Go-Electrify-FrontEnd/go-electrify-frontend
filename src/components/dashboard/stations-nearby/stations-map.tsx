@@ -39,7 +39,7 @@ export function StationMap({
 
         stations!.forEach((station) => {
           const markerColor =
-            station.status == "active" ? "#10B981" : "#EF4444";
+            station.status == "ACTIVE" ? "#10B981" : "#EF4444";
 
           new mapboxgl.Marker({ color: markerColor })
             .setLngLat([station.longitude, station.latitude]) // [longitude, latitude]
@@ -48,10 +48,8 @@ export function StationMap({
             <div class="p-2">
               <h3 class="font-bold text-sm mb-2 text-black">${station.name}</h3>
               <p class="text-xs mb-1 text-black">Địa Chỉ: ${station.address}</p>
-              <p class="text-xs mb-1" style="color: ${
-                station.status == "active" ? "#10B981" : "#EF4444"
-              }">
-                ${station.status == "active" ? "✅ Khả dụng" : "❌ Không khả dụng"}
+              <p class="text-xs mb-1" style="color: ${station.status == "ACTIVE" ? "#10B981" : "#EF4444"}">
+                ${station.status == "ACTIVE" ? "✅ Khả dụng" : "❌ Không khả dụng"}
               </p>
             </div>
           `),
