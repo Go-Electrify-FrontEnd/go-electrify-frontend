@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Notification } from "@/types/notification";
-import { getNotifications } from "@/lib/api/notifications";
 import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
 import { NotificationPopoverWrapper } from "./notification-popover-wrapper";
@@ -44,8 +43,12 @@ function NotificationItem({ notification }: { notification: Notification }) {
   );
 }
 
-export async function NotificationButton() {
-  const notifications = await getNotifications();
+// Server Component nhận data qua props
+export function NotificationButton({
+  notifications,
+}: {
+  notifications: Notification[];
+}) {
   const unreadCount = notifications.length;
 
   const triggerButton = (
