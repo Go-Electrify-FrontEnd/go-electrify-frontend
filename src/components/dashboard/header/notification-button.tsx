@@ -1,156 +1,107 @@
-"use client";
-
-import { Bell, UserPlus, Zap } from "lucide-react";
+// components/dashboard/header/notification-button.tsx
+import { Bell, Bookmark, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
+import { Notification } from "@/types/notification";
+import { getNotifications } from "@/lib/api/notifications";
+import { formatDistanceToNow } from "date-fns";
+import { vi } from "date-fns/locale";
+import { NotificationPopoverWrapper } from "./notification-popover-wrapper";
 
-// Mock notifications data
-const notifications = [
-  {
-    id: 1,
-    type: "reservation",
-    title: "Đặt chỗ mới",
-    description: "Có một đặt chỗ mới tại Trạm Vincom",
-    time: "5 phút trước",
-    isRead: false,
-    icon: Zap,
-  },
-  {
-    id: 2,
-    type: "user",
-    title: "Người dùng mới",
-    description: "Có người dùng mới đăng ký",
-    time: "1 giờ trước",
-    isRead: true,
-    icon: UserPlus,
-  },
-  {
-    id: 3,
-    type: "reservation",
-    title: "Hoàn thành sạc",
-    description: "Quá trình sạc tại Trạm Landmark81 đã hoàn thành",
-    time: "2 giờ trước",
-    isRead: true,
-    icon: Zap,
-  },
-];
+function getNotificationIcon(type: string) {
+  switch (type) {
+    case "booking":
+      return <Bookmark className="h-4 w-4 text-blue-500" />;
+    case "user":
+      return <User className="h-4 w-4 text-green-500" />;
+    default:
+      return <Bell className="h-4 w-4" />;
+  }
+}
 
-export function NotificationButton() {
-  const [isOpen, setIsOpen] = useState(false);
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
+function formatDate(dateString: string) {
+  try {
+    const date = new Date(dateString);
+    return formatDistanceToNow(date, { addSuffix: true, locale: vi });
+  } catch (error) {
+    return dateString;
+  }
+}
 
-  const markAllAsRead = () => {
-    // In a real app, this would make an API call
-    console.log("Marking all notifications as read");
-  };
-
-  const handleNotificationClick = (notificationId: number) => {
-    // In a real app, this would mark the specific notification as read
-    console.log("Notification clicked:", notificationId);
-  };
-
+function NotificationItem({ notification }: { notification: Notification }) {
   return (
-    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative h-9 w-9">
-          <Bell className="h-4 w-4" />
-          {unreadCount > 0 && (
-            <Badge
-              variant="destructive"
-              className="absolute -top-1 -right-1 h-5 min-w-[1.25rem] px-1 text-xs"
-            >
-              {unreadCount}
-            </Badge>
-          )}
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-80">
-        <DropdownMenuLabel className="flex items-center justify-between">
-          <span>Thông báo</span>
-          {unreadCount > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={markAllAsRead}
-              className="text-muted-foreground hover:text-foreground h-auto p-0 text-xs"
-            >
-              Đánh dấu đã đọc
-            </Button>
-          )}
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
+    <div className="hover:bg-accent flex gap-3 p-4 transition-colors">
+      <div className="mt-1">{getNotificationIcon(notification.Type)}</div>
+      <div className="flex-1 space-y-1">
+        <p className="text-sm leading-none font-medium">{notification.Title}</p>
+        <p className="text-muted-foreground text-sm">{notification.Message}</p>
+        <p className="text-muted-foreground text-xs">
+          {formatDate(notification.CreatedAt)}
+        </p>
+      </div>
+    </div>
+  );
+}
 
+export async function NotificationButton() {
+  const notifications = await getNotifications();
+  const unreadCount = notifications.length;
+
+  const triggerButton = (
+    <Button variant="ghost" size="icon" className="relative">
+      <Bell className="h-5 w-5" />
+      {unreadCount > 0 && (
+        <Badge
+          variant="destructive"
+          className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full p-0 text-xs"
+        >
+          {unreadCount > 9 ? "9+" : unreadCount}
+        </Badge>
+      )}
+    </Button>
+  );
+
+  const popoverContent = (
+    <>
+      <div className="flex items-center justify-between border-b px-4 py-3">
+        <h3 className="font-semibold">Thông báo</h3>
+        {unreadCount > 0 && (
+          <Badge variant="secondary" className="ml-auto">
+            {unreadCount} mới
+          </Badge>
+        )}
+      </div>
+      <ScrollArea className="h-[400px]">
         {notifications.length === 0 ? (
-          <div className="text-muted-foreground p-4 text-center text-sm">
-            Không có thông báo nào
+          <div className="flex flex-col items-center justify-center py-8 text-center">
+            <Bell className="text-muted-foreground/50 mb-2 h-12 w-12" />
+            <p className="text-muted-foreground text-sm">
+              Không có thông báo mới
+            </p>
           </div>
         ) : (
-          <div className="max-h-96 overflow-x-hidden overflow-y-auto">
-            {notifications.map((notification, index) => {
-              const IconComponent = notification.icon;
-              return (
-                <div key={notification.id}>
-                  <DropdownMenuItem
-                    className="cursor-pointer p-0 focus:bg-transparent"
-                    onClick={() => handleNotificationClick(notification.id)}
-                  >
-                    <div className="hover:bg-accent w-full rounded-md p-3 transition-colors">
-                      <div className="flex gap-3">
-                        <div className="flex-shrink-0">
-                          <div
-                            className={`rounded-full p-2 ${
-                              notification.type === "reservation"
-                                ? "bg-blue-100 text-blue-600"
-                                : notification.type === "message"
-                                  ? "bg-green-100 text-green-600"
-                                  : "bg-purple-100 text-purple-600"
-                            }`}
-                          >
-                            <IconComponent className="h-4 w-4" />
-                          </div>
-                        </div>
-                        <div className="min-w-0 flex-1 space-y-1">
-                          <div className="flex items-start justify-between gap-2">
-                            <h4 className="truncate text-sm leading-none font-medium">
-                              {notification.title}
-                            </h4>
-                            {!notification.isRead && (
-                              <div className="mt-1 h-2 w-2 flex-shrink-0 rounded-full bg-blue-500"></div>
-                            )}
-                          </div>
-                          <p className="text-muted-foreground line-clamp-2 text-xs">
-                            {notification.description}
-                          </p>
-                          <p className="text-muted-foreground text-xs">
-                            {notification.time}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </DropdownMenuItem>
-                  {index < notifications.length - 1 && (
-                    <DropdownMenuSeparator className="my-1" />
-                  )}
-                </div>
-              );
-            })}
+          <div className="divide-y">
+            {notifications.map((notification, index) => (
+              <NotificationItem key={index} notification={notification} />
+            ))}
           </div>
         )}
+      </ScrollArea>
+      {notifications.length > 0 && (
+        <div className="border-t p-2">
+          <Button variant="ghost" className="w-full text-sm">
+            Xem tất cả thông báo
+          </Button>
+        </div>
+      )}
+    </>
+  );
 
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="cursor-pointer justify-center text-sm">
-          Xem tất cả thông báo
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+  return (
+    <NotificationPopoverWrapper
+      trigger={triggerButton}
+      content={popoverContent}
+    />
   );
 }

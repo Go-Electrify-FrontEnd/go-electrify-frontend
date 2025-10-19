@@ -1,3 +1,4 @@
+// app/dashboard/layout.tsx
 import { AppSidebar } from "@/components/dashboard/sidebar/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { getUser } from "@/lib/auth/auth-server";
@@ -6,9 +7,21 @@ import { forbidden } from "next/navigation";
 import { AppHeader } from "@/components/dashboard/sidebar/app-header";
 import AppLogo from "@/components/shared/logo";
 import { NavUser } from "@/components/dashboard/sidebar/nav-user";
+import { NotificationButton } from "@/components/dashboard/header/notification-button";
+import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
+import { Bell } from "lucide-react";
 
 export const dynamic = "force-dynamic";
+
+// Loading fallback cho notification button
+function NotificationButtonSkeleton() {
+  return (
+    <Button variant="ghost" size="icon" className="relative">
+      <Bell className="h-5 w-5 animate-pulse" />
+    </Button>
+  );
+}
 
 export default async function DashboardLayout({
   children,
@@ -28,9 +41,9 @@ export default async function DashboardLayout({
             className="text-foreground h-max w-auto"
           />
           <div className="flex items-center justify-between gap-2 justify-self-end align-middle">
-            <Button variant="outline" size="sm">
-              Notification
-            </Button>
+            <Suspense fallback={<NotificationButtonSkeleton />}>
+              <NotificationButton />
+            </Suspense>
             <NavUser user={user} />
           </div>
         </header>
