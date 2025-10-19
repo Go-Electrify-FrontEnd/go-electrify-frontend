@@ -149,7 +149,7 @@ export async function refreshAccessToken() {
           name: "refreshToken",
           value: tokens.refreshToken,
           httpOnly: process.env.NODE_ENV === "production",
-          expires: tokens.refreshExpires,
+          maxAge: 60 * 60 * 24 * 30,
         });
       },
     );

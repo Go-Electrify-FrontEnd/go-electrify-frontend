@@ -6,6 +6,7 @@ import { Filter, RotateCcw, Search } from "lucide-react";
 import type { Station } from "@/lib/zod/station/station.types";
 import { getStations } from "../(admin-layout)/admin/stations/page";
 import SectionHeader from "@/components/dashboard/shared/section-header";
+import SectionContent from "@/components/dashboard/shared/section-content";
 
 export default async function FindStationsPage() {
   const chargingStations: Station[] = await getStations();
@@ -33,31 +34,36 @@ export default async function FindStationsPage() {
       </SectionHeader>
 
       {/* Map and Station List Section */}
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-10">
-        {/* Map Section */}
-        <div className="xl:col-span-7">
-          <div className="text-muted-foreground mb-4 flex items-center gap-4 text-xs">
-            <div className="flex items-center gap-1">
-              <div className="h-2 w-2 rounded-full bg-green-500" />
-              <span>Khả dụng</span>
+      <SectionContent>
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-10">
+          {/* Map Section */}
+          <div className="xl:col-span-7">
+            <div className="text-muted-foreground mb-4 flex items-center gap-4 text-xs">
+              <div className="flex items-center gap-1">
+                <div className="h-2 w-2 rounded-full bg-green-500" />
+                <span>Khả dụng</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="h-2 w-2 rounded-full bg-red-500" />
+                <span>Bận</span>
+              </div>
             </div>
-            <div className="flex items-center gap-1">
-              <div className="h-2 w-2 rounded-full bg-red-500" />
-              <span>Bận</span>
+            <div className="h-[65vh] overflow-hidden rounded-xl border">
+              <StationMap stations={chargingStations} />
             </div>
           </div>
-          <div className="h-[65vh] overflow-hidden rounded-xl border">
-            <StationMap stations={chargingStations} />
-          </div>
-        </div>
 
-        {/* Station List Section */}
-        <div className="xl:col-span-3">
-          <div className="mt-9 h-[65vh] overflow-y-auto">
-            <NearestStationsList stations={chargingStations} location={null} />
+          {/* Station List Section */}
+          <div className="xl:col-span-3">
+            <div className="mt-9 h-[65vh] overflow-y-auto">
+              <NearestStationsList
+                stations={chargingStations}
+                location={null}
+              />
+            </div>
           </div>
         </div>
-      </div>
+      </SectionContent>
     </div>
   );
 }

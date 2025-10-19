@@ -46,7 +46,7 @@ export async function createStation(prev: unknown, formData: FormData) {
         ImageUrl: data.imageUrl,
         Latitude: data.latitude ? Number(data.latitude) : undefined,
         Longitude: data.longitude ? Number(data.longitude) : undefined,
-        Status: "ACTIVE",
+        Status: data.status ? String(data.status).toUpperCase() : "ACTIVE",
       }),
     });
 
@@ -104,7 +104,7 @@ export async function updateStation(prev: unknown, formData: FormData) {
         ImageUrl: data.imageUrl,
         Latitude: data.latitude ? Number(data.latitude) : undefined,
         Longitude: data.longitude ? Number(data.longitude) : undefined,
-        Status: data.status.toUpperCase(),
+        Status: data.status ? String(data.status).toUpperCase() : undefined,
       }),
     });
 

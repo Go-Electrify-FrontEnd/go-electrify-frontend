@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const StationStatus = z.enum(["ACTIVE", "INACTIVE", "MAINTENANCE"]);
+export const StationStatus = z.enum(["active", "inactive", "maintenance"]);
 export type StationStatusType = z.infer<typeof StationStatus>;
 
 export const StationSchema = z.object({

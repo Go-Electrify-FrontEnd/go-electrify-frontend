@@ -1,5 +1,10 @@
 "use client";
 
+import {
+  Status,
+  StatusIndicator,
+  StatusLabel,
+} from "@/components/kibo-ui/status";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import type { Station } from "@/lib/zod/station/station.types";
@@ -21,6 +26,10 @@ export function StationCard({ station }: StationCardProps) {
     )}`;
   };
 
+  console.log(JSON.stringify(station));
+
+  console.log(station.status);
+
   return (
     <div className="rounded-lg transition-colors">
       <div className="mb-3 flex items-start justify-between gap-3">
@@ -29,14 +38,17 @@ export function StationCard({ station }: StationCardProps) {
             {station.name}
           </h4>
           <div className="mt-1.5 flex items-center gap-2">
-            <Badge variant="default" className="capitalize">
-              {station.status}
-            </Badge>
-            <div
-              className={`h-2 w-2 flex-shrink-0 rounded-full ${
-                station.status === "ACTIVE" ? "bg-green-500" : "bg-red-500"
-              }`}
-            />
+            {station.status === "active" ? (
+              <Status status="online">
+                <StatusIndicator />
+                <StatusLabel />
+              </Status>
+            ) : (
+              <Status status="offline">
+                <StatusIndicator />
+                <StatusLabel />
+              </Status>
+            )}
           </div>
         </div>
       </div>

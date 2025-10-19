@@ -79,8 +79,8 @@ export function UpdateStation({
     latitude,
     longitude,
     status:
-      (status?.toUpperCase() as "ACTIVE" | "INACTIVE" | "MAINTENANCE") ||
-      "ACTIVE",
+      (status as StationUpdateFormData["status"]) ||
+      ("ACTIVE" as StationUpdateFormData["status"]),
   };
 
   const form = useForm<StationUpdateFormData>({
@@ -352,8 +352,8 @@ export function UpdateStation({
                   </div>
 
                   <p className="text-muted-foreground text-xs">
-                    💡 Mẹo: Nhấp "Sử Dụng Vị Trí Hiện Tại" hoặc lấy tọa độ từ
-                    Google Maps
+                    💡 Mẹo: Nhấp &ldquo;Sử Dụng Vị Trí Hiện Tại&rdquo; hoặc lấy
+                    tọa độ từ Google Maps
                   </p>
                 </>
               )}

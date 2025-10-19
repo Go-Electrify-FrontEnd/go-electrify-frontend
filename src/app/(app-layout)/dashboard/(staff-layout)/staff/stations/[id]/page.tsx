@@ -22,7 +22,10 @@ import {
   TrendingUp,
   Zap,
 } from "lucide-react";
-import { forbidden } from "next/navigation";
+import { forbidden, notFound } from "next/navigation";
+import StationDockCreate from "@/components/dashboard/staff/station/station-dock-create";
+import { getConnectorTypes } from "@/app/(app-layout)/dashboard/(admin-layout)/admin/connector-type/page";
+import SectionContent from "@/components/dashboard/shared/section-content";
 
 async function getStationById(id: string, token: string) {
   const url = `https://api.go-electrify.com/api/v1/stations/${encodeURIComponent(id)}`;
@@ -44,9 +47,9 @@ async function getStationById(id: string, token: string) {
 export default async function StationPage({
   params,
 }: {
-  params: { id: Promise<string> };
+  params: Promise<{ id: string }>;
 }) {
-  const id = await params.id;
+  const { id } = await params;
   const { user, token } = await getUser();
   if (!user) {
     forbidden();
@@ -57,7 +60,15 @@ export default async function StationPage({
     forbidden();
   }
 
+  if (Number.isNaN(id)) {
+    notFound();
+  }
+
   const station = await getStationById(id, token ?? "");
+  if (!station) {
+    notFound();
+  }
+
   const chargers = await getStationChargers(id, token ?? "");
 
   // Dummy sessions data for display: mix of active charging sessions and reservations
@@ -95,6 +106,7 @@ export default async function StationPage({
   );
 
   const sessions: Session[] = [...chargingSessions, ...reservationSessions];
+  const connectorTypes = await getConnectorTypes();
 
   // Calculate stats
   const totalChargers = chargers?.length ?? 0;
@@ -107,192 +119,179 @@ export default async function StationPage({
 
   return (
     <div className="flex flex-col gap-6 p-4 md:gap-6 md:p-6">
-      {/* Header Section */}
-      <div className="flex flex-col gap-4 sm:gap-6">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-start gap-3 sm:items-center">
-            <div className="min-w-0 flex-1">
-              <h1 className="truncate text-xl font-bold tracking-tight sm:text-2xl md:text-3xl">
-                {station?.Name ?? `Trạm ${id}`}
-              </h1>
-              <div className="text-muted-foreground mt-1 flex items-start gap-2 sm:items-center">
-                <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 sm:mt-0 sm:h-4 sm:w-4" />
-                <span className="line-clamp-2 text-xs sm:text-sm">
-                  {station?.Address ?? "Đang tải địa chỉ..."}
-                </span>
-              </div>
-            </div>
-          </div>
-          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-            <Button variant="outline" size="sm" className="w-full sm:w-auto">
-              <Activity className="mr-2 h-4 w-4" />
-              <span className="hidden sm:inline">Xem Lịch Sử</span>
-              <span className="sm:hidden">Lịch Sử</span>
-            </Button>
-            <Button size="sm" className="w-full sm:w-auto">
-              <Plus className="mr-2 h-4 w-4" />
-              <span className="hidden sm:inline">Thêm Dock Sạc</span>
-              <span className="sm:hidden">Thêm Dock</span>
-            </Button>
-          </div>
+      <SectionHeader title={station.Name} subtitle={station.Address}>
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+          <Button variant="outline" size="lg">
+            <Activity className="mr-2 h-4 w-4" />
+            <span className="hidden sm:inline">Xem Lịch Sử</span>
+            <span className="sm:hidden">Lịch Sử</span>
+          </Button>
+          <StationDockCreate
+            connectorTypes={connectorTypes}
+            stationId={Number(id)}
+          />
         </div>
-      </div>
+      </SectionHeader>
 
       {/* Stats Overview */}
-      <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
-        <Card className="border-l-4 border-l-blue-500">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2 sm:p-6 sm:pb-2">
-            <CardTitle className="text-xs font-medium sm:text-sm">
-              Tổng Dock
-            </CardTitle>
-            <Battery className="text-muted-foreground h-3.5 w-3.5 sm:h-4 sm:w-4" />
-          </CardHeader>
-          <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
-            <div className="text-xl font-bold sm:text-2xl">{totalChargers}</div>
-            <p className="text-muted-foreground text-[10px] sm:text-xs">
-              {activeChargers} đang hoạt động
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-l-4 border-l-green-500">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2 sm:p-6 sm:pb-2">
-            <CardTitle className="text-xs font-medium sm:text-sm">
-              Phiên Đang Sạc
-            </CardTitle>
-            <Zap className="text-muted-foreground h-3.5 w-3.5 sm:h-4 sm:w-4" />
-          </CardHeader>
-          <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
-            <div className="text-xl font-bold sm:text-2xl">
-              {activeSessions}
-            </div>
-            <p className="text-muted-foreground text-[10px] sm:text-xs">
-              Đang hoạt động
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-l-4 border-l-purple-500">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2 sm:p-6 sm:pb-2">
-            <CardTitle className="text-xs font-medium sm:text-sm">
-              Giữ Chỗ
-            </CardTitle>
-            <Calendar className="text-muted-foreground h-3.5 w-3.5 sm:h-4 sm:w-4" />
-          </CardHeader>
-          <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
-            <div className="text-xl font-bold sm:text-2xl">
-              {upcomingReservations}
-            </div>
-            <p className="text-muted-foreground text-[10px] sm:text-xs">
-              Sắp tới
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-l-4 border-l-orange-500">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2 sm:p-6 sm:pb-2">
-            <CardTitle className="text-xs font-medium sm:text-sm">
-              Tỷ Lệ Sử Dụng
-            </CardTitle>
-            <TrendingUp className="text-muted-foreground h-3.5 w-3.5 sm:h-4 sm:w-4" />
-          </CardHeader>
-          <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
-            <div className="text-xl font-bold sm:text-2xl">
-              {utilizationRate}%
-            </div>
-            <p className="text-muted-foreground text-[10px] sm:text-xs">
-              Công suất hiện tại
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Chargers Table */}
-      <Card>
-        <CardHeader>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex-1">
-              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                <Battery className="h-4 w-4 sm:h-5 sm:w-5" />
-                Danh sách Dock Sạc
+      <SectionContent>
+        <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
+          <Card className="border-l-4 border-l-blue-500">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2 sm:p-6 sm:pb-2">
+              <CardTitle className="text-xs font-medium sm:text-sm">
+                Tổng Dock
               </CardTitle>
-              <CardDescription className="mt-1 text-xs sm:mt-1.5 sm:text-sm">
-                Quản lý và theo dõi trạng thái các dock sạc trong trạm
-              </CardDescription>
-            </div>
-            <Badge variant="secondary" className="w-fit text-xs">
-              {totalChargers} dock
-            </Badge>
-          </div>
-        </CardHeader>
-        <CardContent className="p-0">
-          {totalChargers === 0 ? (
-            <div className="flex flex-col items-center justify-center px-4 py-8 text-center sm:py-12">
-              <div className="bg-muted flex h-16 w-16 items-center justify-center rounded-full sm:h-20 sm:w-20">
-                <Battery className="text-muted-foreground h-8 w-8 sm:h-10 sm:w-10" />
+              <Battery className="text-muted-foreground h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            </CardHeader>
+            <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
+              <div className="text-xl font-bold sm:text-2xl">
+                {totalChargers}
               </div>
-              <h3 className="mt-3 text-base font-semibold sm:mt-4 sm:text-lg">
-                Chưa có dock sạc
-              </h3>
-              <p className="text-muted-foreground mt-1.5 max-w-sm text-xs sm:mt-2 sm:text-sm">
-                Thêm dock sạc đầu tiên để bắt đầu cung cấp dịch vụ sạc điện
+              <p className="text-muted-foreground text-[10px] sm:text-xs">
+                {activeChargers} đang hoạt động
               </p>
-              <Button className="mt-3 sm:mt-4" size="sm">
-                <Plus className="mr-2 h-4 w-4" />
-                Thêm Dock Đầu Tiên
-              </Button>
-            </div>
-          ) : (
-            <div className="p-3 sm:p-6">
-              <ChargersTable data={chargers} />
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
 
-      {/* Sessions Table */}
-      <Card>
-        <CardHeader>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex-1">
-              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                <Activity className="h-4 w-4 sm:h-5 sm:w-5" />
-                Phiên Sạc & Giữ Chỗ
+          <Card className="border-l-4 border-l-green-500">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2 sm:p-6 sm:pb-2">
+              <CardTitle className="text-xs font-medium sm:text-sm">
+                Phiên Đang Sạc
               </CardTitle>
-              <CardDescription className="mt-1 text-xs sm:mt-1.5 sm:text-sm">
-                Theo dõi các phiên sạc đang diễn ra và lịch giữ chỗ sắp tới
-              </CardDescription>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Badge variant="default" className="text-[10px] sm:text-xs">
-                {activeSessions} đang sạc
-              </Badge>
-              <Badge variant="secondary" className="text-[10px] sm:text-xs">
-                {upcomingReservations} giữ chỗ
+              <Zap className="text-muted-foreground h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            </CardHeader>
+            <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
+              <div className="text-xl font-bold sm:text-2xl">
+                {activeSessions}
+              </div>
+              <p className="text-muted-foreground text-[10px] sm:text-xs">
+                Đang hoạt động
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-l-4 border-l-purple-500">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2 sm:p-6 sm:pb-2">
+              <CardTitle className="text-xs font-medium sm:text-sm">
+                Giữ Chỗ
+              </CardTitle>
+              <Calendar className="text-muted-foreground h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            </CardHeader>
+            <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
+              <div className="text-xl font-bold sm:text-2xl">
+                {upcomingReservations}
+              </div>
+              <p className="text-muted-foreground text-[10px] sm:text-xs">
+                Sắp tới
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-l-4 border-l-orange-500">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2 sm:p-6 sm:pb-2">
+              <CardTitle className="text-xs font-medium sm:text-sm">
+                Tỷ Lệ Sử Dụng
+              </CardTitle>
+              <TrendingUp className="text-muted-foreground h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            </CardHeader>
+            <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
+              <div className="text-xl font-bold sm:text-2xl">
+                {utilizationRate}%
+              </div>
+              <p className="text-muted-foreground text-[10px] sm:text-xs">
+                Công suất hiện tại
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Chargers Table */}
+        <Card>
+          <CardHeader>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex-1">
+                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                  <Battery className="h-4 w-4 sm:h-5 sm:w-5" />
+                  Danh sách Dock Sạc
+                </CardTitle>
+                <CardDescription className="mt-1 text-xs sm:mt-1.5 sm:text-sm">
+                  Quản lý và theo dõi trạng thái các dock sạc trong trạm
+                </CardDescription>
+              </div>
+              <Badge variant="secondary" className="w-fit text-xs">
+                {totalChargers} dock
               </Badge>
             </div>
-          </div>
-        </CardHeader>
-        <CardContent className="p-0">
-          {sessions.length === 0 ? (
-            <div className="flex flex-col items-center justify-center px-4 py-8 text-center sm:py-12">
-              <div className="bg-muted flex h-16 w-16 items-center justify-center rounded-full sm:h-20 sm:w-20">
-                <Activity className="text-muted-foreground h-8 w-8 sm:h-10 sm:w-10" />
+          </CardHeader>
+          <CardContent className="p-0">
+            {totalChargers === 0 ? (
+              <div className="flex flex-col items-center justify-center px-4 py-8 text-center sm:py-12">
+                <div className="bg-muted flex h-16 w-16 items-center justify-center rounded-full sm:h-20 sm:w-20">
+                  <Battery className="text-muted-foreground h-8 w-8 sm:h-10 sm:w-10" />
+                </div>
+                <h3 className="mt-3 text-base font-semibold sm:mt-4 sm:text-lg">
+                  Chưa có dock sạc
+                </h3>
+                <p className="text-muted-foreground mt-1.5 max-w-sm text-xs sm:mt-2 sm:text-sm">
+                  Thêm dock sạc đầu tiên để bắt đầu cung cấp dịch vụ sạc điện
+                </p>
+                <Button className="mt-3 sm:mt-4" size="sm">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Thêm Dock Đầu Tiên
+                </Button>
               </div>
-              <h3 className="mt-3 text-base font-semibold sm:mt-4 sm:text-lg">
-                Không có hoạt động
-              </h3>
-              <p className="text-muted-foreground mt-1.5 max-w-sm text-xs sm:mt-2 sm:text-sm">
-                Chưa có phiên sạc hoặc giữ chỗ nào tại trạm này
-              </p>
+            ) : (
+              <div className="p-3 sm:p-6">
+                <ChargersTable data={chargers} />
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Sessions Table */}
+        <Card>
+          <CardHeader>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex-1">
+                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                  <Activity className="h-4 w-4 sm:h-5 sm:w-5" />
+                  Phiên Sạc & Giữ Chỗ
+                </CardTitle>
+                <CardDescription className="mt-1 text-xs sm:mt-1.5 sm:text-sm">
+                  Theo dõi các phiên sạc đang diễn ra và lịch giữ chỗ sắp tới
+                </CardDescription>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="default" className="text-[10px] sm:text-xs">
+                  {activeSessions} đang sạc
+                </Badge>
+                <Badge variant="secondary" className="text-[10px] sm:text-xs">
+                  {upcomingReservations} giữ chỗ
+                </Badge>
+              </div>
             </div>
-          ) : (
-            <div className="p-3 sm:p-6">
-              <SessionsTable data={sessions} />
-            </div>
-          )}
-        </CardContent>
-      </Card>
+          </CardHeader>
+          <CardContent className="p-0">
+            {sessions.length === 0 ? (
+              <div className="flex flex-col items-center justify-center px-4 py-8 text-center sm:py-12">
+                <div className="bg-muted flex h-16 w-16 items-center justify-center rounded-full sm:h-20 sm:w-20">
+                  <Activity className="text-muted-foreground h-8 w-8 sm:h-10 sm:w-10" />
+                </div>
+                <h3 className="mt-3 text-base font-semibold sm:mt-4 sm:text-lg">
+                  Không có hoạt động
+                </h3>
+                <p className="text-muted-foreground mt-1.5 max-w-sm text-xs sm:mt-2 sm:text-sm">
+                  Chưa có phiên sạc hoặc giữ chỗ nào tại trạm này
+                </p>
+              </div>
+            ) : (
+              <div className="p-3 sm:p-6">
+                <SessionsTable data={sessions} />
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </SectionContent>
     </div>
   );
 }

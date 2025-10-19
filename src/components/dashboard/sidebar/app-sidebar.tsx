@@ -10,6 +10,7 @@ import {
   Map,
   PieChart,
   Plug,
+  Settings2Icon,
   TicketCheckIcon,
   Wallet2Icon,
   Zap,
@@ -21,9 +22,15 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { NavSection } from "./nav-section";
 import { useUser } from "@/contexts/user-context";
+import { NavSecondary } from "./nav-secondary";
+import { NavUser } from "./nav-user";
+import AppLogo from "@/components/shared/logo";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useUser();
@@ -111,16 +118,38 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     ],
   };
 
+  const navSecondary = [
+    {
+      title: "Settings",
+      url: "#",
+      icon: Settings2Icon,
+    },
+  ];
+
   return (
-    <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader></SidebarHeader>
+    <Sidebar collapsible="offcanvas" {...props}>
+      <SidebarHeader className="h-16 border-b">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              className="data-[slot=sidebar-menu-button]:!p-1.5"
+            >
+              <AppLogo className="my-2" width={42} height={42} />
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
       <SidebarContent>
         <NavSection items={overview} />
         <NavSection items={charging} />
         <NavSection items={payment} />
         {user?.role.toLowerCase() === "admin" && <NavSection items={admin} />}
+        <NavSecondary items={navSecondary} className="mt-auto" />
       </SidebarContent>
-      <SidebarFooter></SidebarFooter>
+      <SidebarFooter>
+        <NavUser />
+      </SidebarFooter>
     </Sidebar>
   );
 }

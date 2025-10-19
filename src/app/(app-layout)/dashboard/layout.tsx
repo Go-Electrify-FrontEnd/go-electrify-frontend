@@ -1,5 +1,9 @@
 import { AppSidebar } from "@/components/dashboard/sidebar/app-sidebar";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 import { getUser } from "@/lib/auth/auth-server";
 import { UserProvider } from "@/contexts/user-context";
 import { forbidden } from "next/navigation";
@@ -8,6 +12,8 @@ import AppLogo from "@/components/shared/logo";
 import { NavUser } from "@/components/dashboard/sidebar/nav-user";
 import { Button } from "@/components/ui/button";
 import { NotificationButton } from "@/components/dashboard/header/notification-button";
+import { Separator } from "@/components/ui/separator";
+import HeaderBreadcrumb from "@/components/dashboard/sidebar/header-breadcrumb";
 
 export const dynamic = "force-dynamic";
 
@@ -20,41 +26,24 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen-patched max-h-screen-patched flex flex-col overflow-y-auto">
+    <SidebarProvider>
       <UserProvider user={user}>
-        <header className="@container/chat-header relative z-20 flex h-16 w-full shrink-0 items-center justify-between gap-2 px-3 align-middle">
-          <AppLogo
-            width={40}
-            height={40}
-            className="text-foreground h-max w-auto"
-          />
-          <div className="flex items-center justify-between gap-2 justify-self-end align-middle">
-            {/* <Button variant="outline" size="sm">
-              Notification
-            </Button> */}
-            <NotificationButton />
-            <NavUser user={user} />
-          </div>
-        </header>
-        <div className="flex min-h-0 flex-1 overflow-hidden">
-          <SidebarProvider className="flex min-h-0 flex-1 overflow-hidden">
-            <AppSidebar
-              variant="inset"
-              className="no-scrollbar sticky top-0 hidden origin-left sm:block"
+        <AppSidebar />
+        <SidebarInset>
+          <header className="bg-background sticky top-0 flex h-16 shrink-0 items-center gap-2 border-b px-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator
+              orientation="vertical"
+              className="mr-2 data-[orientation=vertical]:h-4"
             />
-            <SidebarInset className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border">
-              <div className="shrink-0">
-                <AppHeader />
-              </div>
-              <div className="no-scrollbar flex min-h-0 flex-1 flex-col overflow-auto">
-                <div className="@container/main flex flex-col gap-2 px-3 py-4 sm:px-4 md:px-8 md:py-6 lg:px-10">
-                  {children}
-                </div>
-              </div>
-            </SidebarInset>
-          </SidebarProvider>
-        </div>
+            <HeaderBreadcrumb />
+          </header>
+          <div className="flex flex-1 flex-col gap-4">
+            {children}
+            <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min" />
+          </div>
+        </SidebarInset>
       </UserProvider>
-    </div>
+    </SidebarProvider>
   );
 }

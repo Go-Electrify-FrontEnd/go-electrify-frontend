@@ -24,14 +24,14 @@ export async function handleAuthRefresh(request: NextRequest) {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-      maxAge: tokens.accessMaxAge,
+      expires: tokens.accessExpires,
     });
     response.cookies.set("refreshToken", tokens.refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-      maxAge: tokens.refreshMaxAge,
+      maxAge: 60 * 60 * 24 * 30,
     });
   });
 

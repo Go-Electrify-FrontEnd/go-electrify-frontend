@@ -36,7 +36,7 @@ export default async function DashboardPage() {
     let activeStations = 0;
     if (stations) {
       totalStations = stations.length;
-      activeStations = stations.filter((s) => s.status === "ACTIVE").length;
+      activeStations = stations.filter((s) => s.status === "active").length;
     }
 
     const users = await getUsers();
@@ -117,7 +117,7 @@ export default async function DashboardPage() {
     let activeStations = 0;
     if (stations) {
       totalStations = stations.length;
-      activeStations = stations.filter((s) => s.status === "ACTIVE").length;
+      activeStations = stations.filter((s) => s.status === "active").length;
     }
 
     const totalCustomers = 0;

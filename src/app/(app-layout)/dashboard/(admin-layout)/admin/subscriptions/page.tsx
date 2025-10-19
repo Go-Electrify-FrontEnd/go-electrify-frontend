@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import { SubscriptionSchema } from "@/lib/zod/subscription/subscription.schema";
 import type { Subscription } from "@/lib/zod/subscription/subscription.types";
+import SectionContent from "@/components/dashboard/shared/section-content";
 
 export async function getSubscriptions(): Promise<Subscription[]> {
   const url = "https://api.go-electrify.com/api/v1/subscriptions";
@@ -46,17 +47,19 @@ export default async function SubscriptionsPage() {
         <SubscriptionCreateDialog />
       </SectionHeader>
 
-      <Card>
-        <CardHeader className="border-b">
-          <CardTitle>Danh sách gói đăng ký</CardTitle>
-          <CardDescription>
-            Tất cả các gói đăng ký trong hệ thống với thông tin chi tiết
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <SubscriptionsTable data={subscriptions} />
-        </CardContent>
-      </Card>
+      <SectionContent>
+        <Card>
+          <CardHeader className="border-b">
+            <CardTitle>Danh sách gói đăng ký</CardTitle>
+            <CardDescription>
+              Tất cả các gói đăng ký trong hệ thống với thông tin chi tiết
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <SubscriptionsTable data={subscriptions} />
+          </CardContent>
+        </Card>
+      </SectionContent>
     </div>
   );
 }

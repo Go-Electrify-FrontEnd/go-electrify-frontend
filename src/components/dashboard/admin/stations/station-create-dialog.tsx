@@ -79,7 +79,7 @@ export default function StationCreate({ onCancel }: StationCreateProps) {
       address: "",
       latitude: 0,
       longitude: 0,
-      status: "ACTIVE",
+      status: "active",
     },
   });
 
@@ -379,11 +379,11 @@ export default function StationCreate({ onCancel }: StationCreateProps) {
                     <SelectContent>
                       <SelectGroup>
                         <SelectLabel>Chọn trạm</SelectLabel>
-                        <SelectItem value="ACTIVE">Hoạt Động</SelectItem>
-                        <SelectItem value="INACTIVE">
+                        <SelectItem value="active">Hoạt Động</SelectItem>
+                        <SelectItem value="inactive">
                           Không Hoạt Động
                         </SelectItem>
-                        <SelectItem value="MAINTENANCE">Bảo Trì</SelectItem>
+                        <SelectItem value="maintenance">Bảo Trì</SelectItem>
                       </SelectGroup>
                     </SelectContent>
                   </Select>
