@@ -1,15 +1,14 @@
 // app/api/notifications/route.ts
 // MOST SECURE VERSION - API Route as Proxy
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getUserSafe } from "@/lib/auth/auth-wrapper"; // Use safe wrapper
-import { getUser } from "@/lib/auth/auth-server";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // 1. Verify user authentication
-    const { user } = await getUser();
+    const { user } = await getUserSafe();
     if (!user) {
       console.error("❌ Unauthorized access attempt");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
