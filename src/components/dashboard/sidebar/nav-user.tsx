@@ -90,11 +90,6 @@ export function NavUser() {
           {tUser.systemMode}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="p-2">
-          <Languages />
-          Tiếng Việt
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>
             <CreditCard />

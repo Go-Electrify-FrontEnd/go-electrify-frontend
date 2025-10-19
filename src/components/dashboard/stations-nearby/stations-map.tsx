@@ -3,7 +3,6 @@
 import { useEffect, useRef } from "react";
 import "mapbox-gl/dist/mapbox-gl.css";
 import mapboxgl from "mapbox-gl";
-import type { Station } from "@/lib/zod/station/station.types";
 import { useStationsNearby } from "@/contexts/stations-nearby-context";
 
 export function StationMap() {

@@ -1,7 +1,6 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-// translations removed, using static mapping for breadcrumb labels
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,20 +11,26 @@ import {
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
 
+const segmentMap: Record<string, string> = {
+  dashboard: "Tổng Quan",
+  "start-charging": "Bắt Đầu Sạc",
+  "stations-nearby": "Trạm Gần Đây",
+  wallet: "Ví",
+  reservations: "Đặt Chỗ",
+  "charging-history": "Lịch Sử Sạc",
+  admin: "Quản Trị",
+  stations: "Quản Lý Trạm",
+  users: "Quản Lý Người Dùng",
+  subscriptions: "Quản Lý Gói",
+  "connector-type": "Quản Lý Loại Kết Nối",
+  "vehicle-models": "Quản Lý Mẫu Xe",
+  "plans-billing": "Gói & Thanh Toán",
+  settings: "Cài Đặt",
+};
+
 export default function HeaderBreadcrumb() {
   const pathname = usePathname();
-  console.log("Current pathname:" + pathname);
   const paths = pathname.split("/").filter((seg) => seg.length > 0);
-
-  const segmentMap: Record<string, string> = {
-    dashboard: "Tổng quan",
-    "stations-nearby": "Trạm gần đây",
-    wallet: "Ví",
-    reservations: "Đặt chỗ",
-    admin: "Quản trị",
-    subscriptions: "Gói đăng ký",
-    "vehicle-models": "Mẫu xe",
-  };
 
   const breadcrumbItems = paths.map((segment, index) => {
     const href = "/" + paths.slice(0, index + 1).join("/");

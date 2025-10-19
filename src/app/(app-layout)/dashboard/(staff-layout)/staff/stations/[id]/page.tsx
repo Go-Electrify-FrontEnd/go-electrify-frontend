@@ -13,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+// Table primitives removed — bookings now use SharedDataTable via BookingsTable
 import {
   Activity,
   Battery,
@@ -22,6 +23,8 @@ import {
   TrendingUp,
   Zap,
 } from "lucide-react";
+import { SharedDataTable } from "@/components/shared/shared-data-table";
+import bookingColumns from "@/components/dashboard/stations/bookings-table-columns";
 import { forbidden, notFound } from "next/navigation";
 import StationDockCreate from "@/components/dashboard/staff/station/station-dock-create";
 import { ChargerUpdateProvider } from "@/contexts/charger-update-context";
@@ -46,13 +49,25 @@ export async function getStationById(id: string, token: string) {
   return station;
 }
 
-export async function getReservationByStationId(
-  stationId: string,
-  token: string,
-) {
-  const url = `https://api.go-electrify.com/api/v1/reservations?stationId=${encodeURIComponent(
+interface StationBooking {
+  id: number;
+  code: string;
+  status: string;
+  scheduledStart: string;
+  initialSoc: number | null;
+  estimatedCost: number | null;
+  stationId: number;
+  connectorTypeId: number;
+  vehicleModelId: number;
+}
+
+// Booking status mapping moved into the bookings table columns so the table
+// component owns its own display logic.
+
+export async function getBookingsByStationId(stationId: string, token: string) {
+  const url = `https://api.go-electrify.com/api/v1/stations/${encodeURIComponent(
     stationId,
-  )}`;
+  )}/bookings`;
   const response = await fetch(url, {
     method: "GET",
     headers: {
@@ -61,11 +76,39 @@ export async function getReservationByStationId(
   });
 
   if (!response.ok) {
-    throw new Error("Failed to fetch reservations");
+    throw new Error("Failed to fetch bookings");
   }
 
-  const reservations = await response.json();
-  return reservations;
+  const payload = (await response.json()) as {
+    ok?: boolean;
+    data?: Array<{
+      Id: number;
+      Code: string;
+      Status: string;
+      ScheduledStart: string;
+      InitialSoc: number | null;
+      StationId: number;
+      ConnectorTypeId: number;
+      VehicleModelId: number;
+      EstimatedCost: number | null;
+    }>;
+  };
+
+  const bookings = Array.isArray(payload?.data)
+    ? payload.data.map((booking) => ({
+        id: booking.Id,
+        code: booking.Code,
+        status: booking.Status,
+        scheduledStart: booking.ScheduledStart,
+        initialSoc: booking.InitialSoc,
+        estimatedCost: booking.EstimatedCost,
+        stationId: booking.StationId,
+        connectorTypeId: booking.ConnectorTypeId,
+        vehicleModelId: booking.VehicleModelId,
+      }))
+    : [];
+
+  return bookings satisfies StationBooking[];
 }
 
 export default async function StationPage({
@@ -94,6 +137,7 @@ export default async function StationPage({
   }
 
   const chargers = await getStationChargers(id, token ?? "");
+  const bookings = await getBookingsByStationId(id, token ?? "");
 
   // Dummy sessions data for display: mix of active charging sessions and reservations
   const now = Date.now();
@@ -110,26 +154,7 @@ export default async function StationPage({
       soc: Math.max(10, 20 + i * 15),
       estimatedCost: undefined,
     }));
-
-  const reservationSessions: Session[] = Array.from({ length: 3 }).map(
-    (_, i) => {
-      const start = new Date(now + (30 + i * 20) * 60 * 1000);
-      const end = new Date(start.getTime() + 60 * 60 * 1000);
-      return {
-        id: `BK-${1000 + i}`,
-        kind: "reservation",
-        dock: chargers[i % (chargers.length || 1)]?.code ?? `DCK-${i + 1}`,
-        userName: `Khách ${i + 1}`,
-        start: start.toISOString(),
-        end: end.toISOString(),
-        status: "pending",
-        soc: undefined,
-        estimatedCost: 20000 * (i + 1),
-      };
-    },
-  );
-
-  const sessions: Session[] = [...chargingSessions, ...reservationSessions];
+  const sessions: Session[] = chargingSessions;
   const connectorTypes = await getConnectorTypes();
 
   // Calculate stats
@@ -137,9 +162,11 @@ export default async function StationPage({
   const activeChargers =
     chargers?.filter((c) => c.status === "ONLINE")?.length ?? 0;
   const activeSessions = chargingSessions.length;
-  const upcomingReservations = reservationSessions.length;
+  const upcomingBookings = bookings.length;
   const utilizationRate =
     totalChargers > 0 ? Math.round((activeSessions / totalChargers) * 100) : 0;
+
+  // Date/currency formatting is handled inside the bookings table columns.
 
   return (
     <div className="flex flex-col gap-6 p-4 md:gap-6 md:p-6">
@@ -203,7 +230,7 @@ export default async function StationPage({
             </CardHeader>
             <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
               <div className="text-xl font-bold sm:text-2xl">
-                {upcomingReservations}
+                {upcomingBookings}
               </div>
               <p className="text-muted-foreground text-[10px] sm:text-xs">
                 Sắp tới
@@ -293,7 +320,7 @@ export default async function StationPage({
                   {activeSessions} đang sạc
                 </Badge>
                 <Badge variant="secondary" className="text-[10px] sm:text-xs">
-                  {upcomingReservations} giữ chỗ
+                  {upcomingBookings} giữ chỗ
                 </Badge>
               </div>
             </div>
@@ -314,6 +341,51 @@ export default async function StationPage({
             ) : (
               <div className="p-3 sm:p-6">
                 <SessionsTable data={sessions} />
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Bookings Table */}
+        <Card>
+          <CardHeader>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex-1">
+                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                  <Calendar className="h-4 w-4 sm:h-5 sm:w-5" />
+                  Lịch Giữ Chỗ
+                </CardTitle>
+                <CardDescription className="mt-1 text-xs sm:mt-1.5 sm:text-sm">
+                  Danh sách các lượt giữ chỗ đã lên lịch cho trạm này
+                </CardDescription>
+              </div>
+              <Badge variant="secondary" className="text-[10px] sm:text-xs">
+                {upcomingBookings} giữ chỗ
+              </Badge>
+            </div>
+          </CardHeader>
+          <CardContent className="p-0">
+            {bookings.length === 0 ? (
+              <div className="flex flex-col items-center justify-center px-4 py-8 text-center sm:py-12">
+                <div className="bg-muted flex h-16 w-16 items-center justify-center rounded-full sm:h-20 sm:w-20">
+                  <Calendar className="text-muted-foreground h-8 w-8 sm:h-10 sm:w-10" />
+                </div>
+                <h3 className="mt-3 text-base font-semibold sm:mt-4 sm:text-lg">
+                  Chưa có giữ chỗ
+                </h3>
+                <p className="text-muted-foreground mt-1.5 max-w-sm text-xs sm:mt-2 sm:text-sm">
+                  Khách hàng chưa đăng ký giữ chỗ nào cho trạm này
+                </p>
+              </div>
+            ) : (
+              <div className="p-3 sm:p-6">
+                <SharedDataTable
+                  columns={bookingColumns}
+                  data={bookings}
+                  searchColumn="code"
+                  searchPlaceholder="Tìm kiếm mã giữ chỗ..."
+                  emptyMessage="Không có giữ chỗ nào."
+                />
               </div>
             )}
           </CardContent>
