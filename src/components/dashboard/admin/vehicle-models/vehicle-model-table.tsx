@@ -17,24 +17,14 @@ export function VehicleModelTable({ data }: VehicleModelTableProps) {
     noData: "Không có dữ liệu",
   };
 
-  const handleMassDelete = useCallback(
-    async (selected: CarModel[]) => {
-      await new Promise((resolve) => setTimeout(resolve, 600));
-      toast.success(tCommon.delete, {
-        description: `${selected.length} Mẫu xe`,
-      });
-    },
-    [tCommon],
-  );
-
   return (
     <SharedDataTable
       columns={vehicleModelTableColumns}
       data={data}
-      searchColumn="Mẫu xe"
+      // use accessorKey for searching (column id), not the header label
+      searchColumn="modelName"
       searchPlaceholder={tCommon.search}
       emptyMessage={tCommon.noData}
-      onMassDelete={handleMassDelete}
     />
   );
 }

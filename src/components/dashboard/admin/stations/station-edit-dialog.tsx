@@ -44,6 +44,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import AddressSearch from "@/components/shared/address-search";
+import { StationStatusType } from "@/lib/zod/station/station.schema";
 
 interface UpdateStationProps {
   station: Station;
@@ -71,6 +72,8 @@ export function UpdateStation({
     status,
   } = station;
 
+  // station status (debug removed)
+
   const defaultValues: StationUpdateFormData = {
     id,
     name,
@@ -78,9 +81,7 @@ export function UpdateStation({
     address,
     latitude,
     longitude,
-    status:
-      (status as StationUpdateFormData["status"]) ||
-      ("ACTIVE" as StationUpdateFormData["status"]),
+    status: status as StationStatusType,
   };
 
   const form = useForm<StationUpdateFormData>({
@@ -378,7 +379,7 @@ export function UpdateStation({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectLabel>Chọn trạm</SelectLabel>
+                        <SelectLabel>Trạng thái</SelectLabel>
                         <SelectItem value="ACTIVE">Hoạt động</SelectItem>
                         <SelectItem value="INACTIVE">
                           Không hoạt động

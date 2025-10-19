@@ -32,3 +32,13 @@ export const chargerCreateSchema = z.object({
 });
 
 export type ChargerCreateFormData = z.infer<typeof chargerCreateSchema>;
+
+export const chargerUpdateSchema = chargerCreateSchema
+  .omit({ stationId: true })
+  .extend({
+    id: z.string().trim().min(1, "ID trụ sạc là bắt buộc"),
+    // Allow updating without providing a new dockSecretHash
+    dockSecretHash: z.string().optional(),
+  });
+
+export type ChargerUpdateFormData = z.infer<typeof chargerUpdateSchema>;

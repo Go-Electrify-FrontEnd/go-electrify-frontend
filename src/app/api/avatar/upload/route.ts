@@ -19,7 +19,7 @@ export async function POST(request: Request): Promise<NextResponse> {
         if (!user) {
           throw new Error("Unauthorized");
         }
-        
+
         return {
           allowedContentTypes: [
             "image/jpeg",
@@ -38,7 +38,7 @@ export async function POST(request: Request): Promise<NextResponse> {
         // ⚠️ This will not work on `localhost` websites,
         // Use ngrok or similar to get the full upload flow
 
-        console.log("blob upload completed", blob, tokenPayload);
+        // blob upload completed
 
         try {
           // Run any logic after the file upload completed
@@ -58,9 +58,11 @@ export async function POST(request: Request): Promise<NextResponse> {
             body: JSON.stringify({ avatarUrl: blob.url }),
           });
           if (!response.ok) {
-            throw new Error("Could not update user, status: " + response.status);
+            throw new Error(
+              "Could not update user, status: " + response.status,
+            );
           } else {
-            console.log(`User ${clientId} updated with new avatar: ${blob.url}`);
+            // user avatar updated
           }
         } catch {
           throw new Error("Could not update user");

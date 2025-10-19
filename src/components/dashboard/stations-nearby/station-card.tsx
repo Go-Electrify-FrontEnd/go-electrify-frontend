@@ -26,9 +26,7 @@ export function StationCard({ station }: StationCardProps) {
     )}`;
   };
 
-  console.log(JSON.stringify(station));
-
-  console.log(station.status);
+  // debug logs removed
 
   return (
     <div className="rounded-lg transition-colors">
@@ -38,7 +36,7 @@ export function StationCard({ station }: StationCardProps) {
             {station.name}
           </h4>
           <div className="mt-1.5 flex items-center gap-2">
-            {station.status === "active" ? (
+            {station.status === "ACTIVE" ? (
               <Status status="online">
                 <StatusIndicator />
                 <StatusLabel />

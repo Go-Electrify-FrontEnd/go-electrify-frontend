@@ -94,7 +94,7 @@ export default function FullNameUpdate() {
           </FieldGroup>
         </form>
       </CardContent>
-      <CardFooter className="flex h-12 w-full flex-col gap-2 border-t sm:flex-row sm:items-center sm:justify-between">
+      <CardFooter className="flex min-h-12 w-full flex-col gap-2 border-t sm:flex-row sm:items-center sm:justify-between">
         <p className="text-muted-foreground text-center text-sm sm:text-left">
           Vui lòng nhập tên thật để tiện liên hệ
         </p>

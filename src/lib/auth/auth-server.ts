@@ -120,7 +120,7 @@ export async function getUserFromToken(accessToken: string) {
       return { user };
     }
   } catch {
-    console.log("Error in jwt verify");
+    // jwt verify error
   }
 
   return { user: null };

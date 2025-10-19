@@ -3,25 +3,24 @@
 import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
 import type { Station } from "@/lib/zod/station/station.types";
 import { StationActions } from "./station-actions";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 function StatusCell({ value }: { value: string }) {
-  const lowerValue = value.toLowerCase();
+  const upper = String(value).toUpperCase();
   const label =
-    lowerValue === "active"
+    upper === "ACTIVE"
       ? "Hoạt động"
-      : lowerValue === "inactive"
+      : upper === "INACTIVE"
         ? "Không hoạt động"
         : "Bảo trì";
 
   const color =
-    lowerValue === "active"
+    upper === "ACTIVE"
       ? "bg-emerald-500"
-      : lowerValue === "inactive"
+      : upper === "INACTIVE"
         ? "bg-red-500"
         : "bg-yellow-500";
   return (
@@ -46,30 +45,6 @@ function DateCell({ value }: { value: Date }) {
 }
 
 export const columns: ColumnDef<Station>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <div className="flex items-center justify-center">
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      </div>
-    ),
-    cell: ({ row }) => (
-      <div className="flex items-center justify-center">
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      </div>
-    ),
-  },
   {
     accessorKey: "id",
     header: "ID",

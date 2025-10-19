@@ -63,9 +63,7 @@ export default function SubscriptionCreateDialog() {
   );
 
   const form = useForm<SubscriptionCreateFormData>({
-    resolver: zodResolver(
-      subscriptionCreateSchema,
-    ) as Resolver<SubscriptionCreateFormData>,
+    resolver: zodResolver(subscriptionCreateSchema),
     defaultValues: {
       name: "",
       price: 1000,
@@ -131,12 +129,7 @@ export default function SubscriptionCreateDialog() {
                   <Input
                     {...field}
                     type="number"
-                    value={
-                      typeof field.value === "number" ||
-                      typeof field.value === "string"
-                        ? field.value
-                        : ""
-                    }
+                    value={field.value}
                     aria-invalid={fieldState.invalid}
                     placeholder="0"
                     autoComplete="off"
@@ -157,12 +150,7 @@ export default function SubscriptionCreateDialog() {
                   <Input
                     {...field}
                     type="number"
-                    value={
-                      typeof field.value === "number" ||
-                      typeof field.value === "string"
-                        ? field.value
-                        : ""
-                    }
+                    value={field.value}
                     aria-invalid={fieldState.invalid}
                     placeholder="1"
                     autoComplete="off"
@@ -185,12 +173,7 @@ export default function SubscriptionCreateDialog() {
                   <Input
                     {...field}
                     type="number"
-                    value={
-                      typeof field.value === "number" ||
-                      typeof field.value === "string"
-                        ? field.value
-                        : ""
-                    }
+                    value={field.value}
                     aria-invalid={fieldState.invalid}
                     placeholder="30"
                   />

@@ -1,8 +1,6 @@
 import FullNameUpdate from "@/components/dashboard/settings/settings-fullname-update";
 import AvatarUpdate from "@/components/dashboard/settings/settings-avatar-update";
-import SectionHeader from "@/components/dashboard/shared/section-header";
 import { Separator } from "@/components/ui/separator";
-import SettingsTheme from "@/components/dashboard/settings/settings-theme";
 
 export default async function SettingsPage() {
   return (
@@ -22,22 +20,6 @@ export default async function SettingsPage() {
             <FullNameUpdate />
           </div>
         </div>
-
-        <div className="space-y-6">
-          <div>
-            <h3 className="text-lg font-medium">Hiển thị</h3>
-            <p className="text-muted-foreground text-sm">
-              Tuỳ chỉnh giao diện và chế độ hiển thị của bạn
-            </p>
-          </div>
-          <Separator />
-          <div className="space-y-6">
-            <SettingsTheme />
-          </div>
-        </div>
-
-        {/* Additional sections can be added here */}
-        {/* Example: Security, Notifications, Preferences */}
       </div>
     </div>
   );

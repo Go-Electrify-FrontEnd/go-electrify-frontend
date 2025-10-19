@@ -3,6 +3,8 @@
 import { getUser } from "@/lib/auth/auth-server";
 import { chargerCreateSchema } from "@/lib/zod/charger/charger.request";
 import { forbidden } from "next/navigation";
+import { chargerUpdateSchema } from "@/lib/zod/charger/charger.request";
+import { revalidateTag } from "next/cache";
 
 export async function createCharger(prevState: unknown, formData: FormData) {
   const { user, token } = await getUser();
@@ -42,6 +44,7 @@ export async function createCharger(prevState: unknown, formData: FormData) {
     });
 
     if (response.ok) {
+      revalidateTag("chargers");
       return {
         success: true,
         msg: "Sạc điện đã được tạo thành công",
@@ -59,4 +62,62 @@ export async function createCharger(prevState: unknown, formData: FormData) {
       msg: "Lỗi kết nối. Vui lòng thử lại",
     };
   }
+}
+
+export async function updateCharger(prevState: unknown, formData: FormData) {
+  const { user, token } = await getUser();
+  if (!user || !user.role.toLowerCase().includes("admin")) {
+    forbidden();
+  }
+
+  const parsed = chargerUpdateSchema.safeParse({
+    id: String(formData.get("id") ?? ""),
+    connectorTypeId: String(formData.get("connectorTypeId") ?? ""),
+    code: String(formData.get("code") ?? ""),
+    powerKw: String(formData.get("powerKw") ?? ""),
+    status: String(formData.get("status") ?? ""),
+    pricePerKwh: String(formData.get("pricePerKwh") ?? ""),
+    dockSecretHash: String(formData.get("dockSecretHash") ?? ""),
+  });
+
+  if (!parsed.success) {
+    const msg = parsed.error.issues.map((i) => i.message).join("; ");
+    console.error("updateCharger validation error:", parsed.error.format());
+    return { success: false, msg };
+  }
+
+  const data = parsed.data;
+
+  const url = `https://api.go-electrify.com/api/v1/chargers/${encodeURIComponent(
+    data.id,
+  )}`;
+
+  try {
+    const response = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        ConnectorTypeId: data.connectorTypeId,
+        Code: data.code,
+        PowerKw: data.powerKw,
+        Status: data.status,
+        PricePerKwh: data.pricePerKwh,
+        DockSecretHash: data.dockSecretHash,
+      }),
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      return { success: false, msg: err.message || "Cập nhật sạc thất bại" };
+    }
+  } catch (error) {
+    console.error("updateCharger error", error);
+    return { success: false, msg: "Lỗi kết nối. Vui lòng thử lại" };
+  }
+
+  revalidateTag("chargers");
+  return { success: true, msg: "Cập nhật sạc thành công" };
 }

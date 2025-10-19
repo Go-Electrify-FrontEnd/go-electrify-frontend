@@ -10,11 +10,6 @@ interface UsersTableProps {
 }
 
 export function UsersTable({ data }: UsersTableProps) {
-  const handleMassDelete = React.useCallback(async (selected: UserApi[]) => {
-    // TODO: implement delete or bulk actions for users
-    selected.forEach((u) => console.log("Selected user to delete", u.id));
-  }, []);
-
   return (
     <SharedDataTable
       columns={userColumns}
@@ -22,7 +17,6 @@ export function UsersTable({ data }: UsersTableProps) {
       searchColumn="email"
       searchPlaceholder="Tìm kiếm người dùng..."
       emptyMessage="Không có người dùng nào."
-      onMassDelete={handleMassDelete}
     />
   );
 }

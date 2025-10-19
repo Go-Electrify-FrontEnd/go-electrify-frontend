@@ -16,7 +16,7 @@ export async function handleCreateConnectorType(
   const { user, token } = await getUser();
 
   if (!user || !token) {
-    console.log("User not authenticated");
+    // user not authenticated
     forbidden();
   }
 

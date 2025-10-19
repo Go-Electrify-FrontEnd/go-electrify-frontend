@@ -84,13 +84,12 @@ export default function StationDockCreate({
       connectorTypeId: 1,
       code: "",
       powerKw: 7,
-      status: "active",
+      status: "ONLINE",
       pricePerKwh: 5000,
       dockSecretHash: "",
     },
   });
 
-  // Generate a random string using Math.random so the component remains a pure React client
   const generateRandomSecret = (length = 16) => {
     const charset =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -103,7 +102,7 @@ export default function StationDockCreate({
   };
 
   const onSubmit: SubmitHandler<ChargerCreateFormData> = (data) => {
-    console.log("station-dock-create onSubmit", data);
+    // debug: station dock create submitted
     try {
       toast("Đang gửi yêu cầu tạo trụ sạc...");
     } catch {}
@@ -138,10 +137,10 @@ export default function StationDockCreate({
           className="space-y-6"
           onSubmit={(e) => {
             // Debug wrapper to ensure submit attempts are logged and validation errors are visible
-            console.log("station-dock-create form submit clicked");
+            // form submit clicked
             e.preventDefault();
             form.handleSubmit(onSubmit, (errors) => {
-              console.log("Validation errors:", errors);
+              // validation errors (see form state)
               try {
                 toast.error("Vui lòng kiểm tra các trường có lỗi");
               } catch {}

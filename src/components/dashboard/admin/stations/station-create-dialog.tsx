@@ -70,16 +70,14 @@ export default function StationCreate({ onCancel }: StationCreateProps) {
   });
 
   const form = useForm<StationCreateFormData>({
-    resolver: zodResolver(
-      stationCreateSchema,
-    ) as Resolver<StationCreateFormData>,
+    resolver: zodResolver(stationCreateSchema),
     defaultValues: {
       name: "",
       description: "",
       address: "",
       latitude: 0,
       longitude: 0,
-      status: "active",
+      status: "ACTIVE",
     },
   });
 
@@ -379,7 +377,7 @@ export default function StationCreate({ onCancel }: StationCreateProps) {
                     <SelectContent>
                       <SelectGroup>
                         <SelectLabel>Chọn trạm</SelectLabel>
-                        <SelectItem value="active">Hoạt Động</SelectItem>
+                        <SelectItem value="ACTIVE">Hoạt Động</SelectItem>
                         <SelectItem value="inactive">
                           Không Hoạt Động
                         </SelectItem>

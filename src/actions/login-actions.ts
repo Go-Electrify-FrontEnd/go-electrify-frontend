@@ -81,7 +81,7 @@ export async function handleVerifyOTP(prevState: unknown, data: FormData) {
     const parsed = await response.json();
     const { success, data, error } = refreshTokenSchema.safeParse(parsed);
     if (error) {
-      console.log("handleVerifyOTP API error: " + JSON.stringify(error));
+      // handleVerifyOTP API error
     }
     if (!success) {
       return {

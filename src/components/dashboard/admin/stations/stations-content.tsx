@@ -37,7 +37,7 @@ export async function StationsContent() {
   const transformedStations = stations.map((station) => ({
     id: `ST-${station.id.toString().padStart(3, "0")}`,
     name: station.name,
-    status: station.available ? "active" : "maintenance",
+    status: station.available ? "ACTIVE" : "MAINTENANCE",
     usage:
       station.total_connectors > 0
         ? Math.round(
@@ -96,18 +96,18 @@ export async function StationsContent() {
                         </span>
                         <Badge
                           variant={
-                            station.status === "active"
+                            station.status === "ACTIVE"
                               ? "default"
                               : "secondary"
                           }
                           className="text-xs"
                         >
-                          {station.status === "active" ? (
+                          {station.status === "ACTIVE" ? (
                             <CheckCircle className="mr-1 h-3 w-3" />
                           ) : (
                             <AlertTriangle className="mr-1 h-3 w-3" />
                           )}
-                          {station.status === "active"
+                          {station.status === "ACTIVE"
                             ? "Hoạt động"
                             : "Bảo trì"}
                         </Badge>

@@ -10,16 +10,6 @@ interface ConnectorTypesTableProps {
 }
 
 export function ConnectorTypesTable({ data }: ConnectorTypesTableProps) {
-  const handleMassDelete = React.useCallback(
-    async (selected: ConnectorType[]) => {
-      // TODO: Integrate with backend deletion API
-      selected.forEach((ct) => {
-        console.log("Deleting connector type ID:", ct.id);
-      });
-    },
-    [],
-  );
-
   return (
     <SharedDataTable
       columns={columns}
@@ -27,7 +17,6 @@ export function ConnectorTypesTable({ data }: ConnectorTypesTableProps) {
       searchColumn="name"
       searchPlaceholder="Tìm kiếm cổng kết nối..."
       emptyMessage="Không có cổng kết nối nào."
-      onMassDelete={handleMassDelete}
     />
   );
 }

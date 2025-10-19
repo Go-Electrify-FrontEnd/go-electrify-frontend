@@ -16,7 +16,7 @@ import { Crop } from "lucide-react";
 import { toast } from "sonner";
 import { AvatarCropDialog } from "./avatar-crop-dialog";
 import { refreshTokens } from "@/actions/login-actions";
-import { startTransition, useEffect, useRef, useState } from "react";
+import { startTransition, useEffect, useRef, useState, useMemo } from "react";
 
 export default function AvatarUpdate() {
   const { user } = useUser();
@@ -49,11 +49,12 @@ export default function AvatarUpdate() {
     setError(null);
   };
 
-  useEffect(() => {
-    if (!preview && user?.avatar) {
-      setPreview(user.avatar);
-    }
-  }, [user?.avatar, preview]);
+  // Derive the displayed preview from local preview state or the user's stored avatar.
+  // useMemo avoids recalculating the derived value on every render.
+  const displayedPreview = useMemo(
+    () => preview ?? user?.avatar ?? null,
+    [preview, user?.avatar],
+  );
 
   const handleCropComplete = (croppedFile: File, previewUrl: string) => {
     // Revoke old preview URL
@@ -175,8 +176,11 @@ export default function AvatarUpdate() {
             <div className="flex flex-col items-center gap-4 lg:w-64">
               <div className="relative">
                 <Avatar className="ring-background size-32 shadow-lg ring-4 lg:size-40">
-                  {preview ? (
-                    <AvatarImage src={preview} alt={user?.name ?? "Avatar"} />
+                  {displayedPreview ? (
+                    <AvatarImage
+                      src={displayedPreview}
+                      alt={user?.name ?? "Avatar"}
+                    />
                   ) : (
                     <AvatarFallback className="text-4xl font-semibold lg:text-5xl">
                       {user?.name
@@ -187,7 +191,7 @@ export default function AvatarUpdate() {
                     </AvatarFallback>
                   )}
                 </Avatar>
-                {preview && (
+                {displayedPreview && (
                   <div className="bg-primary text-primary-foreground absolute -right-2 -bottom-2 rounded-full p-2 shadow-md">
                     <Crop className="size-4" />
                   </div>
@@ -279,7 +283,9 @@ export default function AvatarUpdate() {
                   variant="outline"
                   type="button"
                   onClick={handleRemove}
-                  disabled={!preview && !blob && !croppedFile && !selectedFile}
+                  disabled={
+                    !displayedPreview && !blob && !croppedFile && !selectedFile
+                  }
                   className="flex-1 sm:flex-none"
                 >
                   Gỡ ảnh

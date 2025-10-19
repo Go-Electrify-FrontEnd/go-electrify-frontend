@@ -30,7 +30,7 @@ export default async function DashboardLayout({
       <UserProvider user={user}>
         <AppSidebar />
         <SidebarInset>
-          <header className="bg-background sticky top-0 flex h-16 shrink-0 items-center gap-2 border-b px-4">
+          <header className="bg-background sticky top-0 z-50 flex h-16 shrink-0 items-center gap-2 border-b px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator
               orientation="vertical"
@@ -38,10 +38,7 @@ export default async function DashboardLayout({
             />
             <HeaderBreadcrumb />
           </header>
-          <div className="flex flex-1 flex-col gap-4">
-            {children}
-            <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min" />
-          </div>
+          <div className="flex flex-1 flex-col gap-4 pb-4">{children}</div>
         </SidebarInset>
       </UserProvider>
     </SidebarProvider>

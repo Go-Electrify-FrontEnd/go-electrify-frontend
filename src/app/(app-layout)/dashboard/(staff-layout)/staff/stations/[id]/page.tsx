@@ -24,10 +24,12 @@ import {
 } from "lucide-react";
 import { forbidden, notFound } from "next/navigation";
 import StationDockCreate from "@/components/dashboard/staff/station/station-dock-create";
+import { ChargerUpdateProvider } from "@/contexts/charger-update-context";
+import UpdateCharger from "@/components/dashboard/stations/charger-edit-dialog";
 import { getConnectorTypes } from "@/app/(app-layout)/dashboard/(admin-layout)/admin/connector-type/page";
 import SectionContent from "@/components/dashboard/shared/section-content";
 
-async function getStationById(id: string, token: string) {
+export async function getStationById(id: string, token: string) {
   const url = `https://api.go-electrify.com/api/v1/stations/${encodeURIComponent(id)}`;
   const response = await fetch(url, {
     method: "GET",
@@ -42,6 +44,28 @@ async function getStationById(id: string, token: string) {
 
   const station = await response.json();
   return station;
+}
+
+export async function getReservationByStationId(
+  stationId: string,
+  token: string,
+) {
+  const url = `https://api.go-electrify.com/api/v1/reservations?stationId=${encodeURIComponent(
+    stationId,
+  )}`;
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch reservations");
+  }
+
+  const reservations = await response.json();
+  return reservations;
 }
 
 export default async function StationPage({
@@ -242,7 +266,10 @@ export default async function StationPage({
               </div>
             ) : (
               <div className="p-3 sm:p-6">
-                <ChargersTable data={chargers} />
+                <ChargerUpdateProvider>
+                  <ChargersTable data={chargers} />
+                  <UpdateCharger connectorTypes={connectorTypes} />
+                </ChargerUpdateProvider>
               </div>
             )}
           </CardContent>

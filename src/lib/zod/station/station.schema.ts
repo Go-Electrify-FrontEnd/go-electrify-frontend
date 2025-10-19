@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const StationStatus = z.enum(["active", "inactive", "maintenance"]);
+export const StationStatus = z.enum(["ACTIVE", "INACTIVE", "MAINTENANCE"]);
 export type StationStatusType = z.infer<typeof StationStatus>;
 
 export const StationSchema = z.object({
@@ -26,6 +26,7 @@ export const StationApiSchema = z
     ImageUrl: z.string().optional().nullable(),
     Latitude: z.number(),
     Longitude: z.number(),
+    // API returns uppercase status values (e.g. "ACTIVE"); validate them separately
     Status: z.enum(["ACTIVE", "INACTIVE", "MAINTENANCE"]),
     CreatedAt: z.string(),
     UpdatedAt: z.string(),
@@ -38,7 +39,7 @@ export const StationApiSchema = z
     imageUrl: raw.ImageUrl ?? undefined,
     latitude: raw.Latitude,
     longitude: raw.Longitude,
-    status: raw.Status.toLowerCase() as StationStatusType,
+    status: raw.Status as StationStatusType,
     createdAt: new Date(raw.CreatedAt),
     updatedAt: new Date(raw.UpdatedAt),
   }));

@@ -56,18 +56,18 @@ export async function getSelfReservations(
       // Reservations are 60 minutes long
       const scheduledEnd = new Date(scheduledStart.getTime() + 60 * 60 * 1000);
 
-      // Map status values from API to client-friendly values
+      // Map status values from API to a canonical uppercase value used in the app
       const statusMap: Record<string, string> = {
-        PENDING: "pending",
-        CONFIRMED: "confirmed",
-        CANCELED: "cancelled",
-        CANCELLED: "cancelled",
-        EXPIRED: "expired",
-        CONSUMED: "completed",
+        PENDING: "PENDING",
+        CONFIRMED: "CONFIRMED",
+        CANCELED: "CANCELED",
+        CANCELLED: "CANCELED",
+        EXPIRED: "EXPIRED",
+        CONSUMED: "CONSUMED",
       };
 
       const normalizedStatus =
-        statusMap[b.status as string] || String(b.status).toLowerCase();
+        statusMap[b.status as string] || String(b.status);
 
       // Try to resolve connector type name for the table 'type' column
       const connector = connectorTypes.find(
