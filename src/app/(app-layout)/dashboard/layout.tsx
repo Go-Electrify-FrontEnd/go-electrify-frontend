@@ -8,15 +8,12 @@ import {
 import { getUser } from "@/lib/auth/auth-server";
 import { UserProvider } from "@/contexts/user-context";
 import { forbidden } from "next/navigation";
-import { AppHeader } from "@/components/dashboard/sidebar/app-header";
-import AppLogo from "@/components/shared/logo";
-import { NavUser } from "@/components/dashboard/sidebar/nav-user";
-import { NotificationButton } from "@/components/dashboard/header/notification-button";
-import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
-import { NotificationButton } from "@/components/dashboard/header/notification-button";
 import { Separator } from "@/components/ui/separator";
 import HeaderBreadcrumb from "@/components/dashboard/sidebar/header-breadcrumb";
+import { NotificationButton } from "@/components/dashboard/header/notification-button";
+import { Bell } from "lucide-react";
+import { Notification } from "@/types/notification";
 
 export const dynamic = "force-dynamic";
 
@@ -89,6 +86,9 @@ export default async function DashboardLayout({
               className="mr-2 data-[orientation=vertical]:h-4"
             />
             <HeaderBreadcrumb />
+            <div className="ml-auto">
+              <NotificationButton notifications={notifications} />
+            </div>
           </header>
           <div className="flex flex-1 flex-col gap-4 pb-4">{children}</div>
         </SidebarInset>
