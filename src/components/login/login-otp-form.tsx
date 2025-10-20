@@ -4,10 +4,11 @@ import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
 import { Button } from "../ui/button";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "../ui/input-otp";
 import { Label } from "../ui/label";
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Shield } from "lucide-react";
-import { handleVerifyOTP } from "@/actions/login-actions";
+import { handleVerifyOTP, requestOtp } from "@/actions/login-actions";
+import { Spinner } from "../ui/spinner";
 
 interface OTPFormProps {
   email: string;
@@ -23,6 +24,10 @@ export function OTPForm({ email }: OTPFormProps) {
     handleVerifyOTP,
     initialState,
   );
+
+  // Resend countdown state
+  const [secondsRemaining, setSecondsRemaining] = useState<number>(60);
+  const [isResendPending, startResend] = useTransition();
 
   useEffect(() => {
     if (!otpVerifyState) return;
@@ -41,6 +46,52 @@ export function OTPForm({ email }: OTPFormProps) {
       }
     }
   }, [otpVerifyState]);
+
+  // Start countdown on mount and when restarted
+  useEffect(() => {
+    // Start only if secondsRemaining > 0
+    if (secondsRemaining <= 0) return;
+    const id = setInterval(() => {
+      setSecondsRemaining((s) => {
+        if (s <= 1) {
+          clearInterval(id);
+          return 0;
+        }
+        return s - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(id);
+  }, [secondsRemaining]);
+
+  const formatTime = (secs: number) => {
+    const m = Math.floor(secs / 60)
+      .toString()
+      .padStart(2, "0");
+    const s = (secs % 60).toString().padStart(2, "0");
+    return `${m}:${s}`;
+  };
+
+  function handleResend() {
+    if (!email) return;
+    if (secondsRemaining > 0 || isResendPending) return;
+
+    startResend(() => {
+      requestOtp(email)
+        .then((result) => {
+          if (result.success) {
+            toast.success(result.msg || "Mã OTP đã được gửi đến email của bạn");
+            setSecondsRemaining(60);
+          } else if (result.msg) {
+            toast.error(result.msg);
+          }
+        })
+        .catch((error) => {
+          console.error("resend OTP error", error);
+          toast.error("Lỗi kết nối. Vui lòng thử lại");
+        });
+    });
+  }
 
   return (
     <form
@@ -68,9 +119,11 @@ export function OTPForm({ email }: OTPFormProps) {
             <InputOTP
               id="code"
               name="code"
+              minLength={6}
               maxLength={6}
               pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
               className="gap-3"
+              required
             >
               <InputOTPGroup className="gap-3">
                 <InputOTPSlot
@@ -104,14 +157,36 @@ export function OTPForm({ email }: OTPFormProps) {
             Nhập 6 chữ số bạn nhận được qua email
           </p>
         </div>
-        <Button
-          type="submit"
-          className="h-12 w-full text-lg font-medium"
-          disabled={verifyActionPending}
-        >
-          <Shield className="mr-2 h-5 w-5" />
-          Xác thực OTP
-        </Button>
+        <div className="flex w-full flex-col gap-3">
+          <Button
+            type="submit"
+            className="h-12 w-full text-lg font-medium"
+            disabled={verifyActionPending}
+          >
+            {verifyActionPending ? (
+              <Spinner className="mr-2 h-5 w-5" />
+            ) : (
+              <Shield className="mr-2 h-5 w-5" />
+            )}
+            Xác thực OTP
+          </Button>
+
+          <div className="flex items-center justify-center gap-3">
+            <button
+              type="button"
+              className="text-primary text-sm underline disabled:opacity-60"
+              onClick={handleResend}
+              disabled={secondsRemaining > 0 || isResendPending}
+            >
+              Gửi lại mã OTP
+            </button>
+            {secondsRemaining > 0 ? (
+              <span className="text-muted-foreground text-sm">
+                Còn lại {formatTime(secondsRemaining)}
+              </span>
+            ) : null}
+          </div>
+        </div>
       </div>
     </form>
   );

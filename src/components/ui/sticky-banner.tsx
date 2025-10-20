@@ -16,7 +16,7 @@ export const StickyBanner = ({
   const { scrollY } = useScroll();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
-    console.log(latest);
+    // latest banner state updated
     if (hideOnScroll && latest > 40) {
       setOpen(false);
     } else {

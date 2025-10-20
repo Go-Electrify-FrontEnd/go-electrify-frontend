@@ -1,12 +1,10 @@
 "use client";
 
-import * as React from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -17,20 +15,23 @@ import { useUser } from "@/contexts/user-context";
 import { Crop } from "lucide-react";
 import { toast } from "sonner";
 import { AvatarCropDialog } from "./avatar-crop-dialog";
+import { refreshTokens } from "@/actions/login-actions";
+import { startTransition, useEffect, useRef, useState, useMemo } from "react";
 
 export default function AvatarUpdate() {
   const { user } = useUser();
-  const fileRef = React.useRef<HTMLInputElement | null>(null);
-  const [preview, setPreview] = React.useState<string | null>(
+  const fileRef = useRef<HTMLInputElement | null>(null);
+  const [preview, setPreview] = useState<string | null>(
     () => user?.avatar ?? null,
   );
-  const [originalImage, setOriginalImage] = React.useState<string | null>(null);
-  const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
-  const [blob, setBlob] = React.useState<PutBlobResult | null>(null);
-  const [isUploading, setIsUploading] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
-  const [showCropDialog, setShowCropDialog] = React.useState(false);
-  const [croppedFile, setCroppedFile] = React.useState<File | null>(null);
+  const [originalImage, setOriginalImage] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [blob, setBlob] = useState<PutBlobResult | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showCropDialog, setShowCropDialog] = useState(false);
+  const [croppedFile, setCroppedFile] = useState<File | null>(null);
+  const refreshTimeoutRef = useRef<number | null>(null);
 
   const handleClickAvatar = () => {
     fileRef.current?.click();
@@ -48,11 +49,12 @@ export default function AvatarUpdate() {
     setError(null);
   };
 
-  React.useEffect(() => {
-    if (!preview && user?.avatar) {
-      setPreview(user.avatar);
-    }
-  }, [user?.avatar, preview]);
+  // Derive the displayed preview from local preview state or the user's stored avatar.
+  // useMemo avoids recalculating the derived value on every render.
+  const displayedPreview = useMemo(
+    () => preview ?? user?.avatar ?? null,
+    [preview, user?.avatar],
+  );
 
   const handleCropComplete = (croppedFile: File, previewUrl: string) => {
     // Revoke old preview URL
@@ -124,13 +126,17 @@ export default function AvatarUpdate() {
         fileRef.current.value = "";
       }
 
-      // Show success toast
+      startTransition(() => {
+        refreshTokens();
+      });
+
       toast.success("Tải ảnh lên thành công!", {
         description: "Ảnh đại diện của bạn đã được cập nhật.",
       });
     } catch (err) {
       console.error("Upload error:", err);
       setError("Đã có lỗi xảy ra khi tải ảnh lên. Vui lòng thử lại.");
+
       toast.error("Tải ảnh lên thất bại", {
         description: "Vui lòng thử lại sau.",
       });
@@ -139,13 +145,17 @@ export default function AvatarUpdate() {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       if (preview && preview.startsWith("blob:")) {
         URL.revokeObjectURL(preview);
       }
       if (originalImage && originalImage.startsWith("blob:")) {
         URL.revokeObjectURL(originalImage);
+      }
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
+        refreshTimeoutRef.current = null;
       }
     };
   }, [preview, originalImage]);
@@ -166,8 +176,11 @@ export default function AvatarUpdate() {
             <div className="flex flex-col items-center gap-4 lg:w-64">
               <div className="relative">
                 <Avatar className="ring-background size-32 shadow-lg ring-4 lg:size-40">
-                  {preview ? (
-                    <AvatarImage src={preview} alt={user?.name ?? "Avatar"} />
+                  {displayedPreview ? (
+                    <AvatarImage
+                      src={displayedPreview}
+                      alt={user?.name ?? "Avatar"}
+                    />
                   ) : (
                     <AvatarFallback className="text-4xl font-semibold lg:text-5xl">
                       {user?.name
@@ -178,7 +191,7 @@ export default function AvatarUpdate() {
                     </AvatarFallback>
                   )}
                 </Avatar>
-                {preview && (
+                {displayedPreview && (
                   <div className="bg-primary text-primary-foreground absolute -right-2 -bottom-2 rounded-full p-2 shadow-md">
                     <Crop className="size-4" />
                   </div>
@@ -270,7 +283,9 @@ export default function AvatarUpdate() {
                   variant="outline"
                   type="button"
                   onClick={handleRemove}
-                  disabled={!preview && !blob && !croppedFile && !selectedFile}
+                  disabled={
+                    !displayedPreview && !blob && !croppedFile && !selectedFile
+                  }
                   className="flex-1 sm:flex-none"
                 >
                   Gỡ ảnh

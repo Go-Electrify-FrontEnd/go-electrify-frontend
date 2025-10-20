@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Eye, Copy } from "lucide-react";
 import type { Charger } from "@/lib/zod/charger/charger.types";
+import { useChargerUpdate } from "@/contexts/charger-update-context";
 
 interface ActionsCellProps {
   charger: Charger;
@@ -19,6 +20,7 @@ interface ActionsCellProps {
 
 export function ActionsCell({ charger }: ActionsCellProps) {
   const [copied, setCopied] = useState(false);
+  const { setCharger, setEditDialogOpen } = useChargerUpdate();
 
   return (
     <DropdownMenu>
@@ -33,6 +35,16 @@ export function ActionsCell({ charger }: ActionsCellProps) {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() => {
+            setCharger(charger);
+            setEditDialogOpen(true);
+          }}
+        >
+          {/* Edit icon omitted to keep icons consistent */}
+          Cập nhật
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onClick={() => {
             navigator.clipboard.writeText(String(charger.id));
             setCopied(true);
             setTimeout(() => setCopied(false), 1500);
@@ -44,7 +56,7 @@ export function ActionsCell({ charger }: ActionsCellProps) {
         <DropdownMenuItem
           onClick={() => {
             // placeholder: open detail view (not implemented)
-            console.log("View charger", charger.id);
+            // view charger action
           }}
         >
           <Eye className="h-4 w-4" />

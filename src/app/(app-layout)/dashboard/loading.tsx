@@ -2,7 +2,7 @@ import { Loader2Icon } from "lucide-react";
 
 export default function Loading() {
   return (
-    <div className="flex h-[85vh] w-full items-center justify-center">
+    <div className="flex min-h-screen w-full items-center justify-center">
       <Loader2Icon
         aria-label="Loading"
         role="status"

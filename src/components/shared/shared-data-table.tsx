@@ -1,7 +1,5 @@
 "use client";
 
-import { gsap } from "gsap";
-import { useGSAP } from "@gsap/react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -30,63 +28,38 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import {
-  Search,
-  SlidersHorizontal,
-  CheckSquare,
-  Trash2,
-  XSquare,
-} from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Search, SlidersHorizontal } from "lucide-react";
+import { useState, useMemo, useEffect, useRef } from "react";
 
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(useGSAP);
-}
+// Selection and toolbar removed — no GSAP animations required
 
-interface SharedDataTableProps<TData, TValue> {
+/**
+ * Generic shared table used across the app.
+ * TData is constrained to an object to keep Row/Column typings simple.
+ */
+interface SharedDataTableProps<TData extends Record<string, unknown>, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   searchColumn?: string;
   searchPlaceholder?: string;
   emptyMessage?: string;
-  onMassDelete?: (selectedRows: TData[]) => Promise<void> | void;
-  onSelectionChange?: (selectedRows: TData[]) => void;
   selectAllLabel?: string;
   deselectAllLabel?: string;
-  massDeleteLabel?: string;
 }
 
-export function SharedDataTable<TData, TValue>({
+export function SharedDataTable<TData extends Record<string, unknown>, TValue>({
   columns,
   data,
   searchColumn = "name",
   searchPlaceholder = "Tìm kiếm...",
   emptyMessage = "Không có dữ liệu.",
-  onMassDelete,
-  onSelectionChange,
   selectAllLabel = "Chọn tất cả",
   deselectAllLabel = "Bỏ chọn tất cả",
-  massDeleteLabel = "Xóa hàng loạt",
 }: SharedDataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
-  const [isMassDeleteLoading, setIsMassDeleteLoading] = useState(false);
-  const [isToolbarMounted, setIsToolbarMounted] = useState(false);
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const toolbarRef = useRef<HTMLDivElement | null>(null);
+  // selection removed
 
   const table = useReactTable({
     data,
@@ -98,101 +71,87 @@ export function SharedDataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    enableRowSelection: true,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
-      rowSelection,
     },
   });
+  // selection removed; no selectedRowCount/filteredRowCount
 
-  const selectedRowCount = table.getSelectedRowModel().rows.length;
-  const filteredRowCount = table.getFilteredRowModel().rows.length;
-  const hasMassDelete = typeof onMassDelete === "function";
+  // selection change handler removed
 
-  useEffect(() => {
-    if (!onSelectionChange) {
-      return;
-    }
+  // toolbar mount logic removed
 
-    onSelectionChange(
-      table.getSelectedRowModel().rows.map((row) => row.original),
-    );
-  }, [onSelectionChange, table, rowSelection]);
+  // GSAP animation for toolbar removed
 
-  useEffect(() => {
-    if (selectedRowCount > 0 && !isToolbarMounted) {
-      setIsToolbarMounted(true);
-    }
+  // selection helpers removed
 
-    if (selectedRowCount === 0) {
-      setIsConfirmOpen(false);
-    }
-  }, [selectedRowCount, isToolbarMounted]);
+  // mass delete removed — no-op
 
-  useGSAP(
-    () => {
-      const element = toolbarRef.current;
-      if (!element) {
-        return;
+  const resolvedSearchColumn = useMemo(() => {
+    // Prefer explicit column id passed in props
+    const col = table.getColumn(searchColumn as string);
+    if (col) return col;
+
+    // Fallback: pick the first leaf column that looks like a data column
+    const fallback = table
+      .getAllLeafColumns()
+      .find((c) => typeof (c as any).accessorFn !== "undefined");
+    if (fallback) {
+      if (process.env.NODE_ENV !== "production") {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `[SharedDataTable] searchColumn '${searchColumn}' not found - falling back to column '${fallback.id}'.`,
+        );
       }
+      return fallback;
+    }
 
-      if (selectedRowCount > 0) {
-        gsap.to(element, {
-          y: 0,
-          autoAlpha: 1,
-          duration: 0.35,
-          ease: "power3.out",
-        });
-      } else {
-        gsap.to(element, {
-          y: 120,
-          autoAlpha: 0,
-          duration: 0.3,
-          ease: "power2.in",
-          onComplete: () => setIsToolbarMounted(false),
-        });
-      }
-    },
-    { scope: toolbarRef, dependencies: [selectedRowCount, isToolbarMounted] },
+    // Last resort: first leaf column (may be header/selection column)
+    return table.getAllLeafColumns()[0];
+  }, [table, searchColumn]);
+
+  // Local controlled search input with debounce to avoid rapid table updates
+  const [searchInput, setSearchInput] = useState<string>(
+    (resolvedSearchColumn?.getFilterValue() as string) ?? "",
   );
+  const debounceRef = useRef<number | null>(null);
 
-  const handleSelectAllFiltered = useCallback(() => {
-    table.getFilteredRowModel().rows.forEach((row) => {
-      if (!row.getIsSelected()) {
-        row.toggleSelected(true);
+  // Keep local input in sync when the resolved column changes (for example
+  // when switching the searchColumn prop).
+  useEffect(() => {
+    setSearchInput((resolvedSearchColumn?.getFilterValue() as string) ?? "");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resolvedSearchColumn?.id]);
+
+  useEffect(() => {
+    if (!resolvedSearchColumn) return;
+    if (debounceRef.current) window.clearTimeout(debounceRef.current);
+    debounceRef.current = window.setTimeout(() => {
+      // Pass undefined for empty string to clear the filter
+      resolvedSearchColumn.setFilterValue(searchInput || undefined);
+    }, 250);
+    return () => {
+      if (debounceRef.current) {
+        window.clearTimeout(debounceRef.current);
+        debounceRef.current = null;
       }
-    });
-  }, [table]);
+    };
+  }, [searchInput, resolvedSearchColumn]);
 
-  const handleDeselectAll = useCallback(() => {
-    table.resetRowSelection();
-  }, [table]);
-
-  const executeMassDelete = useCallback(async () => {
-    if (!hasMassDelete) {
-      return;
-    }
-
-    const selectedRows = table
-      .getSelectedRowModel()
-      .rows.map((row) => row.original);
-
-    if (selectedRows.length === 0) {
-      return;
-    }
-
-    try {
-      setIsMassDeleteLoading(true);
-      await Promise.resolve(onMassDelete?.(selectedRows));
-      table.resetRowSelection();
-      setIsConfirmOpen(false);
-    } finally {
-      setIsMassDeleteLoading(false);
-    }
-  }, [hasMassDelete, onMassDelete, table]);
+  // Memoize hideable columns for the visibility dropdown
+  const hideableColumns = useMemo(
+    () =>
+      table
+        .getAllColumns()
+        .filter(
+          (column) =>
+            typeof (column as any).accessorFn !== "undefined" &&
+            column.getCanHide(),
+        ),
+    [table],
+  );
 
   return (
     <div className="w-full space-y-4">
@@ -201,16 +160,18 @@ export function SharedDataTable<TData, TValue>({
           <div className="relative">
             <Search className="text-muted-foreground absolute top-2.5 left-2 h-4 w-4" />
             <Input
+              aria-label={`Tìm kiếm ${searchColumn}`}
               placeholder={searchPlaceholder}
-              value={
-                (table.getColumn(searchColumn)?.getFilterValue() as string) ??
-                ""
-              }
-              onChange={(event) =>
-                table
-                  .getColumn(searchColumn)
-                  ?.setFilterValue(event.target.value)
-              }
+              value={searchInput}
+              onChange={(event) => setSearchInput(event.target.value)}
+              onKeyDown={(e) => {
+                // Allow users to apply immediately with Enter
+                if (e.key === "Enter") {
+                  resolvedSearchColumn?.setFilterValue(
+                    searchInput || undefined,
+                  );
+                }
+              }}
               className="max-w-sm pl-8"
             />
           </div>
@@ -223,27 +184,16 @@ export function SharedDataTable<TData, TValue>({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[200px]">
-            {table
-              .getAllColumns()
-              .filter(
-                (column) =>
-                  typeof column.accessorFn !== "undefined" &&
-                  column.getCanHide(),
-              )
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
+            {hideableColumns.map((column) => (
+              <DropdownMenuCheckboxItem
+                key={column.id}
+                className="capitalize"
+                checked={column.getIsVisible()}
+                onCheckedChange={(value) => column.toggleVisibility(!!value)}
+              >
+                {column.id}
+              </DropdownMenuCheckboxItem>
+            ))}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -272,7 +222,7 @@ export function SharedDataTable<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
+                  data-row-index={row.index}
                   className="h-14"
                 >
                   {row.getVisibleCells().map((cell) => (
@@ -288,7 +238,7 @@ export function SharedDataTable<TData, TValue>({
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={table.getAllLeafColumns().length}
                   className="h-24 text-center"
                 >
                   {emptyMessage}
@@ -299,13 +249,9 @@ export function SharedDataTable<TData, TValue>({
         </Table>
       </div>
       <div className="flex items-center justify-between space-x-2 py-4">
-        <div
-          className="text-muted-foreground flex-1 text-sm"
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          {table.getFilteredSelectedRowModel().rows.length} trong{" "}
-          {filteredRowCount} dòng được chọn.
+        <div className="text-muted-foreground flex-1 text-sm">
+          Đang hiển thị {table.getRowModel().rows.length} trong tổng{" "}
+          {data.length} dòng.
         </div>
         <div className="flex items-center space-x-2">
           <Button
@@ -327,96 +273,7 @@ export function SharedDataTable<TData, TValue>({
         </div>
       </div>
 
-      {/* Thanh Toolbar */}
-      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 px-4 pb-4">
-        {isToolbarMounted && (
-          <div
-            ref={toolbarRef}
-            role="region"
-            aria-live="polite"
-            aria-hidden={selectedRowCount === 0}
-            aria-label="Thanh công cụ hành động hàng loạt"
-            className="border-border/80 bg-background/95 pointer-events-auto mx-auto flex w-full max-w-3xl transform flex-col gap-4 rounded-t-2xl border p-4 shadow-2xl backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between"
-            style={{ transform: "translateY(120px)", opacity: 0 }}
-          >
-            <div className="flex items-start gap-3 sm:items-center">
-              <span className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-full">
-                <CheckSquare className="h-5 w-5" aria-hidden="true" />
-              </span>
-              <div className="flex flex-col gap-1 text-sm">
-                <span className="font-semibold">
-                  {selectedRowCount} dòng được chọn
-                </span>
-                <span className="text-muted-foreground text-xs">
-                  Chọn hành động để áp dụng cho các mục đã chọn.
-                </span>
-              </div>
-            </div>
-
-            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:gap-3">
-              <Button
-                variant="outline"
-                size="lg"
-                className="w-full sm:w-auto"
-                onClick={handleSelectAllFiltered}
-                disabled={filteredRowCount === 0}
-                aria-label={selectAllLabel}
-              >
-                <CheckSquare className="mr-2 h-5 w-5" aria-hidden="true" />
-                <span className="text-sm font-medium">{selectAllLabel}</span>
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="w-full sm:w-auto"
-                onClick={handleDeselectAll}
-                disabled={selectedRowCount === 0}
-                aria-label={deselectAllLabel}
-              >
-                <XSquare className="mr-2 h-5 w-5" aria-hidden="true" />
-                <span className="text-sm font-medium">{deselectAllLabel}</span>
-              </Button>
-
-              <AlertDialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
-                <AlertDialogTrigger asChild>
-                  <Button
-                    variant="destructive"
-                    size="lg"
-                    className="w-full sm:w-auto"
-                    disabled={!hasMassDelete || selectedRowCount === 0}
-                    aria-label={massDeleteLabel}
-                  >
-                    <Trash2 className="mr-2 h-5 w-5" aria-hidden="true" />
-                    <span className="text-sm font-semibold">
-                      {massDeleteLabel}
-                    </span>
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent className="max-w-md">
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Xác nhận xóa hàng loạt</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Bạn có chắc chắn muốn xóa {selectedRowCount} mục đã chọn?
-                      Hành động này không thể hoàn tác.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel disabled={isMassDeleteLoading}>
-                      Hủy
-                    </AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={executeMassDelete}
-                      disabled={!hasMassDelete || isMassDeleteLoading}
-                    >
-                      {isMassDeleteLoading ? "Đang xóa..." : "Xóa"}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
-          </div>
-        )}
-      </div>
+      {/* Row selection toolbar removed */}
     </div>
   );
 }

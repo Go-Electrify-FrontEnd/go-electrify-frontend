@@ -359,7 +359,7 @@
 //                   ? "--:--"
 //                   : format(end, "HH:mm");
 //                 const statusLabel =
-//                   statusLabels[reservation.status.toLowerCase()] ??
+//                   statusLabels[reservation.status.toUpperCase()] ??
 //                   reservation.status;
 
 //                 return (

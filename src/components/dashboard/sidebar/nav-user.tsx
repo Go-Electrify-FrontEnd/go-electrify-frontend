@@ -6,6 +6,7 @@ import {
   ChevronsUpDown,
   Computer,
   CreditCard,
+  Dot,
   Languages,
   LogOut,
   Moon,
@@ -26,15 +27,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "next-themes";
-import type { User } from "@/lib/zod/user/user.types";
 // Navigation hooks removed for locale switching
 import Link from "next/link";
+import { SidebarMenuButton } from "@/components/ui/sidebar";
+import { useUser } from "@/contexts/user-context";
 
-interface NavUserProps {
-  user: User;
-}
-
-export function NavUser({ user }: NavUserProps) {
+export function NavUser() {
   // Vietnamese-only UI; locale switching removed
   const tUser = {
     darkMode: "Chế độ tối",
@@ -47,20 +45,28 @@ export function NavUser({ user }: NavUserProps) {
     logout: "Đăng xuất",
   };
 
+  const { user } = useUser();
   const { setTheme } = useTheme();
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Avatar className="h-8 w-8">
-          <AvatarImage
-            src={user.avatar || "https://avatar.vercel.sh/rauchg"}
-            alt={user.name || "User"}
-          />
-          <AvatarFallback className="rounded-lg">
-            {(user.name || "User").charAt(0).toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
+        <SidebarMenuButton
+          size="lg"
+          className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+        >
+          <Avatar className="h-8 w-8 rounded-4xl grayscale">
+            <AvatarImage src={user?.avatar} alt={user?.name} />
+            <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+          </Avatar>
+          <div className="grid flex-1 text-left text-sm leading-tight">
+            <span className="truncate font-medium">{user?.name}</span>
+            <span className="text-muted-foreground truncate text-xs">
+              {user?.email}
+            </span>
+          </div>
+          <Dot className="ml-auto size-4" />
+        </SidebarMenuButton>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
@@ -68,7 +74,7 @@ export function NavUser({ user }: NavUserProps) {
         sideOffset={4}
       >
         <DropdownMenuLabel className="text-muted-foreground p-2 py-3 text-sm font-normal">
-          {user.email}
+          {user?.email}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => setTheme("dark")}>
@@ -82,11 +88,6 @@ export function NavUser({ user }: NavUserProps) {
         <DropdownMenuItem onClick={() => setTheme("system")}>
           <Computer />
           {tUser.systemMode}
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="p-2">
-          <Languages />
-          Tiếng Việt
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>

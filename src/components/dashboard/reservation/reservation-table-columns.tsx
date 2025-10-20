@@ -38,14 +38,15 @@ const formatDateTime = (date: string | Date) => {
 
 // Helper function to get status badge variant
 const getStatusVariant = (status: string) => {
-  switch (status.toLowerCase()) {
-    case "confirmed":
+  switch (String(status).toUpperCase()) {
+    case "CONFIRMED":
       return "default";
-    case "pending":
+    case "PENDING":
       return "secondary";
-    case "completed":
+    case "CONSUMED":
+    case "COMPLETED":
       return "outline";
-    case "cancelled":
+    case "CANCELED":
       return "destructive";
     default:
       return "secondary";
@@ -54,16 +55,17 @@ const getStatusVariant = (status: string) => {
 
 // Helper function to translate status
 const translateStatus = (status: string) => {
-  switch (status.toLowerCase()) {
-    case "confirmed":
+  switch (String(status).toUpperCase()) {
+    case "CONFIRMED":
       return "Đã xác nhận";
-    case "pending":
+    case "PENDING":
       return "Chờ xử lý";
-    case "completed":
+    case "CONSUMED":
+    case "COMPLETED":
       return "Hoàn thành";
-    case "cancelled":
+    case "CANCELED":
       return "Đã hủy";
-    case "expired":
+    case "EXPIRED":
       return "Đã hết hạn";
     default:
       return status;

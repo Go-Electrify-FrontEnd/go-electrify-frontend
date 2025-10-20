@@ -15,6 +15,7 @@ import { ConnectorTypeProvider } from "@/contexts/connector-type-context";
 import { VehicleModelTable } from "@/components/dashboard/admin/vehicle-models/vehicle-model-table";
 import { VehicleModelUpdateProvider } from "@/contexts/vehicle-model-action-context";
 import VehicleModelEditDialog from "@/components/dashboard/admin/vehicle-models/vehicle-model-edit-dialog";
+import SectionContent from "@/components/dashboard/shared/section-content";
 
 export async function getVehicleModels(token: string): Promise<CarModel[]> {
   const headers = { Authorization: `Bearer ${token}` };
@@ -66,20 +67,22 @@ export default async function VehicleModelsPage() {
           <VehicleModelCreateDialog />
         </SectionHeader>
 
-        <Card>
-          <CardHeader className="border-b">
-            <CardTitle>Danh sách xe điện</CardTitle>
-            <CardDescription>
-              Tất cả các mẫu xe điện trong hệ thống với thông tin chi tiết
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <VehicleModelUpdateProvider>
-              <VehicleModelTable data={vehicleModels} />
-              <VehicleModelEditDialog />
-            </VehicleModelUpdateProvider>
-          </CardContent>
-        </Card>
+        <SectionContent>
+          <Card>
+            <CardHeader className="border-b">
+              <CardTitle>Danh sách xe điện</CardTitle>
+              <CardDescription>
+                Tất cả các mẫu xe điện trong hệ thống với thông tin chi tiết
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <VehicleModelUpdateProvider>
+                <VehicleModelTable data={vehicleModels} />
+                <VehicleModelEditDialog />
+              </VehicleModelUpdateProvider>
+            </CardContent>
+          </Card>
+        </SectionContent>
       </ConnectorTypeProvider>
     </div>
   );

@@ -6,13 +6,13 @@ export const stationCreateSchema = z.object({
   description: z.string().max(500).optional().or(z.literal("")),
   address: z.string().trim().min(10, "Địa chỉ phải có ít nhất 10 ký tự"),
   imageUrl: z.string().optional().or(z.literal("")),
-  latitude: z.string().optional().or(z.literal("")),
-  longitude: z.string().optional().or(z.literal("")),
-  status: StationStatus.default("active"),
+  latitude: z.coerce.number<number>(),
+  longitude: z.coerce.number<number>(),
+  status: StationStatus,
 });
 
 export const stationUpdateSchema = stationCreateSchema.extend({
-  id: z.string().trim().min(1, "ID trạm là bắt buộc"),
+  id: z.coerce.number<number>().min(1, "ID trạm là bắt buộc"),
 });
 
 export type StationCreateFormData = z.infer<typeof stationCreateSchema>;

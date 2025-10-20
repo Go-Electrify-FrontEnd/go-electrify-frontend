@@ -61,9 +61,8 @@ export default function ConnectorTypeCreateDialog() {
     },
   );
 
-  const schema = connectorTypeCreateSchema;
   const form = useForm({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(connectorTypeCreateSchema),
     defaultValues: {
       name: "",
       description: undefined,

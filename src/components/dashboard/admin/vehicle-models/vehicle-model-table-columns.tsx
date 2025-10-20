@@ -3,7 +3,6 @@
 import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
 import type { CarModel } from "@/lib/zod/vehicle-model/vehicle-model.types";
 import { VehicleModelActionsCell } from "./vehicle-model-actions";
 import { useConnectorTypes } from "@/contexts/connector-type-context";
@@ -34,30 +33,6 @@ function ConnectorTypeNames({ ids }: { ids: string[] }) {
 }
 
 export const vehicleModelTableColumns: ColumnDef<CarModel>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <div className="flex items-center justify-center">
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      </div>
-    ),
-    cell: ({ row }) => (
-      <div className="flex items-center justify-center">
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      </div>
-    ),
-  },
   {
     accessorKey: "id",
     header: "ID",

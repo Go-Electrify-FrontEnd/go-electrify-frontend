@@ -14,6 +14,7 @@ import SectionHeader from "@/components/dashboard/shared/section-header";
 import { ConnectorTypeUpdateProvider } from "@/contexts/connector-type-update-context";
 import { UpdateConnectorType } from "@/components/dashboard/admin/connector-type/connector-type-edit-dialog";
 import { getUser } from "@/lib/auth/auth-server";
+import SectionContent from "@/components/dashboard/shared/section-content";
 
 export async function getConnectorTypes(): Promise<ConnectorType[]> {
   try {
@@ -50,20 +51,22 @@ export default async function ConnectorTypePage() {
         <ConnectorTypeCreateDialog />
       </SectionHeader>
 
-      <Card>
-        <CardHeader className="border-b">
-          <CardTitle>Danh sách cổng kết nối</CardTitle>
-          <CardDescription>
-            Tất cả các loại cổng kết nối trong hệ thống với thông tin chi tiết
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ConnectorTypeUpdateProvider>
-            <ConnectorTypesTable data={connectorTypes} />
-            <UpdateConnectorType />
-          </ConnectorTypeUpdateProvider>
-        </CardContent>
-      </Card>
+      <SectionContent>
+        <Card>
+          <CardHeader className="border-b">
+            <CardTitle>Danh sách cổng kết nối</CardTitle>
+            <CardDescription>
+              Tất cả các loại cổng kết nối trong hệ thống với thông tin chi tiết
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ConnectorTypeUpdateProvider>
+              <ConnectorTypesTable data={connectorTypes} />
+              <UpdateConnectorType />
+            </ConnectorTypeUpdateProvider>
+          </CardContent>
+        </Card>
+      </SectionContent>
     </div>
   );
 }

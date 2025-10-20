@@ -10,13 +10,6 @@ interface ChargersTableProps {
 }
 
 export function ChargersTable({ data }: ChargersTableProps) {
-  const handleMassDelete = React.useCallback(async (selected: Charger[]) => {
-    // TODO: Integrate with backend deletion API for chargers
-    selected.forEach((c) => {
-      console.log("Deleting charger ID:", c.id);
-    });
-  }, []);
-
   return (
     <SharedDataTable
       columns={columns}
@@ -24,7 +17,6 @@ export function ChargersTable({ data }: ChargersTableProps) {
       searchColumn="code"
       searchPlaceholder="Tìm kiếm dock..."
       emptyMessage="Không có dock nào."
-      onMassDelete={handleMassDelete}
     />
   );
 }

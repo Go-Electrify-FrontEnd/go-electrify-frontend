@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 
 export const UserSchema = z.object({
   uid: z.number(),
@@ -27,5 +27,10 @@ export const UserApiSchema = z
     walletBalance: raw.WalletBalance ?? 0,
     createdAt: new Date(raw.CreateAt),
   }));
+
+export const UserNameUpdateSchema = z.object({
+  id: z.coerce.number<number>(),
+  name: z.string().min(2).max(100),
+});
 
 export type UserApi = z.infer<typeof UserApiSchema>;

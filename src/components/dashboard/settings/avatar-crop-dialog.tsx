@@ -17,7 +17,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-// Define type for pixel crop area
 type Area = {
   x: number;
   y: number;
@@ -180,7 +179,7 @@ export function AvatarCropDialog({
           <Button
             type="button"
             onClick={handleConfirm}
-            disabled={!croppedAreaPixels}
+            disabled={!croppedAreaPixels || isProcessing}
           >
             Xác nhận cắt
           </Button>
