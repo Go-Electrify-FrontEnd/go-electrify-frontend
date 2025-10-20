@@ -7,7 +7,6 @@ import { forbidden } from "next/navigation";
 import { AppHeader } from "@/components/dashboard/sidebar/app-header";
 import AppLogo from "@/components/shared/logo";
 import { NavUser } from "@/components/dashboard/sidebar/nav-user";
-import { NotificationButton } from "@/components/dashboard/header/notification-button";
 import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Bell } from "lucide-react";
