@@ -7,6 +7,7 @@ import {
 } from "@/lib/zod/wallet/wallet.schema";
 import { getUser } from "@/lib/auth/auth-server";
 import SectionHeader from "@/components/dashboard/shared/section-header";
+import SectionContent from "@/components/dashboard/shared/section-content";
 
 export async function getWallet() {
   const { token } = await getUser();
@@ -70,15 +71,17 @@ export default async function WalletPage() {
         <WalletDepositButton />
       </SectionHeader>
 
-      <WalletOverview
-        wallet={wallet}
-        transactions={transactionsData?.data || []}
-      />
-      <TransactionTable
-        transactions={transactionsData?.data ?? []}
-        totalCount={transactionsData?.total}
-        showViewAll={true}
-      />
+      <SectionContent className="flex flex-col gap-4 md:gap-6">
+        <WalletOverview
+          wallet={wallet}
+          transactions={transactionsData?.data || []}
+        />
+        <TransactionTable
+          transactions={transactionsData?.data ?? []}
+          totalCount={transactionsData?.total}
+          showViewAll={true}
+        />
+      </SectionContent>
     </div>
   );
 }

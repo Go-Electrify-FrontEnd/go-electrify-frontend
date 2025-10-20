@@ -10,28 +10,40 @@ import {
   Map,
   PieChart,
   Plug,
+  Settings2Icon,
   TicketCheckIcon,
   Wallet2Icon,
   Zap,
 } from "lucide-react";
 // Translations removed: landing and admin UI converted to Vietnamese
 
-import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar";
 import { NavSection } from "./nav-section";
 import { useUser } from "@/contexts/user-context";
+import { NavSecondary } from "./nav-secondary";
+import { NavUser } from "./nav-user";
+import AppLogo from "@/components/shared/logo";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useUser();
   const overview = {
-    title: "Tổng quan",
+    title: "Tổng Quan",
     items: [
       {
-        title: "Trang chính",
+        title: "Trang Chính",
         url: "/dashboard",
         icon: House,
       },
       {
-        title: "Bắt đầu sạc",
+        title: "Bắt Đầu Sạc",
         url: "/dashboard/start-charging",
         icon: Zap,
       },
@@ -42,17 +54,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     title: "Trạm & Sạc",
     items: [
       {
-        title: "Trạm gần đây",
+        title: "Trạm Gần Đây",
         url: "/dashboard/stations-nearby",
         icon: Map,
       },
       {
-        title: "Đặt chỗ",
+        title: "Đặt Chỗ",
         url: "/dashboard/reservations",
         icon: TicketCheckIcon,
       },
       {
-        title: "Lịch sử sạc",
+        title: "Lịch Sử Sạc",
         url: "/dashboard/charging-history",
         icon: PieChart,
       },
@@ -68,7 +80,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         icon: Wallet2Icon,
       },
       {
-        title: "Gói & Thanh toán",
+        title: "Gói & Thanh Toán",
         url: "/dashboard/plans-billing",
         icon: BookOpen,
       },
@@ -76,44 +88,68 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   };
 
   const admin = {
-    title: "Quản trị",
+    title: "Quản Trị",
     items: [
       {
-        title: "Quản lý trạm",
+        title: "Quản Lý Trạm",
         url: "/dashboard/admin/stations",
         icon: Command,
       },
       {
-        title: "Quản lý người dùng",
+        title: "Quản Lý Người Dùng",
         url: "/dashboard/admin/users",
         icon: GalleryVerticalEnd,
       },
       {
-        title: "Quản lý gói",
+        title: "Quản Lý Gói",
         url: "/dashboard/admin/subscriptions",
         icon: AudioWaveform,
       },
       {
-        title: "Loại kết nối",
+        title: "Quản Lý Loại Kết Nối",
         url: "/dashboard/admin/connector-type",
         icon: Plug,
       },
       {
-        title: "Mẫu xe",
+        title: "Quản Lý Mẫu Xe",
         url: "/dashboard/admin/vehicle-models",
         icon: Car,
       },
     ],
   };
 
+  const navSecondary = [
+    {
+      title: "Cài Đặt",
+      url: "/dashboard/settings",
+      icon: Settings2Icon,
+    },
+  ];
+
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible="offcanvas" {...props}>
+      <SidebarHeader className="h-16 border-b">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              className="data-[slot=sidebar-menu-button]:!p-1.5"
+            >
+              <AppLogo className="my-2" width={42} height={42} />
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
       <SidebarContent>
         <NavSection items={overview} />
         <NavSection items={charging} />
         <NavSection items={payment} />
         {user?.role.toLowerCase() === "admin" && <NavSection items={admin} />}
+        <NavSecondary items={navSecondary} className="mt-auto" />
       </SidebarContent>
+      <SidebarFooter>
+        <NavUser />
+      </SidebarFooter>
     </Sidebar>
   );
 }

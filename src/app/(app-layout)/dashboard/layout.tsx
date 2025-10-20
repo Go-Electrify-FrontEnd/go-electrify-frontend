@@ -1,14 +1,70 @@
+// app/dashboard/layout.tsx
 import { AppSidebar } from "@/components/dashboard/sidebar/app-sidebar";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 import { getUser } from "@/lib/auth/auth-server";
 import { UserProvider } from "@/contexts/user-context";
 import { forbidden } from "next/navigation";
 import { AppHeader } from "@/components/dashboard/sidebar/app-header";
 import AppLogo from "@/components/shared/logo";
 import { NavUser } from "@/components/dashboard/sidebar/nav-user";
+import { NotificationButton } from "@/components/dashboard/header/notification-button";
+import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
+import { NotificationButton } from "@/components/dashboard/header/notification-button";
+import { Separator } from "@/components/ui/separator";
+import HeaderBreadcrumb from "@/components/dashboard/sidebar/header-breadcrumb";
 
 export const dynamic = "force-dynamic";
+
+// Fetch notifications directly in layout
+async function getNotifications(): Promise<Notification[]> {
+  try {
+    console.log("🔔 [Layout] Fetching notifications from external API...");
+
+    const response = await fetch(
+      "https://api.go-electrify.com/api/v1/notifications",
+      {
+        method: "GET",
+        headers: {
+          accept: "*/*",
+          // Có thể thêm auth headers nếu cần
+          // "Authorization": `Bearer ${process.env.EXTERNAL_API_TOKEN}`,
+        },
+        cache: "no-store",
+        next: { revalidate: 0 }, // Always fetch fresh data
+      },
+    );
+
+    if (!response.ok) {
+      console.error("❌ [Layout] External API error:", response.status);
+      return [];
+    }
+
+    const data = await response.json();
+    console.log(
+      "✅ [Layout] Notifications fetched:",
+      Array.isArray(data) ? data.length : 0,
+    );
+
+    return data || [];
+  } catch (error) {
+    console.error("❌ [Layout] Error fetching notifications:", error);
+    return [];
+  }
+}
+
+// Loading fallback cho notification button
+function NotificationButtonSkeleton() {
+  return (
+    <Button variant="ghost" size="icon" className="relative">
+      <Bell className="h-5 w-5 animate-pulse" />
+    </Button>
+  );
+}
 
 export default async function DashboardLayout({
   children,
@@ -18,41 +74,25 @@ export default async function DashboardLayout({
     forbidden();
   }
 
+  // Fetch notifications directly in layout (server-side)
+  const notifications = await getNotifications();
+
   return (
-    <div className="min-h-screen-patched max-h-screen-patched flex flex-col">
+    <SidebarProvider>
       <UserProvider user={user}>
-        <header className="@container/chat-header relative z-20 flex h-16 w-full shrink-0 items-center justify-between gap-2 px-3 align-middle">
-          <AppLogo
-            width={40}
-            height={40}
-            className="text-foreground h-max w-auto"
-          />
-          <div className="flex items-center justify-between gap-2 justify-self-end align-middle">
-            <Button variant="outline" size="sm">
-              Notification
-            </Button>
-            <NavUser user={user} />
-          </div>
-        </header>
-        <div className="flex min-h-0 flex-1 overflow-hidden">
-          <SidebarProvider className="flex min-h-0 flex-1 overflow-hidden">
-            <AppSidebar
-              variant="inset"
-              className="sticky top-0 hidden origin-left sm:block"
+        <AppSidebar />
+        <SidebarInset>
+          <header className="bg-background sticky top-0 z-50 flex h-16 shrink-0 items-center gap-2 border-b px-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator
+              orientation="vertical"
+              className="mr-2 data-[orientation=vertical]:h-4"
             />
-            <SidebarInset className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border">
-              <div className="shrink-0">
-                <AppHeader />
-              </div>
-              <div className="no-scrollbar flex min-h-0 flex-1 flex-col overflow-auto">
-                <div className="@container/main flex flex-col gap-2 px-3 py-4 sm:px-4 md:px-8 md:py-6 lg:px-10">
-                  {children}
-                </div>
-              </div>
-            </SidebarInset>
-          </SidebarProvider>
-        </div>
+            <HeaderBreadcrumb />
+          </header>
+          <div className="flex flex-1 flex-col gap-4 pb-4">{children}</div>
+        </SidebarInset>
       </UserProvider>
-    </div>
+    </SidebarProvider>
   );
 }

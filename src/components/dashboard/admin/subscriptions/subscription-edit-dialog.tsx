@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import {} from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -43,17 +43,17 @@ export function UpdateSubscription({
   onOpenChange,
 }: UpdateSubscriptionProps) {
   const { id, name, price, totalKwh, durationDays } = subscription;
+  const defaults = {
+    id,
+    name,
+    price,
+    totalKwH: totalKwh,
+    durationDays,
+  };
+
   const form = useForm<SubscriptionUpdateFormData>({
-    resolver: zodResolver(
-      subscriptionUpdateSchema,
-    ) as Resolver<SubscriptionUpdateFormData>,
-    defaultValues: {
-      id: id.toString(),
-      name,
-      price,
-      totalKwH: totalKwh,
-      durationDays,
-    },
+    resolver: zodResolver(subscriptionUpdateSchema),
+    defaultValues: defaults,
   });
 
   const { execute, pending } = useServerAction(
@@ -77,23 +77,16 @@ export function UpdateSubscription({
     },
   );
 
-  useEffect(() => {
-    if (!open) {
-      return;
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) {
+      form.reset(defaults);
     }
-
-    form.reset({
-      id: id.toString(),
-      name,
-      price,
-      totalKwH: totalKwh,
-      durationDays,
-    });
-  }, [durationDays, form, id, name, open, price, totalKwh]);
+    onOpenChange(nextOpen);
+  };
 
   const handleSubmit = form.handleSubmit((data) => {
     const payload = new FormData();
-    payload.append("id", data.id);
+    payload.append("id", data.id.toString());
     payload.append("name", data.name);
     payload.append("price", data.price.toString());
     payload.append("totalKwH", data.totalKwH.toString());
@@ -102,21 +95,7 @@ export function UpdateSubscription({
   });
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(nextOpen) => {
-        if (!nextOpen) {
-          form.reset({
-            id: id.toString(),
-            name,
-            price,
-            totalKwH: totalKwh,
-            durationDays,
-          });
-        }
-        onOpenChange(nextOpen);
-      }}
-    >
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
           <DialogTitle>Chỉnh sửa gói đăng ký</DialogTitle>
@@ -157,24 +136,8 @@ export function UpdateSubscription({
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="subscription-price">Giá</FieldLabel>
                   <Input
+                    {...field}
                     id="subscription-price"
-                    type="number"
-                    value={
-                      typeof field.value === "number" ||
-                      typeof field.value === "string"
-                        ? field.value
-                        : ""
-                    }
-                    onChange={(event) =>
-                      field.onChange(
-                        event.target.value === ""
-                          ? ""
-                          : Number(event.target.value),
-                      )
-                    }
-                    onBlur={field.onBlur}
-                    name={field.name}
-                    ref={field.ref}
                     aria-invalid={fieldState.invalid}
                     placeholder={"0"}
                     autoComplete="off"
@@ -195,24 +158,8 @@ export function UpdateSubscription({
                     Tổng kWh
                   </FieldLabel>
                   <Input
+                    {...field}
                     id="subscription-total-kwh"
-                    type="number"
-                    value={
-                      typeof field.value === "number" ||
-                      typeof field.value === "string"
-                        ? field.value
-                        : ""
-                    }
-                    onChange={(event) =>
-                      field.onChange(
-                        event.target.value === ""
-                          ? ""
-                          : Number(event.target.value),
-                      )
-                    }
-                    onBlur={field.onBlur}
-                    name={field.name}
-                    ref={field.ref}
                     aria-invalid={fieldState.invalid}
                     placeholder={"100"}
                     autoComplete="off"
@@ -233,24 +180,8 @@ export function UpdateSubscription({
                     Thời hạn (ngày)
                   </FieldLabel>
                   <Input
+                    {...field}
                     id="subscription-duration-days"
-                    type="number"
-                    value={
-                      typeof field.value === "number" ||
-                      typeof field.value === "string"
-                        ? field.value
-                        : ""
-                    }
-                    onChange={(event) =>
-                      field.onChange(
-                        event.target.value === ""
-                          ? ""
-                          : Number(event.target.value),
-                      )
-                    }
-                    onBlur={field.onBlur}
-                    name={field.name}
-                    ref={field.ref}
                     aria-invalid={fieldState.invalid}
                     placeholder={"30"}
                     autoComplete="off"

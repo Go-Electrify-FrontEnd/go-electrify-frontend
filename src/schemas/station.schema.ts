@@ -7,7 +7,7 @@ export const stationCreateSchema = z.object({
   imageUrl: z.string().optional().or(z.literal("")),
   latitude: z.string().optional().or(z.literal("")),
   longitude: z.string().optional().or(z.literal("")),
-  status: z.enum(["active", "inactive", "maintenance"]).default("active"),
+  status: z.enum(["ACTIVE", "INACTIVE", "MAINTENANCE"]).default("ACTIVE"),
 });
 
 export const stationUpdateSchema = stationCreateSchema.extend({

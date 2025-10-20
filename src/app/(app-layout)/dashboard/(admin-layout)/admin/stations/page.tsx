@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import SectionContent from "@/components/dashboard/shared/section-content";
 
 export async function getStations(): Promise<Station[]> {
   const url = "https://api.go-electrify.com/api/v1/stations";
@@ -44,17 +45,19 @@ export default async function StationsManagementPage() {
         <StationCreate />
       </SectionHeader>
 
-      <Card>
-        <CardHeader className="border-b">
-          <CardTitle>Danh sách trạm</CardTitle>
-          <CardDescription>
-            Tất cả các trạm sạc trong hệ thống với thông tin chi tiết
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <StationsTable data={stations} />
-        </CardContent>
-      </Card>
+      <SectionContent>
+        <Card>
+          <CardHeader className="border-b">
+            <CardTitle>Danh sách trạm</CardTitle>
+            <CardDescription>
+              Tất cả các trạm sạc trong hệ thống với thông tin chi tiết
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <StationsTable data={stations} />
+          </CardContent>
+        </Card>
+      </SectionContent>
     </div>
   );
 }

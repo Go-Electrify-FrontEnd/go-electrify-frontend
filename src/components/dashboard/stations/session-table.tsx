@@ -9,13 +9,6 @@ interface SessionsTableProps {
 }
 
 export function SessionsTable({ data }: SessionsTableProps) {
-  const handleMassDelete = React.useCallback(async (selected: Session[]) => {
-    // Placeholder: log selection. Integrate with API to end sessions or cancel bookings.
-    selected.forEach((s) => {
-      console.log("Mass action on session:", s.id, s.kind);
-    });
-  }, []);
-
   return (
     <SharedDataTable
       columns={sessionColumns}
@@ -23,7 +16,6 @@ export function SessionsTable({ data }: SessionsTableProps) {
       searchColumn="userName"
       searchPlaceholder="Tìm kiếm phiên..."
       emptyMessage="Không có phiên nào."
-      onMassDelete={handleMassDelete}
     />
   );
 }

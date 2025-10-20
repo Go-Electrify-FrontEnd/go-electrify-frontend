@@ -1,27 +1,16 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 import Image from "next/image";
-
-const hero = {
-  highlight: "Sạc dễ dàng",
-  headline: "Nền tảng sạc xe điện",
-  description:
-    "Tìm trạm sạc gần nhất, quản lý phiên sạc và thanh toán an toàn — tất cả trong một nền tảng",
-  primaryCta: "Bắt đầu ngay",
-  secondaryCta: "Tìm hiểu thêm",
-  stats: {
-    locations: { value: "10+", label: "Trạm trên toàn quốc" },
-    averageSession: { value: "25 min", label: "Thời lượng trung bình" },
-    savings: { value: "15%", label: "Tiết kiệm chi phí" },
-  },
-};
+import Link from "next/link";
 
 export default function LandingHero() {
   return (
-    <section className="relative flex min-h-screen flex-col items-center justify-center pt-20">
-      <div className="absolute inset-0">
+    <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
+      {/* Background image with overlay */}
+      <div className="absolute inset-0 -z-10">
         <Image
           src="/assets/images/charging-station-clean.webp"
           alt="Hero Background"
@@ -30,37 +19,89 @@ export default function LandingHero() {
           className="object-cover"
           decoding="async"
         />
-        <div className="absolute inset-0 bg-black/50" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
+        {/* Subtle decorative overlays */}
+        <div className="absolute inset-0">
+          <div className="bg-primary/10 absolute top-1/4 -left-48 h-96 w-96 rounded-full blur-3xl" />
+          <div className="bg-accent/10 absolute -right-48 bottom-1/4 h-96 w-96 rounded-full blur-3xl" />
+        </div>
       </div>
 
-      <div className="relative z-10 container mx-auto">
-        <div className="mx-auto max-w-[800px] space-y-12 text-center">
-          <h1 className="text-5xl leading-tight font-bold tracking-tight text-white drop-shadow-2xl md:text-6xl lg:text-7xl">
-            <span className="text-green-400">{hero.highlight}</span>
+      <div className="container mx-auto px-4 py-15">
+        <div className="mx-auto flex max-w-4xl flex-col items-center space-y-8 text-center">
+          {/* Main headline */}
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-5xl leading-tight font-bold tracking-tight text-balance text-white sm:text-6xl lg:text-7xl"
+          >
+            Nền tảng sạc
             <br />
-            <span className="text-white drop-shadow-lg">{hero.headline}</span>
-          </h1>
+            <span>xe điện thông minh</span>
+          </motion.h1>
 
-          <p className="mx-auto max-w-[600px] text-lg leading-relaxed font-medium text-white/95 drop-shadow-lg md:text-xl">
-            {hero.description}
-          </p>
+          {/* Supporting description */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="mx-auto max-w-2xl text-lg leading-relaxed text-balance text-white/90 sm:text-xl"
+          >
+            Tìm trạm sạc gần nhất, quản lý phiên sạc và thanh toán an toàn — tất
+            cả trong một nền tảng hiện đại
+          </motion.p>
 
-          <div className="flex items-center justify-center gap-4 pt-4">
-            <Button
-              size="lg"
-              className="border border-green-500/20 bg-green-600 text-white shadow-2xl transition-all hover:scale-105 hover:bg-green-700 hover:shadow-green-500/25"
+          {/* CTA buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="flex flex-col items-center gap-6 pt-4 sm:flex-row"
+          >
+            <Link
+              href="/login"
+              className={buttonVariants({
+                size: "lg",
+                className:
+                  "group h-12 w-[180px] gap-2 px-8 shadow-lg transition-all",
+              })}
             >
-              {hero.primaryCta}
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-white/40 bg-white/15 text-white shadow-xl backdrop-blur-md hover:border-white/60 hover:bg-white/25"
+              Bắt đầu ngay
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Link>
+            <Link
+              href="/learn-more"
+              className={buttonVariants({
+                size: "lg",
+                className:
+                  "h-12 w-[180px] border border-white/30 bg-white/10 px-8 text-white backdrop-blur-sm transition-all hover:border-white/50 hover:bg-white/20",
+              })}
             >
-              {hero.secondaryCta}
-            </Button>
-          </div>
+              Tìm hiểu thêm
+            </Link>
+          </motion.div>
+
+          {/* Optional: subtle trust indicators or metrics */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="flex flex-wrap items-center justify-center gap-6 pt-12 text-sm text-white/70 sm:gap-12"
+          >
+            <div className="flex flex-col items-center gap-1">
+              <div className="text-2xl font-bold text-white">10+</div>
+              <div className="text-xs">Trạm sạc</div>
+            </div>
+            <div className="flex flex-col items-center gap-1">
+              <div className="text-2xl font-bold text-white">25 phút</div>
+              <div className="text-xs">Thời lượng TB</div>
+            </div>
+            <div className="flex flex-col items-center gap-1">
+              <div className="text-2xl font-bold text-white">15%</div>
+              <div className="text-xs">Tiết kiệm chi phí</div>
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>

@@ -11,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import SectionContent from "@/components/dashboard/shared/section-content";
 
 export async function getUsers(): Promise<UserApi[]> {
   try {
@@ -50,18 +51,19 @@ export default async function UserManagementPage() {
         title={"Quản lý Người Dùng"}
         subtitle={"Danh sách người dùng và trạng thái"}
       />
-
-      <Card>
-        <CardHeader className="border-b">
-          <CardTitle>Danh sách người dùng</CardTitle>
-          <CardDescription>
-            Người dùng được quản lý trong hệ thống
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <UsersTable data={users} />
-        </CardContent>
-      </Card>
+      <SectionContent>
+        <Card>
+          <CardHeader className="border-b">
+            <CardTitle>Danh sách người dùng</CardTitle>
+            <CardDescription>
+              Người dùng được quản lý trong hệ thống
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <UsersTable data={users} />
+          </CardContent>
+        </Card>
+      </SectionContent>
     </div>
   );
 }

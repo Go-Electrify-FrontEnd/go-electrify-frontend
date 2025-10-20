@@ -25,10 +25,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
-import { startTransition, useActionState, useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useState } from "react";
+import { Controller, type Resolver, useForm } from "react-hook-form";
 import { createVehicleModel } from "@/actions/vehicle-models-actions";
 import { toast } from "sonner";
+import { useServerAction } from "@/hooks/use-server-action";
 import {
   vehicleModelSchema,
   type VehicleModelFormData,
@@ -42,31 +43,26 @@ const initialState = {
 };
 
 export default function VehicleModelCreateDialog() {
-  const t = {
-    createTitle: "Tạo mẫu xe",
-    createDescription: "Thêm mẫu xe mới vào hệ thống",
-    form: {
-      modelName: "Tên mẫu xe",
-      modelNamePlaceholder: "Nhập tên mẫu xe",
-      maxPowerKw: "Công suất tối đa (kW)",
-      maxPowerPlaceholder: "Nhập công suất tối đa",
-      batteryCapacityKwh: "Dung lượng pin (kWh)",
-      batteryCapacityPlaceholder: "Nhập dung lượng pin",
-      connectorTypes: "Loại cổng",
-      connectorTypesPlaceholder: "Chọn loại cổng",
-      creating: "Đang tạo...",
-      createButton: "Tạo",
-    },
-  };
+  // Inline Vietnamese labels (no external i18n wrapper here)
   const connectorTypes = useConnectorTypes();
   const [open, setOpen] = useState(false);
 
-  const [createState, createAction, pending] = useActionState(
+  const { execute, pending } = useServerAction(
     createVehicleModel,
     initialState,
+    {
+      onSuccess: (result) => {
+        form.reset();
+        setOpen(false);
+        toast.success(result.msg);
+      },
+      onError: (result) => {
+        if (result.msg) toast.error(result.msg);
+      },
+    },
   );
 
-  const form = useForm({
+  const form = useForm<VehicleModelFormData>({
     resolver: zodResolver(vehicleModelSchema),
     defaultValues: {
       modelName: "",
@@ -75,18 +71,7 @@ export default function VehicleModelCreateDialog() {
       connectorTypeIds: [],
     },
   });
-
-  useEffect(() => {
-    if (!createState.msg) return;
-
-    if (createState.success) {
-      form.reset();
-      setOpen(false);
-      toast.success(createState.msg);
-    } else {
-      toast.error(createState.msg);
-    }
-  }, [createState, form]);
+  // useServerAction callbacks handle success/error — no local effect required
 
   function onSubmit(data: VehicleModelFormData) {
     const formData = new FormData();
@@ -98,9 +83,8 @@ export default function VehicleModelCreateDialog() {
       formData.append("connectorTypeIds", id);
     });
 
-    startTransition(() => {
-      createAction(formData);
-    });
+    // Execute server action (startTransition is handled inside the hook)
+    execute(formData);
   }
 
   return (
@@ -108,14 +92,14 @@ export default function VehicleModelCreateDialog() {
       <DialogTrigger asChild>
         <Button size="lg">
           <Plus />
-          <span className="font-semibold">{t.createTitle}</span>
+          <span className="font-semibold">Tạo mẫu xe</span>
         </Button>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{t.createTitle}</DialogTitle>
-          <DialogDescription>{t.createDescription}</DialogDescription>
+          <DialogTitle>Tạo mẫu xe</DialogTitle>
+          <DialogDescription>Thêm mẫu xe mới vào hệ thống</DialogDescription>
         </DialogHeader>
         <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <FieldGroup className="my-4">
@@ -124,13 +108,11 @@ export default function VehicleModelCreateDialog() {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="modelName">
-                    {t.form.modelName}
-                  </FieldLabel>
+                  <FieldLabel htmlFor="modelName">Tên mẫu xe</FieldLabel>
                   <Input
                     {...field}
                     id="modelName"
-                    placeholder={t.form.modelNamePlaceholder}
+                    placeholder={"Nhập tên mẫu xe"}
                     aria-invalid={fieldState.invalid}
                     autoComplete="off"
                   />
@@ -147,21 +129,14 @@ export default function VehicleModelCreateDialog() {
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="maxPowerKw">
-                    {t.form.maxPowerKw}
+                    Công suất tối đa (kW)
                   </FieldLabel>
                   <Input
                     {...field}
-                    type="number"
                     id="maxPowerKw"
-                    placeholder={t.form.maxPowerPlaceholder}
+                    placeholder={"Nhập công suất tối đa"}
                     aria-invalid={fieldState.invalid}
                     autoComplete="off"
-                    value={
-                      typeof field.value === "number" ||
-                      typeof field.value === "string"
-                        ? field.value
-                        : ""
-                    }
                   />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
@@ -176,21 +151,14 @@ export default function VehicleModelCreateDialog() {
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="batteryCapacityKwh">
-                    {t.form.batteryCapacityKwh}
+                    Dung lượng pin (kWh)
                   </FieldLabel>
                   <Input
                     {...field}
-                    type="number"
                     id="batteryCapacityKwh"
-                    placeholder={t.form.batteryCapacityPlaceholder}
+                    placeholder={"Nhập dung lượng pin"}
                     aria-invalid={fieldState.invalid}
                     autoComplete="off"
-                    value={
-                      typeof field.value === "number" ||
-                      typeof field.value === "string"
-                        ? field.value
-                        : ""
-                    }
                   />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
@@ -204,9 +172,7 @@ export default function VehicleModelCreateDialog() {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="connectorTypeIds">
-                    {t.form.connectorTypes}
-                  </FieldLabel>
+                  <FieldLabel htmlFor="connectorTypeIds">Loại cổng</FieldLabel>
                   <MultiSelect
                     onValuesChange={field.onChange}
                     values={field.value}
@@ -214,7 +180,7 @@ export default function VehicleModelCreateDialog() {
                   >
                     <MultiSelectTrigger className="w-full max-w-[400px]">
                       <MultiSelectValue
-                        placeholder={t.form.connectorTypesPlaceholder}
+                        placeholder={"Chọn loại cổng"}
                         overflowBehavior="wrap"
                       />
                     </MultiSelectTrigger>
@@ -234,10 +200,9 @@ export default function VehicleModelCreateDialog() {
                 </Field>
               )}
             />
-
             <DialogFooter className="flex w-full">
               <Button type="submit" className="self-end" disabled={pending}>
-                {pending ? t.form.creating : t.form.createButton}
+                {pending ? "Đang tạo..." : "Tạo"}
               </Button>
             </DialogFooter>
           </FieldGroup>

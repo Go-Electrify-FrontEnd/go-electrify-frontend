@@ -1,5 +1,10 @@
 "use client";
 
+import {
+  Status,
+  StatusIndicator,
+  StatusLabel,
+} from "@/components/kibo-ui/status";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import type { Station } from "@/lib/zod/station/station.types";
@@ -12,13 +17,16 @@ interface StationCardProps {
 }
 
 export function StationCard({ station }: StationCardProps) {
+  // coordinates expected as [latitude, longitude]
   const generateURL = (coordinates: [number, number], name: string) => {
-    const [lng, lat] = coordinates;
-    const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&destination_place_id=${encodeURIComponent(
-      name,
+    const [lat, lng] = coordinates;
+    // Use Google Maps Search URL with query=lat,lng (example: ?api=1&query=47.5951518,-122.3316393)
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+      `${lat},${lng}`,
     )}`;
-    return url;
   };
+
+  // debug logs removed
 
   return (
     <div className="rounded-lg transition-colors">
@@ -28,14 +36,17 @@ export function StationCard({ station }: StationCardProps) {
             {station.name}
           </h4>
           <div className="mt-1.5 flex items-center gap-2">
-            <Badge variant="default" className="capitalize">
-              {station.status}
-            </Badge>
-            <div
-              className={`h-2 w-2 flex-shrink-0 rounded-full ${
-                station.status === "active" ? "bg-green-500" : "bg-red-500"
-              }`}
-            />
+            {station.status === "ACTIVE" ? (
+              <Status status="online">
+                <StatusIndicator />
+                <StatusLabel />
+              </Status>
+            ) : (
+              <Status status="offline">
+                <StatusIndicator />
+                <StatusLabel />
+              </Status>
+            )}
           </div>
         </div>
       </div>

@@ -6,7 +6,7 @@ export const ReservationSchema = z.object({
   pointId: z.number(),
   initialSoc: z.number(),
   type: z.string(),
-  status: z.string(),
+  status: z.enum(["PENDING", "CONFIRMED", "CANCELED", "EXPIRED", "CONSUMED"]),
   createdAt: z.union([z.string(), z.date()]),
   updatedAt: z.union([z.string(), z.date()]),
 });

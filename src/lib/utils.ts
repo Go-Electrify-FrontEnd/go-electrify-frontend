@@ -12,6 +12,6 @@ export function getBackendUrl(path: string) {
     url.searchParams.append("teamId", process.env.TEST_TEAM_ID || "");
   }
 
-  console.log("Backend URL: " + url.toString());
+  // backend URL computed
   return url.toString();
 }

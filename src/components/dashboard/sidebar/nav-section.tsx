@@ -25,9 +25,7 @@ export function NavSection({
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel className="font-bold uppercase">
-        {items.title}
-      </SidebarGroupLabel>
+      <SidebarGroupLabel className="uppercase">{items.title}</SidebarGroupLabel>
       <SidebarMenu>
         {items.items.map((item) => (
           <SidebarMenuItem
@@ -38,7 +36,7 @@ export function NavSection({
               <Link
                 prefetch={false}
                 href={item.url}
-                className="text-electrify-gray-900 hover:text-foreground hover:bg-muted flex items-center rounded-md text-sm transition-colors group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0"
+                className="hover:text-foreground hover:bg-muted flex items-center rounded-md transition-colors group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0"
               >
                 {item.icon && <item.icon />}
                 <span>{item.title}</span>
