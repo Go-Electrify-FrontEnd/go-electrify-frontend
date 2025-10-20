@@ -95,12 +95,20 @@ export function SharedDataTable<TData extends Record<string, unknown>, TValue>({
     if (col) return col;
 
     // Fallback: pick the first leaf column that looks like a data column
-    const fallback = table
-      .getAllLeafColumns()
-      .find((c) => typeof (c as any).accessorFn !== "undefined");
+    const fallback = table.getAllLeafColumns().find((c) => {
+      // Narrow the ColumnDef union safely using `in` checks instead of
+      // reading properties directly (which the type system may not allow).
+      return (
+        ("accessorFn" in c.columnDef &&
+          typeof (c.columnDef as { accessorFn?: unknown }).accessorFn !==
+            "undefined") ||
+        ("accessorKey" in c.columnDef &&
+          typeof (c.columnDef as { accessorKey?: unknown }).accessorKey !==
+            "undefined")
+      );
+    });
     if (fallback) {
       if (process.env.NODE_ENV !== "production") {
-        // eslint-disable-next-line no-console
         console.warn(
           `[SharedDataTable] searchColumn '${searchColumn}' not found - falling back to column '${fallback.id}'.`,
         );
@@ -143,13 +151,17 @@ export function SharedDataTable<TData extends Record<string, unknown>, TValue>({
   // Memoize hideable columns for the visibility dropdown
   const hideableColumns = useMemo(
     () =>
-      table
-        .getAllColumns()
-        .filter(
-          (column) =>
-            typeof (column as any).accessorFn !== "undefined" &&
-            column.getCanHide(),
-        ),
+      table.getAllColumns().filter((column) => {
+        if (!column.getCanHide()) return false;
+        return (
+          ("accessorFn" in column.columnDef &&
+            typeof (column.columnDef as { accessorFn?: unknown }).accessorFn !==
+              "undefined") ||
+          ("accessorKey" in column.columnDef &&
+            typeof (column.columnDef as { accessorKey?: unknown })
+              .accessorKey !== "undefined")
+        );
+      }),
     [table],
   );
 

@@ -11,7 +11,7 @@ export function StationMap() {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
-  const geolocateHandlerRef = useRef<((e: any) => void) | null>(null);
+  const geolocateHandlerRef = useRef<((e: unknown) => void) | null>(null);
   const geolocateControlRef = useRef<mapboxgl.GeolocateControl | null>(null);
 
   useEffect(() => {
@@ -53,18 +53,40 @@ export function StationMap() {
       showAccuracyCircle: true,
     });
 
-    const handler = (e: any) => {
-      const location = e?.target?._lastKnownPosition || e?.coords || null;
-      if (location) {
-        const coords: [number, number] = [
-          location.coords?.longitude ?? location.longitude,
-          location.coords?.latitude ?? location.latitude,
-        ];
-        updateUserLocationRef.current(coords);
+    // Derive the listener parameter type directly from the control's `on`
+    // signature. First extract the listener function type, then the event
+    // parameter type it receives. This produces the concrete event shape
+    // like `{ type: 'geolocate'; target: GeolocateControl } & GeolocationPosition`.
+    type GeolocateListener = Parameters<typeof geolocateControl.on>[1];
+    type GeolocateEvent = Parameters<GeolocateListener>[0];
+
+    const handler = (e: GeolocateEvent) => {
+      // Some Mapbox builds attach the most recent position to
+      // `e.target._lastKnownPosition`; others provide a `coords` object on
+      // the event itself. Normalize to a GeolocationPosition-like object.
+      const normalized = (
+        e as unknown as {
+          target?: { _lastKnownPosition?: GeolocationPosition };
+        }
+      )?.target
+        ? (
+            e as unknown as {
+              target?: { _lastKnownPosition?: GeolocationPosition };
+            }
+          ).target?._lastKnownPosition
+        : ((e as unknown as { coords?: GeolocationPosition | null }).coords ??
+          null);
+
+      if (!normalized) return;
+      const { longitude, latitude } = normalized.coords;
+      if (typeof longitude === "number" && typeof latitude === "number") {
+        updateUserLocationRef.current([longitude, latitude]);
       }
     };
 
-    geolocateHandlerRef.current = handler;
+    // Store a broadly-typed copy for cleanup; actual handler has the precise
+    // derived type above.
+    geolocateHandlerRef.current = handler as unknown as (e: unknown) => void;
     geolocateControl.on("geolocate", handler);
     geolocateControlRef.current = geolocateControl;
 
@@ -80,11 +102,17 @@ export function StationMap() {
       if (geolocateControlRef.current && geolocateHandlerRef.current) {
         // detach the event listener if mapbox exposes off
         try {
-          // typings may not expose `off`, but it's available on Evented
-          (geolocateControlRef.current as any).off?.(
-            "geolocate",
-            geolocateHandlerRef.current,
-          );
+          // typings may not expose `off`, but it's available on Evented. Use
+          // a conservative, well-typed cast to avoid `any`.
+          const maybeEvented = geolocateControlRef.current as unknown as {
+            off?: (event: string, handler: (e: GeolocateEvent) => void) => void;
+          };
+          if (geolocateHandlerRef.current) {
+            maybeEvented.off?.(
+              "geolocate",
+              geolocateHandlerRef.current as (e: GeolocateEvent) => void,
+            );
+          }
         } catch {
           /* ignore */
         }
