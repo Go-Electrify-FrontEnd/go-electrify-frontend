@@ -1,13 +1,13 @@
-import TransactionTable from "@/components/dashboard/wallet/wallet-transaction-table";
-import WalletDepositButton from "@/components/dashboard/wallet/wallet-deposit-button";
-import { WalletOverview } from "@/components/dashboard/wallet/wallet-overview";
+import TransactionTable from "@/features/wallet/components/wallet-transaction-table";
+import WalletDepositButton from "@/features/wallet/components/wallet-deposit-button";
+import { WalletOverview } from "@/features/wallet/components/wallet-overview";
 import {
   WalletSchema,
   TransactionListApiSchema,
 } from "@/lib/zod/wallet/wallet.schema";
 import { getUser } from "@/lib/auth/auth-server";
-import SectionHeader from "@/components/dashboard/shared/section-header";
-import SectionContent from "@/components/dashboard/shared/section-content";
+import SectionHeader from "@/components/shared/section-header";
+import SectionContent from "@/components/shared/section-content";
 
 export async function getWallet() {
   const { token } = await getUser();

@@ -22,7 +22,14 @@ export async function middleware(request: NextRequest) {
 
   if (pathname === "/login") {
     if (user) {
-      const url = request.nextUrl.clone();
+      // Some test environments provide a minimal mock for request.nextUrl
+      // (e.g. { pathname }) which doesn't implement clone(). Be defensive
+      // and fall back to constructing a new URL when clone isn't available.
+      const nextUrlAny = request.nextUrl as unknown as { clone?: () => URL };
+      const url =
+        typeof nextUrlAny.clone === "function"
+          ? nextUrlAny.clone()
+          : new URL(request.url);
       url.pathname = "/dashboard";
       return NextResponse.redirect(url);
     }

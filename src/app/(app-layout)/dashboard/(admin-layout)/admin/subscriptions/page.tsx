@@ -1,6 +1,6 @@
-import SubscriptionCreateDialog from "@/components/dashboard/admin/subscriptions/subscription-create-dialog";
-import SectionHeader from "@/components/dashboard/shared/section-header";
-import { SubscriptionsTable } from "@/components/dashboard/admin/subscriptions/subscription-table";
+import SubscriptionCreateDialog from "@/features/subscriptions/components/subscription-create-dialog";
+import SectionHeader from "@/components/shared/section-header";
+import { SubscriptionsTable } from "@/features/subscriptions/components/subscription-table";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { SubscriptionSchema } from "@/lib/zod/subscription/subscription.schema";
 import type { Subscription } from "@/lib/zod/subscription/subscription.types";
-import SectionContent from "@/components/dashboard/shared/section-content";
+import SectionContent from "@/components/shared/section-content";
 
 export async function getSubscriptions(): Promise<Subscription[]> {
   const url = "https://api.go-electrify.com/api/v1/subscriptions";
