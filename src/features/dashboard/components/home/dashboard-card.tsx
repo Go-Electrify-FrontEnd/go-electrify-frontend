@@ -1,4 +1,3 @@
-export * from "@/features/dashboard/components/home/dashboard-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LucideIcon } from "lucide-react";
 import Link from "next/link";

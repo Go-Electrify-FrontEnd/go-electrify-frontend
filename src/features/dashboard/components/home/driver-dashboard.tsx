@@ -1,4 +1,3 @@
-export * from "@/features/dashboard/components/home/driver-dashboard";
 import { User } from "@/lib/zod/user/user.types";
 import { Wallet, Calendar, MapPin, TrendingUp, Zap } from "lucide-react";
 import {
@@ -88,9 +87,7 @@ export async function DriverDashboard({
             <Calendar className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {stats.upcomingReservations}
-            </div>
+            <div className="text-2xl font-bold">{stats.upcomingReservations}</div>
             <p className="text-muted-foreground text-xs">Lịch sắp tới</p>
           </CardContent>
         </Card>
@@ -245,9 +242,7 @@ export async function DriverDashboard({
             </div>
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Đặt chỗ sắp tới</span>
-              <span className="font-medium">
-                {stats.upcomingReservations} lịch
-              </span>
+              <span className="font-medium">{stats.upcomingReservations} lịch</span>
             </div>
           </div>
           <Button className="w-full" asChild>
