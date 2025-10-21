@@ -1,7 +1,7 @@
 import SectionHeader from "@/components/dashboard/shared/section-header";
 import { getUser } from "@/lib/auth/auth-server";
 import { z } from "zod";
-import { UsersTable } from "@/components/dashboard/admin/users/users-table";
+import { UsersTable } from "@/features/users/components/users-table";
 import { UserApiSchema } from "@/lib/zod/user/user.schema";
 import type { UserApi } from "@/lib/zod/user/user.types";
 import {

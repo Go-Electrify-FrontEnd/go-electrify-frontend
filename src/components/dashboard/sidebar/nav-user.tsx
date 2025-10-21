@@ -30,7 +30,7 @@ import { useTheme } from "next-themes";
 // Navigation hooks removed for locale switching
 import Link from "next/link";
 import { SidebarMenuButton } from "@/components/ui/sidebar";
-import { useUser } from "@/contexts/user-context";
+import { useUser } from "@/features/users/contexts/user-context";
 
 export function NavUser() {
   // Vietnamese-only UI; locale switching removed

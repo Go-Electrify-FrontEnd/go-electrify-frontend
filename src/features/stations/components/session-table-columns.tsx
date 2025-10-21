@@ -37,7 +37,8 @@ const formatNumber = (value: number | null, suffix = "") => {
 const getStatusVariant = (status: string) => {
   const normalized = String(status).toLowerCase();
   if (normalized === "active" || normalized === "charging") return "default";
-  if (normalized === "stopped" || normalized === "completed") return "secondary";
+  if (normalized === "stopped" || normalized === "completed")
+    return "secondary";
   if (normalized === "error" || normalized === "faulted") return "destructive";
   return "secondary";
 };

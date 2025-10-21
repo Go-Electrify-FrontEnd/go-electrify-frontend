@@ -2,7 +2,10 @@
 
 import * as React from "react";
 import { SharedDataTable } from "@/components/shared/shared-data-table";
-import { sessionColumns, type SessionRow } from "@/features/stations/components/session-table-columns";
+import {
+  sessionColumns,
+  type SessionRow,
+} from "@/features/stations/components/session-table-columns";
 
 interface SessionsTableProps {
   data: SessionRow[];

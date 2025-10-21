@@ -5,7 +5,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { getUser } from "@/lib/auth/auth-server";
-import { UserProvider } from "@/contexts/user-context";
+import { UserProvider } from "@/features/users/contexts/user-context";
 import { forbidden } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import HeaderBreadcrumb from "@/components/dashboard/sidebar/header-breadcrumb";

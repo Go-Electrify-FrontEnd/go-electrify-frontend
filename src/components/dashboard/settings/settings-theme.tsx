@@ -16,7 +16,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { useUser } from "@/contexts/user-context";
+import { useUser } from "@/features/users/contexts/user-context";
 import { UserNameUpdateSchema } from "@/lib/zod/user/user.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
