@@ -3,9 +3,9 @@ import {
   getStationChargers,
   getStationSessions,
 } from "@/actions/stations-actions";
-import { ChargersTable } from "@/components/dashboard/stations/charger-table";
-import { SessionsTable } from "@/components/dashboard/stations/session-table";
-import type { SessionRow } from "@/components/dashboard/stations/session-table-columns";
+import { ChargersTable } from "@/features/stations/components/charger-table";
+import { SessionsTable } from "@/features/stations/components/session-table";
+import type { SessionRow } from "@/features/stations/components/session-table-columns";
 import SectionHeader from "@/components/dashboard/shared/section-header";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -26,11 +26,11 @@ import {
   Zap,
 } from "lucide-react";
 import { SharedDataTable } from "@/components/shared/shared-data-table";
-import bookingColumns from "@/components/dashboard/stations/bookings-table-columns";
+import bookingColumns from "@/features/stations/components/bookings-table-columns";
 import { forbidden, notFound } from "next/navigation";
 import StationDockCreate from "@/components/dashboard/staff/station/station-dock-create";
-import { ChargerUpdateProvider } from "@/contexts/charger-update-context";
-import UpdateCharger from "@/components/dashboard/stations/charger-edit-dialog";
+import { ChargerUpdateProvider } from "@/features/stations/contexts/charger-update-context";
+import UpdateCharger from "@/features/stations/components/charger-edit-dialog";
 import { getConnectorTypes } from "@/app/(app-layout)/dashboard/(admin-layout)/admin/connector-type/page";
 import SectionContent from "@/components/dashboard/shared/section-content";
 
@@ -308,10 +308,10 @@ export default async function StationPage({
               </div>
             ) : (
               <div className="p-3 sm:p-6">
-                <ChargerUpdateProvider>
-                  <ChargersTable data={chargers} />
-                  <UpdateCharger connectorTypes={connectorTypes} />
-                </ChargerUpdateProvider>
+                                <ChargerUpdateProvider>
+                                  <ChargersTable data={chargers} />
+                                  <UpdateCharger connectorTypes={connectorTypes} />
+                                </ChargerUpdateProvider>
               </div>
             )}
           </CardContent>

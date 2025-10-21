@@ -19,7 +19,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Loader2 } from "lucide-react";
-import { useChargerUpdate } from "@/contexts/charger-update-context";
+import { useChargerUpdate } from "@/features/stations/contexts/charger-update-context";
 import {
   chargerUpdateSchema,
   type ChargerUpdateFormData,
