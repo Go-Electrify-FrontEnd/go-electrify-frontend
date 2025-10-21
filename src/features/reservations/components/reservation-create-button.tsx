@@ -23,7 +23,11 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Calendar, Plus, Check, ChevronsUpDown } from "lucide-react";
 import { startTransition, useActionState, useEffect, useState } from "react";
@@ -164,7 +168,8 @@ export default function CreateReservationButton({
                       >
                         {field.value
                           ? stations.find(
-                              (station) => station.id.toString() === field.value,
+                              (station) =>
+                                station.id.toString() === field.value,
                             )?.name
                           : "Chọn trạm sạc"}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -201,7 +206,9 @@ export default function CreateReservationButton({
                       </Command>
                     </PopoverContent>
                   </Popover>
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
                 </Field>
               )}
             />
@@ -213,7 +220,10 @@ export default function CreateReservationButton({
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="vehicleModelId">Mẫu xe</FieldLabel>
-                  <Popover open={openVehicleModel} onOpenChange={setOpenVehicleModel}>
+                  <Popover
+                    open={openVehicleModel}
+                    onOpenChange={setOpenVehicleModel}
+                  >
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
@@ -226,10 +236,12 @@ export default function CreateReservationButton({
                         )}
                       >
                         {field.value
-                          ? vehicleModels.find((vm) => vm.id.toString() === field.value)?.modelName
+                          ? vehicleModels.find(
+                              (vm) => vm.id.toString() === field.value,
+                            )?.modelName
                           : vehicleModels.length === 0
-                          ? "Đang tải mẫu xe..."
-                          : "Chọn mẫu xe của bạn"}
+                            ? "Đang tải mẫu xe..."
+                            : "Chọn mẫu xe của bạn"}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                       </Button>
                     </PopoverTrigger>
@@ -251,7 +263,9 @@ export default function CreateReservationButton({
                                 <Check
                                   className={cn(
                                     "mr-2 h-4 w-4",
-                                    field.value === vm.id.toString() ? "opacity-100" : "opacity-0",
+                                    field.value === vm.id.toString()
+                                      ? "opacity-100"
+                                      : "opacity-0",
                                   )}
                                 />
                                 {vm.modelName}
@@ -262,7 +276,9 @@ export default function CreateReservationButton({
                       </Command>
                     </PopoverContent>
                   </Popover>
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
                 </Field>
               )}
             />
@@ -274,7 +290,10 @@ export default function CreateReservationButton({
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="connectorTypeId">Loại cổng</FieldLabel>
-                  <Popover open={openConnectorType} onOpenChange={setOpenConnectorType}>
+                  <Popover
+                    open={openConnectorType}
+                    onOpenChange={setOpenConnectorType}
+                  >
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
@@ -288,10 +307,12 @@ export default function CreateReservationButton({
                         )}
                       >
                         {field.value
-                          ? connectorTypes.find((ct) => ct.id.toString() === field.value)?.name
+                          ? connectorTypes.find(
+                              (ct) => ct.id.toString() === field.value,
+                            )?.name
                           : selectedVehicleModelId
-                          ? "Chọn loại cổng"
-                          : "Vui lòng chọn mẫu xe trước"}
+                            ? "Chọn loại cổng"
+                            : "Vui lòng chọn mẫu xe trước"}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                       </Button>
                     </PopoverTrigger>
@@ -313,7 +334,9 @@ export default function CreateReservationButton({
                                 <Check
                                   className={cn(
                                     "mr-2 h-4 w-4",
-                                    field.value === ct.id.toString() ? "opacity-100" : "opacity-0",
+                                    field.value === ct.id.toString()
+                                      ? "opacity-100"
+                                      : "opacity-0",
                                   )}
                                 />
                                 {ct.name}
@@ -324,7 +347,9 @@ export default function CreateReservationButton({
                       </Command>
                     </PopoverContent>
                   </Popover>
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
                 </Field>
               )}
             />
@@ -335,7 +360,9 @@ export default function CreateReservationButton({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="initialSoc">Mức sạc ban đầu (%)</FieldLabel>
+                  <FieldLabel htmlFor="initialSoc">
+                    Mức sạc ban đầu (%)
+                  </FieldLabel>
                   <Input
                     {...field}
                     id="initialSoc"
@@ -343,7 +370,9 @@ export default function CreateReservationButton({
                     aria-invalid={fieldState.invalid}
                     autoComplete="off"
                   />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
                 </Field>
               )}
             />

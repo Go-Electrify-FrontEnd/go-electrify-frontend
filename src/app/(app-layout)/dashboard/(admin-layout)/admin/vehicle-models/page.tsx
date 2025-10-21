@@ -1,4 +1,4 @@
-import VehicleModelCreateDialog from "@/components/dashboard/admin/vehicle-models/vehicle-model-create-dialog";
+import VehicleModelCreateDialog from "@/features/vehicle-models/components/vehicle-model-create-dialog";
 import SectionHeader from "@/components/dashboard/shared/section-header";
 import {
   Card,
@@ -12,9 +12,9 @@ import { CarModelSchema } from "@/lib/zod/vehicle-model/vehicle-model.schema";
 import type { CarModel } from "@/lib/zod/vehicle-model/vehicle-model.types";
 import { getConnectorTypes } from "../connector-type/page";
 import { ConnectorTypeProvider } from "@/contexts/connector-type-context";
-import { VehicleModelTable } from "@/components/dashboard/admin/vehicle-models/vehicle-model-table";
+import { VehicleModelTable } from "@/features/vehicle-models/components/vehicle-model-table";
 import { VehicleModelUpdateProvider } from "@/contexts/vehicle-model-action-context";
-import VehicleModelEditDialog from "@/components/dashboard/admin/vehicle-models/vehicle-model-edit-dialog";
+import VehicleModelEditDialog from "@/features/vehicle-models/components/vehicle-model-edit-dialog";
 import SectionContent from "@/components/dashboard/shared/section-content";
 
 export async function getVehicleModels(token: string): Promise<CarModel[]> {

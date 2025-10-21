@@ -1,1 +1,6 @@
+/* DEPRECATED SHIM
+	 Compatibility shim left during feature refactor. Prefer:
+		 @/features/stations/components/charger-table-columns
+	 This file is a safe-to-remove candidate once the repo is fully verified.
+*/
 export * from "@/features/stations/components/charger-table-columns";

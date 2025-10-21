@@ -141,14 +141,18 @@ export const columns: ColumnDef<Reservation>[] = [
     accessorKey: "initialSoc",
     header: "SOC ban đầu",
     cell: ({ row }) => (
-      <div className="text-foreground text-left font-medium">{row.getValue("initialSoc")}%</div>
+      <div className="text-foreground text-left font-medium">
+        {row.getValue("initialSoc")}%
+      </div>
     ),
   },
   {
     accessorKey: "type",
     header: "Loại",
     cell: ({ row }) => (
-      <div className="text-foreground">{translateType(row.getValue("type"))}</div>
+      <div className="text-foreground">
+        {translateType(row.getValue("type"))}
+      </div>
     ),
   },
   {
@@ -171,7 +175,9 @@ export const columns: ColumnDef<Reservation>[] = [
       const amount = Number(raw ?? 0);
       const safeAmount = Number.isFinite(amount) ? amount : 0;
       return (
-        <div className="text-foreground text-left font-semibold">{formatCurrency(safeAmount)}</div>
+        <div className="text-foreground text-left font-semibold">
+          {formatCurrency(safeAmount)}
+        </div>
       );
     },
   },
@@ -191,14 +197,27 @@ export const columns: ColumnDef<Reservation>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuLabel className="font-semibold">Hành động</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(reservation.id.toString())} className="cursor-pointer">
+            <DropdownMenuLabel className="font-semibold">
+              Hành động
+            </DropdownMenuLabel>
+            <DropdownMenuItem
+              onClick={() =>
+                navigator.clipboard.writeText(reservation.id.toString())
+              }
+              className="cursor-pointer"
+            >
               Sao chép ID đặt chỗ
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer">Xem chi tiết</DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer">Chỉnh sửa</DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive focus:text-destructive cursor-pointer">Hủy đặt chỗ</DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">
+              Xem chi tiết
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">
+              Chỉnh sửa
+            </DropdownMenuItem>
+            <DropdownMenuItem className="text-destructive focus:text-destructive cursor-pointer">
+              Hủy đặt chỗ
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
