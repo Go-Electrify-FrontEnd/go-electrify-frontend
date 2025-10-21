@@ -1,8 +1,11 @@
 import { getUser } from "@/lib/auth/auth-server";
-import { getStationChargers } from "@/actions/stations-actions";
+import {
+  getStationChargers,
+  getStationSessions,
+} from "@/actions/stations-actions";
 import { ChargersTable } from "@/components/dashboard/stations/charger-table";
 import { SessionsTable } from "@/components/dashboard/stations/session-table";
-import type { Session } from "@/components/dashboard/stations/session-table-columns";
+import type { SessionRow } from "@/components/dashboard/stations/session-table-columns";
 import SectionHeader from "@/components/dashboard/shared/section-header";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +21,6 @@ import {
   Activity,
   Battery,
   Calendar,
-  MapPin,
   Plus,
   TrendingUp,
   Zap,
@@ -138,30 +140,43 @@ export default async function StationPage({
 
   const chargers = await getStationChargers(id, token ?? "");
   const bookings = await getBookingsByStationId(id, token ?? "");
+  const stationSessions = await getStationSessions(id, token ?? "");
 
-  // Dummy sessions data for display: mix of active charging sessions and reservations
-  const now = Date.now();
-  const chargingSessions: Session[] = (chargers ?? [])
-    .slice(0, 4)
-    .map((c, i) => ({
-      id: `CS-${c.id}`,
-      kind: "charging",
-      dock: c.code,
-      userName: `Người dùng ${i + 1}`,
-      start: new Date(now - (10 + i * 12) * 60 * 1000).toISOString(),
-      end: null,
-      status: "active",
-      soc: Math.max(10, 20 + i * 15),
-      estimatedCost: undefined,
-    }));
-  const sessions: Session[] = chargingSessions;
+  const chargerCodeById = new Map(
+    (chargers ?? []).map((charger) => [charger.id, charger.code] as const),
+  );
+
+  const sessions: SessionRow[] = stationSessions
+    .map((session) => ({
+      id: session.id,
+      chargerId: session.chargerId,
+      chargerCode: chargerCodeById.get(session.chargerId) ?? null,
+      bookingId: session.bookingId,
+      status: session.status,
+      startedAt: session.startedAt,
+      initialSoc: session.initialSoc,
+      targetSoc: session.targetSoc,
+      chargerPowerKw: session.chargerPowerKw,
+      vehicleMaxPowerKw: session.vehicleMaxPowerKw,
+      vehicleBatteryCapacityKwh: session.vehicleBatteryCapacityKwh,
+      connectorMaxPowerKw: session.connectorMaxPowerKw,
+    }))
+    .sort((a, b) => {
+      const aTime = new Date(a.startedAt).getTime();
+      const bTime = new Date(b.startedAt).getTime();
+      if (Number.isNaN(aTime) || Number.isNaN(bTime)) return 0;
+      return bTime - aTime;
+    });
   const connectorTypes = await getConnectorTypes();
 
   // Calculate stats
   const totalChargers = chargers?.length ?? 0;
   const activeChargers =
     chargers?.filter((c) => c.status === "ONLINE")?.length ?? 0;
-  const activeSessions = chargingSessions.length;
+  const activeSessions = sessions.filter((session) => {
+    const normalized = session.status.toLowerCase();
+    return ["active", "charging", "in_progress"].includes(normalized);
+  }).length;
   const upcomingBookings = bookings.length;
   const utilizationRate =
     totalChargers > 0 ? Math.round((activeSessions / totalChargers) * 100) : 0;
@@ -326,23 +341,9 @@ export default async function StationPage({
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            {sessions.length === 0 ? (
-              <div className="flex flex-col items-center justify-center px-4 py-8 text-center sm:py-12">
-                <div className="bg-muted flex h-16 w-16 items-center justify-center rounded-full sm:h-20 sm:w-20">
-                  <Activity className="text-muted-foreground h-8 w-8 sm:h-10 sm:w-10" />
-                </div>
-                <h3 className="mt-3 text-base font-semibold sm:mt-4 sm:text-lg">
-                  Không có hoạt động
-                </h3>
-                <p className="text-muted-foreground mt-1.5 max-w-sm text-xs sm:mt-2 sm:text-sm">
-                  Chưa có phiên sạc hoặc giữ chỗ nào tại trạm này
-                </p>
-              </div>
-            ) : (
-              <div className="p-3 sm:p-6">
-                <SessionsTable data={sessions} />
-              </div>
-            )}
+            <div className="p-3 sm:p-6">
+              <SessionsTable data={sessions} />
+            </div>
           </CardContent>
         </Card>
 
@@ -365,29 +366,16 @@ export default async function StationPage({
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            {bookings.length === 0 ? (
-              <div className="flex flex-col items-center justify-center px-4 py-8 text-center sm:py-12">
-                <div className="bg-muted flex h-16 w-16 items-center justify-center rounded-full sm:h-20 sm:w-20">
-                  <Calendar className="text-muted-foreground h-8 w-8 sm:h-10 sm:w-10" />
-                </div>
-                <h3 className="mt-3 text-base font-semibold sm:mt-4 sm:text-lg">
-                  Chưa có giữ chỗ
-                </h3>
-                <p className="text-muted-foreground mt-1.5 max-w-sm text-xs sm:mt-2 sm:text-sm">
-                  Khách hàng chưa đăng ký giữ chỗ nào cho trạm này
-                </p>
-              </div>
-            ) : (
-              <div className="p-3 sm:p-6">
-                <SharedDataTable
-                  columns={bookingColumns}
-                  data={bookings}
-                  searchColumn="code"
-                  searchPlaceholder="Tìm kiếm mã giữ chỗ..."
-                  emptyMessage="Không có giữ chỗ nào."
-                />
-              </div>
-            )}
+            <div className="p-3 sm:p-6">
+              <SharedDataTable
+                columns={bookingColumns}
+                data={bookings}
+                searchColumn="code"
+                searchPlaceholder="Tìm kiếm mã giữ chỗ..."
+                emptyTitle="Chưa có giữ chỗ"
+                emptyMessage="Khách hàng chưa đăng ký giữ chỗ nào cho trạm này."
+              />
+            </div>
           </CardContent>
         </Card>
       </SectionContent>

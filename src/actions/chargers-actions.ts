@@ -77,13 +77,12 @@ export async function updateCharger(prevState: unknown, formData: FormData) {
     powerKw: String(formData.get("powerKw") ?? ""),
     status: String(formData.get("status") ?? ""),
     pricePerKwh: String(formData.get("pricePerKwh") ?? ""),
-    dockSecretHash: String(formData.get("dockSecretHash") ?? ""),
   });
 
   if (!parsed.success) {
     const msg = parsed.error.issues.map((i) => i.message).join("; ");
-    console.error("updateCharger validation error:", parsed.error.format());
-    return { success: false, msg };
+    console.error("updateCharger validation error:", parsed.error.flatten());
+    return { success: false, msg: "Vui lòng kiểm tra lại dữ liệu" };
   }
 
   const data = parsed.data;
@@ -105,7 +104,6 @@ export async function updateCharger(prevState: unknown, formData: FormData) {
         PowerKw: data.powerKw,
         Status: data.status,
         PricePerKwh: data.pricePerKwh,
-        DockSecretHash: data.dockSecretHash,
       }),
     });
 

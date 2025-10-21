@@ -12,7 +12,7 @@ export default function SectionHeader({
   children?: React.ReactNode;
 }) {
   return (
-    <div className="border-b px-8 py-12">
+    <div className="border-b py-12 lg:px-8">
       <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1.5">
           <h1 className="text-foreground text-4xl font-semibold">{title}</h1>

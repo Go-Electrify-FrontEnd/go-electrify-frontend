@@ -15,14 +15,19 @@ import { BarChartWrapper, LineChartWrapper } from "./client-charts";
 import type { DriverStats } from "@/types/dashboard-stats";
 import Link from "next/link";
 import SectionHeader from "@/components/dashboard/shared/section-header";
+import { TransactionList } from "@/lib/zod/wallet/wallet.schema";
 
 interface DriverDashboardProps {
   user: User;
-  token?: string;
   stats: DriverStats;
+  transactions: TransactionList | null;
 }
 
-export function DriverDashboard({ user, token, stats }: DriverDashboardProps) {
+export async function DriverDashboard({
+  user,
+  stats,
+  transactions,
+}: DriverDashboardProps) {
   // Mock data for charts - in production, this would come from API
   const spendingData = [
     { month: "T7", amount: stats.totalSpent * 0.15 },

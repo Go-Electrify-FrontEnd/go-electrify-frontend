@@ -15,6 +15,187 @@ import { getSubscriptions } from "./(admin-layout)/admin/subscriptions/page";
 import { getUsers } from "./(admin-layout)/admin/users/page";
 import { getTransactions, getWallet } from "./wallet/page";
 
+const RESERVATIONS_ENDPOINT =
+  "https://api.go-electrify.com/api/v1/reservations";
+
+type ReservationRecord = {
+  ScheduledStart?: string | null;
+  ScheduledEnd?: string | null;
+};
+
+type ReservationSummary = {
+  active: number;
+  upcoming: number;
+};
+
+async function fetchReservations(token: string): Promise<ReservationRecord[]> {
+  try {
+    const response = await fetch(RESERVATIONS_ENDPOINT, {
+      headers: { Authorization: `Bearer ${token}` },
+      next: { tags: ["reservations"] },
+    });
+
+    if (!response.ok) {
+      console.error("Failed to fetch reservations", response.status);
+      return [];
+    }
+
+    const payload = await response.json();
+    return Array.isArray(payload?.Items) ? payload.Items : [];
+  } catch (error) {
+    console.error("Error fetching reservations", error);
+    return [];
+  }
+}
+
+function parseIsoDate(value?: string | null): Date | null {
+  if (!value) return null;
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function summarizeReservations(
+  reservations: ReservationRecord[],
+  now: Date,
+): ReservationSummary {
+  return reservations.reduce<ReservationSummary>(
+    (acc, reservation) => {
+      const start = parseIsoDate(reservation.ScheduledStart);
+      const end = parseIsoDate(reservation.ScheduledEnd);
+
+      if (start && end && now >= start && now <= end) {
+        acc.active += 1;
+      } else if (start && start > now) {
+        acc.upcoming += 1;
+      }
+
+      return acc;
+    },
+    { active: 0, upcoming: 0 },
+  );
+}
+
+function summarizeStations(
+  stations: Array<{ status?: string }> | null | undefined,
+) {
+  const totalStations = stations?.length ?? 0;
+  const activeStations =
+    stations?.filter((station) => station.status === "ACTIVE").length ?? 0;
+  return { totalStations, activeStations };
+}
+
+function summarizeUsers(
+  users: Array<{ role?: string | null }> | null | undefined,
+) {
+  const roleBreakdown: AdminStats["roleBreakdown"] = {
+    driver: 0,
+    staff: 0,
+    admin: 0,
+  };
+
+  let totalUsers = 0;
+  let unknownCount = 0;
+
+  if (Array.isArray(users)) {
+    totalUsers = users.length;
+    users.forEach((user) => {
+      const normalized = user.role?.toLowerCase() ?? "unknown";
+      if (
+        normalized === "driver" ||
+        normalized === "staff" ||
+        normalized === "admin"
+      ) {
+        roleBreakdown[normalized] += 1;
+        return;
+      }
+      unknownCount += 1;
+    });
+  }
+
+  if (unknownCount > 0 && process.env.NODE_ENV !== "production") {
+    console.warn(
+      `[Dashboard] Encountered ${unknownCount} user(s) with unknown role during summary.`,
+    );
+  }
+
+  return { totalUsers, roleBreakdown };
+}
+
+async function buildAdminStats(token: string): Promise<AdminStats> {
+  const [
+    stations,
+    users,
+    connectors,
+    vehicleModels,
+    subscriptions,
+    reservations,
+  ] = await Promise.all([
+    getStations(),
+    getUsers(),
+    getConnectorTypes(),
+    getVehicleModels(token),
+    getSubscriptions(),
+    fetchReservations(token),
+  ]);
+
+  const { totalStations, activeStations } = summarizeStations(stations);
+  const { totalUsers, roleBreakdown } = summarizeUsers(users);
+  const totalConnectorTypes = connectors?.length ?? 0;
+  const totalVehicleModels = vehicleModels?.length ?? 0;
+  const totalSubscriptions = subscriptions?.length ?? 0;
+  const { active: activeReservations } = summarizeReservations(
+    reservations,
+    new Date(),
+  );
+
+  return {
+    totalStations,
+    activeStations,
+    totalUsers,
+    roleBreakdown,
+    totalConnectorTypes,
+    totalVehicleModels,
+    totalSubscriptions,
+    totalReservations: reservations.length,
+    activeReservations,
+  };
+}
+
+async function buildStaffStats(token: string): Promise<StaffStats> {
+  const [stations, reservations] = await Promise.all([
+    getStations(),
+    fetchReservations(token),
+  ]);
+
+  const { totalStations, activeStations } = summarizeStations(stations);
+  const { active: activeSessions, upcoming: pendingReservations } =
+    summarizeReservations(reservations, new Date());
+
+  return {
+    totalStations,
+    activeStations,
+    totalCustomers: 0,
+    activeSessions,
+    pendingReservations,
+  };
+}
+
+async function buildDriverData() {
+  const [wallet, transactions] = await Promise.all([
+    getWallet(),
+    getTransactions(),
+  ]);
+
+  const driverStats: DriverStats = {
+    walletBalance: wallet?.balance ?? 0,
+    totalSpent: 0,
+    chargingSessions: 0,
+    upcomingReservations: 0,
+  };
+
+  return { driverStats, transactions };
+}
+
 export default async function DashboardPage() {
   const { user, token } = await getUser();
 
@@ -24,160 +205,22 @@ export default async function DashboardPage() {
 
   const userRole = user.role?.toLowerCase();
   if (userRole === "admin") {
-    const [reservationsRes] = await Promise.all([
-      fetch("https://api.go-electrify.com/api/v1/reservations", {
-        headers: { Authorization: `Bearer ${token}` },
-        next: { tags: ["reservations"] },
-      }),
-    ]);
-
-    const stations = await getStations();
-    let totalStations = 0;
-    let activeStations = 0;
-    if (stations) {
-      totalStations = stations.length;
-      activeStations = stations.filter((s) => s.status === "ACTIVE").length;
-    }
-
-    const users = await getUsers();
-    let totalUsers = 0;
-    const roleBreakdown = { driver: 0, staff: 0, admin: 0, unknown: 0 };
-
-    if (users) {
-      totalUsers = users.length;
-
-      users.forEach((user) => {
-        const role = user.role?.toLowerCase() || "";
-        if (role === "driver") roleBreakdown.driver++;
-        else if (role === "staff") roleBreakdown.staff++;
-        else if (role === "admin") roleBreakdown.admin++;
-        else roleBreakdown.unknown++;
-      });
-    }
-
-    const connectors = await getConnectorTypes();
-    let totalConnectorTypes = 0;
-    if (connectors) {
-      totalConnectorTypes = connectors.length;
-    }
-
-    const vehicleModels = await getVehicleModels(token);
-    let totalVehicleModels = 0;
-    if (vehicleModels) {
-      totalVehicleModels = vehicleModels.length;
-    }
-
-    const subscriptions = await getSubscriptions();
-    let totalSubscriptions = 0;
-    if (subscriptions) {
-      totalSubscriptions = subscriptions.length;
-    }
-
-    let totalReservations = 0;
-    let activeReservations = 0;
-    if (reservationsRes.ok) {
-      const data = await reservationsRes.json();
-      const reservations = data.Items || [];
-      totalReservations = reservations.length;
-      const now = new Date();
-      activeReservations = reservations.filter(
-        (r: { ScheduledStart?: string; ScheduledEnd?: string }) => {
-          const scheduledStart = new Date(r.ScheduledStart || "");
-          const scheduledEnd = new Date(r.ScheduledEnd || "");
-          return now >= scheduledStart && now <= scheduledEnd;
-        },
-      ).length;
-    }
-
-    const adminStats: AdminStats = {
-      totalStations,
-      activeStations,
-      totalUsers,
-      roleBreakdown,
-      totalConnectorTypes,
-      totalVehicleModels,
-      totalSubscriptions,
-      totalReservations,
-      activeReservations,
-    };
-
-    return <AdminDashboard user={user} token={token} stats={adminStats} />;
+    const stats = await buildAdminStats(token);
+    return <AdminDashboard user={user} token={token} stats={stats} />;
   }
 
   if (userRole === "staff") {
-    const [reservationsRes] = await Promise.all([
-      fetch("https://api.go-electrify.com/api/v1/reservations", {
-        headers: { Authorization: `Bearer ${token}` },
-        next: { tags: ["reservations"] },
-      }),
-    ]);
-
-    const stations = await getStations();
-    let totalStations = 0;
-    let activeStations = 0;
-    if (stations) {
-      totalStations = stations.length;
-      activeStations = stations.filter((s) => s.status === "ACTIVE").length;
-    }
-
-    const totalCustomers = 0;
-    // if (usersRes.ok) {
-    //   const usersData = await usersRes.json();
-    //   const users = usersData.Items || [];
-    //   totalCustomers = users.filter((u: { Role?: string }) => {
-    //     const role = (u.Role || "").toLowerCase();
-    //     return role === "driver" || role === "customer" || role === "user";
-    //   }).length;
-    // }
-
-    let activeSessions = 0;
-    let pendingReservations = 0;
-    if (reservationsRes.ok) {
-      const reservationsData = await reservationsRes.json();
-      const reservations = reservationsData.Items || [];
-      const now = new Date();
-      reservations.forEach(
-        (r: { ScheduledStart?: string; ScheduledEnd?: string }) => {
-          const scheduledStart = new Date(r.ScheduledStart || "");
-          const scheduledEnd = new Date(r.ScheduledEnd || "");
-          if (now >= scheduledStart && now <= scheduledEnd) activeSessions++;
-          if (scheduledStart > now) pendingReservations++;
-        },
-      );
-    }
-
-    const staffStats: StaffStats = {
-      totalStations,
-      activeStations,
-      totalCustomers,
-      activeSessions,
-      pendingReservations,
-    };
-
-    return <StaffDashboard user={user} token={token} stats={staffStats} />;
-  }
-  const wallet = await getWallet();
-  let walletBalance = 0;
-  if (wallet) {
-    walletBalance = wallet.balance;
+    const stats = await buildStaffStats(token);
+    return <StaffDashboard user={user} token={token} stats={stats} />;
   }
 
-  const transactions = await getTransactions();
-  let totalSpent = 0;
-  const chargingSessions = 0;
-  if (transactions) {
-    totalSpent = transactions.data
-      .filter((transaction) => transaction.type === "DEPOSIT")
-      .reduce((sum, prev) => sum + prev.amount, 0);
-  }
+  const { driverStats, transactions } = await buildDriverData();
 
-  const upcomingReservations = 0;
-  const driverStats: DriverStats = {
-    walletBalance,
-    totalSpent,
-    chargingSessions,
-    upcomingReservations,
-  };
-
-  return <DriverDashboard user={user} token={token} stats={driverStats} />;
+  return (
+    <DriverDashboard
+      user={user}
+      transactions={transactions}
+      stats={driverStats}
+    />
+  );
 }
