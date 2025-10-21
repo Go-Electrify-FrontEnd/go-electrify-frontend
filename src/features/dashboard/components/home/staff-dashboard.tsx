@@ -1,4 +1,3 @@
-export * from "@/features/dashboard/components/home/staff-dashboard";
 import { User } from "@/lib/zod/user/user.types";
 import {
   MapPin,
@@ -85,9 +84,7 @@ export function StaffDashboard({ user, token, stats }: StaffDashboardProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.activeSessions}</div>
-            <p className="text-muted-foreground text-xs">
-              Phiên đang hoạt động
-            </p>
+            <p className="text-muted-foreground text-xs">Phiên đang hoạt động</p>
           </CardContent>
         </Card>
 
@@ -97,9 +94,7 @@ export function StaffDashboard({ user, token, stats }: StaffDashboardProps) {
             <Clock className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {stats.pendingReservations}
-            </div>
+            <div className="text-2xl font-bold">{stats.pendingReservations}</div>
             <p className="text-muted-foreground text-xs">Lịch sắp tới</p>
           </CardContent>
         </Card>
@@ -138,18 +133,14 @@ export function StaffDashboard({ user, token, stats }: StaffDashboardProps) {
                   <CheckCircle2 className="h-4 w-4 text-green-600" />
                   <span className="text-sm">Hoạt động</span>
                 </div>
-                <span className="text-sm font-semibold">
-                  {stats.activeStations}
-                </span>
+                <span className="text-sm font-semibold">{stats.activeStations}</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <AlertCircle className="h-4 w-4 text-gray-600" />
                   <span className="text-sm">Không hoạt động</span>
                 </div>
-                <span className="text-sm font-semibold">
-                  {stats.totalStations - stats.activeStations}
-                </span>
+                <span className="text-sm font-semibold">{stats.totalStations - stats.activeStations}</span>
               </div>
             </div>
             <Link
@@ -237,9 +228,7 @@ export function StaffDashboard({ user, token, stats }: StaffDashboardProps) {
         <CardContent className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <p className="text-muted-foreground text-sm">
-                Phiên sạc đang hoạt động
-              </p>
+              <p className="text-muted-foreground text-sm">Phiên sạc đang hoạt động</p>
               <p className="text-2xl font-bold">{stats.activeSessions}</p>
               <Badge variant="secondary" className="text-xs">
                 <TrendingUp className="mr-1 h-3 w-3" />

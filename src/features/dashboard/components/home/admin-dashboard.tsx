@@ -1,4 +1,3 @@
-export { AdminDashboard } from "@/features/dashboard/components/home/admin-dashboard";
 "use client";
 
 import { User } from "@/lib/zod/user/user.types";

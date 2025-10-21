@@ -1,4 +1,3 @@
-export * from "@/features/dashboard/components/home/resource-utilization";
 "use client";
 
 import { TrendingUp } from "lucide-react";
