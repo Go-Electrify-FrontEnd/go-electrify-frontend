@@ -50,6 +50,7 @@ export function ActionsCell({ connectorType }: ActionsCellProps) {
             }}
             className="text-red-600 focus:text-red-600"
           >
+          export * from "@/features/connector-type/services/connector-type-actions";
             <Trash2 className="h-4 w-4" />
             Xóa
           </DropdownMenuItem>
