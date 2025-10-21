@@ -27,7 +27,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { NavSection } from "./nav-section";
-import { useUser } from "@/contexts/user-context";
+import { useUser } from "@/features/users/contexts/user-context";
 import { NavSecondary } from "./nav-secondary";
 import { NavUser } from "./nav-user";
 import AppLogo from "@/components/shared/logo";

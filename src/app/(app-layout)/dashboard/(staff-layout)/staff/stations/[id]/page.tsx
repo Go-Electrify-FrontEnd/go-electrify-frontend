@@ -308,10 +308,10 @@ export default async function StationPage({
               </div>
             ) : (
               <div className="p-3 sm:p-6">
-                                <ChargerUpdateProvider>
-                                  <ChargersTable data={chargers} />
-                                  <UpdateCharger connectorTypes={connectorTypes} />
-                                </ChargerUpdateProvider>
+                <ChargerUpdateProvider>
+                  <ChargersTable data={chargers} />
+                  <UpdateCharger connectorTypes={connectorTypes} />
+                </ChargerUpdateProvider>
               </div>
             )}
           </CardContent>
