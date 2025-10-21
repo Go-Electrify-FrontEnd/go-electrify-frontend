@@ -15,6 +15,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import {
   Table,
   TableBody,
   TableCell,
@@ -28,7 +35,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Inbox, Search, SlidersHorizontal } from "lucide-react";
 import { useState, useMemo, useEffect, useRef } from "react";
 
 // Selection and toolbar removed — no GSAP animations required
@@ -43,8 +50,7 @@ interface SharedDataTableProps<TData extends Record<string, unknown>, TValue> {
   searchColumn?: string;
   searchPlaceholder?: string;
   emptyMessage?: string;
-  selectAllLabel?: string;
-  deselectAllLabel?: string;
+  emptyTitle?: string;
 }
 
 export function SharedDataTable<TData extends Record<string, unknown>, TValue>({
@@ -53,8 +59,7 @@ export function SharedDataTable<TData extends Record<string, unknown>, TValue>({
   searchColumn = "name",
   searchPlaceholder = "Tìm kiếm...",
   emptyMessage = "Không có dữ liệu.",
-  selectAllLabel = "Chọn tất cả",
-  deselectAllLabel = "Bỏ chọn tất cả",
+  emptyTitle = "Không tìm thấy dữ liệu",
 }: SharedDataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -251,9 +256,19 @@ export function SharedDataTable<TData extends Record<string, unknown>, TValue>({
               <TableRow>
                 <TableCell
                   colSpan={table.getAllLeafColumns().length}
-                  className="h-24 text-center"
+                  className="p-8"
                 >
-                  {emptyMessage}
+                  <Empty className="border-muted-foreground/30 bg-muted/40 border border-dashed p-8">
+                    <EmptyHeader>
+                      <EmptyMedia variant="icon">
+                        <Inbox className="h-6 w-6" aria-hidden="true" />
+                      </EmptyMedia>
+                      <EmptyTitle>{emptyTitle}</EmptyTitle>
+                      {emptyMessage ? (
+                        <EmptyDescription>{emptyMessage}</EmptyDescription>
+                      ) : null}
+                    </EmptyHeader>
+                  </Empty>
                 </TableCell>
               </TableRow>
             )}
