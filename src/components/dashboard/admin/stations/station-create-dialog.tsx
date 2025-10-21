@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createStation } from "@/actions/stations-actions";
+import { createStation } from "@/features/stations/services/stations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {

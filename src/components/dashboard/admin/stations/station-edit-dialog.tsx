@@ -27,7 +27,7 @@ import {
   stationUpdateSchema,
   type StationUpdateFormData,
 } from "@/lib/zod/station/station.request";
-import { updateStation } from "@/actions/stations-actions";
+import { updateStation } from "@/features/stations/services/stations";
 import {
   InputGroup,
   InputGroupAddon,

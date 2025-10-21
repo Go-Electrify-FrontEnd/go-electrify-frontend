@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Eye, Copy } from "lucide-react";
 import type { Charger } from "@/lib/zod/charger/charger.types";
-import { useChargerUpdate } from "@/contexts/charger-update-context";
+import { useChargerUpdate } from "@/features/stations/contexts/charger-update-context";
 
 interface ActionsCellProps {
   charger: Charger;
