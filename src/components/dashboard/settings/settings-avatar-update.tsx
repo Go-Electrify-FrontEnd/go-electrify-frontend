@@ -11,7 +11,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { type PutBlobResult } from "@vercel/blob";
 import { upload } from "@vercel/blob/client";
-import { useUser } from "@/contexts/user-context";
+import { useUser } from "@/features/users/contexts/user-context";
 import { Crop } from "lucide-react";
 import { toast } from "sonner";
 import { AvatarCropDialog } from "./avatar-crop-dialog";
