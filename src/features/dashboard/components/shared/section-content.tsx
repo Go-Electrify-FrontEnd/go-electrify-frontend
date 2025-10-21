@@ -5,6 +5,9 @@ interface SectionContentProps {
   className?: string;
 }
 
-export default function SectionContent({ children, className }: SectionContentProps) {
+export default function SectionContent({
+  children,
+  className,
+}: SectionContentProps) {
   return <div className={`space-y-4 ${className ?? ""}`}>{children}</div>;
 }

@@ -9,8 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import SectionHeader from "@/components/dashboard/shared/section-header";
-import StatCard from "@/components/dashboard/shared/stat-card";
+import SectionHeader from "@/components/shared/section-header";
+import StatCard from "@/components/shared/stat-card";
 import { Badge } from "@/components/ui/badge";
 import { type ChartConfig } from "@/components/ui/chart";
 import type { AdminStats } from "@/types/dashboard-stats";
@@ -25,9 +25,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Link from "next/link";
+import SectionContent from "../shared/section-content";
 import { ResourceUtilizationPie } from "./resource-utilization";
 import { RoleDistributionCard } from "./role-distribution";
-import SectionContent from "../shared/section-content";
 
 interface AdminDashboardProps {
   user: User;

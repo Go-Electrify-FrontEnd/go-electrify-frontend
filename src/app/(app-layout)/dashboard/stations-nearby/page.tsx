@@ -1,13 +1,13 @@
-import { NearestStationsList } from "@/components/dashboard/stations-nearby/stations-nearby-list";
-import { StationMap } from "@/components/dashboard/stations-nearby/stations-map";
+import { NearestStationsList } from "@/features/stations-nearby/components/stations-nearby-list";
+import { StationMap } from "@/features/stations-nearby/components/stations-map";
 import { Button } from "@/components/ui/button";
 import { Filter, RotateCcw } from "lucide-react";
 import type { Station } from "@/lib/zod/station/station.types";
 import { getStations } from "../(admin-layout)/admin/stations/page";
-import SectionHeader from "@/components/dashboard/shared/section-header";
-import SectionContent from "@/components/dashboard/shared/section-content";
+import SectionHeader from "@/components/shared/section-header";
+import SectionContent from "@/components/shared/section-content";
 import { StationsNearbyProvider } from "@/contexts/stations-nearby-context";
-import NearbyStationSearch from "@/components/dashboard/stations-nearby/search-input";
+import NearbyStationSearch from "@/features/stations-nearby/components/search-input";
 
 export default async function FindStationsPage() {
   const chargingStations: Station[] = await getStations();

@@ -10,11 +10,11 @@ import { ConnectorTypeSchema } from "@/lib/zod/connector-type/connector-type.sch
 import type { ConnectorType } from "@/lib/zod/connector-type/connector-type.types";
 import { z } from "zod";
 import ConnectorTypeCreateDialog from "@/features/connector-type/components/connector-type-create-dialog";
-import SectionHeader from "@/components/dashboard/shared/section-header";
+import SectionHeader from "@/components/shared/section-header";
 import { ConnectorTypeUpdateProvider } from "@/contexts/connector-type-update-context";
 import { UpdateConnectorType } from "@/features/connector-type/components/connector-type-edit-dialog";
 import { getUser } from "@/lib/auth/auth-server";
-import SectionContent from "@/components/dashboard/shared/section-content";
+import SectionContent from "@/components/shared/section-content";
 
 export async function getConnectorTypes(): Promise<ConnectorType[]> {
   try {

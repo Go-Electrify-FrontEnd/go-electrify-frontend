@@ -1,4 +1,4 @@
-import SectionHeader from "@/components/dashboard/shared/section-header";
+import SectionHeader from "@/components/shared/section-header";
 import StationCreate from "@/features/stations/components/station-create-dialog";
 import { StationsTable } from "@/features/stations/components/station-table";
 import { StationApiSchema } from "@/lib/zod/station/station.schema";
@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import SectionContent from "@/components/dashboard/shared/section-content";
+import SectionContent from "@/components/shared/section-content";
 
 export async function getStations(): Promise<Station[]> {
   const url = "https://api.go-electrify.com/api/v1/stations";

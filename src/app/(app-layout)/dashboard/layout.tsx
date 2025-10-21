@@ -1,4 +1,4 @@
-import { AppSidebar } from "@/components/dashboard/sidebar/app-sidebar";
+import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import {
   SidebarInset,
   SidebarProvider,
@@ -8,8 +8,8 @@ import { getUser } from "@/lib/auth/auth-server";
 import { UserProvider } from "@/features/users/contexts/user-context";
 import { forbidden } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
-import HeaderBreadcrumb from "@/components/dashboard/sidebar/header-breadcrumb";
-import { NotificationButton } from "@/components/dashboard/header/notification-button";
+import HeaderBreadcrumb from "@/components/sidebar/header-breadcrumb";
+import { NotificationButton } from "@/components/header/notification-button";
 import { Notification } from "@/types/notification";
 
 export const dynamic = "force-dynamic";

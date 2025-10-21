@@ -6,8 +6,8 @@ import {
   TransactionListApiSchema,
 } from "@/lib/zod/wallet/wallet.schema";
 import { getUser } from "@/lib/auth/auth-server";
-import SectionHeader from "@/components/dashboard/shared/section-header";
-import SectionContent from "@/components/dashboard/shared/section-content";
+import SectionHeader from "@/components/shared/section-header";
+import SectionContent from "@/components/shared/section-content";
 
 export async function getWallet() {
   const { token } = await getUser();

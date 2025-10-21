@@ -1,6 +1,3 @@
-import { AdminDashboard } from "@/components/dashboard/home/admin-dashboard";
-import { DriverDashboard } from "@/components/dashboard/home/driver-dashboard";
-import { StaffDashboard } from "@/components/dashboard/home/staff-dashboard";
 import { getUser } from "@/lib/auth/auth-server";
 import type {
   DriverStats,
@@ -14,9 +11,9 @@ import { getVehicleModels } from "./(admin-layout)/admin/vehicle-models/page";
 import { getSubscriptions } from "./(admin-layout)/admin/subscriptions/page";
 import { getUsers } from "./(admin-layout)/admin/users/page";
 import { getTransactions, getWallet } from "./wallet/page";
-
-const RESERVATIONS_ENDPOINT =
-  "https://api.go-electrify.com/api/v1/reservations";
+import { DriverDashboard } from "@/features/dashboard/components/home/driver-dashboard";
+import { StaffDashboard } from "@/features/dashboard/components/home/staff-dashboard";
+import { AdminDashboard } from "@/features/dashboard/components/home/admin-dashboard";
 
 type ReservationRecord = {
   ScheduledStart?: string | null;
@@ -29,23 +26,7 @@ type ReservationSummary = {
 };
 
 async function fetchReservations(token: string): Promise<ReservationRecord[]> {
-  try {
-    const response = await fetch(RESERVATIONS_ENDPOINT, {
-      headers: { Authorization: `Bearer ${token}` },
-      next: { tags: ["reservations"] },
-    });
-
-    if (!response.ok) {
-      console.error("Failed to fetch reservations", response.status);
-      return [];
-    }
-
-    const payload = await response.json();
-    return Array.isArray(payload?.Items) ? payload.Items : [];
-  } catch (error) {
-    console.error("Error fetching reservations", error);
-    return [];
-  }
+  return [];
 }
 
 function parseIsoDate(value?: string | null): Date | null {
