@@ -6,7 +6,6 @@ import CreateReservationButton from "@/features/reservations/components/reservat
 import { getStations } from "../(admin-layout)/admin/stations/page";
 import SectionHeader from "@/components/dashboard/shared/section-header";
 import { getUser } from "@/lib/auth/auth-server";
-import { CarModelSchema } from "@/lib/zod/vehicle-model/vehicle-model.schema";
 import type { CarModel } from "@/lib/zod/vehicle-model/vehicle-model.types";
 import { getConnectorTypes } from "../(admin-layout)/admin/connector-type/page";
 import { z } from "zod";
