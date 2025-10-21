@@ -1,5 +1,5 @@
 "use client";
-import { updateUserName } from "@/actions/user-actions";
+import { updateUserName } from "@/features/users/services/users";
 import { Button } from "@/components/ui/button";
 import {
   Card,
