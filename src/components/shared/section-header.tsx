@@ -1,4 +1,3 @@
-export * from "@/features/dashboard/components/shared/section-header";
 "use client";
 
 import React from "react";

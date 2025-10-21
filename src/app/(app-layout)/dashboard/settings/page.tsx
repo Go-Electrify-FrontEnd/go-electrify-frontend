@@ -1,5 +1,5 @@
-import FullNameUpdate from "@/components/dashboard/settings/settings-fullname-update";
-import AvatarUpdate from "@/components/dashboard/settings/settings-avatar-update";
+import FullNameUpdate from "@/features/settings/components/settings-fullname-update";
+import AvatarUpdate from "@/features/settings/components/settings-avatar-update";
 import { Separator } from "@/components/ui/separator";
 
 export default async function SettingsPage() {
