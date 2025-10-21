@@ -2,7 +2,7 @@ import { getUser } from "@/lib/auth/auth-server";
 import {
   getStationChargers,
   getStationSessions,
-} from "@/actions/stations-actions";
+} from "@/features/stations/services/stations";
 import { ChargersTable } from "@/features/stations/components/charger-table";
 import { SessionsTable } from "@/features/stations/components/session-table";
 import type { SessionRow } from "@/features/stations/components/session-table-columns";
