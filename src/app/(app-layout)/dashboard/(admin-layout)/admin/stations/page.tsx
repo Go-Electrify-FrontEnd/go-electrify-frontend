@@ -1,6 +1,6 @@
 import SectionHeader from "@/components/dashboard/shared/section-header";
-import StationCreate from "@/components/dashboard/admin/stations/station-create-dialog";
-import { StationsTable } from "@/components/dashboard/admin/stations/station-table";
+import StationCreate from "@/features/stations/components/station-create-dialog";
+import { StationsTable } from "@/features/stations/components/station-table";
 import { StationApiSchema } from "@/lib/zod/station/station.schema";
 import type { Station } from "@/lib/zod/station/station.types";
 import {

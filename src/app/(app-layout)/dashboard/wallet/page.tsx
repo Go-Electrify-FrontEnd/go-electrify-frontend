@@ -1,6 +1,6 @@
-import TransactionTable from "@/components/dashboard/wallet/wallet-transaction-table";
-import WalletDepositButton from "@/components/dashboard/wallet/wallet-deposit-button";
-import { WalletOverview } from "@/components/dashboard/wallet/wallet-overview";
+import TransactionTable from "@/features/wallet/components/wallet-transaction-table";
+import WalletDepositButton from "@/features/wallet/components/wallet-deposit-button";
+import { WalletOverview } from "@/features/wallet/components/wallet-overview";
 import {
   WalletSchema,
   TransactionListApiSchema,

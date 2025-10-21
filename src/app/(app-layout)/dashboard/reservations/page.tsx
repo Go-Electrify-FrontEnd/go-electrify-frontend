@@ -1,8 +1,8 @@
-import { columns } from "@/components/dashboard/reservation/reservation-table-columns";
-import { DataTable } from "@/components/dashboard/reservation/reservation-table";
-import { EmptyTable } from "@/components/dashboard/reservation/reservation-table-empty";
+import { columns } from "@/features/reservations/components/reservation-table-columns";
+import { DataTable } from "@/features/reservations/components/reservation-table";
+import { EmptyTable } from "@/features/reservations/components/reservation-table-empty";
 import { Plus } from "lucide-react";
-import CreateReservationButton from "@/components/dashboard/reservation/reservation-create-button";
+import CreateReservationButton from "@/features/reservations/components/reservation-create-button";
 import { getStations } from "../(admin-layout)/admin/stations/page";
 import SectionHeader from "@/components/dashboard/shared/section-header";
 import { getUser } from "@/lib/auth/auth-server";

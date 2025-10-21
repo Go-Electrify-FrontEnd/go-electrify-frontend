@@ -27,7 +27,10 @@ export async function handleCreateTopup(prev: unknown, formData: FormData) {
   const cancelUrl = process.env.CANCEL_URL;
 
   if (!returnUrl || !cancelUrl) {
-    return { success: false, msg: "Missing RETURN_URL or CANCEL_URL environment variables" };
+    return {
+      success: false,
+      msg: "Missing RETURN_URL or CANCEL_URL environment variables",
+    };
   }
 
   let response;
@@ -56,7 +59,12 @@ export async function handleCreateTopup(prev: unknown, formData: FormData) {
     const body = await response.json();
     const parsed = TopupResponseApiSchema.safeParse(body);
     if (!parsed.success) {
-      return { success: false, msg: parsed.error.issues.map((i) => i.message).join("; ") || "Phản hồi không hợp lệ từ máy chủ" };
+      return {
+        success: false,
+        msg:
+          parsed.error.issues.map((i) => i.message).join("; ") ||
+          "Phản hồi không hợp lệ từ máy chủ",
+      };
     }
 
     parsedResponse = parsed.data;
@@ -76,5 +84,9 @@ export async function handleCreateTopup(prev: unknown, formData: FormData) {
     }
   }
 
-  return { success: true, msg: "Đã tạo yêu cầu nạp tiền", data: parsedResponse };
+  return {
+    success: true,
+    msg: "Đã tạo yêu cầu nạp tiền",
+    data: parsedResponse,
+  };
 }

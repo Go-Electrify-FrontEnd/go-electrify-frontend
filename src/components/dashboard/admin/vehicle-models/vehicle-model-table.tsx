@@ -1,30 +1,8 @@
 "use client";
 
-import { toast } from "sonner";
-import { SharedDataTable } from "@/components/shared/shared-data-table";
-import type { CarModel } from "@/lib/zod/vehicle-model/vehicle-model.types";
-import { useCallback } from "react";
-import { vehicleModelTableColumns } from "./vehicle-model-table-columns";
-
-interface VehicleModelTableProps {
-  data: CarModel[];
-}
-
-export function VehicleModelTable({ data }: VehicleModelTableProps) {
-  const tCommon = {
-    delete: "Xóa",
-    search: "Tìm kiếm",
-    noData: "Không có dữ liệu",
-  };
-
-  return (
-    <SharedDataTable
-      columns={vehicleModelTableColumns}
-      data={data}
-      // use accessorKey for searching (column id), not the header label
-      searchColumn="modelName"
-      searchPlaceholder={tCommon.search}
-      emptyMessage={tCommon.noData}
-    />
-  );
-}
+/* DEPRECATED SHIM
+	 Compatibility shim left during feature refactor. Prefer:
+		 @/features/vehicle-models/components/vehicle-model-table
+	 This file is a safe-to-remove candidate once the repo is fully verified.
+*/
+export * from "@/features/vehicle-models/components/vehicle-model-table";

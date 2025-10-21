@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable @typescript-eslint/no-require-imports */
 /*
   Simple codemod to migrate imports for the `stations` feature to the
   new feature-based paths.

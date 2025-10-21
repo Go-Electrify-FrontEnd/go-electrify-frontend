@@ -53,27 +53,33 @@ export default function WalletDepositButton() {
     defaultValues: { amount: 10000 },
   });
 
-  const { execute, pending } = useServerAction(handleCreateTopup, initialState, {
-    onSuccess: (result) => {
-      if (result.success) {
-        if (result.data?.checkoutUrl) {
-          window.location.href = result.data.checkoutUrl;
-          return;
+  const { execute, pending } = useServerAction(
+    handleCreateTopup,
+    initialState,
+    {
+      onSuccess: (result) => {
+        if (result.success) {
+          if (result.data?.checkoutUrl) {
+            window.location.href = result.data.checkoutUrl;
+            return;
+          }
+
+          toast.success("Yêu cầu nạp tiền đã được tạo");
+          setOpen(false);
+          form.reset();
         }
-
-        toast.success("Yêu cầu nạp tiền đã được tạo");
-        setOpen(false);
-        form.reset();
-      }
+      },
+      onError: (result) => {
+        if (result.msg) {
+          toast.error("Không thể nạp tiền", { description: result.msg });
+        }
+      },
     },
-    onError: (result) => {
-      if (result.msg) {
-        toast.error("Không thể nạp tiền", { description: result.msg });
-      }
-    },
-  });
+  );
 
-  const quickAmounts = [50000, 100000, 200000, 500000, 1000000, 1500000, 2000000, 2500000, 3000000];
+  const quickAmounts = [
+    50000, 100000, 200000, 500000, 1000000, 1500000, 2000000, 2500000, 3000000,
+  ];
 
   const handleSubmit = form.handleSubmit((data) => {
     const formData = new FormData();
@@ -106,9 +112,26 @@ export default function WalletDepositButton() {
                 name="amount"
                 render={({ field, fieldState }) => (
                   <Field>
-                    <FieldLabel htmlFor="amount">{t["dialog.amountLabel"]}</FieldLabel>
-                    <Input {...field} id="amount" type="number" placeholder="10000" aria-invalid={fieldState.invalid} step={1000} value={typeof field.value === "number" || typeof field.value === "string" ? field.value : ""} />
-                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    <FieldLabel htmlFor="amount">
+                      {t["dialog.amountLabel"]}
+                    </FieldLabel>
+                    <Input
+                      {...field}
+                      id="amount"
+                      type="number"
+                      placeholder="10000"
+                      aria-invalid={fieldState.invalid}
+                      step={1000}
+                      value={
+                        typeof field.value === "number" ||
+                        typeof field.value === "string"
+                          ? field.value
+                          : ""
+                      }
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
                   </Field>
                 )}
               />
@@ -119,8 +142,17 @@ export default function WalletDepositButton() {
             <FieldLabel>{t["dialog.quickAmountsLabel"]}</FieldLabel>
             <div className="grid grid-cols-2 gap-2">
               {quickAmounts.map((quickAmount) => (
-                <Button key={quickAmount} type="button" variant="outline" onClick={() => form.setValue("amount", quickAmount)} className="justify-start">
-                  {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(quickAmount)}
+                <Button
+                  key={quickAmount}
+                  type="button"
+                  variant="outline"
+                  onClick={() => form.setValue("amount", quickAmount)}
+                  className="justify-start"
+                >
+                  {new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  }).format(quickAmount)}
                 </Button>
               ))}
             </div>
@@ -129,7 +161,11 @@ export default function WalletDepositButton() {
 
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="outline" onClick={() => form.reset()} disabled={pending}>
+            <Button
+              variant="outline"
+              onClick={() => form.reset()}
+              disabled={pending}
+            >
               Hủy
             </Button>
           </DialogClose>

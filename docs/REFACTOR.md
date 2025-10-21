@@ -1,4 +1,4 @@
-Refactor notes — feature-based migration
+# Refactor notes — feature-based migration
 
 This repository has been migrated incrementally to a feature-based layout.
 

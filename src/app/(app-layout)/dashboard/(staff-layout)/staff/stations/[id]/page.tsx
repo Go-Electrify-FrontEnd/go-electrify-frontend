@@ -28,7 +28,7 @@ import {
 import { SharedDataTable } from "@/components/shared/shared-data-table";
 import bookingColumns from "@/features/stations/components/bookings-table-columns";
 import { forbidden, notFound } from "next/navigation";
-import StationDockCreate from "@/components/dashboard/staff/station/station-dock-create";
+import StationDockCreate from "@/features/stations/components/station-dock-create";
 import { ChargerUpdateProvider } from "@/features/stations/contexts/charger-update-context";
 import UpdateCharger from "@/features/stations/components/charger-edit-dialog";
 import { getConnectorTypes } from "@/app/(app-layout)/dashboard/(admin-layout)/admin/connector-type/page";

@@ -1,6 +1,6 @@
-import SubscriptionCreateDialog from "@/components/dashboard/admin/subscriptions/subscription-create-dialog";
+import SubscriptionCreateDialog from "@/features/subscriptions/components/subscription-create-dialog";
 import SectionHeader from "@/components/dashboard/shared/section-header";
-import { SubscriptionsTable } from "@/components/dashboard/admin/subscriptions/subscription-table";
+import { SubscriptionsTable } from "@/features/subscriptions/components/subscription-table";
 import { Button } from "@/components/ui/button";
 import {
   Card,
