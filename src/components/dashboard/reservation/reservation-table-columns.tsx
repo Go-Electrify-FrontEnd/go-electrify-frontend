@@ -224,3 +224,5 @@ export const columns: ColumnDef<Reservation>[] = [
     },
   },
 ];
+
+export { columns as reservationColumns };
