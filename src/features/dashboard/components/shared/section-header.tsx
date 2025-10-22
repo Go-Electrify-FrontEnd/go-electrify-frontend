@@ -1,7 +1,5 @@
 "use client";
 
-import React from "react";
-
 export default function SectionHeader({
   title,
   subtitle,
@@ -12,9 +10,9 @@ export default function SectionHeader({
   children?: React.ReactNode;
 }) {
   return (
-    <div className="border-b py-12 lg:px-8">
+    <div className="border-b px-2 py-12 lg:px-8">
       <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-        <div className="space-y-1.5">
+        <div className="space-y-1.5 px-2">
           <h1 className="text-foreground text-4xl font-semibold">{title}</h1>
           {subtitle && (
             <p className="text-muted-foreground/90 text-base font-medium">
