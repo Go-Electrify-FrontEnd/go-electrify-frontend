@@ -28,13 +28,13 @@ import {
 } from "@/components/ui/input-group";
 import { Controller, useForm } from "react-hook-form";
 import { useState } from "react";
-import { handleCreateConnectorType } from "@/actions/connector-type-actions";
 import { toast } from "sonner";
 import {
   connectorTypeCreateSchema,
   type ConnectorTypeCreateFormData,
 } from "@/lib/zod/connector-type/connector-type.request";
 import { useServerAction } from "@/hooks/use-server-action";
+import { handleCreateConnectorType } from "../services/connector-type-actions";
 
 const initialState = { success: false, msg: "" };
 

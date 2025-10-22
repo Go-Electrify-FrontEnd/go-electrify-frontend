@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createStation } from "@/features/stations/services/stations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -45,6 +44,7 @@ import {
   type StationCreateFormData,
 } from "@/lib/zod/station/station.request";
 import { useServerAction } from "@/hooks/use-server-action";
+import { createStation } from "../services/stations-actions";
 
 interface StationCreateProps {
   onCancel?: () => void;

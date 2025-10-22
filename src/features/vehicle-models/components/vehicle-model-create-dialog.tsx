@@ -27,7 +27,6 @@ import {
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { Controller, type Resolver, useForm } from "react-hook-form";
-import { createVehicleModel } from "@/actions/vehicle-models-actions";
 import { toast } from "sonner";
 import { useServerAction } from "@/hooks/use-server-action";
 import {
@@ -35,6 +34,7 @@ import {
   type VehicleModelFormData,
 } from "@/lib/zod/vehicle-model/vehicle-model.request";
 import { useConnectorTypes } from "@/contexts/connector-type-context";
+import { createVehicleModel } from "../services/vehicle-models-actions";
 // Translations removed; using Vietnamese literals
 
 const initialState = {
