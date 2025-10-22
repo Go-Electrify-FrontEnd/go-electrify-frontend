@@ -1,7 +1,15 @@
 "use client";
 
 import { User } from "@/lib/zod/user/user.types";
-import { MapPin, Users, Car, Plug, Package, ArrowUpRight, ReceiptText } from "lucide-react";
+import {
+  MapPin,
+  Users,
+  Car,
+  Plug,
+  Package,
+  ArrowUpRight,
+  ReceiptText,
+} from "lucide-react";
 import {
   Card,
   CardContent,
