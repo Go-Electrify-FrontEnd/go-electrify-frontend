@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidateTag } from "next/cache";
+import { updateTag } from "next/cache";
 import { getUser } from "@/lib/auth/auth-server";
 import {
   stationCreateSchema,
@@ -53,7 +53,7 @@ export async function createStation(prev: unknown, formData: FormData) {
     });
 
     if (response.ok) {
-      revalidateTag("stations");
+      updateTag("stations");
       return { success: true, msg: "Trạm đã được tạo thành công" };
     } else {
       return { success: false, msg: "Tạo trạm thất bại" };
@@ -111,7 +111,7 @@ export async function updateStation(prev: unknown, formData: FormData) {
     });
 
     if (response.ok) {
-      revalidateTag("stations");
+      updateTag("stations");
       return { success: true, msg: "Trạm đã được cập nhật thành công" };
     } else {
       return { success: false, msg: "Cập nhật trạm thất bại" };
@@ -143,7 +143,7 @@ export async function deleteStation(prev: unknown, formData: FormData) {
     });
 
     if (response.ok) {
-      revalidateTag("stations");
+      updateTag("stations");
       return { success: true, msg: "Trạm đã được xóa thành công" };
     } else {
       return { success: false, msg: "Xóa trạm thất bại" };

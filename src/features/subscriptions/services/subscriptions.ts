@@ -1,7 +1,7 @@
 "use server";
 
 import { getUser } from "@/lib/auth/auth-server";
-import { revalidateTag } from "next/cache";
+import { updateTag } from "next/cache";
 import { forbidden } from "next/navigation";
 
 export async function createSubscription(prev: unknown, data: FormData) {
@@ -100,7 +100,7 @@ export async function updateSubscription(prev: unknown, data: FormData) {
     });
 
     const success = response.ok;
-    if (success) revalidateTag("subscriptions");
+    if (success) updateTag("subscriptions");
 
     return {
       success,
@@ -132,7 +132,7 @@ export async function deleteSubscription(prev: unknown, dataForm: FormData) {
       headers: { Authorization: `Bearer ${token}` },
     });
     const success = response.ok;
-    revalidateTag("subscriptions");
+    updateTag("subscriptions");
     return {
       success,
       msg: success ? "Gói đã được xóa thành công" : "Xóa gói thất bại",

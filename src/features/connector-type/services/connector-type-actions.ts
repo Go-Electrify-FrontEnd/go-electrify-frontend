@@ -1,7 +1,7 @@
 "use server";
 
 import { getUser } from "@/lib/auth/auth-server";
-import { revalidateTag } from "next/cache";
+import { updateTag } from "next/cache";
 import { forbidden } from "next/navigation";
 import {
   connectorTypeCreateSchema,
@@ -60,7 +60,7 @@ export async function handleCreateConnectorType(
     };
   }
 
-  revalidateTag("connector-types");
+  updateTag("connector-types");
   return { success: true, msg: "Tạo loại cổng kết nối thành công" };
 }
 
@@ -109,7 +109,7 @@ export async function handleDeleteConnectorType(
     };
   }
 
-  revalidateTag("connector-types");
+  updateTag("connector-types");
   return { success: true, msg: "Xóa loại cổng kết nối thành công" };
 }
 
@@ -163,6 +163,6 @@ export async function handleUpdateConnectorType(
     };
   }
 
-  revalidateTag("connector-types");
+  updateTag("connector-types");
   return { success: true, msg: "Cập nhật loại cổng kết nối thành công" };
 }
