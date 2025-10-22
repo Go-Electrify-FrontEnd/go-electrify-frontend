@@ -55,12 +55,14 @@ export async function getTransactions(page: number = 1, pageSize: number = 20) {
 export default async function WalletPage() {
   const [wallet, transactionsData] = await Promise.all([
     getWallet(),
-    getTransactions(1, 10),
+    getTransactions(),
   ]);
 
   if (!wallet) {
     return <div>Đã xảy ra một số lỗi khi cố tải dữ liệu ví.</div>;
   }
+
+  const transactions = transactionsData?.data || [];
 
   return (
     <div className="flex flex-col gap-4 md:gap-6">
@@ -72,13 +74,10 @@ export default async function WalletPage() {
       </SectionHeader>
 
       <SectionContent className="flex flex-col gap-4 md:gap-6">
-        <WalletOverview
-          wallet={wallet}
-          transactions={transactionsData?.data || []}
-        />
+        <WalletOverview wallet={wallet} transactions={transactions} />
         <TransactionTable
-          transactions={transactionsData?.data ?? []}
-          totalCount={transactionsData?.total}
+          transactions={transactions}
+          totalCount={transactions.length}
           showViewAll={true}
         />
       </SectionContent>

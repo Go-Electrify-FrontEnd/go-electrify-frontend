@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import type { Station } from "@/lib/zod/station/station.types";
-import { deleteStation } from "@/features/stations/services/stations";
+import { deleteStation } from "../services/stations-actions";
 
 interface DeleteStationProps {
   station: Station;

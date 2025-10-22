@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import type { Subscription } from "@/lib/zod/subscription/subscription.types";
-import { deleteSubscription } from "@/actions/subscriptions-actions";
+import { deleteSubscription } from "../services/subscriptions";
 
 interface DeleteSubscriptionProps {
   subscription: Subscription;

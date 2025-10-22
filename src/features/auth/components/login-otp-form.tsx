@@ -11,8 +11,8 @@ import { Label } from "@/components/ui/label";
 import { useActionState, useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Shield } from "lucide-react";
-import { handleVerifyOTP, requestOtp } from "@/actions/login-actions";
 import { Spinner } from "@/components/ui/spinner";
+import { handleVerifyOTP, requestOtp } from "../services/auth";
 
 interface OTPFormProps {
   email: string;

@@ -26,8 +26,8 @@ import { useState } from "react";
 import { useServerAction } from "@/hooks/use-server-action";
 import { Spinner } from "@/components/ui/spinner";
 import { walletTopupSchema } from "@/lib/zod/wallet/wallet.request";
-import { handleCreateTopup } from "@/features/wallet/services/wallet";
 import type { TopupResponse } from "@/lib/zod/wallet/wallet.types";
+import { handleCreateTopup } from "../services/wallet-actions";
 
 const initialState = {
   success: false,

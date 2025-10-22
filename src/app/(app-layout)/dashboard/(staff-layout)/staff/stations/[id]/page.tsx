@@ -1,8 +1,4 @@
 import { getUser } from "@/lib/auth/auth-server";
-import {
-  getStationChargers,
-  getStationSessions,
-} from "@/features/stations/services/stations";
 import { ChargersTable } from "@/features/stations/components/charger-table";
 import { SessionsTable } from "@/features/stations/components/session-table";
 import type { SessionRow } from "@/features/stations/components/session-table-columns";
@@ -33,6 +29,10 @@ import { ChargerUpdateProvider } from "@/features/stations/contexts/charger-upda
 import UpdateCharger from "@/features/stations/components/charger-edit-dialog";
 import { getConnectorTypes } from "@/app/(app-layout)/dashboard/(admin-layout)/admin/connector-type/page";
 import SectionContent from "@/components/shared/section-content";
+import {
+  getStationChargers,
+  getStationSessions,
+} from "@/features/stations/services/stations-actions";
 
 export async function getStationById(id: string, token: string) {
   const url = `https://api.go-electrify.com/api/v1/stations/${encodeURIComponent(id)}`;

@@ -21,6 +21,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+    incomingRequests: {
+      ignore: [/api\/healthz/],
+    },
+  },
 };
 
 const bundleAnalyzerConfig = withBundleAnalyzer({
