@@ -21,6 +21,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  reactCompiler: true,
   logging: {
     fetches: {
       fullUrl: true,
