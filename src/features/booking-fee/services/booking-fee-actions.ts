@@ -30,7 +30,7 @@ export async function updateBookingFee(prev: unknown, formData: FormData) {
   let response;
   try {
     response = await fetch(BACKEND_URL, {
-      method: "POST",
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -46,6 +46,7 @@ export async function updateBookingFee(prev: unknown, formData: FormData) {
   }
 
   if (!response.ok) {
+    console.log("Failed to update booking fee:", response.statusText);
     return {
       success: false,
       msg: "Không thể cập nhật phí đặt chỗ",

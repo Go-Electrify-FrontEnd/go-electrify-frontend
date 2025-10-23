@@ -46,7 +46,8 @@ export async function createReservation(prev: unknown, formData: FormData) {
       updateTag("reservations");
       return { success: true, msg: "Đặt chỗ đã được tạo thành công" };
     } else {
-      return { success: false, msg: "Tạo đặt chỗ thất bại" };
+      const json = await response.json();
+      return { success: false, msg: json.message };
     }
   } catch (error) {
     console.error("Error creating reservation:", error);

@@ -34,7 +34,6 @@ export async function getSelfReservations(
     }
 
     const json = await response.json();
-
     if (!json || !Array.isArray(json.data)) {
       console.error("Invalid bookings response");
       return [];
@@ -59,7 +58,6 @@ export async function getSelfReservations(
       const statusMap: Record<string, string> = {
         PENDING: "PENDING",
         CONFIRMED: "CONFIRMED",
-        CANCELED: "CANCELED",
         CANCELLED: "CANCELED",
         EXPIRED: "EXPIRED",
         CONSUMED: "CONSUMED",

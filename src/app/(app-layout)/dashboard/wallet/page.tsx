@@ -42,7 +42,6 @@ export async function getTransactions(page: number = 1, pageSize: number = 20) {
   }
 
   const data = await response.json();
-
   const parsedApi = TransactionListApiSchema.safeParse(data);
 
   if (parsedApi.success) {

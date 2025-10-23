@@ -16,7 +16,7 @@ export async function getStations(): Promise<Station[]> {
   const url = "https://api.go-electrify.com/api/v1/stations";
   const response = await fetch(url, {
     method: "GET",
-    next: { revalidate: 60, tags: ["stations"] },
+    next: { revalidate: 15, tags: ["stations"] },
   });
 
   if (!response.ok) {

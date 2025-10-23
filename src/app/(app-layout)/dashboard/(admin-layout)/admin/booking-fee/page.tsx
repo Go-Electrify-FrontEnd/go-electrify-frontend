@@ -8,10 +8,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { BookingFeeResponseSchema } from "@/lib/zod/booking-fee/booking-fee.schema";
 import type { BookingFee } from "@/lib/zod/booking-fee/booking-fee.types";
-import { BookingFeeDisplay } from "@/features/booking-fee/components/booking-fee-display";
-import { BookingFeeForm } from "@/features/booking-fee/components/booking-fee-form";
+import { BookingFeeManager } from "@/features/booking-fee/components/booking-fee-manager";
+import { AlertCircle, DollarSign, Percent } from "lucide-react";
 
 async function getBookingFee(): Promise<BookingFee | null> {
   try {
@@ -74,57 +75,81 @@ export default async function BookingFeePage() {
       />
 
       <SectionContent>
-        <div className="grid gap-6 lg:grid-cols-2">
-          {/* Current Fee Display */}
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Cấu Hình Hiện Tại</h2>
-            <BookingFeeDisplay bookingFee={bookingFee} />
-          </div>
+        {/* Current Configuration and Update Form */}
+        <BookingFeeManager bookingFee={bookingFee} />
 
-          {/* Update Form */}
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Cập Nhật Phí</h2>
-            <Card>
-              <CardHeader>
-                <CardTitle>Chỉnh sửa phí đặt chỗ</CardTitle>
-                <CardDescription>
-                  Thay đổi loại phí và giá trị áp dụng cho tất cả đặt chỗ mới
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <BookingFeeForm bookingFee={bookingFee} />
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        {/* Information Card */}
+        {/* Help and Guidelines */}
         <Card>
-          <CardHeader>
-            <CardTitle>Hướng Dẫn Sử Dụng</CardTitle>
+          <CardHeader className="border-b">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900">
+                <DollarSign className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+              </div>
+              <div>
+                <CardTitle>Hướng Dẫn Sử Dụng</CardTitle>
+                <CardDescription>
+                  Tìm hiểu về các loại phí đặt chỗ và cách áp dụng
+                </CardDescription>
+              </div>
+            </div>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <h3 className="mb-2 font-semibold">Phí Cố Định (FLAT)</h3>
-              <p className="text-muted-foreground text-sm">
-                Một khoản phí cố định sẽ được tính cho mỗi đặt chỗ, bất kể giá
-                trị đặt chỗ là bao nhiêu. Ví dụ: nếu phí cố định là 10,000 VND,
-                mỗi đặt chỗ sẽ phải trả thêm 10,000 VND.
-              </p>
-            </div>
-            <div>
-              <h3 className="mb-2 font-semibold">Phí Phần Trăm (PERCENT)</h3>
-              <p className="text-muted-foreground text-sm">
-                Phí sẽ được tính dựa trên phần trăm của tổng giá trị đặt chỗ.
-                Ví dụ: nếu phí là 5% và giá trị đặt chỗ là 100,000 VND, phí sẽ
-                là 5,000 VND.
-              </p>
-            </div>
-            <div className="border-l-4 border-yellow-500 bg-yellow-50 p-4">
-              <p className="text-sm font-medium text-yellow-800">
-                ⚠️ Lưu ý: Thay đổi cấu hình phí sẽ có hiệu lực ngay lập tức và
-                áp dụng cho tất cả các đặt chỗ mới trong hệ thống.
-              </p>
+          <CardContent>
+            <div className="space-y-6">
+              <div className="grid gap-6 md:grid-cols-2">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
+                      <DollarSign className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold">
+                        Phí Cố Định (FLAT)
+                      </h3>
+                      <p className="text-muted-foreground text-sm">
+                        Một khoản phí cố định sẽ được tính cho mỗi đặt chỗ
+                      </p>
+                    </div>
+                  </div>
+                  <div className="bg-muted/30 ml-13 rounded-lg p-4">
+                    <p className="mb-2 text-sm font-medium">Ví dụ:</p>
+                    <p className="text-muted-foreground text-sm leading-relaxed">
+                      Phí cố định 10,000 VND → mỗi đặt chỗ trả thêm 10,000 VND
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
+                      <Percent className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold">
+                        Phí Phần Trăm (PERCENT)
+                      </h3>
+                      <p className="text-muted-foreground text-sm">
+                        Phí sẽ được tính dựa trên phần trăm của tổng giá trị đặt
+                        chỗ
+                      </p>
+                    </div>
+                  </div>
+                  <div className="bg-muted/30 ml-13 rounded-lg p-4">
+                    <p className="mb-2 text-sm font-medium">Ví dụ:</p>
+                    <p className="text-muted-foreground text-sm leading-relaxed">
+                      Phí 5% + Đặt chỗ 100,000 VND → Phí là 5,000 VND
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <Alert>
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription className="text-sm">
+                  <strong>Lưu ý quan trọng:</strong> Thay đổi cấu hình phí sẽ có
+                  hiệu lực ngay lập tức và áp dụng cho tất cả các đặt chỗ mới
+                  trong hệ thống. Các đặt chỗ hiện tại sẽ không bị ảnh hưởng.
+                </AlertDescription>
+              </Alert>
             </div>
           </CardContent>
         </Card>
