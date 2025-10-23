@@ -1,12 +1,7 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
-import {
-  getUser,
-  refreshAccessToken,
-  refreshTokenSchema,
-} from "@/lib/auth/auth-server";
+import { refreshAccessToken, refreshTokenSchema } from "@/lib/auth/auth-server";
 
 export async function requestOtp(email: string) {
   if (!email) {
@@ -55,8 +50,13 @@ export async function handleVerifyOTP(prevState: unknown, data: FormData) {
   const existingRefresh = cookieStore.get("refreshToken");
 
   if (existingAccess?.value || existingRefresh?.value) {
-    // User already has valid tokens, redirect to dashboard
-    redirect("/dashboard");
+    // User already has valid tokens, return success for client-side redirect
+    return {
+      success: true,
+      msg: "Bạn đã đăng nhập",
+      user: null,
+      tokens: null,
+    };
   }
 
   // Verify OTP with backend
@@ -113,7 +113,13 @@ export async function handleVerifyOTP(prevState: unknown, data: FormData) {
       expires: refreshExpires,
     });
 
-    redirect("/dashboard");
+    // Return success for client-side redirect
+    return {
+      success: true,
+      msg: "Đăng nhập thành công",
+      user: null,
+      tokens: null,
+    };
   } catch (error) {
     console.error("handleVerifyOTP network/parsing error:", error);
     return {

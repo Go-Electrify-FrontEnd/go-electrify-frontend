@@ -1,5 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
+import { formatNumber } from "@/lib/formatters";
 import { SessionActionsCell } from "@/features/stations/components/session-actions";
 
 export type SessionRow = {
@@ -29,9 +30,10 @@ const formatDateTime = (iso?: string | null) => {
   });
 };
 
-const formatNumber = (value: number | null, suffix = "") => {
-  if (value == null) return "-";
-  return `${value}${suffix}`;
+// Use shared formatters but preserve previous '-' output for null/undefined values
+const formatWithSuffix = (value: number | null | undefined, suffix = "") => {
+  if (value == null || Number.isNaN(Number(value))) return "-";
+  return `${formatNumber(value)}${suffix}`;
 };
 
 const getStatusVariant = (status: string) => {
@@ -87,39 +89,45 @@ export const sessionColumns: ColumnDef<SessionRow>[] = [
   {
     accessorKey: "initialSoc",
     header: "SOC bắt đầu",
-    cell: ({ row }) => <div>{formatNumber(row.original.initialSoc, "%")}</div>,
+    cell: ({ row }) => (
+      <div>{formatWithSuffix(row.original.initialSoc, "%")}</div>
+    ),
   },
   {
     accessorKey: "targetSoc",
     header: "SOC mục tiêu",
-    cell: ({ row }) => <div>{formatNumber(row.original.targetSoc, "%")}</div>,
+    cell: ({ row }) => (
+      <div>{formatWithSuffix(row.original.targetSoc, "%")}</div>
+    ),
   },
   {
     accessorKey: "chargerPowerKw",
     header: "Công suất sạc",
     cell: ({ row }) => (
-      <div>{formatNumber(row.original.chargerPowerKw, " kW")}</div>
+      <div>{formatWithSuffix(row.original.chargerPowerKw, " kW")}</div>
     ),
   },
   {
     accessorKey: "vehicleMaxPowerKw",
     header: "Công suất xe",
     cell: ({ row }) => (
-      <div>{formatNumber(row.original.vehicleMaxPowerKw, " kW")}</div>
+      <div>{formatWithSuffix(row.original.vehicleMaxPowerKw, " kW")}</div>
     ),
   },
   {
     accessorKey: "vehicleBatteryCapacityKwh",
     header: "Dung lượng pin",
     cell: ({ row }) => (
-      <div>{formatNumber(row.original.vehicleBatteryCapacityKwh, " kWh")}</div>
+      <div>
+        {formatWithSuffix(row.original.vehicleBatteryCapacityKwh, " kWh")}
+      </div>
     ),
   },
   {
     accessorKey: "connectorMaxPowerKw",
     header: "Công suất cổng",
     cell: ({ row }) => (
-      <div>{formatNumber(row.original.connectorMaxPowerKw, " kW")}</div>
+      <div>{formatWithSuffix(row.original.connectorMaxPowerKw, " kW")}</div>
     ),
   },
   {

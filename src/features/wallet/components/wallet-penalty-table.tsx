@@ -7,6 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Calendar, CreditCard, Zap } from "lucide-react";
+import { formatCurrencyVND } from "@/lib/formatters";
 
 const outstandingInvoices = [
   {
@@ -29,12 +30,7 @@ const sortedInvoices = outstandingInvoices.sort((a, b) => {
   );
 });
 
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-  }).format(amount);
-};
+// use shared formatter
 
 export function PenaltyTable() {
   return (
@@ -54,23 +50,23 @@ export function PenaltyTable() {
               return (
                 <div
                   key={invoice.id}
-                  className="flex items-center gap-3 p-3 border rounded-lg hover:shadow-md transition-all"
+                  className="flex items-center gap-3 rounded-lg border p-3 transition-all hover:shadow-md"
                 >
-                  <Zap className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
+                  <Zap className="text-muted-foreground h-5 w-5 flex-shrink-0" />
+                  <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <div className="font-medium truncate">
+                      <div className="min-w-0 flex-1">
+                        <div className="truncate font-medium">
                           {invoice.description} - {invoice.location}
                         </div>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-muted-foreground text-sm">
                           {invoice.invoiceNumber}
                         </div>
                       </div>
-                      <div className="flex items-center gap-3 flex-shrink-0">
+                      <div className="flex flex-shrink-0 items-center gap-3">
                         <div className="text-right">
                           <div className="font-semibold">
-                            {formatCurrency(invoice.amount)}
+                            {formatCurrencyVND(invoice.amount)}
                           </div>
                         </div>
                         <div className="flex gap-2">
@@ -91,10 +87,10 @@ export function PenaltyTable() {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-8 text-center">
-            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
-              <Calendar className="h-8 w-8 text-muted-foreground" />
+            <div className="bg-muted mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+              <Calendar className="text-muted-foreground h-8 w-8" />
             </div>
-            <h3 className="font-medium text-foreground mb-2">
+            <h3 className="text-foreground mb-2 font-medium">
               Không có khoản phạt nào
             </h3>
             <Button variant="outline" size="sm" className="mt-4">

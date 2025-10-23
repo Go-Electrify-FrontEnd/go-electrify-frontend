@@ -3,10 +3,8 @@
 import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
-const formatCurrency = (amount: number) =>
-  new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(
-    amount,
-  );
+import { formatCurrencyVND } from "@/lib/formatters";
+const formatCurrency = (amount: number) => formatCurrencyVND(amount);
 import type { Charger } from "@/lib/zod/charger/charger.types";
 import { ActionsCell } from "@/features/stations/components/charger-actions";
 
