@@ -43,7 +43,7 @@ export function WalletOverview({ wallet, transactions }: WalletOverviewProps) {
     const chargesThisMonth = transactions.filter((transaction) => {
       const date = toDate(transaction.createdAt as Date | string);
       return (
-        transaction.type === "CHARGE" &&
+        transaction.type === "CHARGING_FEE" &&
         transaction.status === "SUCCEEDED" &&
         date.getMonth() === currentMonth &&
         date.getFullYear() === currentYear
@@ -81,8 +81,8 @@ export function WalletOverview({ wallet, transactions }: WalletOverviewProps) {
         latest.type === "DEPOSIT" || latest.type === "REFUND" ? "+" : "−";
       const typeLabelMap: Record<Transaction["type"], string> = {
         DEPOSIT: "Nạp tiền",
-        WITHDRAW: "Rút tiền",
-        CHARGE: "Sạc",
+        BOOKING_FEE: "Phí đặt chỗ",
+        CHARGING_FEE: "Sạc",
         REFUND: "Hoàn tiền",
       };
       lastActivityText = `${formatted} • ${typeLabelMap[latest.type]} ${sign}${latest.amount.toLocaleString("vi-VN")} ₫`;
