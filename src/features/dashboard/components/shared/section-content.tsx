@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import React from "react";
 
 interface SectionContentProps {
@@ -9,5 +10,7 @@ export default function SectionContent({
   children,
   className,
 }: SectionContentProps) {
-  return <div className={`space-y-4 ${className ?? ""}`}>{children}</div>;
+  return (
+    <div className={cn("space-y-4 px-2 lg:px-8", className)}>{children}</div>
+  );
 }

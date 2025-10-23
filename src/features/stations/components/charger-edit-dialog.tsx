@@ -25,7 +25,7 @@ import {
   type ChargerUpdateFormData,
 } from "@/lib/zod/charger/charger.request";
 import { useServerAction } from "@/hooks/use-server-action";
-import { updateCharger } from "@/actions/chargers-actions";
+import { updateCharger } from "@/features/stations/services/chargers-actions";
 import { toast } from "sonner";
 import {
   Select,

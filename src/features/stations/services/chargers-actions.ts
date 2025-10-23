@@ -4,7 +4,7 @@ import { getUser } from "@/lib/auth/auth-server";
 import { chargerCreateSchema } from "@/lib/zod/charger/charger.request";
 import { forbidden } from "next/navigation";
 import { chargerUpdateSchema } from "@/lib/zod/charger/charger.request";
-import { revalidateTag } from "next/cache";
+import { updateTag } from "next/cache";
 
 export async function createCharger(prevState: unknown, formData: FormData) {
   const { user, token } = await getUser();
@@ -44,7 +44,7 @@ export async function createCharger(prevState: unknown, formData: FormData) {
     });
 
     if (response.ok) {
-      revalidateTag("chargers");
+      updateTag("chargers");
       return {
         success: true,
         msg: "Sạc điện đã được tạo thành công",
@@ -116,6 +116,6 @@ export async function updateCharger(prevState: unknown, formData: FormData) {
     return { success: false, msg: "Lỗi kết nối. Vui lòng thử lại" };
   }
 
-  revalidateTag("chargers");
+  updateTag("chargers");
   return { success: true, msg: "Cập nhật sạc thành công" };
 }

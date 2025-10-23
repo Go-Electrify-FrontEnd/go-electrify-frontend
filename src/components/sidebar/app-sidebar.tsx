@@ -14,6 +14,7 @@ import {
   TicketCheckIcon,
   Wallet2Icon,
   Zap,
+  ReceiptText,
 } from "lucide-react";
 // Translations removed: landing and admin UI converted to Vietnamese
 
@@ -114,6 +115,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: "Quản Lý Mẫu Xe",
         url: "/dashboard/admin/vehicle-models",
         icon: Car,
+      },
+      {
+        title: "Phí Đặt Chỗ",
+        url: "/dashboard/admin/booking-fee",
+        icon: ReceiptText,
       },
     ],
   };
