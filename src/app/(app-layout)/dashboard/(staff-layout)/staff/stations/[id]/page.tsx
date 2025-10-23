@@ -32,7 +32,7 @@ import SectionContent from "@/components/shared/section-content";
 import {
   getStationChargers,
   getStationSessions,
-} from "@/features/stations/services/stations-actions";
+} from "@/features/stations/api/stations-api";
 
 export async function getStationById(id: string, token: string) {
   const url = `https://api.go-electrify.com/api/v1/stations/${encodeURIComponent(id)}`;
@@ -119,28 +119,22 @@ export default async function StationPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const { user, token } = await getUser();
-  if (!user) {
-    forbidden();
-  }
-
-  const role = user.role.toLowerCase();
-  if (role !== "admin" && role !== "staff") {
-    forbidden();
-  }
 
   if (Number.isNaN(id)) {
     notFound();
   }
 
-  const station = await getStationById(id, token ?? "");
+  // Token is definitely present here since the middleware protects this route
+  const { token } = await getUser();
+  const station = await getStationById(id, token!);
+
   if (!station) {
     notFound();
   }
 
-  const chargers = await getStationChargers(id, token ?? "");
-  const bookings = await getBookingsByStationId(id, token ?? "");
-  const stationSessions = await getStationSessions(id, token ?? "");
+  const chargers = await getStationChargers(id, token!);
+  const bookings = await getBookingsByStationId(id, token!);
+  const stationSessions = await getStationSessions(id, token!);
 
   const chargerCodeById = new Map(
     (chargers ?? []).map((charger) => [charger.id, charger.code] as const),
@@ -148,28 +142,15 @@ export default async function StationPage({
 
   const sessions: SessionRow[] = stationSessions
     .map((session) => ({
-      id: session.id,
-      chargerId: session.chargerId,
+      ...session,
       chargerCode: chargerCodeById.get(session.chargerId) ?? null,
-      bookingId: session.bookingId,
-      status: session.status,
-      startedAt: session.startedAt,
-      initialSoc: session.initialSoc,
-      targetSoc: session.targetSoc,
-      chargerPowerKw: session.chargerPowerKw,
-      vehicleMaxPowerKw: session.vehicleMaxPowerKw,
-      vehicleBatteryCapacityKwh: session.vehicleBatteryCapacityKwh,
-      connectorMaxPowerKw: session.connectorMaxPowerKw,
     }))
     .sort((a, b) => {
-      const aTime = new Date(a.startedAt).getTime();
-      const bTime = new Date(b.startedAt).getTime();
-      if (Number.isNaN(aTime) || Number.isNaN(bTime)) return 0;
-      return bTime - aTime;
+      return new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime();
     });
+
   const connectorTypes = await getConnectorTypes();
 
-  // Calculate stats
   const totalChargers = chargers?.length ?? 0;
   const activeChargers =
     chargers?.filter((c) => c.status === "ONLINE")?.length ?? 0;
@@ -180,8 +161,6 @@ export default async function StationPage({
   const upcomingBookings = bookings.length;
   const utilizationRate =
     totalChargers > 0 ? Math.round((activeSessions / totalChargers) * 100) : 0;
-
-  // Date/currency formatting is handled inside the bookings table columns.
 
   return (
     <div className="flex flex-col gap-6 p-4 md:gap-6 md:p-6">

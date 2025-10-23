@@ -10,7 +10,7 @@ import { getConnectorTypes } from "./(admin-layout)/admin/connector-type/page";
 import { getVehicleModels } from "./(admin-layout)/admin/vehicle-models/page";
 import { getSubscriptions } from "./(admin-layout)/admin/subscriptions/page";
 import { getUsers } from "./(admin-layout)/admin/users/page";
-import { getTransactions, getWallet } from "./wallet/page";
+import { getTransactions, getWallet } from "./(driver)/wallet/page";
 import { DriverDashboard } from "@/features/dashboard/components/home/driver-dashboard";
 import { StaffDashboard } from "@/features/dashboard/components/home/staff-dashboard";
 import { AdminDashboard } from "@/features/dashboard/components/home/admin-dashboard";

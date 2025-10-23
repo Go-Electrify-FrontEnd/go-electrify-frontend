@@ -6,10 +6,6 @@ import {
   stationCreateSchema,
   stationUpdateSchema,
 } from "@/lib/zod/station/station.request";
-import { ChargerApiSchema } from "@/lib/zod/charger/charger.schema";
-import type { Charger } from "@/lib/zod/charger/charger.types";
-import { StationSessionApiSchema } from "@/lib/zod/session/session.schema";
-import type { StationSession } from "@/lib/zod/session/session.types";
 
 const BASE_URL = "https://api.go-electrify.com/api/v1/stations";
 
@@ -151,91 +147,5 @@ export async function deleteStation(prev: unknown, formData: FormData) {
   } catch (error) {
     console.error("Error deleting station:", error);
     return { success: false, msg: "Đã xảy ra lỗi khi xóa trạm" };
-  }
-}
-
-export async function getStationChargers(
-  stationId: string,
-  token: string,
-): Promise<Charger[]> {
-  if (!token) {
-    console.error("getStationChargers: missing auth token");
-    return [];
-  }
-
-  try {
-    const url = `https://api.go-electrify.com/api/v1/stations/${encodeURIComponent(
-      stationId,
-    )}/chargers`;
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-      next: { revalidate: 60, tags: ["chargers"] },
-    });
-
-    if (!response.ok) {
-      console.error(
-        "Failed to fetch station chargers, status:",
-        response.status,
-      );
-      return [];
-    }
-
-    const json = await response.json();
-    const raw = Array.isArray(json?.data) ? json.data : json;
-    const parsed = ChargerApiSchema.array().safeParse(raw);
-    if (!parsed.success) {
-      console.error("Invalid charger items:", parsed.error);
-      return [];
-    }
-
-    return parsed.data;
-  } catch (error) {
-    console.error("Error fetching station chargers:", error);
-    return [];
-  }
-}
-
-export async function getStationSessions(
-  stationId: string,
-  token: string,
-): Promise<StationSession[]> {
-  if (!token) {
-    console.error("getStationSessions: missing auth token");
-    return [];
-  }
-
-  try {
-    const url = `https://api.go-electrify.com/api/v1/stations/${encodeURIComponent(
-      stationId,
-    )}/sessions`;
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-      next: { revalidate: 60, tags: ["station-sessions"] },
-    });
-
-    if (!response.ok) {
-      console.error(
-        "Failed to fetch station sessions, status:",
-        response.status,
-      );
-      return [];
-    }
-
-    const json = await response.json();
-    const raw = Array.isArray(json?.data) ? json.data : json;
-    const parsed = StationSessionApiSchema.array().safeParse(raw);
-    if (!parsed.success) {
-      console.error("Invalid session items:", parsed.error);
-      return [];
-    }
-
-    return parsed.data;
-  } catch (error) {
-    console.error("Error fetching station sessions:", error);
-    return [];
   }
 }

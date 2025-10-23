@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { ReservationSchema } from "./reservation.schema";
 
 export const reservationFormSchema = z.object({
   stationId: z.string().min(1, "Trạm sạc là bắt buộc"),
@@ -12,29 +13,8 @@ export const reservationFormSchema = z.object({
 
 export type ReservationFormData = z.infer<typeof reservationFormSchema>;
 
-// Booking API response schema (maps backend PascalCase -> client-friendly fields)
-export const BookingApiSchema = z
-  .object({
-    Id: z.number(),
-    Code: z.string(),
-    Status: z.enum(["PENDING", "CONFIRMED", "CANCELED", "EXPIRED", "CONSUMED"]),
-    ScheduledStart: z.string(),
-    InitialSoc: z.number(),
-    StationId: z.number(),
-    ConnectorTypeId: z.number(),
-    VehicleModelId: z.number(),
-    EstimatedCost: z.number().nullable(),
-  })
-  .transform((raw) => ({
-    id: raw.Id,
-    code: raw.Code,
-    status: raw.Status,
-    scheduledStart: new Date(raw.ScheduledStart),
-    initialSoc: raw.InitialSoc,
-    stationId: raw.StationId,
-    connectorTypeId: raw.ConnectorTypeId,
-    vehicleModelId: raw.VehicleModelId,
-    estimatedCost: raw.EstimatedCost,
-  }));
-
-export type BookingApi = z.infer<typeof BookingApiSchema>;
+export const ReservationAPI = z.object({
+  ok: z.boolean(),
+  data: ReservationSchema.array(),
+});
+export type ReservationApi = z.infer<typeof ReservationAPI>;
