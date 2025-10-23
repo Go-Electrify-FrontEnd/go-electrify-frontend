@@ -3,6 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { formatCurrencyVND } from "@/lib/formatters";
 import { Button } from "@/components/ui/button";
 import type { Reservation } from "@/lib/zod/reservation/reservation.types";
 
@@ -16,12 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 // Helper function to format Vietnamese currency
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-  }).format(amount);
-};
+const formatCurrency = (amount: number) => formatCurrencyVND(amount);
 
 // Helper function to format date
 const formatDateTime = (date: string | Date) => {
