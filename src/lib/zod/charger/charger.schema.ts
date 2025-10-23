@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const ChargerApiSchema = z
+export const ChargerSchema = z
   .object({
     Id: z.number(),
     StationId: z.number(),
@@ -24,4 +24,4 @@ export const ChargerApiSchema = z
     updatedAt: new Date(raw.UpdatedAt),
   }));
 
-export type Charger = z.infer<typeof ChargerApiSchema>;
+export type Charger = z.infer<typeof ChargerSchema>;

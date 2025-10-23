@@ -3,7 +3,7 @@ import { StationMap } from "@/features/stations-nearby/components/stations-map";
 import { Button } from "@/components/ui/button";
 import { Filter, RotateCcw } from "lucide-react";
 import type { Station } from "@/lib/zod/station/station.types";
-import { getStations } from "../(admin-layout)/admin/stations/page";
+import { getStations } from "../../(admin-layout)/admin/stations/page";
 import SectionHeader from "@/components/shared/section-header";
 import SectionContent from "@/components/shared/section-content";
 import { StationsNearbyProvider } from "@/contexts/stations-nearby-context";
@@ -20,8 +20,6 @@ export default async function FindStationsPage() {
             <NearbyStationSearch />
           </div>
         </SectionHeader>
-
-        {/* Map and Station List Section */}
 
         <SectionContent>
           <div className="grid grid-cols-1 gap-6 xl:grid-cols-10">

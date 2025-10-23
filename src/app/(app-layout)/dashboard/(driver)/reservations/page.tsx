@@ -3,19 +3,19 @@ import { DataTable } from "@/features/reservations/components/reservation-table"
 import { EmptyTable } from "@/features/reservations/components/reservation-table-empty";
 import { Plus } from "lucide-react";
 import CreateReservationButton from "@/features/reservations/components/reservation-create-button";
-import { getStations } from "../(admin-layout)/admin/stations/page";
+import { getStations } from "../../(admin-layout)/admin/stations/page";
 import SectionHeader from "@/components/shared/section-header";
 import { getUser } from "@/lib/auth/auth-server";
 import type { CarModel } from "@/lib/zod/vehicle-model/vehicle-model.types";
-import { getConnectorTypes } from "../(admin-layout)/admin/connector-type/page";
-import { z } from "zod";
-import { BookingApiSchema } from "@/lib/zod/reservation/reservation.request";
+import { getConnectorTypes } from "../../(admin-layout)/admin/connector-type/page";
 import type { Reservation } from "@/lib/zod/reservation/reservation.types";
 import type { ConnectorType } from "@/lib/zod/connector-type/connector-type.types";
-import { getVehicleModels } from "../(admin-layout)/admin/vehicle-models/page";
+import { getVehicleModels } from "../../(admin-layout)/admin/vehicle-models/page";
 import SectionContent from "@/components/shared/section-content";
+import { ReservationSchema } from "@/lib/zod/reservation/reservation.schema";
+import { ReservationAPI } from "@/lib/zod/reservation/reservation.request";
 
-export async function getSelfReservations(
+export async function getReservations(
   token: string,
   connectorTypes: ConnectorType[],
   vehicleModels: CarModel[],
@@ -25,7 +25,7 @@ export async function getSelfReservations(
     const response = await fetch(url, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
-      next: { revalidate: 60, tags: ["reservations"] },
+      next: { revalidate: 15, tags: ["reservations"] },
     });
 
     if (!response.ok) {
@@ -33,66 +33,15 @@ export async function getSelfReservations(
       return [];
     }
 
-    const json = await response.json();
-    if (!json || !Array.isArray(json.data)) {
-      console.error("Invalid bookings response");
+    const parseResult = ReservationAPI.safeParse(await response.json());
+
+    if (parseResult.success) {
+      const reservations = parseResult.data.data;
+      return reservations;
+    } else {
+      console.error("Invalid reservations data:", parseResult.error);
       return [];
     }
-
-    const parsed = z.array(BookingApiSchema).safeParse(json.data);
-    if (!parsed.success) {
-      console.error("Invalid booking items:", parsed.error);
-      return [];
-    }
-
-    // Map API shape -> internal Reservation shape
-    const mapped: Reservation[] = parsed.data.map((b) => {
-      const scheduledStart =
-        b.scheduledStart instanceof Date
-          ? b.scheduledStart
-          : new Date(b.scheduledStart);
-      // Reservations are 60 minutes long
-      const scheduledEnd = new Date(scheduledStart.getTime() + 60 * 60 * 1000);
-
-      // Map status values from API to a canonical uppercase value used in the app
-      const statusMap: Record<string, string> = {
-        PENDING: "PENDING",
-        CONFIRMED: "CONFIRMED",
-        CANCELLED: "CANCELED",
-        EXPIRED: "EXPIRED",
-        CONSUMED: "CONSUMED",
-      };
-
-      const normalizedStatus =
-        statusMap[b.status as string] || String(b.status);
-
-      // Try to resolve connector type name for the table 'type' column
-      const connector = connectorTypes.find(
-        (ct) => ct.id === b.connectorTypeId,
-      );
-      const typeLabel = connector ? connector.name : "";
-
-      // Resolve vehicle model name for display (avoids unused variable and enriches the row)
-      const vehicleModelName =
-        vehicleModels.find((vm) => vm.id === b.vehicleModelId)?.modelName ?? "";
-
-      return {
-        id: b.id,
-        userId: 0,
-        pointId: b.stationId,
-        scheduledStart,
-        scheduledEnd,
-        initialSoc: b.initialSoc,
-        type: typeLabel,
-        status: normalizedStatus,
-        estimatedCost: b.estimatedCost ?? 0,
-        createdAt: scheduledStart,
-        updatedAt: scheduledStart,
-        vehicleModelName,
-      } as Reservation;
-    });
-
-    return mapped;
   } catch (error) {
     console.error("Error fetching reservations:", error);
     return [];
@@ -104,7 +53,7 @@ export default async function ReservationPage() {
   const stations = await getStations();
   const vehicleModels = await getVehicleModels(token!);
   const connectorTypes = await getConnectorTypes();
-  const reservations = await getSelfReservations(
+  const reservations = await getReservations(
     token!,
     connectorTypes,
     vehicleModels,

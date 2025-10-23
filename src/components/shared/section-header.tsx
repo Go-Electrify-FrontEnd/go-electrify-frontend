@@ -15,11 +15,11 @@ export default function SectionHeader({
     <div className="border-b px-2 py-12 lg:px-8">
       <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1.5">
-          <h1 className="text-foreground max-w-[95%] text-4xl font-semibold">
+          <h1 className="text-foreground w-full text-4xl font-semibold">
             {title}
           </h1>
           {subtitle && (
-            <p className="text-muted-foreground/90 max-w-[95%] text-base font-medium">
+            <p className="text-muted-foreground/90 w-full text-base font-medium">
               {subtitle}
             </p>
           )}

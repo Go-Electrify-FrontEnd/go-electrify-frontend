@@ -1,9 +1,9 @@
 import { z } from "zod";
 
-export const StationSessionApiSchema = z
+export const StationSessionSchema = z
   .object({
     Id: z.number(),
-    Status: z.string(),
+    Status: z.enum(["STOPPED"]),
     StartedAt: z.string(),
     ChargerId: z.number(),
     StationId: z.number(),
@@ -32,4 +32,4 @@ export const StationSessionApiSchema = z
     targetSoc: raw.TargetSoc ?? null,
   }));
 
-export type StationSession = z.infer<typeof StationSessionApiSchema>;
+export type StationSession = z.infer<typeof StationSessionSchema>;

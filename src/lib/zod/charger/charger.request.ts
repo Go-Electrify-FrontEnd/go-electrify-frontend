@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { ChargerSchema } from "./charger.schema";
 
 export const chargerCreateSchema = z.object({
   stationId: z.coerce
@@ -37,8 +38,14 @@ export const chargerUpdateSchema = chargerCreateSchema
   .omit({ stationId: true })
   .extend({
     id: z.string().trim().min(1, "ID trụ sạc là bắt buộc"),
-    // Allow updating without providing a new dockSecretHash
     dockSecretHash: z.string().optional(),
   });
 
 export type ChargerUpdateFormData = z.infer<typeof chargerUpdateSchema>;
+
+export const ChargerAPI = z.object({
+  ok: z.boolean(),
+  data: ChargerSchema.array(),
+});
+
+export type ChargerAPI = z.infer<typeof ChargerAPI>;
