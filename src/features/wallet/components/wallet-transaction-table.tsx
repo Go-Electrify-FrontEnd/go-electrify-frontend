@@ -30,9 +30,7 @@ import type { Transaction } from "@/lib/zod/wallet/wallet.types";
 import { transactionColumns } from "./wallet-transaction-table-columns";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { ArrowRight, Search } from "lucide-react";
+import { Search } from "lucide-react";
 
 type TransactionTableProps = {
   transactions: Transaction[];
@@ -82,14 +80,6 @@ export function TransactionTable({
               Chi tiết các giao dịch nạp tiền và chi tiêu gần đây
             </CardDescription>
           </div>
-          {showViewAll && totalCount && totalCount > transactions.length && (
-            <Button variant="outline" size="sm" asChild>
-              <Link prefetch={false} href="/dashboard/wallet/transactions">
-                Xem tất cả
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-          )}
         </div>
       </CardHeader>
       <CardContent>
