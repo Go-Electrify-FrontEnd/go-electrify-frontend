@@ -33,24 +33,26 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface BookingFeeFormProps {
   bookingFee: BookingFee;
-  onSuccess?: () => void;
 }
 
-export function BookingFeeForm({ bookingFee, onSuccess }: BookingFeeFormProps) {
-  const initialState = { success: false, msg: "" };
-  const { execute, pending } = useServerAction(
-    updateBookingFee,
-    initialState,
-    {
-      onSuccess: (res) => {
-        toast.success(res.msg);
-        onSuccess?.();
-      },
-      onError: (res) => {
-        if (res.msg) toast.error(res.msg);
-      },
+const initialState = { success: false, msg: "" };
+
+export function BookingFeeForm({ bookingFee }: BookingFeeFormProps) {
+  const { execute, pending } = useServerAction(updateBookingFee, initialState, {
+    onSuccess: (result) => {
+      toast.success("Hành động được thực hiện thành công", {
+        description: result.msg,
+      });
+      form.reset();
     },
-  );
+    onError: (result) => {
+      if (result.msg) {
+        toast.error("Hành động không thành công", {
+          description: result.msg,
+        });
+      }
+    },
+  });
 
   const form = useForm<BookingFeeUpdateFormData>({
     resolver: zodResolver(bookingFeeUpdateSchema),
@@ -76,6 +78,7 @@ export function BookingFeeForm({ bookingFee, onSuccess }: BookingFeeFormProps) {
     const formData = new FormData();
     formData.append("type", data.type);
     formData.append("value", String(data.value));
+
     execute(formData);
   };
 
@@ -99,14 +102,24 @@ export function BookingFeeForm({ bookingFee, onSuccess }: BookingFeeFormProps) {
             <Field>
               <FieldLabel>Loại Phí Đặt Chỗ</FieldLabel>
               <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger>
+                <SelectTrigger className="h-11">
                   <SelectValue placeholder="Chọn loại phí" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Loại phí</SelectLabel>
-                    <SelectItem value="FLAT">Phí Cố Định (VND)</SelectItem>
-                    <SelectItem value="PERCENT">Phần Trăm (%)</SelectItem>
+                    <SelectLabel>Chọn loại phí</SelectLabel>
+                    <SelectItem value="FLAT">
+                      <div className="flex items-center gap-2">
+                        <span>💵</span>
+                        <span>Phí Cố Định (VND)</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="PERCENT">
+                      <div className="flex items-center gap-2">
+                        <span>📊</span>
+                        <span>Phần Trăm (%)</span>
+                      </div>
+                    </SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -126,6 +139,7 @@ export function BookingFeeForm({ bookingFee, onSuccess }: BookingFeeFormProps) {
               <Input
                 {...field}
                 type="number"
+                className="h-11"
                 step={selectedType === "PERCENT" ? "0.01" : "1"}
                 min="0"
                 placeholder={
@@ -141,23 +155,33 @@ export function BookingFeeForm({ bookingFee, onSuccess }: BookingFeeFormProps) {
       </FieldGroup>
 
       {getPreviewText() && (
-        <Alert>
-          <Info className="h-4 w-4" />
-          <AlertDescription>{getPreviewText()}</AlertDescription>
+        <Alert className="border-blue-200 bg-blue-50">
+          <Info className="h-4 w-4 text-blue-600" />
+          <AlertDescription className="text-blue-900">
+            {getPreviewText()}
+          </AlertDescription>
         </Alert>
       )}
 
-      <Alert>
-        <AlertCircle className="h-4 w-4" />
-        <AlertDescription>
-          Thay đổi phí đặt chỗ sẽ ảnh hưởng đến tất cả các đặt chỗ mới trong hệ
-          thống.
+      <Alert className="border-amber-200 bg-amber-50">
+        <AlertCircle className="h-4 w-4 text-amber-600" />
+        <AlertDescription className="text-amber-900">
+          <span className="font-medium">Lưu ý:</span> Thay đổi phí đặt chỗ sẽ
+          ảnh hưởng đến tất cả các đặt chỗ mới trong hệ thống.
         </AlertDescription>
       </Alert>
 
-      <div className="flex justify-end gap-3">
-        <Button type="submit" disabled={pending}>
-          {pending ? "Đang cập nhật..." : "Cập nhật phí đặt chỗ"}
+      <div className="flex justify-end gap-3 pt-2">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => form.reset()}
+          disabled={pending}
+        >
+          Đặt lại
+        </Button>
+        <Button type="submit" disabled={pending} className="min-w-[140px]">
+          {pending ? "Đang cập nhật..." : "Cập nhật"}
         </Button>
       </div>
     </form>

@@ -18,14 +18,14 @@ import VehicleModelEditDialog from "@/features/vehicle-models/components/vehicle
 import SectionContent from "@/components/shared/section-content";
 
 export async function getVehicleModels(token: string): Promise<CarModel[]> {
-  const headers = { Authorization: `Bearer ${token}` };
-
   try {
     const response = await fetch(
       "https://api.go-electrify.com/api/v1/vehicle-models",
       {
         method: "GET",
-        headers,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         next: { revalidate: 60, tags: ["vehicle-models"] },
       },
     );
