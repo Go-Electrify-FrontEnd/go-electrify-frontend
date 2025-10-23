@@ -1,7 +1,7 @@
 "use server";
 
 import { getUser } from "@/lib/auth/auth-server";
-import { revalidateTag } from "next/cache";
+import { updateTag } from "next/cache";
 import { reservationFormSchema } from "@/lib/zod/reservation/reservation.request";
 
 export async function createReservation(prev: unknown, formData: FormData) {
@@ -43,7 +43,7 @@ export async function createReservation(prev: unknown, formData: FormData) {
     });
 
     if (response.ok) {
-      revalidateTag("reservations");
+      updateTag("reservations");
       return { success: true, msg: "Đặt chỗ đã được tạo thành công" };
     } else {
       return { success: false, msg: "Tạo đặt chỗ thất bại" };

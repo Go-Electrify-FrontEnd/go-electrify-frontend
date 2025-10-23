@@ -1,9 +1,7 @@
 "use client";
 
-import { toast } from "sonner";
 import { SharedDataTable } from "@/components/shared/shared-data-table";
 import type { CarModel } from "@/lib/zod/vehicle-model/vehicle-model.types";
-import { useCallback } from "react";
 import { vehicleModelTableColumns } from "./vehicle-model-table-columns";
 
 interface VehicleModelTableProps {

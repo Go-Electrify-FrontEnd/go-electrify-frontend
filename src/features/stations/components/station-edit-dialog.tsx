@@ -27,7 +27,6 @@ import {
   stationUpdateSchema,
   type StationUpdateFormData,
 } from "@/lib/zod/station/station.request";
-import { updateStation } from "@/features/stations/services/stations";
 import {
   InputGroup,
   InputGroupAddon,
@@ -45,6 +44,7 @@ import {
 } from "@/components/ui/select";
 import AddressSearch from "@/components/shared/address-search";
 import { StationStatusType } from "@/lib/zod/station/station.schema";
+import { updateStation } from "../services/stations-actions";
 
 interface UpdateStationProps {
   station: Station;

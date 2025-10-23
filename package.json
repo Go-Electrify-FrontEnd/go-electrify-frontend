@@ -20,7 +20,7 @@
     "@gsap/react": "^2.1.2",
     "@hookform/resolvers": "^5.2.1",
     "@next-safe-action/adapter-react-hook-form": "^2.0.0",
-    "@next/bundle-analyzer": "^15.5.5",
+    "@next/bundle-analyzer": "16.0.0",
     "@origin-space/image-cropper": "^0.1.9",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",
@@ -67,12 +67,12 @@
     "lucide-react": "^0.543.0",
     "mapbox-gl": "^3.15.0",
     "motion": "^12.23.22",
-    "next": "15.5.4",
+    "next": "16.0.0",
     "next-safe-action": "^8.0.11",
     "next-themes": "^0.4.6",
-    "react": "19.1.0",
+    "react": "19.2.0",
     "react-day-picker": "^9.11.1",
-    "react-dom": "19.1.0",
+    "react-dom": "19.2.0",
     "react-easy-crop": "^5.5.3",
     "react-hook-form": "^7.62.0",
     "react-resizable-panels": "^3.0.5",
@@ -92,13 +92,13 @@
     "@testing-library/react": "^16.3.0",
     "@types/mapbox-gl": "^3.4.1",
     "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2",
     "@types/three": "^0.180.0",
     "@vitejs/plugin-react": "^5.0.4",
     "@vitest/coverage-v8": "3.2.4",
     "eslint": "^9",
-    "eslint-config-next": "15.5.4",
+    "eslint-config-next": "16.0.0",
     "jsdom": "^27.0.0",
     "only-allow": "^1.2.1",
     "prettier": "^3.6.2",
@@ -109,5 +109,11 @@
     "typescript": "^5",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.2.4"
+  },
+  "pnpm": {
+    "overrides": {
+      "@types/react": "19.2.2",
+      "@types/react-dom": "19.2.2"
+    }
   }
 }

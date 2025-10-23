@@ -5,7 +5,7 @@ import { getUserFromToken } from "./lib/auth/auth-server";
 
 const PUBLIC_PATHS = new Set(["/"]);
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const response = await handleAuthRefresh(request);
 
   const finalAccessToken =

@@ -27,7 +27,7 @@ import {
   subscriptionUpdateSchema,
   type SubscriptionUpdateFormData,
 } from "@/lib/zod/subscription/subscription.request";
-import { updateSubscription } from "@/actions/subscriptions-actions";
+import { updateSubscription } from "../services/subscriptions";
 
 interface UpdateSubscriptionProps {
   subscription: Subscription;

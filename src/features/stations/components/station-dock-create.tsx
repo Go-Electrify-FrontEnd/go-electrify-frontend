@@ -27,7 +27,6 @@ import {
   useForm,
 } from "react-hook-form";
 import { useState } from "react";
-import { createCharger } from "@/actions/chargers-actions";
 import { toast } from "sonner";
 import { useServerAction } from "@/hooks/use-server-action";
 import {
@@ -44,6 +43,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { createCharger } from "../services/chargers-actions";
 
 const initialState = { success: false, msg: "" };
 

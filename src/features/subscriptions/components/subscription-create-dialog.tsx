@@ -27,13 +27,13 @@ import {
   useForm,
 } from "react-hook-form";
 import { useState } from "react";
-import { createSubscription } from "@/actions/subscriptions-actions";
 import { toast } from "sonner";
 import { useServerAction } from "@/hooks/use-server-action";
 import {
   subscriptionCreateSchema,
   type SubscriptionCreateFormData,
 } from "@/lib/zod/subscription/subscription.request";
+import { createSubscription } from "../services/subscriptions";
 
 const initialState = { success: false, msg: "" };
 

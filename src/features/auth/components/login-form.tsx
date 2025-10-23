@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { useActionState, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { OTPForm } from "./login-otp-form";
-import { handleLogin } from "@/actions/login-actions";
+import { handleLogin } from "../services/auth";
 
 const initialState = {
   success: false,

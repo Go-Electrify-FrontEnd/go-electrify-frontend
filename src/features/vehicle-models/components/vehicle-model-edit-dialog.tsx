@@ -32,10 +32,9 @@ import {
   MultiSelectValue,
 } from "@/components/ui/multi-select";
 import { useConnectorTypes } from "@/contexts/connector-type-context";
-// Translations removed; using Vietnamese literals
-import { updateVehicleModel } from "@/actions/vehicle-models-actions";
 import { toast } from "sonner";
 import { useVehicleModelUpdate } from "@/contexts/vehicle-model-action-context";
+import { updateVehicleModel } from "../services/vehicle-models-actions";
 
 export default function VehicleModelEditDialog() {
   const t = {

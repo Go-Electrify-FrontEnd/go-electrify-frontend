@@ -1,7 +1,7 @@
 "use server";
 
 import { getUser } from "@/lib/auth/auth-server";
-import { revalidateTag } from "next/cache";
+import { updateTag } from "next/cache";
 import { vehicleModelSchema } from "@/lib/zod/vehicle-model/vehicle-model.request";
 
 export async function createVehicleModel(prev: unknown, formData: FormData) {
@@ -40,7 +40,7 @@ export async function createVehicleModel(prev: unknown, formData: FormData) {
     });
 
     if (response.ok) {
-      revalidateTag("vehicle-models");
+      updateTag("vehicle-models");
       return { success: true, msg: "Mẫu xe đã được tạo thành công" };
     } else {
       return { success: false, msg: "Tạo mẫu xe thất bại" };
@@ -88,7 +88,7 @@ export async function updateVehicleModel(prev: unknown, formData: FormData) {
     });
 
     if (response.ok) {
-      revalidateTag("vehicle-models");
+      updateTag("vehicle-models");
       return { success: true, msg: "Mẫu xe đã được cập nhật thành công" };
     } else {
       return { success: false, msg: "Cập nhật mẫu xe thất bại" };
@@ -120,7 +120,7 @@ export async function deleteVehicleModel(prev: unknown, formData: FormData) {
     });
 
     if (response.ok) {
-      revalidateTag("vehicle-models");
+      updateTag("vehicle-models");
       return { success: true, msg: "Mẫu xe đã được xóa thành công" };
     } else {
       return { success: false, msg: "Xóa mẫu xe thất bại" };

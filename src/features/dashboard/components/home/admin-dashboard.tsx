@@ -1,7 +1,7 @@
 "use client";
 
 import { User } from "@/lib/zod/user/user.types";
-import { MapPin, Users, Car, Plug, Package, ArrowUpRight } from "lucide-react";
+import { MapPin, Users, Car, Plug, Package, ArrowUpRight, ReceiptText } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -84,7 +84,7 @@ export function AdminDashboard({ user, token, stats }: AdminDashboardProps) {
         subtitle="Tổng quan hệ thống và quản lý toàn diện"
       />
 
-      <SectionContent className="flex flex-col gap-6">
+      <SectionContent>
         {/* Primary Stats */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <StatCard
@@ -295,6 +295,26 @@ export function AdminDashboard({ user, token, stats }: AdminDashboardProps) {
                   <TableCell className="text-right">
                     <Link
                       href="/dashboard/admin/subscriptions"
+                      className="text-primary inline-flex items-center gap-1 text-sm font-medium hover:underline"
+                    >
+                      Quản lý <ArrowUpRight className="h-3 w-3" />
+                    </Link>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">
+                    <div className="flex items-center gap-2">
+                      <ReceiptText className="h-4 w-4" />
+                      Phí đặt chỗ
+                    </div>
+                  </TableCell>
+                  <TableCell>Cấu hình</TableCell>
+                  <TableCell>
+                    <Badge variant="secondary">Hệ thống</Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Link
+                      href="/dashboard/admin/booking-fee"
                       className="text-primary inline-flex items-center gap-1 text-sm font-medium hover:underline"
                     >
                       Quản lý <ArrowUpRight className="h-3 w-3" />

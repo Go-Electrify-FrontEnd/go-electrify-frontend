@@ -24,7 +24,6 @@ import {
   InputGroupText,
   InputGroupTextarea,
 } from "@/components/ui/input-group";
-import { handleUpdateConnectorType } from "@/actions/connector-type-actions";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useConnectorTypeUpdate } from "@/contexts/connector-type-update-context";
@@ -33,6 +32,7 @@ import {
   type ConnectorTypeUpdateFormData,
 } from "@/lib/zod/connector-type/connector-type.request";
 import { useServerAction } from "@/hooks/use-server-action";
+import { handleUpdateConnectorType } from "../services/connector-type-actions";
 
 export const UpdateConnectorType = () => {
   const { connectorType, isEditDialogOpen, setEditDialogOpen } =
