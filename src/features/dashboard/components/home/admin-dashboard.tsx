@@ -312,17 +312,17 @@ export function AdminDashboard({ user, token, stats }: AdminDashboardProps) {
                 <TableRow>
                   <TableCell className="font-medium">
                     <div className="flex items-center gap-2">
-                      <ReceiptText className="h-4 w-4" />
-                      Phí đặt chỗ
+                      <Package className="h-4 w-4" />
+                      Báo cáo sự cố
                     </div>
                   </TableCell>
-                  <TableCell>Cấu hình</TableCell>
+                  <TableCell>-</TableCell>
                   <TableCell>
-                    <Badge variant="secondary">Hệ thống</Badge>
+                    <Badge variant="outline">Đang theo dõi</Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <Link
-                      href="/dashboard/admin/booking-fee"
+                      href="/dashboard/admin/incident-reports"
                       className="text-primary inline-flex items-center gap-1 text-sm font-medium hover:underline"
                     >
                       Quản lý <ArrowUpRight className="h-3 w-3" />

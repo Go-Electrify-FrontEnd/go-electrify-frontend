@@ -15,6 +15,7 @@ import {
   Wallet2Icon,
   Zap,
   ReceiptText,
+  Package,
 } from "lucide-react";
 // Translations removed: landing and admin UI converted to Vietnamese
 
@@ -32,6 +33,7 @@ import { useUser } from "@/features/users/contexts/user-context";
 import { NavSecondary } from "./nav-secondary";
 import { NavUser } from "./nav-user";
 import AppLogo from "@/components/shared/logo";
+import { url } from "inspector";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useUser();
@@ -120,6 +122,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: "Phí Đặt Chỗ",
         url: "/dashboard/admin/booking-fee",
         icon: ReceiptText,
+      },
+      {
+        title: "Báo Cáo Sự Cố",
+        url: "/dashboard/admin/incident-reports",
+        icon: Package,
       },
     ],
   };
