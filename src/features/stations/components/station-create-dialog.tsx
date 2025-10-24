@@ -57,13 +57,12 @@ export default function StationCreate({ onCancel }: StationCreateProps) {
 
   const initialState = { success: false, msg: "" };
   const { execute, pending } = useServerAction(createStation, initialState, {
-    onSuccess: (result) => {
-      form.reset();
-      setOpen(false);
-      toast.success(result.msg);
-    },
-    onError: (result) => {
-      if (result.msg) {
+    onSettled: (result) => {
+      if (result.success) {
+        form.reset();
+        setOpen(false);
+        toast.success(result.msg);
+      } else if (result.msg) {
         toast.error(result.msg);
       }
     },

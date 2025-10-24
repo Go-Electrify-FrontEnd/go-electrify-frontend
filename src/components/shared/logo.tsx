@@ -26,7 +26,6 @@ export default function AppLogo({
         height={height}
         className="object-contain"
         decoding="async"
-        quality={75}
       />
       <span className="text-2xl font-bold">Electrify</span>
     </Link>

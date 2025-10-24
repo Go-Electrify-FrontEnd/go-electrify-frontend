@@ -56,7 +56,7 @@ export async function DriverDashboard({
   } satisfies ChartConfig;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div>
       <SectionHeader
         title={`Xin chào, ${user.name || user.email}!`}
         subtitle="Tổng quan hoạt động sạc điện của bạn"

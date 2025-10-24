@@ -43,3 +43,46 @@ export const StationApiSchema = z
     createdAt: new Date(raw.CreatedAt),
     updatedAt: new Date(raw.UpdatedAt),
   }));
+
+export const StationBookingSchema = z.object({
+  id: z.number(),
+  code: z.string(),
+  status: z.string(),
+  scheduledStart: z.string(),
+  initialSoc: z.number().nullable(),
+  estimatedCost: z.number().nullable(),
+  stationId: z.number(),
+  connectorTypeId: z.number(),
+  vehicleModelId: z.number(),
+});
+
+export const StationBookingApiSchema = z
+  .object({
+    Id: z.number(),
+    Code: z.string(),
+    Status: z.string(),
+    ScheduledStart: z.string(),
+    InitialSoc: z.number().nullable(),
+    StationId: z.number(),
+    ConnectorTypeId: z.number(),
+    VehicleModelId: z.number(),
+    EstimatedCost: z.number().nullable(),
+  })
+  .transform((raw) => ({
+    id: raw.Id,
+    code: raw.Code,
+    status: raw.Status,
+    scheduledStart: raw.ScheduledStart,
+    initialSoc: raw.InitialSoc,
+    estimatedCost: raw.EstimatedCost,
+    stationId: raw.StationId,
+    connectorTypeId: raw.ConnectorTypeId,
+    vehicleModelId: raw.VehicleModelId,
+  }));
+
+export const StationBookingListApiSchema = z.object({
+  ok: z.boolean().optional(),
+  data: z.array(StationBookingApiSchema).optional(),
+});
+
+export type StationBooking = z.infer<typeof StationBookingSchema>;

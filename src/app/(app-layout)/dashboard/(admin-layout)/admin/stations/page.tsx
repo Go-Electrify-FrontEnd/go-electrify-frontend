@@ -24,13 +24,15 @@ export async function getStations(): Promise<Station[]> {
     return [];
   }
 
-  const parsed = StationApiSchema.array().safeParse(await response.json());
-  if (!parsed.success) {
-    console.error("Failed to parse stations:", parsed.error);
+  const { data, success, error } = StationApiSchema.array().safeParse(
+    await response.json(),
+  );
+  if (!success) {
+    console.error("Failed to parse stations:", error);
     return [];
   }
 
-  return parsed.data;
+  return data;
 }
 
 export default async function StationsManagementPage() {

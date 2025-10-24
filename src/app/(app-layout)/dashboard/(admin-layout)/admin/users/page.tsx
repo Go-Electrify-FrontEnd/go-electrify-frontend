@@ -1,6 +1,5 @@
 import SectionHeader from "@/components/shared/section-header";
 import { getUser } from "@/lib/auth/auth-server";
-import { z } from "zod";
 import { UsersTable } from "@/features/users/components/users-table";
 import { UserApiSchema } from "@/lib/zod/user/user.schema";
 import type { UserApi } from "@/lib/zod/user/user.types";
@@ -30,12 +29,12 @@ export async function getUsers(): Promise<UserApi[]> {
 
     const json = await response.json();
     const items = Array.isArray(json?.Items) ? json.Items : [];
-    const parsed = z.array(UserApiSchema).safeParse(items);
-    if (!parsed.success) {
-      console.error("Invalid users response:", parsed.error);
+    const { data, success, error } = UserApiSchema.array().safeParse(items);
+    if (!success) {
+      console.error("Invalid users response:", error);
       return [];
     }
-    return parsed.data;
+    return data;
   } catch (err) {
     console.error("Error fetching users:", err);
     return [];

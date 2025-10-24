@@ -10,8 +10,8 @@ import { Button } from "@/components/ui/button";
 
 const typeLabels: Record<Transaction["type"], string> = {
   DEPOSIT: "Nạp tiền",
-  WITHDRAW: "Rút tiền",
-  CHARGE: "Sạc xe",
+  BOOKING_FEE: "Phí đặt chỗ",
+  CHARGING_FEE: "Sạc xe",
   REFUND: "Hoàn tiền",
 };
 

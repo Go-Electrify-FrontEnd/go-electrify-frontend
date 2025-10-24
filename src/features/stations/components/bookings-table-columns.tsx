@@ -3,6 +3,7 @@
 import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
+import { formatCurrencyVND } from "@/lib/formatters";
 
 export type Booking = {
   id: number;
@@ -17,13 +18,7 @@ export type Booking = {
 };
 
 const formatCurrency = (amount?: number) =>
-  amount == null
-    ? ""
-    : new Intl.NumberFormat("vi-VN", {
-        style: "currency",
-        currency: "VND",
-        maximumFractionDigits: 0,
-      }).format(amount);
+  amount == null ? "" : formatCurrencyVND(amount);
 
 const formatDate = (iso?: string | null) => {
   if (!iso) return "-";

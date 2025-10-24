@@ -42,13 +42,12 @@ export const UpdateConnectorType = () => {
     handleUpdateConnectorType,
     initialState,
     {
-      onSuccess: (result) => {
-        toast.success(result.msg);
-        setEditDialogOpen(false);
-        form.reset();
-      },
-      onError: (result) => {
-        if (result.msg) {
+      onSettled: (result) => {
+        if (result.success) {
+          toast.success(result.msg);
+          setEditDialogOpen(false);
+          form.reset();
+        } else if (result.msg) {
           toast.error(result.msg);
         }
       },
