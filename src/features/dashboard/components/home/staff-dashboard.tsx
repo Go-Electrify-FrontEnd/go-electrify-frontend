@@ -24,7 +24,7 @@ import { type ChartConfig } from "@/components/ui/chart";
 import { BarChartWrapper } from "./client-charts";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
-import SectionContent from "../shared/section-content";
+import SectionContent from "@/components/shared/section-content";
 
 interface StaffDashboardProps {
   user: User;
@@ -55,7 +55,7 @@ export function StaffDashboard({ user, token, stats }: StaffDashboardProps) {
   } satisfies ChartConfig;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div>
       <SectionHeader
         title={`Xin chào, ${user.name || user.email}!`}
         subtitle="Quản lý trạm sạc và hỗ trợ khách hàng"

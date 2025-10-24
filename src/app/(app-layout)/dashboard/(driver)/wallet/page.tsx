@@ -20,11 +20,8 @@ export async function getWallet() {
     console.error("Failed to fetch wallet, status: " + response.status);
     return null;
   }
-  const data = await response.json();
-  const { success, data: wallet } = WalletSchema.safeParse(data);
-  if (!success) {
-    return null;
-  }
+  const { success, data } = WalletSchema.safeParse(await response.json());
+  const wallet = success ? data : null;
   return wallet;
 }
 
@@ -38,33 +35,27 @@ export async function getTransactions(page: number = 1, pageSize: number = 20) {
 
   if (!response.ok) {
     console.error("Failed to fetch transactions, status: " + response.status);
-    return null;
+    return [];
   }
 
-  const data = await response.json();
-  const parsedApi = TransactionListApiSchema.safeParse(data);
+  const { success, data } = TransactionListApiSchema.safeParse(
+    await response.json(),
+  );
 
-  if (parsedApi.success) {
-    return parsedApi.data;
-  }
-
-  return null;
+  const transactions = success ? data.data : [];
+  return transactions;
 }
 
 export default async function WalletPage() {
-  const [wallet, transactionsData] = await Promise.all([
-    getWallet(),
-    getTransactions(),
-  ]);
+  const wallet = await getWallet();
+  const transactions = await getTransactions(1, 50);
 
   if (!wallet) {
     return <div>Đã xảy ra một số lỗi khi cố tải dữ liệu ví.</div>;
   }
 
-  const transactions = transactionsData?.data || [];
-
   return (
-    <div className="flex flex-col gap-4 md:gap-6">
+    <div>
       <SectionHeader
         title="Ví của tôi"
         subtitle="Quản lý số dư và giao dịch của bạn"

@@ -3,10 +3,10 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { formatCurrencyVND } from "@/lib/formatters";
 import { Button } from "@/components/ui/button";
 import type { Reservation } from "@/lib/zod/reservation/reservation.types";
 
-export type { Reservation };
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,12 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 // Helper function to format Vietnamese currency
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-  }).format(amount);
-};
+const formatCurrency = (amount: number) => formatCurrencyVND(amount);
 
 // Helper function to format date
 const formatDateTime = (date: string | Date) => {
@@ -69,20 +64,6 @@ const translateStatus = (status: string) => {
       return "Đã hết hạn";
     default:
       return status;
-  }
-};
-
-// Helper function to translate charging type
-const translateType = (type: string) => {
-  switch (type.toLowerCase()) {
-    case "standard":
-      return "Tiêu chuẩn";
-    case "fast":
-      return "Nhanh";
-    case "rapid":
-      return "Siêu nhanh";
-    default:
-      return type;
   }
 };
 
@@ -147,15 +128,6 @@ export const columns: ColumnDef<Reservation>[] = [
     ),
   },
   {
-    accessorKey: "type",
-    header: "Loại",
-    cell: ({ row }) => (
-      <div className="text-foreground">
-        {translateType(row.getValue("type"))}
-      </div>
-    ),
-  },
-  {
     accessorKey: "status",
     header: "Trạng thái",
     cell: ({ row }) => {
@@ -206,7 +178,7 @@ export const columns: ColumnDef<Reservation>[] = [
               }
               className="cursor-pointer"
             >
-              Sao chép ID đặt chỗ
+              Sao chép ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="cursor-pointer">

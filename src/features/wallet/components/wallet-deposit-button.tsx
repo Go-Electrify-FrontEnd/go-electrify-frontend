@@ -57,7 +57,7 @@ export default function WalletDepositButton() {
     handleCreateTopup,
     initialState,
     {
-      onSuccess: (result) => {
+      onSettled: (result) => {
         if (result.success) {
           if (result.data?.checkoutUrl) {
             window.location.href = result.data.checkoutUrl;
@@ -67,10 +67,7 @@ export default function WalletDepositButton() {
           toast.success("Yêu cầu nạp tiền đã được tạo");
           setOpen(false);
           form.reset();
-        }
-      },
-      onError: (result) => {
-        if (result.msg) {
+        } else if (result.msg) {
           toast.error("Không thể nạp tiền", { description: result.msg });
         }
       },

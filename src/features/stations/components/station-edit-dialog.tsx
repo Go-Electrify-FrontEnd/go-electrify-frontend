@@ -90,13 +90,12 @@ export function UpdateStation({
   });
 
   const { execute, pending } = useServerAction(updateStation, initialState, {
-    onSuccess: (result) => {
-      toast.success("Trạm đã được cập nhật", { description: result.msg });
-      onOpenChange(false);
-      form.reset();
-    },
-    onError: (result) => {
-      if (result.msg) {
+    onSettled: (result) => {
+      if (result.success) {
+        toast.success("Trạm đã được cập nhật", { description: result.msg });
+        onOpenChange(false);
+        form.reset();
+      } else if (result.msg) {
         toast.error("Cập nhật không thành công", { description: result.msg });
       }
     },

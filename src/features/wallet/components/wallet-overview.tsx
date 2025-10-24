@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Transaction, Wallet } from "@/lib/zod/wallet/wallet.types";
 import { CreditCard, WalletIcon, Zap } from "lucide-react";
 import { useMemo } from "react";
+import { formatShortCurrency, formatCurrencyVND } from "@/lib/formatters";
 
 interface WalletOverviewProps {
   wallet: Wallet;
@@ -43,7 +44,7 @@ export function WalletOverview({ wallet, transactions }: WalletOverviewProps) {
     const chargesThisMonth = transactions.filter((transaction) => {
       const date = toDate(transaction.createdAt as Date | string);
       return (
-        transaction.type === "CHARGE" &&
+        transaction.type === "CHARGING_FEE" &&
         transaction.status === "SUCCEEDED" &&
         date.getMonth() === currentMonth &&
         date.getFullYear() === currentYear
@@ -81,8 +82,8 @@ export function WalletOverview({ wallet, transactions }: WalletOverviewProps) {
         latest.type === "DEPOSIT" || latest.type === "REFUND" ? "+" : "−";
       const typeLabelMap: Record<Transaction["type"], string> = {
         DEPOSIT: "Nạp tiền",
-        WITHDRAW: "Rút tiền",
-        CHARGE: "Sạc",
+        BOOKING_FEE: "Phí đặt chỗ",
+        CHARGING_FEE: "Sạc",
         REFUND: "Hoàn tiền",
       };
       lastActivityText = `${formatted} • ${typeLabelMap[latest.type]} ${sign}${latest.amount.toLocaleString("vi-VN")} ₫`;
@@ -97,8 +98,7 @@ export function WalletOverview({ wallet, transactions }: WalletOverviewProps) {
     };
   }, [transactions]);
 
-  const formatCurrency = (value: number) =>
-    `${value.toLocaleString("vi-VN")} ₫`;
+  // local helpers replaced by shared formatters
 
   return (
     <div className="grid gap-4 sm:gap-6 md:grid-cols-3">
@@ -127,7 +127,7 @@ export function WalletOverview({ wallet, transactions }: WalletOverviewProps) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            {formatCurrency(totalDepositCurrentMonth)}
+            {formatShortCurrency(totalDepositCurrentMonth)}
           </div>
           <p className="text-muted-foreground mt-1 text-xs">
             {depositCount > 0
@@ -146,7 +146,7 @@ export function WalletOverview({ wallet, transactions }: WalletOverviewProps) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            {formatCurrency(totalSpentCurrentMonth)}
+            {formatShortCurrency(totalSpentCurrentMonth)}
           </div>
           <p className="text-muted-foreground mt-1 text-xs">
             {chargingSessionsCount > 0
