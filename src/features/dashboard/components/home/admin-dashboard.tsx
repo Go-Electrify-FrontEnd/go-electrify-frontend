@@ -33,9 +33,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Link from "next/link";
-import SectionContent from "../shared/section-content";
 import { ResourceUtilizationPie } from "./resource-utilization";
 import { RoleDistributionCard } from "./role-distribution";
+import SectionContent from "@/components/shared/section-content";
 
 interface AdminDashboardProps {
   user: User;
@@ -86,7 +86,7 @@ export function AdminDashboard({ user, token, stats }: AdminDashboardProps) {
   } satisfies ChartConfig;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div>
       <SectionHeader
         title={`Chào mừng quản trị viên, ${user.name || user.email}!`}
         subtitle="Tổng quan hệ thống và quản lý toàn diện"

@@ -16,7 +16,7 @@ import { Crop } from "lucide-react";
 import { toast } from "sonner";
 import { AvatarCropDialog } from "./avatar-crop-dialog";
 import { startTransition, useEffect, useRef, useState, useMemo } from "react";
-import { refreshTokens } from "@/features/auth/services/auth";
+import { refreshTokens } from "@/features/auth/services/login-actions";
 
 export default function AvatarUpdate() {
   const { user } = useUser();

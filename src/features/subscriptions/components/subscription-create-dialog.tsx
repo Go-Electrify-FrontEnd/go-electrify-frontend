@@ -45,15 +45,14 @@ export default function SubscriptionCreateDialog() {
     createSubscription,
     initialState,
     {
-      onSuccess: (result) => {
-        toast.success("Gói đăng ký đã được tạo", {
-          description: result.msg,
-        });
-        setOpen(false);
-        form.reset();
-      },
-      onError: (result) => {
-        if (result.msg) {
+      onSettled: (result) => {
+        if (result.success) {
+          toast.success("Gói đăng ký đã được tạo", {
+            description: result.msg,
+          });
+          setOpen(false);
+          form.reset();
+        } else if (result.msg) {
           toast.error("Tạo gói đăng ký thất bại", {
             description: result.msg,
           });

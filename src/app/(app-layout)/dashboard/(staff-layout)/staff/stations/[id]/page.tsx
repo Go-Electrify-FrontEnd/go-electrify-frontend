@@ -19,6 +19,8 @@ import {
   Calendar,
   Plus,
   TrendingUp,
+  UserPlus,
+  Users,
   Zap,
 } from "lucide-react";
 import { SharedDataTable } from "@/components/shared/shared-data-table";
@@ -29,89 +31,13 @@ import { ChargerUpdateProvider } from "@/features/stations/contexts/charger-upda
 import UpdateCharger from "@/features/stations/components/charger-edit-dialog";
 import { getConnectorTypes } from "@/app/(app-layout)/dashboard/(admin-layout)/admin/connector-type/page";
 import SectionContent from "@/components/shared/section-content";
+import { getStationChargers } from "@/features/stations/api/stations-api";
+import { stationStaffColumns } from "@/features/stations/components/station-staff-table-columns";
 import {
-  getStationChargers,
-  getStationSessions,
+  getBookingsByStationId,
+  getStationById,
+  getStationStaff,
 } from "@/features/stations/api/stations-api";
-
-export async function getStationById(id: string, token: string) {
-  const url = `https://api.go-electrify.com/api/v1/stations/${encodeURIComponent(id)}`;
-  const response = await fetch(url, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch station");
-  }
-
-  const station = await response.json();
-  return station;
-}
-
-interface StationBooking {
-  id: number;
-  code: string;
-  status: string;
-  scheduledStart: string;
-  initialSoc: number | null;
-  estimatedCost: number | null;
-  stationId: number;
-  connectorTypeId: number;
-  vehicleModelId: number;
-}
-
-// Booking status mapping moved into the bookings table columns so the table
-// component owns its own display logic.
-
-export async function getBookingsByStationId(stationId: string, token: string) {
-  const url = `https://api.go-electrify.com/api/v1/stations/${encodeURIComponent(
-    stationId,
-  )}/bookings`;
-  const response = await fetch(url, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch bookings");
-  }
-
-  const payload = (await response.json()) as {
-    ok?: boolean;
-    data?: Array<{
-      Id: number;
-      Code: string;
-      Status: string;
-      ScheduledStart: string;
-      InitialSoc: number | null;
-      StationId: number;
-      ConnectorTypeId: number;
-      VehicleModelId: number;
-      EstimatedCost: number | null;
-    }>;
-  };
-
-  const bookings = Array.isArray(payload?.data)
-    ? payload.data.map((booking) => ({
-        id: booking.Id,
-        code: booking.Code,
-        status: booking.Status,
-        scheduledStart: booking.ScheduledStart,
-        initialSoc: booking.InitialSoc,
-        estimatedCost: booking.EstimatedCost,
-        stationId: booking.StationId,
-        connectorTypeId: booking.ConnectorTypeId,
-        vehicleModelId: booking.VehicleModelId,
-      }))
-    : [];
-
-  return bookings satisfies StationBooking[];
-}
 
 export default async function StationPage({
   params,
@@ -124,7 +50,6 @@ export default async function StationPage({
     notFound();
   }
 
-  // Token is definitely present here since the middleware protects this route
   const { token } = await getUser();
   const station = await getStationById(id, token!);
 
@@ -134,20 +59,8 @@ export default async function StationPage({
 
   const chargers = await getStationChargers(id, token!);
   const bookings = await getBookingsByStationId(id, token!);
-  const stationSessions = await getStationSessions(id, token!);
-
-  const chargerCodeById = new Map(
-    (chargers ?? []).map((charger) => [charger.id, charger.code] as const),
-  );
-
-  const sessions: SessionRow[] = stationSessions
-    .map((session) => ({
-      ...session,
-      chargerCode: chargerCodeById.get(session.chargerId) ?? null,
-    }))
-    .sort((a, b) => {
-      return new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime();
-    });
+  const stationStaff = await getStationStaff(id, token!);
+  const sessions: SessionRow[] = [];
 
   const connectorTypes = await getConnectorTypes();
 
@@ -158,13 +71,14 @@ export default async function StationPage({
     const normalized = session.status.toLowerCase();
     return ["active", "charging", "in_progress"].includes(normalized);
   }).length;
+
   const upcomingBookings = bookings.length;
   const utilizationRate =
     totalChargers > 0 ? Math.round((activeSessions / totalChargers) * 100) : 0;
 
   return (
-    <div className="flex flex-col gap-6 p-4 md:gap-6 md:p-6">
-      <SectionHeader title={station.Name} subtitle={station.Address}>
+    <div className="flex flex-col gap-6 md:gap-6">
+      <SectionHeader title={station.name} subtitle={station.address}>
         <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
           <Button variant="outline" size="lg">
             <Activity className="mr-2 h-4 w-4" />
@@ -353,6 +267,39 @@ export default async function StationPage({
                 searchPlaceholder="Tìm kiếm mã giữ chỗ..."
                 emptyTitle="Chưa có giữ chỗ"
                 emptyMessage="Khách hàng chưa đăng ký giữ chỗ nào cho trạm này."
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Station Staff Table */}
+        <Card>
+          <CardHeader>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex-1">
+                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                  <Users className="h-4 w-4 sm:h-5 sm:w-5" />
+                  Nhân Viên Trạm
+                </CardTitle>
+                <CardDescription className="mt-1 text-xs sm:mt-1.5 sm:text-sm">
+                  Danh sách nhân viên được phân công quản lý trạm này
+                </CardDescription>
+              </div>
+              <Button size="sm" variant="default">
+                <UserPlus className="mr-2 h-4 w-4" />
+                <span className="sm:inline">Phân công nhân viên</span>
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="p-3 sm:p-6">
+              <SharedDataTable
+                columns={stationStaffColumns}
+                data={stationStaff}
+                searchColumn="userEmail"
+                searchPlaceholder="Tìm kiếm email nhân viên..."
+                emptyTitle="Chưa có nhân viên"
+                emptyMessage="Chưa có nhân viên nào được phân công cho trạm này. Nhấn nút phía trên để thêm nhân viên."
               />
             </div>
           </CardContent>

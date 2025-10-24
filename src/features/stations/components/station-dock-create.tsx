@@ -59,15 +59,14 @@ export default function StationDockCreate({
   const [open, setOpen] = useState(false);
 
   const { execute, pending } = useServerAction(createCharger, initialState, {
-    onSuccess: (result) => {
-      toast.success("Sạc điện đã được tạo", {
-        description: result.msg,
-      });
-      setOpen(false);
-      form.reset();
-    },
-    onError: (result) => {
-      if (result.msg) {
+    onSettled: (result) => {
+      if (result.success) {
+        toast.success("Sạc điện đã được tạo", {
+          description: result.msg,
+        });
+        setOpen(false);
+        form.reset();
+      } else if (result.msg) {
         toast.error("Tạo sạc điện thất bại", {
           description: result.msg,
         });

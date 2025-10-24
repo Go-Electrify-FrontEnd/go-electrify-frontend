@@ -60,7 +60,7 @@ export default async function ReservationPage() {
   );
 
   return (
-    <div className="container mx-auto space-y-6">
+    <div className="container mx-auto">
       <SectionHeader
         title="Quản lý Đặt Chỗ"
         subtitle="Xem và quản lý các đặt chỗ trạm sạc xe điện của bạn"
