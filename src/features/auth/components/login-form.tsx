@@ -37,17 +37,16 @@ export function LoginForm({
   const [otpSent, setOtpSent] = useState(false);
 
   const { execute, pending } = useServerAction(handleLogin, initialState, {
-    onSuccess: (result) => {
-      toast("Email đã được gửi!", {
-        description: result.msg,
-      });
+    onSettled: (result) => {
+      if (result.success) {
+        toast("Email đã được gửi!", {
+          description: result.msg,
+        });
 
-      setEmail(form.getValues("email"));
-      form.reset();
-      setOtpSent(true);
-    },
-    onError: (result) => {
-      if (result.msg) {
+        setEmail(form.getValues("email"));
+        form.reset();
+        setOtpSent(true);
+      } else if (result.msg) {
         toast.error("Lỗi", {
           description: result.msg,
         });

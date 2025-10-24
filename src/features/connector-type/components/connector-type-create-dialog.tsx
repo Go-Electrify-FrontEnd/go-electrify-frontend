@@ -44,15 +44,14 @@ export default function ConnectorTypeCreateDialog() {
     handleCreateConnectorType,
     initialState,
     {
-      onSuccess: (result) => {
-        toast.success("Hành động được thực hiện thành công", {
-          description: result.msg,
-        });
-        setOpen(false);
-        form.reset();
-      },
-      onError: (result) => {
-        if (result.msg) {
+      onSettled: (result) => {
+        if (result.success) {
+          toast.success("Hành động được thực hiện thành công", {
+            description: result.msg,
+          });
+          setOpen(false);
+          form.reset();
+        } else if (result.msg) {
           toast.error("Hành động không thành công", {
             description: result.msg,
           });

@@ -29,7 +29,11 @@ export function NavSecondary({ items, ...props }: NavSecondaryProps) {
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild>
-                <Link prefetch={false} href={item.url}>
+                <Link
+                  prefetch={false}
+                  href={item.url}
+                  className="text-muted-foreground/90"
+                >
                   <item.icon />
                   <span>{item.title}</span>
                 </Link>

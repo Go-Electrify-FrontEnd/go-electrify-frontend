@@ -7,12 +7,7 @@ export default async function StaffLayout({
   children: React.ReactNode;
 }) {
   const { user } = await getUser();
-
-  if (!user) {
-    forbidden();
-  }
-
-  const role = user.role.toLowerCase();
+  const role = user!.role.toLowerCase();
   if (role !== "staff" && role !== "admin") {
     forbidden();
   }

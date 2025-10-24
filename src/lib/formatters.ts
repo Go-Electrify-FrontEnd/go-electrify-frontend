@@ -22,3 +22,18 @@ export function formatShortCurrency(value: number | null | undefined) {
   if (value == null || Number.isNaN(value)) return "0 ₫";
   return `${new Intl.NumberFormat("vi-VN").format(value)} ₫`;
 }
+
+export function formatDateTime(
+  value: string | null | undefined,
+  locale = "vi-VN",
+) {
+  if (!value) return "-";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return String(value);
+  }
+  return date.toLocaleString(locale, {
+    dateStyle: "short",
+    timeStyle: "short",
+  });
+}

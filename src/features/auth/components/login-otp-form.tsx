@@ -40,16 +40,15 @@ export function OTPForm({ email }: OTPFormProps) {
   const [isResendPending, startResend] = useTransition();
 
   const { execute, pending } = useServerAction(handleVerifyOTP, initialState, {
-    onSuccess: (result) => {
-      toast.success("Đăng nhập thành công", {
-        description: result.msg,
-      });
+    onSettled: (result) => {
+      if (result.success) {
+        toast.success("Đăng nhập thành công", {
+          description: result.msg,
+        });
 
-      router.refresh();
-      router.push("/dashboard");
-    },
-    onError: (result) => {
-      if (result.msg) {
+        router.refresh();
+        router.push("/dashboard");
+      } else if (result.msg) {
         toast.error("Xác thực không thành công", {
           description: result.msg,
         });

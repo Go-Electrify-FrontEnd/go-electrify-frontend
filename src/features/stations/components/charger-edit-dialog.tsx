@@ -47,14 +47,15 @@ export default function UpdateCharger({ connectorTypes }: UpdateChargerProps) {
     useChargerUpdate();
   const initialState = { success: false, msg: "" };
   const { execute, pending } = useServerAction(updateCharger, initialState, {
-    onSuccess: (res) => {
-      toast.success(res.msg);
-      setEditDialogOpen(false);
-      form.reset();
-      setCharger(null);
-    },
-    onError: (res) => {
-      if (res.msg) toast.error(res.msg);
+    onSettled: (res) => {
+      if (res.success) {
+        toast.success(res.msg);
+        setEditDialogOpen(false);
+        form.reset();
+        setCharger(null);
+      } else if (res.msg) {
+        toast.error(res.msg);
+      }
     },
   });
 

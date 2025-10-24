@@ -12,7 +12,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { BookingFeeResponseSchema } from "@/lib/zod/booking-fee/booking-fee.schema";
 import type { BookingFee } from "@/lib/zod/booking-fee/booking-fee.types";
 import { BookingFeeManager } from "@/features/booking-fee/components/booking-fee-manager";
-import { AlertCircle, DollarSign, Percent } from "lucide-react";
+import { AlertCircle } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 async function getBookingFee(): Promise<BookingFee | null> {
   try {
@@ -49,16 +50,23 @@ export default async function BookingFeePage() {
 
   if (!bookingFee) {
     return (
-      <div className="flex flex-col gap-4 md:gap-6">
+      <div>
         <SectionHeader
           title="Quản lý Phí Đặt Chỗ"
           subtitle="Cấu hình phí đặt chỗ cho hệ thống"
         />
         <SectionContent>
           <Card>
-            <CardContent className="py-12 text-center">
-              <p className="text-muted-foreground">
-                Không thể tải thông tin phí đặt chỗ. Vui lòng thử lại sau.
+            <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+              <div className="bg-muted flex h-16 w-16 items-center justify-center rounded-full sm:h-20 sm:w-20">
+                <AlertCircle className="text-muted-foreground h-8 w-8 sm:h-10 sm:w-10" />
+              </div>
+              <h3 className="mt-4 text-lg font-semibold">
+                Không thể tải dữ liệu
+              </h3>
+              <p className="text-muted-foreground mt-2 max-w-sm text-sm">
+                Không thể tải thông tin phí đặt chỗ. Vui lòng thử lại sau hoặc
+                liên hệ quản trị viên.
               </p>
             </CardContent>
           </Card>
@@ -68,39 +76,25 @@ export default async function BookingFeePage() {
   }
 
   return (
-    <div className="flex flex-col gap-4 md:gap-6">
+    <div>
       <SectionHeader
         title="Quản lý Phí Đặt Chỗ"
         subtitle="Cấu hình và quản lý phí đặt chỗ cho toàn hệ thống"
       />
 
       <SectionContent>
-        {/* Current Configuration and Update Form */}
-        <BookingFeeManager bookingFee={bookingFee} />
-
-        {/* Help and Guidelines */}
-        <Card>
-          <CardHeader className="border-b">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900">
-                <DollarSign className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-              </div>
-              <div>
-                <CardTitle>Hướng Dẫn Sử Dụng</CardTitle>
-                <CardDescription>
-                  Tìm hiểu về các loại phí đặt chỗ và cách áp dụng
-                </CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
-              <div className="grid gap-6 md:grid-cols-2">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
-                      <DollarSign className="h-5 w-5" />
-                    </div>
+        <div className="grid gap-4 lg:grid-cols-12 lg:gap-6">
+          <Card className="w-full lg:col-span-4">
+            <CardHeader className="border-b">
+              <CardTitle>Hướng Dẫn Sử Dụng</CardTitle>
+              <CardDescription>
+                Tìm hiểu về các loại phí đặt chỗ và cách áp dụng
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                <div className="grid gap-6">
+                  <div className="space-y-4">
                     <div>
                       <h3 className="text-lg font-semibold">
                         Phí Cố Định (FLAT)
@@ -110,49 +104,54 @@ export default async function BookingFeePage() {
                       </p>
                     </div>
                   </div>
-                  <div className="bg-muted/30 ml-13 rounded-lg p-4">
+                  <div className="">
                     <p className="mb-2 text-sm font-medium">Ví dụ:</p>
                     <p className="text-muted-foreground text-sm leading-relaxed">
                       Phí cố định 10,000 VND → mỗi đặt chỗ trả thêm 10,000 VND
                     </p>
                   </div>
-                </div>
 
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
-                      <Percent className="h-5 w-5" />
+                  <Separator className="my-2" />
+
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div>
+                        <h3 className="text-lg font-semibold">
+                          Phí Phần Trăm (PERCENT)
+                        </h3>
+                        <p className="text-muted-foreground text-sm">
+                          Phí sẽ được tính dựa trên phần trăm sạc điện của loại
+                          xe
+                        </p>
+                      </div>
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold">
-                        Phí Phần Trăm (PERCENT)
-                      </h3>
-                      <p className="text-muted-foreground text-sm">
-                        Phí sẽ được tính dựa trên phần trăm của tổng giá trị đặt
-                        chỗ
+                      <p className="mb-2 text-sm font-medium">Ví dụ:</p>
+                      <p className="text-muted-foreground text-sm leading-relaxed">
+                        Phí 5% + Số Tiền sạc 10% pin của xe
                       </p>
                     </div>
                   </div>
-                  <div className="bg-muted/30 ml-13 rounded-lg p-4">
-                    <p className="mb-2 text-sm font-medium">Ví dụ:</p>
-                    <p className="text-muted-foreground text-sm leading-relaxed">
-                      Phí 5% + Đặt chỗ 100,000 VND → Phí là 5,000 VND
-                    </p>
-                  </div>
                 </div>
-              </div>
 
-              <Alert>
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription className="text-sm">
-                  <strong>Lưu ý quan trọng:</strong> Thay đổi cấu hình phí sẽ có
-                  hiệu lực ngay lập tức và áp dụng cho tất cả các đặt chỗ mới
-                  trong hệ thống. Các đặt chỗ hiện tại sẽ không bị ảnh hưởng.
-                </AlertDescription>
-              </Alert>
-            </div>
-          </CardContent>
-        </Card>
+                <Alert>
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription className="text-sm">
+                    <strong>Lưu ý quan trọng:</strong> Thay đổi cấu hình phí sẽ
+                    có hiệu lực ngay lập tức và áp dụng cho tất cả các đặt chỗ
+                    mới trong hệ thống. Các đặt chỗ hiện tại sẽ không bị ảnh
+                    hưởng.
+                  </AlertDescription>
+                </Alert>
+              </div>
+            </CardContent>
+          </Card>
+
+          <BookingFeeManager
+            className="w-full lg:col-span-8"
+            bookingFee={bookingFee}
+          />
+        </div>
       </SectionContent>
     </div>
   );

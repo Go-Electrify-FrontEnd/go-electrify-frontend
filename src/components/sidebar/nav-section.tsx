@@ -36,7 +36,7 @@ export function NavSection({
               <Link
                 prefetch={false}
                 href={item.url}
-                className="hover:text-foreground hover:bg-muted flex items-center rounded-md transition-colors group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0"
+                className="hover:text-foreground text-muted-foreground/90 hover:bg-muted flex items-center rounded-md transition-colors group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0"
               >
                 {item.icon && <item.icon />}
                 <span>{item.title}</span>

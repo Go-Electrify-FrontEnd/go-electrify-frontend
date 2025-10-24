@@ -55,7 +55,7 @@ export default async function WalletPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4 md:gap-6">
+    <div>
       <SectionHeader
         title="Ví của tôi"
         subtitle="Quản lý số dư và giao dịch của bạn"
