@@ -1,9 +1,15 @@
 import LandingHeader from "@/components/landing/landing-header";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import { StationMap } from "@/features/stations-nearby/components/stations-map";
 import { StationsNearbyProvider } from "@/contexts/stations-nearby-context";
 import { getStations } from "@/features/stations/services/stations-api";
+import { Suspense } from "react";
+import {
+  CheaperPriceCard,
+  ReservationSlotCard,
+  SupportCard,
+  OnlinePaymentCard,
+} from "@/components/ui/gradient-card-example";
 
 export const revalidate = 3600; // Revalidate this page every hour
 
@@ -13,11 +19,11 @@ export default async function HomePage() {
     "flex h-20 w-full items-center justify-center opacity-60 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0";
 
   const brands = [
-    { name: "Porsche", size: "text-4xl" },
-    { name: "Tesla", size: "text-4xl" },
-    { name: "VinFast", size: "text-4xl" },
-    { name: "BYD", size: "text-4xl" },
-    { name: "Volvo", size: "text-4xl" },
+    { name: "Porsche" },
+    { name: "Tesla" },
+    { name: "VinFast" },
+    { name: "BYD" },
+    { name: "Volvo" },
   ];
 
   return (
@@ -26,19 +32,15 @@ export default async function HomePage() {
 
       {/* Hero Section */}
       <section className="w-full pt-32">
-        <div className="mx-auto w-full max-w-7xl border-t border-r border-l text-center">
-          <div className="mx-auto w-max max-w-full space-y-4 p-6 sm:space-y-6 sm:p-10 lg:border-r lg:border-l lg:p-14">
-            <div className="text-muted-foreground font-xanh text-xs tracking-wider sm:text-sm">
-              GOELECTRIFY / 2025
-            </div>
-
+        <div className="mx-auto w-full max-w-7xl text-center">
+          <div className="mx-auto w-max max-w-full space-y-4 p-6 sm:space-y-6 sm:p-10 lg:p-14">
             <h1 className="text-4xl font-light tracking-tight sm:text-5xl lg:text-6xl xl:text-7xl">
               Sạc Xe Điện
               <br />
-              <span className="text-muted-foreground">Thông Minh</span>
+              <span className="">Thông Minh</span>
             </h1>
 
-            <p className="text-muted-foreground mx-auto max-w-2xl px-4 text-base leading-relaxed sm:px-0 sm:text-lg lg:text-xl">
+            <p className="mx-auto max-w-2xl px-4 text-base leading-relaxed sm:px-0 sm:text-lg lg:text-xl">
               Nền tảng sạc xe điện tiện lợi và tiết kiệm hàng đầu dành cho tài
               xế với mạng lưới trạm sạc phủ sóng khắp Thành phố Hồ Chí Minh.
             </p>
@@ -65,28 +67,28 @@ export default async function HomePage() {
       </section>
 
       {/* Partner Brands Section */}
-      <section className="mx-auto w-full max-w-7xl border px-4 py-12 sm:px-6 sm:py-16">
-        <div className="mb-8 text-center">
-          <h2 className="text-muted-foreground font-xanh mb-2 text-xs tracking-wider uppercase sm:text-sm">
-            Các Hãng Xe Được Hỗ Trợ
-          </h2>
-          <p className="text-xl">
-            Hợp tác cùng các thương hiệu xe điện hàng đầu
-          </p>
-        </div>
-
+      <section className="mx-auto w-full max-w-7xl px-4 sm:px-6">
         <div className="grid grid-cols-2 place-items-center gap-6 sm:gap-8 md:grid-cols-3 lg:grid-cols-5">
           {brands.map((b) => (
             <div key={b.name} className={brandClass}>
-              <div className={`${b.size} font-mono text-current`}>{b.name}</div>
+              <div className="font-mono text-3xl text-current lg:text-4xl">
+                {b.name}
+              </div>
             </div>
           ))}
         </div>
       </section>
 
+      <div className="no-scrollbar mx-auto grid w-max grid-cols-4 gap-6 overflow-x-auto py-16">
+        <CheaperPriceCard />
+        <ReservationSlotCard />
+        <SupportCard />
+        <OnlinePaymentCard />
+      </div>
+
       {/* Map Section */}
       <section>
-        <div className="mx-auto w-full max-w-7xl border p-6 sm:px-6">
+        <div className="mx-auto w-full max-w-7xl p-6 sm:px-6">
           <div className="p-12">
             <div className="text-center text-balance">
               <h2 className="text-muted-foreground font-xanh mb-2 text-xs tracking-wider sm:mb-3 sm:text-sm">
@@ -102,19 +104,21 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <div className="overflow-hidden rounded-2xl border shadow-2xl sm:rounded-3xl">
-            <div className="h-[400px] sm:h-[500px] md:h-[600px] lg:h-[800px] xl:h-[1000px]">
-              <StationsNearbyProvider stations={stations}>
-                <StationMap />
-              </StationsNearbyProvider>
+          <div className="overflow-hidden rounded-2xl shadow-2xl sm:rounded-3xl">
+            <div className="h-[400px] sm:h-[500px] md:h-[600px] lg:h-[800px]">
+              <Suspense fallback={<div>Loading map...</div>}>
+                <StationsNearbyProvider stations={stations}>
+                  <StationMap />
+                </StationsNearbyProvider>
+              </Suspense>
             </div>
           </div>
         </div>
       </section>
 
-      <footer className="bg-background mt-32 border-t">
+      <footer className="bg-background mt-32">
         <div className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
-          <div className="grid gap-8 sm:gap-12 lg:grid-cols-12">
+          <div className="grid gap-8 sm:gap-12">
             <div className="lg:col-span-4">
               <div className="space-y-3 sm:space-y-4">
                 <div className="font-xanh text-lg font-semibold tracking-tight sm:text-xl">
@@ -331,7 +335,7 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <div className="border-muted-foreground/20 mt-8 border-t pt-6 sm:mt-12 sm:pt-8">
+          <div className="mt-8 pt-6 sm:mt-12 sm:pt-8">
             <div className="flex flex-col items-center justify-between gap-3 text-center sm:flex-row sm:gap-4 sm:text-left">
               <p className="text-muted-foreground text-xs sm:text-sm">
                 © 2025 GoElectrify. Tất cả quyền được bảo lưu.

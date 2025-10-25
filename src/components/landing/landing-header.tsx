@@ -14,7 +14,7 @@ export default function LandingHeader() {
         <div className="flex items-center gap-3">
           {/* LanguageSwitcher removed: landing page converted to Vietnamese */}
           <button
-            className="hover:text-foreground hover:bg-accent flex h-9 w-9 items-center justify-center rounded-full text-white transition-all duration-200"
+            className="hover:text-foreground hover:bg-accent text-foreground flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200"
             aria-label="Trợ giúp"
           >
             <HelpCircle className="h-4.5 w-4.5" />
@@ -22,7 +22,7 @@ export default function LandingHeader() {
           <Link
             href="/login"
             prefetch={false}
-            className="hover:text-foreground hover:bg-accent flex h-9 w-9 items-center justify-center rounded-full text-white transition-all duration-200"
+            className="hover:text-foreground hover:bg-accent text-foreground flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200"
             aria-label="Tài khoản"
           >
             <UserCircle className="h-4.5 w-4.5" />

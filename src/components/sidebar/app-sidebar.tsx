@@ -143,11 +143,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader className="h-16 border-b">
         <SidebarMenu>
-          <SidebarMenuItem>
-            <div className="data-[slot=sidebar-menu-button]:!p-1.5">
-              <AppLogo className="my-2" width={42} height={42} />
-            </div>
-          </SidebarMenuItem>
+          <NavUser />
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
@@ -155,10 +151,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSection items={charging} />
         <NavSection items={payment} />
         {user?.role.toLowerCase() === "admin" && <NavSection items={admin} />}
-        <NavSecondary items={navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser />
+        <NavSecondary items={navSecondary} />
       </SidebarFooter>
     </Sidebar>
   );

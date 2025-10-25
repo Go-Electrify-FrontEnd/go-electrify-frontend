@@ -32,7 +32,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Calendar, Plus, Check, ChevronsUpDown } from "lucide-react";
 import { startTransition, useActionState, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { createReservation } from "@/features/reservations/services/reservations";
 import { toast } from "sonner";
 import {
   reservationFormSchema,
@@ -42,6 +41,7 @@ import type { Station } from "@/lib/zod/station/station.types";
 import type { CarModel } from "@/lib/zod/vehicle-model/vehicle-model.types";
 import type { ConnectorType } from "@/lib/zod/connector-type/connector-type.types";
 import { cn } from "@/lib/utils";
+import { createReservation } from "../services/reservation-actions";
 
 const initialState = {
   success: false,
