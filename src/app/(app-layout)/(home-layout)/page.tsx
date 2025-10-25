@@ -79,22 +79,21 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <div className="no-scrollbar mx-auto grid w-max grid-cols-4 gap-6 overflow-x-auto py-16">
-        <CheaperPriceCard />
-        <ReservationSlotCard />
-        <SupportCard />
-        <OnlinePaymentCard />
+      <div className="no-scrollbar overflow-x-auto py-16 sm:mx-auto sm:w-max">
+        <div className="grid w-max grid-cols-4 gap-6 px-4 sm:px-0">
+          <CheaperPriceCard />
+          <ReservationSlotCard />
+          <SupportCard />
+          <OnlinePaymentCard />
+        </div>
       </div>
 
       {/* Map Section */}
       <section>
         <div className="mx-auto w-full max-w-7xl p-6 sm:px-6">
-          <div className="p-12">
-            <div className="text-center text-balance">
-              <h2 className="text-muted-foreground font-xanh mb-2 text-xs tracking-wider sm:mb-3 sm:text-sm">
-                MẠNG LƯỚI TRẠM SẠC
-              </h2>
-              <p className="text-2xl font-light sm:text-3xl lg:text-4xl">
+          <div className="py-12">
+            <div className="text-center">
+              <p className="text-2xl font-semibold sm:text-3xl lg:text-4xl">
                 Khám phá trạm sạc gần bạn
               </p>
               <p className="text-muted-foreground mt-3 px-4">
@@ -104,8 +103,8 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <div className="overflow-hidden rounded-2xl shadow-2xl sm:rounded-3xl">
-            <div className="h-[400px] sm:h-[500px] md:h-[600px] lg:h-[800px]">
+          <div className="overflow-hidden">
+            <div className="container mx-auto h-[600px] sm:h-[700px] md:h-[800px] lg:h-[900px]">
               <Suspense fallback={<div>Loading map...</div>}>
                 <StationsNearbyProvider stations={stations}>
                   <StationMap />
