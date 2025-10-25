@@ -64,14 +64,12 @@ export async function getUsers(): Promise<User[]> {
     const json = await response.json();
     const items = Array.isArray(json?.Items) ? json.Items : [];
 
-    // Parse với UserApiSchema (đã có transform sẵn)
     const parsed = z.array(UserApiSchema).safeParse(items);
     if (!parsed.success) {
       console.error("Invalid users response:", parsed.error);
       return [];
     }
 
-    // Map UserApi sang User
     return parsed.data.map(mapUserApiToUser);
   } catch (err) {
     console.error("Error fetching users:", err);
@@ -82,7 +80,7 @@ export async function getUsers(): Promise<User[]> {
 export default async function StationsManagementPage() {
   const [stations, users] = await Promise.all([getStations(), getUsers()]);
 
-  // Lọc chỉ lấy Staff
+  //Staf list contains only usera with role Staff
   const staffList = users.filter((user) => user.role === "Staff");
 
   return (

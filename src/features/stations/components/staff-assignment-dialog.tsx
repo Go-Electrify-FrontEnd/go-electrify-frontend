@@ -30,9 +30,16 @@ export function StaffAssignmentDialog({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStaff, setSelectedStaff] = useState<User | null>(null);
 
+  // Debug logs
+  console.log("StaffAssignmentDialog - staffList:", staffList);
+  console.log("StaffAssignmentDialog - staffList length:", staffList.length);
+
   const filteredStaff = staffList.filter((staff) =>
     staff.email.toLowerCase().includes(searchQuery.toLowerCase()),
   );
+
+  console.log("Filtered staff:", filteredStaff);
+  console.log("Search query:", searchQuery);
 
   const handleAssign = () => {
     if (!selectedStaff) return;
@@ -60,7 +67,9 @@ export function StaffAssignmentDialog({
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium">Tìm kiếm nhân viên</label>
+            <label className="text-sm font-medium">
+              Tìm kiếm nhân viên (Tổng: {staffList.length} staff)
+            </label>
             <Input
               placeholder="Tìm theo email..."
               value={searchQuery}
@@ -68,8 +77,13 @@ export function StaffAssignmentDialog({
             />
           </div>
 
-          <div className="max-h-64 space-y-2 overflow-y-auto">
-            {filteredStaff.length > 0 ? (
+          <div className="max-h-64 space-y-2 overflow-y-auto rounded-md border p-2">
+            {staffList.length === 0 ? (
+              <div className="text-muted-foreground py-8 text-center">
+                <p>Không có nhân viên nào</p>
+                <p className="mt-2 text-xs">Kiểm tra API response</p>
+              </div>
+            ) : filteredStaff.length > 0 ? (
               filteredStaff.map((staff) => (
                 <div
                   key={staff.uid}
@@ -86,7 +100,7 @@ export function StaffAssignmentDialog({
                         {staff.email}
                       </div>
                       <div className="text-muted-foreground mt-0.5 text-xs">
-                        Role: {staff.role}
+                        ID: {staff.uid} | Role: {staff.role}
                       </div>
                     </div>
                     {selectedStaff?.uid === staff.uid && (
@@ -109,7 +123,7 @@ export function StaffAssignmentDialog({
               ))
             ) : (
               <div className="text-muted-foreground py-8 text-center">
-                Không tìm thấy nhân viên
+                Không tìm thấy nhân viên với email: "{searchQuery}"
               </div>
             )}
           </div>
