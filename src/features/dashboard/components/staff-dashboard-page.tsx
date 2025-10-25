@@ -1,8 +1,8 @@
 import { getUser } from "@/lib/auth/auth-server";
 import type { StaffStats } from "@/types/dashboard-stats";
 import { redirect } from "next/navigation";
-import { getStations } from "@/app/(app-layout)/dashboard/(admin-layout)/admin/stations/page";
 import { StaffDashboard } from "@/features/dashboard/components/home/staff-dashboard";
+import { getStations } from "@/features/stations/services/stations-api";
 
 type ReservationRecord = {
   ScheduledStart?: string | null;
