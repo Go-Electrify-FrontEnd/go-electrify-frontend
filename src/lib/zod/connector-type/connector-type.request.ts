@@ -9,7 +9,7 @@ export const connectorTypeCreateSchema = z.object({
     .optional()
     .transform((value) => (value === "" ? undefined : value)),
   maxPowerKw: z.coerce
-    .number()
+    .number<number>()
     .refine((value) => !Number.isNaN(value), {
       message: "Công suất phải là số",
     })

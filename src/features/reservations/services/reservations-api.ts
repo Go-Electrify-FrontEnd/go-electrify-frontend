@@ -1,0 +1,62 @@
+import { ConnectorType } from "@/lib/zod/connector-type/connector-type.schema";
+import { ReservationAPI } from "@/lib/zod/reservation/reservation.request";
+import { Reservation } from "@/lib/zod/reservation/reservation.schema";
+import { Station } from "@/lib/zod/station/station.schema";
+import { CarModel } from "@/types/car";
+
+export interface ReservationDetails extends Reservation {
+  stationName: string;
+  vehicleModelName: string;
+  connectorTypeName: string;
+}
+
+export async function getReservationsDetails(
+  token: string,
+  stations: Station[],
+  vehicleModels: CarModel[],
+  connectorTypes: ConnectorType[],
+): Promise<ReservationDetails[]> {
+  const reservations = await getReservations(token);
+
+  return reservations.map((reservation) => ({
+    ...reservation,
+    stationName:
+      stations.find((s) => s.id === reservation.stationId)?.name || "",
+    vehicleModelName:
+      vehicleModels.find((vm) => vm.id === reservation.vehicleModelId)
+        ?.modelName || "",
+    connectorTypeName:
+      connectorTypes.find((ct) => ct.id === reservation.connectorTypeId)
+        ?.name || "",
+  }));
+}
+
+export async function getReservations(token: string) {
+  try {
+    const url = "https://api.go-electrify.com/api/v1/bookings/my";
+    const response = await fetch(url, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+      next: { revalidate: 15, tags: ["reservations"] },
+    });
+
+    if (!response.ok) {
+      console.error("Failed to fetch reservations, status: " + response.status);
+      return [];
+    }
+
+    const { success, data, error } = ReservationAPI.safeParse(
+      await response.json(),
+    );
+
+    if (success) {
+      return data.data;
+    } else {
+      console.error("Invalid reservations data:", error);
+      return [];
+    }
+  } catch (error) {
+    console.error("Error fetching reservations:", error);
+    return [];
+  }
+}

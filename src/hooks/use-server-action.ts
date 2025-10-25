@@ -38,11 +38,11 @@ export function useServerAction<
   });
 
   useEffect(() => {
-    if (state === initialState) return;
+    if (state === prevStateRef.current) return;
 
     handleStateChange(state);
     prevStateRef.current = state;
-  }, [state, initialState]);
+  }, [state]);
 
   const execute = (payload: TPayload) => {
     startTransition(() => {
