@@ -82,18 +82,6 @@ export function SharedDataTable<TData extends Record<string, unknown>, TValue>({
       columnVisibility,
     },
   });
-  // selection removed; no selectedRowCount/filteredRowCount
-
-  // selection change handler removed
-
-  // toolbar mount logic removed
-
-  // GSAP animation for toolbar removed
-
-  // selection helpers removed
-
-  // mass delete removed — no-op
-
   const resolvedSearchColumn = useMemo(() => {
     // Prefer explicit column id passed in props
     const col = table.getColumn(searchColumn as string);

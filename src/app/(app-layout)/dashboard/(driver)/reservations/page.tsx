@@ -3,7 +3,6 @@ import { DataTable } from "@/features/reservations/components/reservation-table"
 import { EmptyTable } from "@/features/reservations/components/reservation-table-empty";
 import { Plus } from "lucide-react";
 import CreateReservationButton from "@/features/reservations/components/reservation-create-button";
-import { getStations } from "../../(admin-layout)/admin/stations/page";
 import SectionHeader from "@/components/shared/section-header";
 import { getUser } from "@/lib/auth/auth-server";
 import type { CarModel } from "@/lib/zod/vehicle-model/vehicle-model.types";
@@ -12,8 +11,8 @@ import type { Reservation } from "@/lib/zod/reservation/reservation.types";
 import type { ConnectorType } from "@/lib/zod/connector-type/connector-type.types";
 import { getVehicleModels } from "../../(admin-layout)/admin/vehicle-models/page";
 import SectionContent from "@/components/shared/section-content";
-import { ReservationSchema } from "@/lib/zod/reservation/reservation.schema";
 import { ReservationAPI } from "@/lib/zod/reservation/reservation.request";
+import { getStations } from "@/features/stations/services/stations-api";
 
 export async function getReservations(
   token: string,

@@ -25,11 +25,10 @@ import {
 } from "lucide-react";
 import { SharedDataTable } from "@/components/shared/shared-data-table";
 import bookingColumns from "@/features/stations/components/bookings-table-columns";
-import { forbidden, notFound } from "next/navigation";
+import { notFound } from "next/navigation";
 import StationDockCreate from "@/features/stations/components/station-dock-create";
 import { ChargerUpdateProvider } from "@/features/stations/contexts/charger-update-context";
 import UpdateCharger from "@/features/stations/components/charger-edit-dialog";
-import { getConnectorTypes } from "@/app/(app-layout)/dashboard/(admin-layout)/admin/connector-type/page";
 import SectionContent from "@/components/shared/section-content";
 import { getStationChargers } from "@/features/stations/api/stations-api";
 import { stationStaffColumns } from "@/features/stations/components/station-staff-table-columns";
@@ -38,6 +37,7 @@ import {
   getStationById,
   getStationStaff,
 } from "@/features/stations/api/stations-api";
+import { getConnectorTypes } from "@/features/connector-type/services/connector-type-api";
 
 export default async function StationPage({
   params,
@@ -61,7 +61,6 @@ export default async function StationPage({
   const bookings = await getBookingsByStationId(id, token!);
   const stationStaff = await getStationStaff(id, token!);
   const sessions: SessionRow[] = [];
-
   const connectorTypes = await getConnectorTypes();
 
   const totalChargers = chargers?.length ?? 0;
