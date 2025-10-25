@@ -39,7 +39,7 @@
   --destructive-foreground: oklch(1 0 0);
   --font-sans: Geist, sans-serif;
   --font-serif: Georgia, serif;
-  --font-mono: IBM Plex Mono, ui-monospace, monospace;
+  --font-mono: Geist Mono, ui-monospace, monospace;
   --shadow-color: hsl(0 0% 0%);
   --shadow-opacity: 0.18;
   --shadow-blur: 2px;
@@ -95,7 +95,7 @@
   --radius: 0.5rem;
   --font-sans: Geist, sans-serif;
   --font-serif: Georgia, serif;
-  --font-mono: IBM Plex Mono, ui-monospace, monospace;
+  --font-mono: Geist Mono, ui-monospace, monospace;
   --shadow-color: hsl(0 0% 0%);
   --shadow-opacity: 0.18;
   --shadow-blur: 2px;
@@ -149,7 +149,7 @@
   --color-sidebar-ring: var(--sidebar-ring);
 
   --font-sans: Geist, sans-serif;
-  --font-mono: IBM Plex Mono, ui-monospace, monospace;
+  --font-mono: Geist Mono, ui-monospace, monospace;
   --font-serif: Georgia, serif;
 
   /* Custom electrify colors - exposed as Tailwind utilities */

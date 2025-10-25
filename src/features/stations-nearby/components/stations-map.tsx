@@ -160,7 +160,7 @@ export function StationMap() {
     };
   }, [stations]);
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-lg">
+    <div className="relative h-full w-full overflow-hidden">
       <div className="h-full w-full" ref={mapContainerRef} />
     </div>
   );
