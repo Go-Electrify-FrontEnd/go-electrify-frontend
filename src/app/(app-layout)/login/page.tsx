@@ -1,7 +1,15 @@
 import { LoginForm } from "@/components/login/login-form";
 import AppLogo from "@/components/shared/logo";
+import { getUser } from "@/lib/auth/auth-server";
+import { redirect } from "next/navigation";
+
+export const dynamic = "force-dynamic";
 
 export default async function LoginPage() {
+  const { user } = await getUser();
+  if (user) {
+    redirect("/dashboard");
+  }
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="flex flex-col gap-4 p-6 md:p-10">

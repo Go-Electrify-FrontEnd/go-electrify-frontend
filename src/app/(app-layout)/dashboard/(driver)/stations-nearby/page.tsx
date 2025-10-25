@@ -1,16 +1,13 @@
 import { NearestStationsList } from "@/features/stations-nearby/components/stations-nearby-list";
 import { StationMap } from "@/features/stations-nearby/components/stations-map";
-import { Button } from "@/components/ui/button";
-import { Filter, RotateCcw } from "lucide-react";
-import type { Station } from "@/lib/zod/station/station.types";
-import { getStations } from "../../(admin-layout)/admin/stations/page";
 import SectionHeader from "@/components/shared/section-header";
 import SectionContent from "@/components/shared/section-content";
 import { StationsNearbyProvider } from "@/contexts/stations-nearby-context";
 import NearbyStationSearch from "@/features/stations-nearby/components/search-input";
+import { getStations } from "@/features/stations/services/stations-api";
 
 export default async function FindStationsPage() {
-  const chargingStations: Station[] = await getStations();
+  const chargingStations = await getStations();
 
   return (
     <div className="flex flex-col gap-4 md:gap-6">

@@ -1,5 +1,4 @@
 "use client";
-import { updateUserName } from "@/features/users/services/users";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,6 +16,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useUser } from "@/features/users/contexts/user-context";
+import { updateUserName } from "@/features/users/services/user-actions";
 import { useServerAction } from "@/hooks/use-server-action";
 import { UserNameUpdateSchema } from "@/lib/zod/user/user.schema";
 import { zodResolver } from "@hookform/resolvers/zod";

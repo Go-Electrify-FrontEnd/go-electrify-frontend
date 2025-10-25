@@ -1,8 +1,6 @@
 import SectionHeader from "@/components/shared/section-header";
 import StationCreate from "@/features/stations/components/station-create-dialog";
 import { StationsTable } from "@/features/stations/components/station-table";
-import { StationApiSchema } from "@/lib/zod/station/station.schema";
-import type { Station } from "@/lib/zod/station/station.types";
 import {
   Card,
   CardContent,
@@ -11,29 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import SectionContent from "@/components/shared/section-content";
-
-export async function getStations(): Promise<Station[]> {
-  const url = "https://api.go-electrify.com/api/v1/stations";
-  const response = await fetch(url, {
-    method: "GET",
-    next: { revalidate: 15, tags: ["stations"] },
-  });
-
-  if (!response.ok) {
-    console.error("Failed to fetch stations, status: " + response.status);
-    return [];
-  }
-
-  const { data, success, error } = StationApiSchema.array().safeParse(
-    await response.json(),
-  );
-  if (!success) {
-    console.error("Failed to parse stations:", error);
-    return [];
-  }
-
-  return data;
-}
+import { getStations } from "@/features/stations/services/stations-api";
 
 export default async function StationsManagementPage() {
   const stations = await getStations();
