@@ -10,6 +10,7 @@ import {
   SupportCard,
   OnlinePaymentCard,
 } from "@/components/ui/gradient-card-example";
+import Image from "next/image";
 
 export const revalidate = 3600; // Revalidate this page every hour
 
@@ -34,21 +35,14 @@ export default async function HomePage() {
       <section className="w-full pt-32">
         <div className="mx-auto w-full max-w-7xl text-center">
           <div className="mx-auto w-max max-w-full space-y-4 p-6 sm:space-y-6 sm:p-10 lg:p-14">
-            <h1 className="text-4xl font-light tracking-tight sm:text-5xl lg:text-6xl xl:text-7xl">
-              Sạc Xe Điện
-              <br />
-              <span className="">Thông Minh</span>
+            <h1 className="text-4xl font-semibold sm:text-5xl lg:text-6xl">
+              Sạc Xe Điện Thông Minh
             </h1>
 
-            <p className="mx-auto max-w-2xl px-4 text-base leading-relaxed sm:px-0 sm:text-lg lg:text-xl">
+            <p className="mx-auto max-w-2xl px-4 text-base leading-relaxed sm:px-0 sm:text-lg">
               Nền tảng sạc xe điện tiện lợi và tiết kiệm hàng đầu dành cho tài
               xế với mạng lưới trạm sạc phủ sóng khắp Thành phố Hồ Chí Minh.
             </p>
-
-            <div className="text-muted-foreground flex items-center justify-center gap-2 text-xs sm:gap-3 sm:text-sm">
-              <div className="h-2 w-2 rounded-full bg-green-500"></div>
-              <div>Sẵn sàng phục vụ 24/7</div>
-            </div>
 
             <div className="flex flex-col justify-center gap-3 pt-2 sm:flex-row sm:gap-4 sm:pt-4">
               <Button size="lg" className="w-full font-medium sm:w-auto">
@@ -79,14 +73,32 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <div className="no-scrollbar overflow-x-auto py-16 sm:mx-auto sm:w-max">
+      <section className="relative container mx-auto mt-16 hidden aspect-video lg:block">
+        <Image
+          className=""
+          src="/assets/images/charging-station-clean.webp"
+          alt="Description of image"
+          fill
+        />
+      </section>
+
+      <section className="grid items-center justify-center pt-32 text-center align-middle">
+        <h1 className="text-4xl font-semibold">
+          Cung cấp trải nghiệm sạc xe điện tốt nhất
+        </h1>
+        <h2 className="text-muted-foreground">
+          Nền tảng sạc xe điện thông minh hàng đầu tại Việt Nam.
+        </h2>
+      </section>
+
+      <section className="no-scrollbar overflow-x-auto py-16 sm:mx-auto sm:w-max">
         <div className="grid w-max grid-cols-4 gap-6 px-4 sm:px-0">
           <CheaperPriceCard />
           <ReservationSlotCard />
           <SupportCard />
           <OnlinePaymentCard />
         </div>
-      </div>
+      </section>
 
       {/* Map Section */}
       <section>
