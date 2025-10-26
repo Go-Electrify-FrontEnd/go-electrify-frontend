@@ -4,7 +4,10 @@ import {
   StationSession,
   StationSessionSchema,
 } from "@/lib/zod/session/session.schema";
-import { StationStaffRowSchema } from "@/lib/zod/station/station-staff.schema";
+import {
+  StationStaffListSchema,
+  StationStaffSchema,
+} from "@/lib/zod/station/station-staff.schema";
 import {
   StationApiSchema,
   StationBookingListApiSchema,
@@ -196,7 +199,7 @@ export async function getStationStaff(stationId: string, token: string) {
     }
 
     const payload = await response.json();
-    const { success, data } = StationStaffRowSchema.array().safeParse(payload);
+    const { success, data } = StationStaffListSchema.safeParse(payload);
 
     if (!success) {
       console.error("Failed to parse station staff data");
@@ -207,5 +210,34 @@ export async function getStationStaff(stationId: string, token: string) {
   } catch (error) {
     console.error("Error fetching station staff:", error);
     return [];
+  }
+}
+
+export async function getSelfStationId(token: string) {
+  if (!token) {
+    console.error("getSelfStationId: missing auth token");
+    return null;
+  }
+
+  try {
+    const url = `https://api.go-electrify.com/api/v1/stations/me`;
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      console.error("Failed to fetch self station, status:", response.status);
+      return null;
+    }
+
+    const data = await response.json();
+
+    return (data.Id as number) || null;
+  } catch (error) {
+    console.error("Error fetching self station:", error);
+    return null;
   }
 }
