@@ -1,7 +1,7 @@
 import { getUser } from "@/lib/auth/auth-server";
 import type { AdminStats } from "@/types/dashboard-stats";
 import { redirect } from "next/navigation";
-import { getSubscriptions } from "@/app/(app-layout)/dashboard/(admin-layout)/admin/subscriptions/page";
+import { getSubscriptions } from "@/app/(app-layout)/dashboard/admin/subscriptions/page";
 import { AdminDashboard } from "@/features/dashboard/components/home/admin-dashboard";
 import { getStations } from "@/features/stations/services/stations-api";
 import { getUsers } from "@/features/users/services/users-api";
