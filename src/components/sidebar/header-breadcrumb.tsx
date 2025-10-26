@@ -26,6 +26,8 @@ const segmentMap: Record<string, string> = {
   "vehicle-models": "Quản Lý Mẫu Xe",
   "plans-billing": "Gói & Thanh Toán",
   settings: "Cài Đặt",
+  "station-me": "Trạm Của Tôi",
+  "station-detail": "Chi Tiết Trạm",
 };
 
 export default function HeaderBreadcrumb() {
