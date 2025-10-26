@@ -1,8 +1,8 @@
 import CreateReservationButton from "@/features/reservations/components/reservation-create-button";
 import SectionHeader from "@/components/shared/section-header";
 import { getUser } from "@/lib/auth/auth-server";
-import { getConnectorTypes } from "../../(admin-layout)/admin/connector-type/page";
-import { getVehicleModels } from "../../(admin-layout)/admin/vehicle-models/page";
+import { getConnectorTypes } from "../../admin/connector-type/page";
+import { getVehicleModels } from "../../admin/vehicle-models/page";
 import SectionContent from "@/components/shared/section-content";
 import { getStations } from "@/features/stations/services/stations-api";
 import { getReservationsDetails } from "@/features/reservations/services/reservations-api";

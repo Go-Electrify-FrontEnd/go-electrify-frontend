@@ -13,9 +13,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { formatDateTime } from "@/lib/formatters";
-import { StationStaffRow } from "@/lib/zod/station/station-staff.schema";
+import { StationStaff } from "@/lib/zod/station/station-staff.schema";
 
-export const stationStaffColumns: ColumnDef<StationStaffRow>[] = [
+export const stationStaffColumns: ColumnDef<StationStaff>[] = [
   {
     accessorKey: "userId",
     header: "ID",
