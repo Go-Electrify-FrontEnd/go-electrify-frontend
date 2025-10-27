@@ -1,14 +1,6 @@
 import SubscriptionCreateDialog from "@/features/subscriptions/components/subscription-create-dialog";
 import SectionHeader from "@/components/shared/section-header";
 import { SubscriptionsTable } from "@/features/subscriptions/components/subscription-table";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { SubscriptionSchema } from "@/lib/zod/subscription/subscription.schema";
 import type { Subscription } from "@/lib/zod/subscription/subscription.types";
 import SectionContent from "@/components/shared/section-content";
@@ -48,17 +40,7 @@ export default async function SubscriptionsPage() {
       </SectionHeader>
 
       <SectionContent>
-        <Card>
-          <CardHeader className="border-b">
-            <CardTitle>Danh sách gói đăng ký</CardTitle>
-            <CardDescription>
-              Tất cả các gói đăng ký trong hệ thống với thông tin chi tiết
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <SubscriptionsTable data={subscriptions} />
-          </CardContent>
-        </Card>
+        <SubscriptionsTable data={subscriptions} />
       </SectionContent>
     </div>
   );

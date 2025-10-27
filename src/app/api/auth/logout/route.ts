@@ -1,12 +1,11 @@
 import { cookies } from "next/headers";
-import { getBackendUrl } from "@/lib/utils";
 import { redirect } from "next/navigation";
 
 export async function GET() {
   const cookieStore = await cookies();
 
   // Call the backend to invalidate the refresh token
-  await fetch(getBackendUrl("auth/logout"), {
+  await fetch("https://api.go-electrify.com/api/auth/logout", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

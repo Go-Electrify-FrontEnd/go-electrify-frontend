@@ -24,17 +24,7 @@ export default async function StationsManagementPage() {
       </SectionHeader>
 
       <SectionContent>
-        <Card>
-          <CardHeader className="border-b">
-            <CardTitle>Danh sách trạm</CardTitle>
-            <CardDescription>
-              Tất cả các trạm sạc trong hệ thống với thông tin chi tiết
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <StationsTable data={stations} />
-          </CardContent>
-        </Card>
+        <StationsTable data={stations} />
       </SectionContent>
     </div>
   );

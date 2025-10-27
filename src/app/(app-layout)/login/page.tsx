@@ -1,5 +1,5 @@
-import { LoginForm } from "@/components/login/login-form";
 import AppLogo from "@/components/shared/logo";
+import { LoginForm } from "@/features/auth/components/login-form";
 
 export default async function LoginPage() {
   return (

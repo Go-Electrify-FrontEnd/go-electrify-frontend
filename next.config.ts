@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 import withBundleAnalyzer from "@next/bundle-analyzer";
 
 const nextConfig: NextConfig = {
+  reactCompiler: true,
   experimental: {
     authInterrupts: true,
   },
@@ -19,9 +20,14 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "ik.imagekit.io",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
-  reactCompiler: true,
   logging: {
     fetches: {
       fullUrl: true,
