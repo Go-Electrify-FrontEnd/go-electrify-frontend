@@ -1,4 +1,3 @@
-import React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -43,7 +42,7 @@ export default function HeroSection() {
                 </div>
               </div>
               <Image
-                className="-z-10 order-first ml-auto w-full object-cover invert lg:absolute lg:inset-0 lg:-top-46 lg:-right-35 lg:order-last lg:h-max lg:w-2/3 lg:object-contain dark:mix-blend-lighten dark:invert-0"
+                className="z-0 order-first ml-auto w-full object-cover invert lg:absolute lg:inset-0 lg:-top-46 lg:-right-35 lg:order-last lg:h-max lg:w-2/3 lg:object-contain dark:mix-blend-lighten dark:invert-0"
                 src="/assets/images/canva-1.png"
                 alt="Abstract Object"
                 height={4000}
@@ -63,7 +62,7 @@ export default function HeroSection() {
                   <div className="flex">
                     <img
                       className="mx-auto h-10 w-fit dark:invert"
-                      src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/VinFast_logo_%28simple_variant%29.svg/1024px-VinFast_logo_%28simple_variant%29.svg.png"
+                      src="/assets/images/Vinfast.png"
                       alt="VinFast Logo"
                       height="20"
                       width="auto"
@@ -73,7 +72,7 @@ export default function HeroSection() {
                   <div className="flex">
                     <img
                       className="mx-auto h-10 w-fit dark:invert"
-                      src="https://www.svgrepo.com/download/446911/porsche.svg"
+                      src="/assets/images/Porsche.svg"
                       alt="Porsche Logo"
                       height="20"
                       width="auto"
@@ -82,7 +81,7 @@ export default function HeroSection() {
                   <div className="flex">
                     <img
                       className="mx-auto h-13 w-fit dark:invert"
-                      src="https://www.svgrepo.com/download/446934/volvo-alt.svg"
+                      src="/assets/images/Volvo.svg"
                       alt="Volvo Logo"
                       height="20"
                       width="auto"
