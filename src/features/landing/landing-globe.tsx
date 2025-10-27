@@ -2,9 +2,12 @@
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 
-const World = dynamic(() => import("../ui/globe").then((m) => m.World), {
-  ssr: false,
-});
+const World = dynamic(
+  () => import("../../components/ui/globe").then((m) => m.World),
+  {
+    ssr: false,
+  },
+);
 
 export default function LandingGlobe() {
   const globeConfig = {

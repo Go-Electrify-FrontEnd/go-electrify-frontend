@@ -5,15 +5,20 @@ import React, { createContext, useContext } from "react";
 
 interface UserProviderProps extends React.PropsWithChildren {
   user: User | null | undefined;
+  token: string | null | undefined;
 }
 
-const UserContext = createContext<UserProviderProps["user"]>(null);
+const UserContext = createContext<UserProviderProps | null>(null);
 
-export function UserProvider({ user, children }: UserProviderProps) {
-  return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
+export function UserProvider({ user, token, children }: UserProviderProps) {
+  return (
+    <UserContext.Provider value={{ user, token }}>
+      {children}
+    </UserContext.Provider>
+  );
 }
 
 export function useUser() {
-  const user = useContext(UserContext);
-  return { user };
+  const context = useContext(UserContext);
+  return { user: context?.user, token: context?.token };
 }
