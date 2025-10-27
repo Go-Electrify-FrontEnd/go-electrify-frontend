@@ -12,11 +12,11 @@ const Card = ({
   children?: React.ReactNode;
 }) => {
   return (
-    <div className="relative mx-auto h-[30rem] w-full max-w-sm overflow-hidden rounded-lg border border-black/[0.2] dark:border-white/[0.2]">
-      <Icon className="absolute -top-3 -left-3 z-30 h-6 w-6 text-black dark:text-white" />
-      <Icon className="absolute -bottom-3 -left-3 z-30 h-6 w-6 text-black dark:text-white" />
-      <Icon className="absolute -top-3 -right-3 z-30 h-6 w-6 text-black dark:text-white" />
-      <Icon className="absolute -right-3 -bottom-3 z-30 h-6 w-6 text-black dark:text-white" />
+    <div className="relative mx-auto h-[30rem] w-full max-w-sm rounded-lg border border-black/[0.2] dark:border-white/[0.2]">
+      <Icon className="absolute -top-3 -left-3 z-40 h-6 w-6 text-black dark:text-white" />
+      <Icon className="absolute -bottom-3 -left-3 z-40 h-6 w-6 text-black dark:text-white" />
+      <Icon className="absolute -top-3 -right-3 z-40 h-6 w-6 text-black dark:text-white" />
+      <Icon className="absolute -right-3 -bottom-3 z-40 h-6 w-6 text-black dark:text-white" />
 
       {/* Static background - always visible */}
       <div className="absolute inset-0 h-full w-full">{children}</div>

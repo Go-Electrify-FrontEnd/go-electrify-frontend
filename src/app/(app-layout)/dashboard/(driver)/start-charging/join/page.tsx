@@ -6,6 +6,6 @@ const ComponentNoSSR = dynamic(() => import("./join-page-wrapper"), {
   ssr: false,
 });
 
-export default async function JoinPage() {
+export default function JoinPage() {
   return <ComponentNoSSR />;
 }
