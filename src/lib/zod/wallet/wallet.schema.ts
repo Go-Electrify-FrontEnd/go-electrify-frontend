@@ -18,7 +18,7 @@ export const TransactionSchema = z
     WalletId: z.number(),
     ChargingSessionId: z.number().nullable(),
     Amount: z.number(),
-    Type: z.enum(["DEPOSIT", "WITHDRAW", "CHARGE", "REFUND"]),
+    Type: z.enum(["DEPOSIT", "BOOKING_FEE", "CHARGING_FEE", "REFUND"]),
     Status: z.enum(["SUCCEEDED", "PENDING", "FAILED"]),
     Note: z.string().nullable(),
     CreatedAt: z.string(),
@@ -34,7 +34,6 @@ export const TransactionSchema = z
     createdAt: new Date(raw.CreatedAt),
   }));
 
-// API response variant: PascalCase keys with Data array
 export const TransactionListApiSchema = z
   .object({
     WalletId: z.number(),
@@ -54,24 +53,18 @@ export const TransactionListApiSchema = z
 export type Transaction = z.infer<typeof TransactionSchema>;
 export type TransactionList = z.infer<typeof TransactionListApiSchema>;
 
-// Top-up API response schema (accepts PascalCase from API and maps to camelCase)
 export const TopupResponseApiSchema = z
   .object({
     Message: z.string().optional(),
     TopupIntentId: z.number().optional(),
     OrderCode: z.union([z.number(), z.string()]).optional(),
-    CheckoutUrl: z.string().url().optional(),
-    // Accept camelCase variants as well
-    message: z.string().optional(),
-    topupIntentId: z.number().optional(),
-    orderCode: z.union([z.number(), z.string()]).optional(),
-    checkoutUrl: z.string().url().optional(),
+    CheckoutUrl: z.url().optional(),
   })
   .transform((raw) => ({
-    message: raw.Message ?? raw.message,
-    topupIntentId: raw.TopupIntentId ?? raw.topupIntentId,
-    orderCode: raw.OrderCode ?? raw.orderCode,
-    checkoutUrl: raw.CheckoutUrl ?? raw.checkoutUrl,
+    message: raw.Message,
+    topupIntentId: raw.TopupIntentId,
+    orderCode: raw.OrderCode,
+    checkoutUrl: raw.CheckoutUrl,
   }));
 
 export type TopupResponse = z.infer<typeof TopupResponseApiSchema>;

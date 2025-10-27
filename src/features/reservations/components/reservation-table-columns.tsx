@@ -3,10 +3,10 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { formatCurrencyVND, formatDateTime } from "@/lib/formatters";
 import { Button } from "@/components/ui/button";
 import type { Reservation } from "@/lib/zod/reservation/reservation.types";
 
-export type { Reservation };
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,28 +15,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ReservationDetails } from "../services/reservations-api";
 
-// Helper function to format Vietnamese currency
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-  }).format(amount);
-};
-
-// Helper function to format date
-const formatDateTime = (date: string | Date) => {
-  const dateObj = typeof date === "string" ? new Date(date) : date;
-  return new Intl.DateTimeFormat("vi-VN", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(dateObj);
-};
-
-// Helper function to get status badge variant
 const getStatusVariant = (status: string) => {
   switch (String(status).toUpperCase()) {
     case "CONFIRMED":
@@ -53,7 +33,6 @@ const getStatusVariant = (status: string) => {
   }
 };
 
-// Helper function to translate status
 const translateStatus = (status: string) => {
   switch (String(status).toUpperCase()) {
     case "CONFIRMED":
@@ -72,21 +51,7 @@ const translateStatus = (status: string) => {
   }
 };
 
-// Helper function to translate charging type
-const translateType = (type: string) => {
-  switch (type.toLowerCase()) {
-    case "standard":
-      return "Tiêu chuẩn";
-    case "fast":
-      return "Nhanh";
-    case "rapid":
-      return "Siêu nhanh";
-    default:
-      return type;
-  }
-};
-
-export const columns: ColumnDef<Reservation>[] = [
+export const columns: ColumnDef<ReservationDetails>[] = [
   {
     accessorKey: "id",
     header: "ID",
@@ -102,22 +67,23 @@ export const columns: ColumnDef<Reservation>[] = [
     ),
   },
   {
-    accessorKey: "pointId",
+    accessorKey: "stationName",
     header: "Trạm",
     cell: ({ row }) => (
-      <div className="text-foreground">Trạm #{row.getValue("pointId")}</div>
+      <div className="text-foreground">{row.getValue("stationName")}</div>
     ),
     filterFn: (row, id, value) => {
-      const pointId = row.getValue(id) as number;
-      return pointId.toString().includes(value);
+      const stationName = row.getValue(id) as string;
+      return stationName.toLowerCase().includes(value.toLowerCase());
     },
   },
   {
     accessorKey: "vehicleModelName",
     header: "Mẫu xe",
-    cell: ({ row }) => (
-      <div className="text-foreground">{row.getValue("vehicleModelName")}</div>
-    ),
+    cell: ({ row }) => {
+      const vehicleModelName = row.getValue("vehicleModelName") as string;
+      return <div className="text-foreground">{vehicleModelName}</div>;
+    },
   },
   {
     accessorKey: "scheduledStart",
@@ -129,13 +95,12 @@ export const columns: ColumnDef<Reservation>[] = [
     ),
   },
   {
-    accessorKey: "scheduledEnd",
-    header: "Kết thúc dự kiến",
-    cell: ({ row }) => (
-      <div className="text-foreground text-sm">
-        {formatDateTime(row.getValue("scheduledEnd"))}
-      </div>
-    ),
+    accessorKey: "connectorTypeName",
+    header: "Loại cổng",
+    cell: ({ row }) => {
+      const connectorTypeName = row.getValue("connectorTypeName") as string;
+      return <div className="text-foreground">{connectorTypeName}</div>;
+    },
   },
   {
     accessorKey: "initialSoc",
@@ -143,15 +108,6 @@ export const columns: ColumnDef<Reservation>[] = [
     cell: ({ row }) => (
       <div className="text-foreground text-left font-medium">
         {row.getValue("initialSoc")}%
-      </div>
-    ),
-  },
-  {
-    accessorKey: "type",
-    header: "Loại",
-    cell: ({ row }) => (
-      <div className="text-foreground">
-        {translateType(row.getValue("type"))}
       </div>
     ),
   },
@@ -176,7 +132,7 @@ export const columns: ColumnDef<Reservation>[] = [
       const safeAmount = Number.isFinite(amount) ? amount : 0;
       return (
         <div className="text-foreground text-left font-semibold">
-          {formatCurrency(safeAmount)}
+          {formatCurrencyVND(safeAmount)}
         </div>
       );
     },
@@ -206,7 +162,7 @@ export const columns: ColumnDef<Reservation>[] = [
               }
               className="cursor-pointer"
             >
-              Sao chép ID đặt chỗ
+              Sao chép ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="cursor-pointer">

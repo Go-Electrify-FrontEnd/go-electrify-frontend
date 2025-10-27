@@ -42,13 +42,12 @@ export const UpdateConnectorType = () => {
     handleUpdateConnectorType,
     initialState,
     {
-      onSuccess: (result) => {
-        toast.success(result.msg);
-        setEditDialogOpen(false);
-        form.reset();
-      },
-      onError: (result) => {
-        if (result.msg) {
+      onSettled: (result) => {
+        if (result.success) {
+          toast.success(result.msg);
+          setEditDialogOpen(false);
+          form.reset();
+        } else if (result.msg) {
           toast.error(result.msg);
         }
       },
@@ -156,25 +155,14 @@ export const UpdateConnectorType = () => {
                   <FieldLabel htmlFor="maxPowerKw">
                     Công suất tối đa (kW)
                   </FieldLabel>
-                  <InputGroup>
-                    <Input
-                      {...field}
-                      type="number"
-                      id="maxPowerKw"
-                      placeholder="Nhập công suất tối đa"
-                      aria-invalid={fieldState.invalid}
-                      autoComplete="off"
-                      value={
-                        typeof field.value === "number" ||
-                        typeof field.value === "string"
-                          ? field.value
-                          : ""
-                      }
-                    />
-                    <InputGroupAddon>
-                      <InputGroupText>kW</InputGroupText>
-                    </InputGroupAddon>
-                  </InputGroup>
+                  <Input
+                    {...field}
+                    type="number"
+                    id="maxPowerKw"
+                    placeholder="Nhập công suất tối đa"
+                    aria-invalid={fieldState.invalid}
+                    autoComplete="off"
+                  />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}

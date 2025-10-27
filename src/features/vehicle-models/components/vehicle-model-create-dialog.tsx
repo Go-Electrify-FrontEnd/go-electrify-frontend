@@ -51,13 +51,14 @@ export default function VehicleModelCreateDialog() {
     createVehicleModel,
     initialState,
     {
-      onSuccess: (result) => {
-        form.reset();
-        setOpen(false);
-        toast.success(result.msg);
-      },
-      onError: (result) => {
-        if (result.msg) toast.error(result.msg);
+      onSettled: (result) => {
+        if (result.success) {
+          form.reset();
+          setOpen(false);
+          toast.success(result.msg);
+        } else if (result.msg) {
+          toast.error(result.msg);
+        }
       },
     },
   );

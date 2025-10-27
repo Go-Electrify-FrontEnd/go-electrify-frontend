@@ -1,5 +1,4 @@
 "use client";
-import { updateUserName } from "@/features/users/services/users";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,6 +16,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useUser } from "@/features/users/contexts/user-context";
+import { updateUserName } from "@/features/users/services/user-actions";
 import { useServerAction } from "@/hooks/use-server-action";
 import { UserNameUpdateSchema } from "@/lib/zod/user/user.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,13 +30,12 @@ export default function FullNameUpdate() {
     updateUserName,
     { success: false, msg: "" },
     {
-      onSuccess: (result) => {
-        toast.success("Hành động được thực hiện thành công", {
-          description: result.msg,
-        });
-      },
-      onError: (result) => {
-        if (result.msg) {
+      onSettled: (result) => {
+        if (result.success) {
+          toast.success("Hành động được thực hiện thành công", {
+            description: result.msg,
+          });
+        } else if (result.msg) {
           toast.error("Hành động không thành công", {
             description: result.msg,
           });

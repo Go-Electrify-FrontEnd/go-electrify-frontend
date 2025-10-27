@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -57,13 +57,12 @@ export default function StationCreate({ onCancel }: StationCreateProps) {
 
   const initialState = { success: false, msg: "" };
   const { execute, pending } = useServerAction(createStation, initialState, {
-    onSuccess: (result) => {
-      form.reset();
-      setOpen(false);
-      toast.success(result.msg);
-    },
-    onError: (result) => {
-      if (result.msg) {
+    onSettled: (result) => {
+      if (result.success) {
+        // Don't reset form here to avoid triggering AddressSearch re-initialization
+        setOpen(false);
+        toast.success(result.msg);
+      } else if (result.msg) {
         toast.error(result.msg);
       }
     },
@@ -108,7 +107,15 @@ export default function StationCreate({ onCancel }: StationCreateProps) {
     );
   };
 
-  // Note: success/error handling is performed via useServerAction callbacks
+  const handleOpenChange = useCallback(
+    (nextOpen: boolean) => {
+      if (!nextOpen) {
+        onCancel?.();
+      }
+      setOpen(nextOpen);
+    },
+    [onCancel],
+  );
 
   const handleSubmit = form.handleSubmit((data) => {
     const payload = new FormData();
@@ -124,16 +131,7 @@ export default function StationCreate({ onCancel }: StationCreateProps) {
   });
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(nextOpen) => {
-        if (!nextOpen) {
-          form.reset();
-          onCancel?.();
-        }
-        setOpen(nextOpen);
-      }}
-    >
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button>
           <Plus className="mr-2 h-4 w-4" />
@@ -378,10 +376,10 @@ export default function StationCreate({ onCancel }: StationCreateProps) {
                       <SelectGroup>
                         <SelectLabel>Chọn trạm</SelectLabel>
                         <SelectItem value="ACTIVE">Hoạt Động</SelectItem>
-                        <SelectItem value="inactive">
+                        <SelectItem value="INACTIVE">
                           Không Hoạt Động
                         </SelectItem>
-                        <SelectItem value="maintenance">Bảo Trì</SelectItem>
+                        <SelectItem value="MAINTENANCE">Bảo Trì</SelectItem>
                       </SelectGroup>
                     </SelectContent>
                   </Select>

@@ -57,7 +57,7 @@ export const columns: ColumnDef<Station>[] = [
       <Link
         prefetch={false}
         className="font-medium underline"
-        href={`/dashboard/staff/stations/${row.getValue("id")}`}
+        href={`/dashboard/station-detail/${row.getValue("id")}`}
       >
         {row.getValue("name")}
       </Link>

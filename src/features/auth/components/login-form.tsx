@@ -1,41 +1,70 @@
 "use client";
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useActionState, useEffect, useState } from "react";
+import {
+  Field,
+  FieldLabel,
+  FieldError,
+  FieldGroup,
+} from "@/components/ui/field";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { useState } from "react";
 import { toast } from "sonner";
 import { OTPForm } from "./login-otp-form";
-import { handleLogin } from "../services/auth";
+import { handleLogin } from "../services/login-actions";
+import { useServerAction } from "@/hooks/use-server-action";
 
 const initialState = {
   success: false,
   msg: "",
 };
 
+const loginSchema = z.object({
+  email: z.email("Vui lòng nhập địa chỉ email hợp lệ"),
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
+
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
   const [email, setEmail] = useState<string>("");
-  const [loginState, loginAction, isPending] = useActionState(
-    handleLogin,
-    initialState,
-  );
   const [otpSent, setOtpSent] = useState(false);
 
-  useEffect(() => {
-    if (loginState.success) {
-      toast("Email đã được gửi!", {
-        description: loginState.msg,
-      });
-      setOtpSent(true);
-    } else if (loginState.msg) {
-      toast.error("Lỗi", {
-        description: loginState.msg,
-      });
-    }
-  }, [loginState]);
+  const { execute, pending } = useServerAction(handleLogin, initialState, {
+    onSettled: (result) => {
+      if (result.success) {
+        toast("Email đã được gửi!", {
+          description: result.msg,
+        });
+
+        setEmail(form.getValues("email"));
+        form.reset();
+        setOtpSent(true);
+      } else if (result.msg) {
+        toast.error("Lỗi", {
+          description: result.msg,
+        });
+      }
+    },
+  });
+
+  const form = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: "" },
+  });
+
+  const handleSubmit = form.handleSubmit((data: LoginFormValues) => {
+    const formData = new FormData();
+    formData.append("email", data.email);
+
+    execute(formData);
+  });
 
   if (otpSent) {
     return <OTPForm email={email} />;
@@ -43,7 +72,7 @@ export function LoginForm({
 
   return (
     <form
-      action={loginAction}
+      onSubmit={handleSubmit}
       className={cn("flex flex-col gap-6", className)}
       {...props}
     >
@@ -54,25 +83,32 @@ export function LoginForm({
         </p>
       </div>
       <div className="grid gap-6">
-        <div className="grid gap-3">
-          <Label className="text-base" htmlFor="email">
-            Email
-          </Label>
-          <Input
-            id="email"
-            type="email"
+        <FieldGroup>
+          <Controller
+            control={form.control}
             name="email"
-            className="h-[45px]"
-            placeholder="ten@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            disabled={isPending}
+            render={({ field, fieldState }) => (
+              <Field>
+                <FieldLabel htmlFor="email" className="text-base">
+                  Email
+                </FieldLabel>
+                <Input
+                  {...field}
+                  className="h-[45px]"
+                  placeholder="email@example.com"
+                  aria-invalid={fieldState.invalid}
+                  disabled={pending}
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
           />
-        </div>
-        <Button type="submit" className="w-full" size="lg" disabled={isPending}>
+        </FieldGroup>
+        <Button type="submit" className="w-full" size="lg" disabled={pending}>
           <div className="text-base font-medium">
-            {isPending ? "Đang gửi..." : "Đăng nhập"}
+            {pending ? "Đang gửi..." : "Đăng nhập"}
           </div>
         </Button>
         <div className="after:border-border relative text-center after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
