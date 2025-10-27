@@ -5,70 +5,78 @@ import {
 } from "./gradient-card";
 
 /**
- * Example usage of the GradientCard component
- * This demonstrates how to create a card similar to the GPT-5 Pro design
+ * EV Charging focused cards with minimal design and subtle accents
  */
 export function CheaperPriceCard() {
   return (
     <GradientCard
-      title="Sạc Tiết Kiệm"
-      subtitle="Giá rẻ hơn — tiết kiệm cho mỗi chuyến đi"
-      className="h-[520px] max-w-sm"
+      title="💰 Tiết Kiệm Chi Phí"
+      subtitle="Giá cước rẻ hơn 30% so với các trạm khác"
+      className="hover:border-foreground/20 h-[520px] max-w-sm transition-colors"
     >
       <GradientCardSection>
-        <GradientCardDetail label="Giảm giá giờ thấp điểm" value="Có" />
-        <GradientCardDetail label="Gói thành viên" value="Ưu đãi lên đến 20%" />
+        <GradientCardDetail label="Giờ thấp điểm" value="Giảm 40%" />
+        <GradientCardDetail label="Gói tháng VIP" value="Ưu đãi 20%" />
       </GradientCardSection>
 
       <GradientCardSection className="mt-6">
-        <GradientCardDetail label="Thanh toán" value="Không cần tiền mặt" />
-        <GradientCardDetail label="Ưu đãi tháng" value="Ưu đãi định kỳ" />
+        <GradientCardDetail label="Thanh toán" value="Không dùng tiền mặt" />
+        <GradientCardDetail label="Điểm thưởng" value="Tích lũy & đổi quà" />
+      </GradientCardSection>
+
+      <GradientCardSection className="mt-6">
+        <GradientCardDetail label="So sánh giá" value="Minh bạch & rõ ràng" />
+        <GradientCardDetail label="Không phí ẩn" value="100%" />
       </GradientCardSection>
     </GradientCard>
   );
 }
 
-/**
- * Simple usage example
- */
 export function ReservationSlotCard() {
   return (
     <GradientCard
-      title="Đặt Chỗ Trước"
-      subtitle="Chọn khung giờ, an tâm có chỗ sạc"
-      className="h-[520px] max-w-sm"
+      title="🎯 Đặt Chỗ Thông Minh"
+      subtitle="Luôn có chỗ sạc khi bạn cần, không lo chờ đợi"
+      className="hover:border-foreground/20 h-[520px] max-w-sm transition-colors"
     >
       <GradientCardSection>
-        <GradientCardDetail label="Chọn khung giờ" value="Tùy chọn linh hoạt" />
-        <GradientCardDetail label="Nhắc nhở" value="Thông báo trước giờ" />
+        <GradientCardDetail label="Đặt trước" value="30 phút - 7 ngày" />
+        <GradientCardDetail label="Nhắc nhở" value="Trước 15 phút" />
       </GradientCardSection>
 
       <GradientCardSection className="mt-6">
-        <GradientCardDetail label="Quản lý" value="Hủy/đổi dễ dàng" />
-        <GradientCardDetail label="Xác nhận" value="Qua app ngay lập tức" />
+        <GradientCardDetail label="Linh hoạt" value="Hủy/đổi miễn phí" />
+        <GradientCardDetail label="Xác nhận" value="Tức thời" />
+      </GradientCardSection>
+
+      <GradientCardSection className="mt-6">
+        <GradientCardDetail label="Chọn cổng" value="Tùy chọn ưa thích" />
+        <GradientCardDetail label="Quản lý" value="Lịch sử & đặt chỗ" />
       </GradientCardSection>
     </GradientCard>
   );
 }
 
-/**
- * Custom background example
- */
 export function SupportCard() {
   return (
     <GradientCard
-      title="Hỗ Trợ 24/7"
-      subtitle="Luôn đồng hành cùng tài xế"
-      className="h-[520px] max-w-sm"
+      title="🛟 Hỗ Trợ 24/7"
+      subtitle="Đội ngũ chuyên nghiệp luôn sẵn sàng hỗ trợ"
+      className="hover:border-foreground/20 h-[520px] max-w-sm transition-colors"
     >
       <GradientCardSection>
-        <GradientCardDetail label="Hỗ trợ kỹ thuật" value="Tại chỗ & từ xa" />
-        <GradientCardDetail label="Hotline" value="24/7 – phản hồi nhanh" />
+        <GradientCardDetail label="Kỹ thuật viên" value="Tại mọi trạm" />
+        <GradientCardDetail label="Hotline" value="1900-xxxx" />
       </GradientCardSection>
 
       <GradientCardSection className="mt-6">
-        <GradientCardDetail label="Hướng dẫn" value="Trực tuyến & tại trạm" />
-        <GradientCardDetail label="Bảo trì" value="Đội ngũ chuyên nghiệp" />
+        <GradientCardDetail label="Chat trực tuyến" value="< 2 phút" />
+        <GradientCardDetail label="Video call" value="Hướng dẫn trực tiếp" />
+      </GradientCardSection>
+
+      <GradientCardSection className="mt-6">
+        <GradientCardDetail label="Bảo trì" value="Định kỳ & khẩn cấp" />
+        <GradientCardDetail label="Đảm bảo" value="Chất lượng dịch vụ" />
       </GradientCardSection>
     </GradientCard>
   );
@@ -77,21 +85,23 @@ export function SupportCard() {
 export function OnlinePaymentCard() {
   return (
     <GradientCard
-      title="Thanh Toán Trực Tuyến"
-      subtitle="Aan toàn và nhanh chóng"
-      className="h-[520px] max-w-sm"
+      title="💳 Thanh Toán An Toàn"
+      subtitle="Đa dạng phương thức, bảo mật tuyệt đối"
+      className="hover:border-foreground/20 h-[520px] max-w-sm transition-colors"
     >
       <GradientCardSection>
-        <GradientCardDetail
-          label="Phương thức"
-          value="Thẻ, ví điện tử, ngân hàng"
-        />
-        <GradientCardDetail label="Bảo mật" value="Mã hóa & chứng thực" />
+        <GradientCardDetail label="Ví điện tử" value="Momo, ZaloPay, VNPay" />
+        <GradientCardDetail label="Ngân hàng" value="ATM & Internet Banking" />
       </GradientCardSection>
 
       <GradientCardSection className="mt-6">
-        <GradientCardDetail label="Hóa đơn" value="Tự động gửi qua email" />
-        <GradientCardDetail label="Hoàn tiền" value="Hỗ trợ khi cần thiết" />
+        <GradientCardDetail label="Bảo mật" value="SSL 256-bit" />
+        <GradientCardDetail label="Xác thực" value="OTP & 3D Secure" />
+      </GradientCardSection>
+
+      <GradientCardSection className="mt-6">
+        <GradientCardDetail label="Hóa đơn VAT" value="Tự động qua email" />
+        <GradientCardDetail label="Hoàn tiền" value="Trong 24h" />
       </GradientCardSection>
     </GradientCard>
   );

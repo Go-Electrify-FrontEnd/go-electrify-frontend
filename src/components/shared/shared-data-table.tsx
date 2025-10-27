@@ -124,7 +124,7 @@ export function SharedDataTable<TData extends Record<string, unknown>, TValue>({
         searchColumn={searchColumn}
       />
 
-      <div className="rounded-md border">
+      <div className="rounded-md border p-2">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

@@ -1,4 +1,4 @@
-import { AppSidebar } from "@/components/sidebar/app-sidebar";
+import { AppSidebar } from "@/features/dashboard/components/sidebar/app-sidebar";
 import {
   SidebarInset,
   SidebarProvider,
@@ -8,8 +8,8 @@ import { getUser } from "@/lib/auth/auth-server";
 import { UserProvider } from "@/features/users/contexts/user-context";
 import { forbidden } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
-import HeaderBreadcrumb from "@/components/sidebar/header-breadcrumb";
-import { NotificationButton } from "@/components/header/notification-button";
+import HeaderBreadcrumb from "@/features/dashboard/components/sidebar/header-breadcrumb";
+import { NotificationButton } from "@/features/dashboard/components/header/notification-button";
 import { Notification } from "@/types/notification";
 
 export const dynamic = "force-dynamic";
@@ -46,7 +46,7 @@ export default async function DashboardLayout({
   const notifications = await getNotifications(token);
   return (
     <SidebarProvider>
-      <UserProvider user={user}>
+      <UserProvider user={user} token={token}>
         <AppSidebar />
         <SidebarInset>
           <header className="bg-background sticky top-0 z-50 flex h-16 shrink-0 items-center gap-2 border-b px-4">
