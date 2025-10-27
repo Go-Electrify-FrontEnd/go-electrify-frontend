@@ -30,11 +30,6 @@ export async function handleJoin(prev: unknown, formData: FormData) {
   redirect(
     `/dashboard/driver/start-charging/join?ablyToken=${data.token}&channelId=${data.channelId}&sessionId=${data.sessionId}&expiresAt=${data.expiresAt}`,
   );
-  return {
-    success: true,
-    msg: "Joined successfully!",
-    data,
-  };
 }
 
 export async function handleBindBooking(prev: unknown, formData: FormData) {
