@@ -51,17 +51,7 @@ export default async function UserManagementPage() {
         subtitle={"Danh sách người dùng và trạng thái"}
       />
       <SectionContent>
-        <Card>
-          <CardHeader className="border-b">
-            <CardTitle>Danh sách người dùng</CardTitle>
-            <CardDescription>
-              Người dùng được quản lý trong hệ thống
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <UsersTable data={users} />
-          </CardContent>
-        </Card>
+        <UsersTable data={users} />
       </SectionContent>
     </div>
   );

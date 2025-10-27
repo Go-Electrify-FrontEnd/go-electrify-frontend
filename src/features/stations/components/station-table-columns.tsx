@@ -24,13 +24,13 @@ function StatusCell({ value }: { value: string }) {
         ? "bg-red-500"
         : "bg-yellow-500";
   return (
-    <Badge variant="outline" className="-ml-2 gap-1.5">
+    <div className="-ml-2 flex items-center gap-2 align-middle">
       <span
         className={cn("size-1.5 rounded-full", color)}
         aria-hidden="true"
       ></span>
       {label}
-    </Badge>
+    </div>
   );
 }
 
@@ -67,7 +67,7 @@ export const columns: ColumnDef<Station>[] = [
     accessorKey: "address",
     header: "Địa chỉ",
     cell: ({ row }) => (
-      <div className="text-muted-foreground text-sm">
+      <div className="text-muted-foreground max-w-[400px] truncate text-sm">
         {row.getValue("address")}
       </div>
     ),

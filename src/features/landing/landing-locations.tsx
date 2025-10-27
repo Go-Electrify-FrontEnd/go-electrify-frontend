@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import LandingGlobe from "@/components/landing/landing-globe";
+import LandingGlobe from "./landing-globe";
 import { motion } from "framer-motion";
 
 const locations = {
