@@ -92,7 +92,7 @@ export function AdminDashboard({ user, token, stats }: AdminDashboardProps) {
         subtitle="Tổng quan hệ thống và quản lý toàn diện"
       />
 
-      <SectionContent>
+      <SectionContent className="mt-8">
         {/* Primary Stats */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <StatCard
