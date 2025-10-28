@@ -101,7 +101,7 @@ export function WalletOverview({ wallet, transactions }: WalletOverviewProps) {
   // local helpers replaced by shared formatters
 
   return (
-    <div className="grid gap-4 sm:gap-6 md:grid-cols-3">
+    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:grid-cols-3">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Số Dư Hiện Tại</CardTitle>

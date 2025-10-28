@@ -14,36 +14,7 @@ import type { BookingFee } from "@/lib/zod/booking-fee/booking-fee.types";
 import { BookingFeeManager } from "@/features/booking-fee/components/booking-fee-manager";
 import { AlertCircle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-
-async function getBookingFee(): Promise<BookingFee | null> {
-  try {
-    const { token } = await getUser();
-    const url = "https://api.go-electrify.com/api/v1/admin/booking-fee";
-    const response = await fetch(url, {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-      next: { revalidate: 60, tags: ["booking-fee"] },
-    });
-
-    if (!response.ok) {
-      console.error("Failed to fetch booking fee:", response.statusText);
-      return null;
-    }
-
-    const data = await response.json();
-    const parsed = BookingFeeResponseSchema.safeParse(data);
-
-    if (!parsed.success) {
-      console.error("Invalid booking fee data:", parsed.error);
-      return null;
-    }
-
-    return parsed.data.data;
-  } catch (error) {
-    console.error("Error fetching booking fee:", error);
-    return null;
-  }
-}
+import { getBookingFee } from "@/features/booking-fee/services/booking-fee-api";
 
 export default async function BookingFeePage() {
   const bookingFee = await getBookingFee();
@@ -82,7 +53,7 @@ export default async function BookingFeePage() {
         subtitle="Cấu hình và quản lý phí đặt chỗ cho toàn hệ thống"
       />
 
-      <SectionContent>
+      <SectionContent className="mt-8">
         <div className="grid gap-4 lg:grid-cols-12 lg:gap-6">
           <Card className="w-full lg:col-span-4">
             <CardHeader className="border-b">

@@ -27,8 +27,9 @@ export async function handleJoin(prev: unknown, formData: FormData) {
 
   const data = await response.json();
   console.log("Join Response:", data);
+  const parsed = data.data;
   redirect(
-    `/dashboard/driver/start-charging/join?ablyToken=${data.token}&channelId=${data.channelId}&sessionId=${data.sessionId}&expiresAt=${data.expiresAt}`,
+    `/dashboard/start-charging/join?ablyToken=${parsed.token}&channelId=${parsed.channelId}&sessionId=${parsed.sessionId}&expiresAt=${parsed.expiresAt}`,
   );
 }
 
@@ -38,7 +39,7 @@ export async function handleBindBooking(prev: unknown, formData: FormData) {
   const initialSOC = formData.get("initialSOC") as string;
   const targetSOC = formData.get("targetSOC") as string;
   const sessionId = formData.get("sessionId") as string;
-  if (!token || !bookingCode || !initialSOC || !targetSOC || !sessionId) {
+  if (!token || !bookingCode || !targetSOC || !sessionId) {
     return {
       success: false,
       msg: "Missing token or booking details.",
@@ -55,10 +56,13 @@ export async function handleBindBooking(prev: unknown, formData: FormData) {
 
     body: JSON.stringify({
       bookingCode: bookingCode,
-      initialSOC: Number(initialSOC),
+      initialSOC: 20,
       targetSOC: Number(targetSOC),
     }),
   });
+
+  const responseClone = response.clone();
+  console.log("Bind Booking Raw Response:", await responseClone.text());
   const { Id, BookingId, vehicleModelId, SocStart, TargetSoc } =
     await response.json();
 

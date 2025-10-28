@@ -65,18 +65,7 @@ export default async function ReportedIncidentsPage() {
       />
 
       <SectionContent>
-        <Card>
-          <CardHeader className="border-b">
-            <CardTitle>Danh sách sự cố báo cáo</CardTitle>
-            <CardDescription>
-              Tất cả các sự cố được báo cáo trong hệ thống với thông tin chi
-              tiết
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ReportedIncidentTable data={reportedIncidents} />
-          </CardContent>
-        </Card>
+        <ReportedIncidentTable data={reportedIncidents} />
       </SectionContent>
     </div>
   );
