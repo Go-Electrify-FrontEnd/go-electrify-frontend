@@ -62,7 +62,7 @@ export default function HeroSection() {
                   <div className="flex">
                     <img
                       className="mx-auto h-10 w-fit dark:invert"
-                      src="/assets/images/Vinfast.png"
+                      src="/assets/images/Vinfast.svg"
                       alt="VinFast Logo"
                       height="20"
                       width="auto"

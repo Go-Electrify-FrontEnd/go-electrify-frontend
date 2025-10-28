@@ -164,12 +164,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavSection items={overview} />
-        {user!.role.toLowerCase() === "driver" && (
-          <>
-            <NavSection items={charging} />
-            <NavSection items={payment} />
-          </>
-        )}
+        <>
+          <NavSection items={charging} />
+          <NavSection items={payment} />
+        </>
 
         {user?.role.toLowerCase() === "admin" && <NavSection items={admin} />}
         {user?.role.toLowerCase() === "staff" && <NavSection items={staff} />}
