@@ -48,7 +48,7 @@ export async function getTransactions(page: number = 1, pageSize: number = 20) {
 
 export default async function WalletPage() {
   const wallet = await getWallet();
-  const transactions = await getTransactions(1, 50);
+  const transactions = await getTransactions();
 
   if (!wallet) {
     return <div>Đã xảy ra một số lỗi khi cố tải dữ liệu ví.</div>;
@@ -63,7 +63,7 @@ export default async function WalletPage() {
         <WalletDepositButton />
       </SectionHeader>
 
-      <SectionContent className="flex flex-col gap-4 md:gap-6">
+      <SectionContent className="mt-8 flex flex-col gap-4 md:gap-6">
         <WalletOverview wallet={wallet} transactions={transactions} />
         <TransactionTable
           transactions={transactions}

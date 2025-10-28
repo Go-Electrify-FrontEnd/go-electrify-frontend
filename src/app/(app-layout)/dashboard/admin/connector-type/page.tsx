@@ -52,20 +52,10 @@ export default async function ConnectorTypePage() {
       </SectionHeader>
 
       <SectionContent>
-        <Card>
-          <CardHeader className="border-b">
-            <CardTitle>Danh sách cổng kết nối</CardTitle>
-            <CardDescription>
-              Tất cả các loại cổng kết nối trong hệ thống với thông tin chi tiết
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ConnectorTypeUpdateProvider>
-              <ConnectorTypesTable data={connectorTypes} />
-              <UpdateConnectorType />
-            </ConnectorTypeUpdateProvider>
-          </CardContent>
-        </Card>
+        <ConnectorTypeUpdateProvider>
+          <ConnectorTypesTable data={connectorTypes} />
+          <UpdateConnectorType />
+        </ConnectorTypeUpdateProvider>
       </SectionContent>
     </div>
   );

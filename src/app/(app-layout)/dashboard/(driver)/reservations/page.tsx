@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/card";
 import { ReservationTable } from "@/features/reservations/components/reservation-table";
 import { Plus, Clock } from "lucide-react";
+import { getBookingFee } from "@/features/booking-fee/services/booking-fee-api";
 
 export default async function ReservationPage() {
   const { token } = await getUser();
@@ -27,6 +28,7 @@ export default async function ReservationPage() {
     vehicleModels,
     connectorTypes,
   );
+  const bookingFee = await getBookingFee();
 
   // Filter upcoming reservations (PENDING, CONFIRMED)
   const upcomingReservations = allReservations.filter((r) =>
@@ -43,6 +45,7 @@ export default async function ReservationPage() {
           stations={stations}
           vehicleModels={vehicleModels}
           connectorTypes={connectorTypes}
+          bookingFee={bookingFee!}
         />
       </SectionHeader>
 

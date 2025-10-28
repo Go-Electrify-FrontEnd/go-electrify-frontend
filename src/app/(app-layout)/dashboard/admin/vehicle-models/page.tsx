@@ -26,7 +26,7 @@ export async function getVehicleModels(token: string): Promise<CarModel[]> {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        next: { revalidate: 60, tags: ["vehicle-models"] },
+        next: { revalidate: 15, tags: ["vehicle-models"] },
       },
     );
 
@@ -68,20 +68,10 @@ export default async function VehicleModelsPage() {
         </SectionHeader>
 
         <SectionContent>
-          <Card>
-            <CardHeader className="border-b">
-              <CardTitle>Danh sách xe điện</CardTitle>
-              <CardDescription>
-                Tất cả các mẫu xe điện trong hệ thống với thông tin chi tiết
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <VehicleModelUpdateProvider>
-                <VehicleModelTable data={vehicleModels} />
-                <VehicleModelEditDialog />
-              </VehicleModelUpdateProvider>
-            </CardContent>
-          </Card>
+          <VehicleModelUpdateProvider>
+            <VehicleModelTable data={vehicleModels} />
+            <VehicleModelEditDialog />
+          </VehicleModelUpdateProvider>
         </SectionContent>
       </ConnectorTypeProvider>
     </div>
