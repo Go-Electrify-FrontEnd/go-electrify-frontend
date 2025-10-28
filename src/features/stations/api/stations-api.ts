@@ -241,3 +241,104 @@ export async function getSelfStationId(token: string) {
     return null;
   }
 }
+// Thêm vào cuối file stations-api.ts
+
+export async function getAllUsers(token: string) {
+  if (!token) {
+    console.error("getAllUsers: missing auth token");
+    return [];
+  }
+
+  try {
+    const url = `https://api.go-electrify.com/api/v1/users`;
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      console.error("Failed to fetch users, status:", response.status);
+      return [];
+    }
+
+    const payload = await response.json();
+    return payload.data || [];
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    return [];
+  }
+}
+
+export async function assignStaffToStation(
+  stationId: string,
+  userId: number,
+  token: string,
+) {
+  if (!token) {
+    console.error("assignStaffToStation: missing auth token");
+    return { success: false, error: "Missing auth token" };
+  }
+
+  try {
+    const url = `https://api.go-electrify.com/api/v1/stations/${encodeURIComponent(
+      stationId,
+    )}/staff`;
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId }),
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      console.error("Failed to assign staff, status:", response.status, error);
+      return { success: false, error: `Status ${response.status}` };
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error assigning staff:", error);
+    return { success: false, error: String(error) };
+  }
+}
+
+export async function revokeStaffFromStation(
+  stationId: string,
+  userId: number,
+  token: string,
+) {
+  if (!token) {
+    console.error("revokeStaffFromStation: missing auth token");
+    return { success: false, error: "Missing auth token" };
+  }
+
+  try {
+    const url = `https://api.go-electrify.com/api/v1/stations/${encodeURIComponent(
+      stationId,
+    )}/staff/${userId}`;
+
+    const response = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      console.error("Failed to revoke staff, status:", response.status, error);
+      return { success: false, error: `Status ${response.status}` };
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error revoking staff:", error);
+    return { success: false, error: String(error) };
+  }
+}
