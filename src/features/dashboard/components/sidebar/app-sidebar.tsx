@@ -27,7 +27,7 @@ const overview = {
     },
     {
       title: "Bắt Đầu Sạc",
-      url: "/dashboard/start-charging",
+      url: "/dashboard/charging",
       icon: Zap,
     },
   ],
