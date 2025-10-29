@@ -37,7 +37,10 @@ export default function NearbyStationSearch() {
   const [value, setValue] = useState<string>(() => searchQuery || "");
 
   // Keep local input in sync when the query is changed externally (use key instead of effect).
-  const displayValue = searchQuery !== undefined && searchQuery !== value.trim() ? searchQuery : value;
+  const displayValue =
+    searchQuery !== undefined && searchQuery !== value.trim()
+      ? searchQuery
+      : value;
 
   // Debounce calls to the provider to avoid filtering on every keystroke.
   useEffect(() => {
