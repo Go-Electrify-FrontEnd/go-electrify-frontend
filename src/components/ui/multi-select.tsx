@@ -53,19 +53,12 @@ export function MultiSelect({
 }) {
   const [open, setOpen] = useState(false);
   const [internalValues, setInternalValues] = useState(
-    new Set<string>(defaultValues ?? []),
+    () => new Set<string>(values ?? defaultValues ?? []),
   );
 
   // Use controlled values if provided, otherwise use internal state
   const selectedValues = values ? new Set(values) : internalValues;
   const [items, setItems] = useState<Map<string, ReactNode>>(new Map());
-
-  // Sync internal values with controlled values on change
-  useEffect(() => {
-    if (values !== undefined) {
-      setInternalValues(new Set(values));
-    }
-  }, [values]);
 
   function toggleValue(value: string) {
     const getNewSet = (prev: Set<string>) => {
@@ -178,11 +171,18 @@ export function MultiSelectValue({
       child.style.display = "none";
       overflowElement?.style.removeProperty("display");
     }
-    setOverflowAmount(amount);
+    return amount;
   }, []);
 
   useLayoutEffect(() => {
-    checkOverflow();
+    // Use requestAnimationFrame to defer state update
+    const rafId = requestAnimationFrame(() => {
+      const amount = checkOverflow();
+      if (amount !== undefined) {
+        setOverflowAmount(amount);
+      }
+    });
+    return () => cancelAnimationFrame(rafId);
   }, [selectedValues, checkOverflow, shouldWrap]);
 
   const handleResize = useCallback(

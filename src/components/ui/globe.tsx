@@ -63,7 +63,7 @@ interface WorldProps {
 export function Globe({ globeConfig, data }: WorldProps) {
   const globeRef = useRef<ThreeGlobe | null>(null);
   const groupRef = useRef<Group | null>(null);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const isInitializedRef = useRef(false);
 
   const defaultProps = {
     pointSize: 1,
@@ -87,13 +87,13 @@ export function Globe({ globeConfig, data }: WorldProps) {
     if (!globeRef.current && groupRef.current) {
       globeRef.current = new ThreeGlobe();
       (groupRef.current as Group).add(globeRef.current);
-      setIsInitialized(true);
+      isInitializedRef.current = true;
     }
   }, []);
 
   // Build material when globe is initialized or when relevant props change
   useEffect(() => {
-    if (!globeRef.current || !isInitialized) return;
+    if (!globeRef.current || !isInitializedRef.current) return;
 
     const globeMaterial = globeRef.current.globeMaterial() as unknown as {
       color: Color;
@@ -106,7 +106,6 @@ export function Globe({ globeConfig, data }: WorldProps) {
     globeMaterial.emissiveIntensity = globeConfig.emissiveIntensity || 0.1;
     globeMaterial.shininess = globeConfig.shininess || 0.9;
   }, [
-    isInitialized,
     globeConfig.globeColor,
     globeConfig.emissive,
     globeConfig.emissiveIntensity,
@@ -115,7 +114,7 @@ export function Globe({ globeConfig, data }: WorldProps) {
 
   // Build data when globe is initialized or when data changes
   useEffect(() => {
-    if (!globeRef.current || !isInitialized || !data) return;
+    if (!globeRef.current || !isInitializedRef.current || !data) return;
 
     const arcs = data;
     const points = [];
@@ -186,7 +185,6 @@ export function Globe({ globeConfig, data }: WorldProps) {
         (defaultProps.arcTime * defaultProps.arcLength) / defaultProps.rings,
       );
   }, [
-    isInitialized,
     data,
     defaultProps.pointSize,
     defaultProps.showAtmosphere,
@@ -201,7 +199,7 @@ export function Globe({ globeConfig, data }: WorldProps) {
 
   // Handle rings animation with cleanup
   useEffect(() => {
-    if (!globeRef.current || !isInitialized || !data) return;
+    if (!globeRef.current || !isInitializedRef.current || !data) return;
 
     const interval = setInterval(() => {
       if (!globeRef.current) return;
@@ -226,7 +224,7 @@ export function Globe({ globeConfig, data }: WorldProps) {
     return () => {
       clearInterval(interval);
     };
-  }, [isInitialized, data]);
+  }, [data]);
 
   return <group ref={groupRef} />;
 }
