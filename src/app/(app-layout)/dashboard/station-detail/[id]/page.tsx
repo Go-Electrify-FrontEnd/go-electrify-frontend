@@ -38,7 +38,6 @@ import {
   getSelfStationId,
   getStationChargers,
 } from "@/features/stations/api/stations-api";
-import { stationStaffColumns } from "@/features/stations/components/station-staff-table-columns";
 import {
   getBookingsByStationId,
   getStationById,
@@ -52,6 +51,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { AssignStaffDialog } from "@/features/stations/components/assign-staff-dialog";
+import { StationStaffTableClient } from "@/features/stations/components/station-staff-table-client";
 
 export default async function StationPage({
   params,
@@ -112,7 +113,7 @@ export default async function StationPage({
 
       <SectionContent>
         {/* Stats Overview */}
-        <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:grid-cols-2 @5xl/main:grid-cols-4">
+        <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-linear-to-t *:data-[slot=card]:shadow-xs lg:grid-cols-2 @5xl/main:grid-cols-4">
           <Card className="@container/card">
             <CardHeader>
               <CardDescription>Tổng Dock</CardDescription>
@@ -338,6 +339,11 @@ async function StationStaffTable({ stationId }: { stationId: string }) {
   const { token } = await getUser();
   const staff = await getStationStaff(stationId, token!);
 
+  // Get IDs of already assigned staff
+  const assignedStaffIds = staff
+    .filter((s) => !s.revokedAt)
+    .map((s) => s.userId);
+
   return (
     <Card>
       <CardHeader>
@@ -353,11 +359,10 @@ async function StationStaffTable({ stationId }: { stationId: string }) {
           </div>
           <CardAction>
             <div className="flex items-center gap-2">
-              <Button size="sm" variant="default">
-                <UserPlus className="mr-2 h-4 w-4" />
-                <span className="hidden sm:inline">Phân công nhân viên</span>
-                <span className="sm:hidden">Thêm</span>
-              </Button>
+              <AssignStaffDialog
+                stationId={stationId}
+                assignedStaffIds={assignedStaffIds}
+              />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm" className="h-8">
@@ -386,14 +391,7 @@ async function StationStaffTable({ stationId }: { stationId: string }) {
       </CardHeader>
       <CardContent className="p-0">
         <div className="p-3 sm:p-6">
-          <SharedDataTable
-            columns={stationStaffColumns}
-            data={staff}
-            searchColumn="userEmail"
-            searchPlaceholder="Tìm kiếm email nhân viên..."
-            emptyTitle="Chưa có nhân viên"
-            emptyMessage="Chưa có nhân viên nào được phân công cho trạm này. Nhấn nút phía trên để thêm nhân viên."
-          />
+          <StationStaffTableClient stationId={stationId} data={staff} />
         </div>
       </CardContent>
     </Card>
