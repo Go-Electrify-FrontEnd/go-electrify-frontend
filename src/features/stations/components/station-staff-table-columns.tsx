@@ -1,9 +1,8 @@
 "use client";
-
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, UserMinus } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,8 +13,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { formatDateTime } from "@/lib/formatters";
 import { StationStaff } from "@/lib/zod/station/station-staff.schema";
+import { RevokeStaffAction } from "./revoke-staff-action";
 
-export const stationStaffColumns: ColumnDef<StationStaff>[] = [
+export const createStationStaffColumns = (
+  stationId: string,
+): ColumnDef<StationStaff>[] => [
   {
     accessorKey: "userId",
     header: "ID",
@@ -84,15 +86,11 @@ export const stationStaffColumns: ColumnDef<StationStaff>[] = [
             <DropdownMenuLabel>Hành động</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {!isRevoked && (
-              <DropdownMenuItem
-                onClick={() => {
-                  // TODO: Implement revoke staff action
-                  console.log("Revoke staff:", staff.userId);
-                }}
-              >
-                <UserMinus className="mr-2 h-4 w-4" />
-                Thu hồi quyền
-              </DropdownMenuItem>
+              <RevokeStaffAction
+                stationId={stationId}
+                userId={staff.userId}
+                userEmail={staff.userEmail}
+              />
             )}
           </DropdownMenuContent>
         </DropdownMenu>
@@ -100,3 +98,6 @@ export const stationStaffColumns: ColumnDef<StationStaff>[] = [
     },
   },
 ];
+
+// Keep old export for backward compatibility
+export const stationStaffColumns = createStationStaffColumns("");
