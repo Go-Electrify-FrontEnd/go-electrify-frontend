@@ -49,14 +49,14 @@ export default function VehicleModelDeleteDialog({
   );
 
   useEffect(() => {
-    if (deleteState.success) {
-      setOpen(false);
-      setConfirmationText("");
-    }
-
     if (deleteState.msg) {
       if (deleteState.success) {
         toast.success(deleteState.msg);
+        // Close dialog after successful deletion
+        queueMicrotask(() => {
+          setOpen(false);
+          setConfirmationText("");
+        });
       } else {
         toast.error(deleteState.msg);
       }

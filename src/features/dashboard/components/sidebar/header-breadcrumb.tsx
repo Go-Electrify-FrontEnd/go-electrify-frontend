@@ -13,7 +13,7 @@ import Link from "next/link";
 
 const segmentMap: Record<string, string> = {
   dashboard: "Tổng Quan",
-  "start-charging": "Bắt Đầu Sạc",
+  charging: "Bắt Đầu Sạc",
   "stations-nearby": "Trạm Gần Đây",
   wallet: "Ví",
   reservations: "Đặt Chỗ",

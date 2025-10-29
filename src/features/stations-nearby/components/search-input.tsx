@@ -34,12 +34,10 @@ export default function NearbyStationSearch() {
     searchMode,
     setSearchMode,
   } = useStationsNearby();
-  const [value, setValue] = useState<string>(searchQuery || "");
+  const [value, setValue] = useState<string>(() => searchQuery || "");
 
-  // Keep local input in sync when the query is changed externally.
-  useEffect(() => {
-    setValue(searchQuery || "");
-  }, [searchQuery]);
+  // Keep local input in sync when the query is changed externally (use key instead of effect).
+  const displayValue = searchQuery !== undefined && searchQuery !== value.trim() ? searchQuery : value;
 
   // Debounce calls to the provider to avoid filtering on every keystroke.
   useEffect(() => {
@@ -55,7 +53,7 @@ export default function NearbyStationSearch() {
     <InputGroup>
       <InputGroupInput
         placeholder="Tìm kiếm trạm..."
-        value={value}
+        value={displayValue}
         onChange={(e) => setValue(e.target.value)}
       />
 
