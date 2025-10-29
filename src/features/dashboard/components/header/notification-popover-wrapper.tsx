@@ -1,7 +1,7 @@
 // components/dashboard/header/notification-popover-wrapper.tsx
 "use client";
 
-import { ReactNode, useState } from "react";
+import { ReactNode } from "react";
 import {
   Popover,
   PopoverContent,
@@ -11,14 +11,16 @@ import {
 export function NotificationPopoverWrapper({
   trigger,
   content,
+  isOpen,
+  onOpenChange,
 }: {
   trigger: ReactNode;
   content: ReactNode;
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
 }) {
-  const [isOpen, setIsOpen] = useState(false);
-
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
+    <Popover open={isOpen} onOpenChange={onOpenChange}>
       <PopoverTrigger asChild>{trigger}</PopoverTrigger>
       <PopoverContent className="w-80 p-0" align="end">
         {content}
