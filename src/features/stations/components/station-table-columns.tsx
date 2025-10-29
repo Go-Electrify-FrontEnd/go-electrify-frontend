@@ -35,13 +35,10 @@ function StatusCell({ value }: { value: string }) {
 }
 
 function DateCell({ value }: { value: Date }) {
-  try {
-    return (
-      <div className="font-medium">{value.toLocaleDateString("vi-VN")}</div>
-    );
-  } catch {
+  if (!value || isNaN(value.getTime())) {
     return <div className="font-medium">-</div>;
   }
+  return <div className="font-medium">{value.toLocaleDateString("vi-VN")}</div>;
 }
 
 export const columns: ColumnDef<Station>[] = [

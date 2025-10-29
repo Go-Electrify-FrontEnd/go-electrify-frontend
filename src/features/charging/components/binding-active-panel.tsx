@@ -255,9 +255,9 @@ export function BindingActivePanel() {
         <Info className="h-4 w-4" />
         <AlertTitle>Hướng dẫn</AlertTitle>
         <AlertDescription>
-          Nhấn "Bắt đầu sạc" để khởi động phiên sạc. Hệ thống sẽ tự động theo
-          dõi và cập nhật tiến trình sạc của bạn. Phiên sạc sẽ tự động dừng khi
-          đạt SOC mục tiêu.
+          Nhấn &ldquo;Bắt đầu sạc&rdquo; để khởi động phiên sạc. Hệ thống sẽ tự
+          động theo dõi và cập nhật tiến trình sạc của bạn. Phiên sạc sẽ tự động
+          dừng khi đạt SOC mục tiêu.
         </AlertDescription>
       </Alert>
     </SectionContent>

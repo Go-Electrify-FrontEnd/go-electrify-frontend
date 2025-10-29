@@ -82,54 +82,36 @@ export function StationsNearbyProvider({
 }: StationsNearbyProviderProps) {
   const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
 
-  // Keep a stable copy of the original list so searches can be reset.
-  const originalStationsRef = useRef<Station[]>(stations);
-  const [displayStations, setDisplayStations] = useState<Station[]>(stations);
   const [searchQuery, setSearchQueryState] = useState<string>("");
   const [searchMode, setSearchModeState] = useState<SearchMode>("ALL");
 
-  // If the prop changes (external refresh), update both original and displayed lists.
-  useEffect(() => {
-    originalStationsRef.current = stations;
-    setDisplayStations(stations);
-  }, [stations]);
-
-  // Apply search filtering against the original station list.
-  useEffect(() => {
+  // Derive filtered stations based on search query and mode using useMemo
+  const displayStations = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     if (!q) {
-      setDisplayStations(originalStationsRef.current);
-      return;
+      return stations;
     }
 
     if (searchMode === "ALL") {
-      setDisplayStations(
-        originalStationsRef.current.filter((station) => {
-          return (
-            station.name.toLowerCase().includes(q) ||
-            station.address.toLowerCase().includes(q)
-          );
-        }),
-      );
-      return;
+      return stations.filter((station) => {
+        return (
+          station.name.toLowerCase().includes(q) ||
+          station.address.toLowerCase().includes(q)
+        );
+      });
     }
 
     if (searchMode === "NAME") {
-      setDisplayStations(
-        originalStationsRef.current.filter((station) =>
-          station.name.toLowerCase().includes(q),
-        ),
+      return stations.filter((station) =>
+        station.name.toLowerCase().includes(q),
       );
-      return;
     }
 
     // ADDRESS mode
-    setDisplayStations(
-      originalStationsRef.current.filter((station) =>
-        station.address.toLowerCase().includes(q),
-      ),
+    return stations.filter((station) =>
+      station.address.toLowerCase().includes(q),
     );
-  }, [searchQuery, searchMode]);
+  }, [stations, searchQuery, searchMode]);
 
   const sortedStations = useMemo(() => {
     if (!userLocation) {
@@ -157,13 +139,12 @@ export function StationsNearbyProvider({
   }, []);
 
   const setStations = useCallback((newStations: Station[]) => {
-    originalStationsRef.current = newStations;
-    setDisplayStations(newStations);
+    // This function is no longer needed as we derive displayStations from stations
+    // Keep for API compatibility
   }, []);
 
   const resetStations = useCallback(() => {
     setSearchQueryState("");
-    setDisplayStations(originalStationsRef.current);
   }, []);
 
   const contextValue = useMemo(

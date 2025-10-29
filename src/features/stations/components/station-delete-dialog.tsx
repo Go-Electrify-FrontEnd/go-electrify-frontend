@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -32,17 +32,18 @@ export function DeleteStation({
     msg: "",
   });
 
-  const resetForm = () => setConfirmText("");
+  const resetForm = useCallback(() => setConfirmText(""), []);
 
   useEffect(() => {
     if (deleteState.success) {
       toast.success("Trạm đã được xóa", { description: deleteState.msg });
       onOpenChange(false);
-      resetForm();
+      // Schedule reset after dialog closes
+      queueMicrotask(() => resetForm());
     } else if (!deleteState.success && deleteState.msg) {
       toast.error("Xóa không thành công", { description: deleteState.msg });
     }
-  }, [deleteState.msg, deleteState.success, onOpenChange]);
+  }, [deleteState.msg, deleteState.success, onOpenChange, resetForm]);
 
   return (
     <AlertDialog
