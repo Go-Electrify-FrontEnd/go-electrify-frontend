@@ -60,31 +60,31 @@ export default function HeroSection() {
               <div className="relative py-6 md:w-[calc(100%-11rem)]">
                 <InfiniteSlider speedOnHover={20} speed={40} gap={112}>
                   <div className="flex">
-                    <img
+                    <Image
                       className="mx-auto h-10 w-fit dark:invert"
                       src="/assets/images/Vinfast.svg"
                       alt="VinFast Logo"
-                      height="20"
-                      width="auto"
+                      height={20}
+                      width={80}
                     />
                   </div>
 
                   <div className="flex">
-                    <img
+                    <Image
                       className="mx-auto h-10 w-fit dark:invert"
                       src="/assets/images/Porsche.svg"
                       alt="Porsche Logo"
-                      height="20"
-                      width="auto"
+                      height={20}
+                      width={80}
                     />
                   </div>
                   <div className="flex">
-                    <img
+                    <Image
                       className="mx-auto h-13 w-fit dark:invert"
                       src="/assets/images/Volvo.svg"
                       alt="Volvo Logo"
-                      height="20"
-                      width="auto"
+                      height={20}
+                      width={80}
                     />
                   </div>
                   {/* <div className="flex">

@@ -26,7 +26,7 @@ import {
   type SubmitHandler,
   useForm,
 } from "react-hook-form";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { useServerAction } from "@/hooks/use-server-action";
 import {
@@ -89,16 +89,17 @@ export default function StationDockCreate({
     },
   });
 
-  const generateRandomSecret = (length = 16) => {
+  const generateRandomSecret = useCallback((length = 16) => {
     const charset =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     let result = "";
+    const array = new Uint32Array(length);
+    crypto.getRandomValues(array);
     for (let i = 0; i < length; i++) {
-      const idx = Math.floor(Math.random() * charset.length);
-      result += charset[idx];
+      result += charset[array[i]! % charset.length];
     }
     return result;
-  };
+  }, []);
 
   const onSubmit: SubmitHandler<ChargerCreateFormData> = (data) => {
     // debug: station dock create submitted
