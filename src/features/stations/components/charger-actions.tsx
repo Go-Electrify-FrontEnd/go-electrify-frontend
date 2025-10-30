@@ -11,8 +11,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Eye, Copy } from "lucide-react";
-import type { Charger } from "@/lib/zod/charger/charger.types";
 import { useChargerUpdate } from "@/features/stations/contexts/charger-update-context";
+import { Charger } from "@/features/chargers/schemas/charger.schema";
 
 interface ActionsCellProps {
   charger: Charger;

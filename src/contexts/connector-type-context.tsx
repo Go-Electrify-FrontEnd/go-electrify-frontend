@@ -1,6 +1,6 @@
 "use client";
 
-import type { ConnectorType } from "@/lib/zod/connector-type/connector-type.types";
+import type { ConnectorType } from "@/features/connector-type/schemas/connector-type.types";
 import { createContext, useContext, type ReactNode } from "react";
 
 interface ConnectorTypeContextValue {

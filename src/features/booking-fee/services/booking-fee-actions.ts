@@ -2,8 +2,8 @@
 
 import { getUser } from "@/lib/auth/auth-server";
 import { forbidden } from "next/navigation";
-import { bookingFeeUpdateSchema } from "@/lib/zod/booking-fee/booking-fee.request";
 import { updateTag } from "next/cache";
+import { bookingFeeUpdateSchema } from "../schemas/booking-fee.request";
 
 const BACKEND_URL = "https://api.go-electrify.com/api/v1/admin/booking-fee";
 

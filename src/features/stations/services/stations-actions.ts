@@ -5,7 +5,7 @@ import { getUser } from "@/lib/auth/auth-server";
 import {
   stationCreateSchema,
   stationUpdateSchema,
-} from "@/lib/zod/station/station.request";
+} from "../schemas/station.request";
 
 const BASE_URL = "https://api.go-electrify.com/api/v1/stations";
 

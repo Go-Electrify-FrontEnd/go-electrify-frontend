@@ -24,16 +24,16 @@ export function formatShortCurrency(value: number | null | undefined) {
 }
 
 export function formatDateTime(
-  value: string | null | undefined,
-  locale = "vi-VN",
+value: string | Date | null | undefined,
+locale = "vi-VN",
 ) {
-  if (!value) return "-";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return String(value);
-  }
-  return date.toLocaleString(locale, {
-    dateStyle: "short",
-    timeStyle: "short",
-  });
+if (!value) return "-";
+const date = new Date(value);
+if (Number.isNaN(date.getTime())) {
+return String(value);
+}
+return date.toLocaleString(locale, {
+dateStyle: "short",
+timeStyle: "short",
+});
 }

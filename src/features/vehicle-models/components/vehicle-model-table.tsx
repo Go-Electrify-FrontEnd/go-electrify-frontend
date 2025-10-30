@@ -1,8 +1,8 @@
 "use client";
 
 import { SharedDataTable } from "@/components/shared/shared-data-table";
-import type { CarModel } from "@/lib/zod/vehicle-model/vehicle-model.types";
 import { vehicleModelTableColumns } from "./vehicle-model-table-columns";
+import { CarModel } from "@/types/car";
 
 interface VehicleModelTableProps {
   data: CarModel[];

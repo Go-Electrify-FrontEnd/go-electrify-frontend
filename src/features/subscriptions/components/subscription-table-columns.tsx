@@ -1,11 +1,10 @@
 "use client";
 
-import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
 import { ActionsCell } from "./subscription-actions";
-import type { Subscription } from "@/lib/zod/subscription/subscription.types";
+import type { Subscription } from "../schemas/subscription.types";
+
 function PriceCell({ value }: { value: number }) {
   const nf = new Intl.NumberFormat("vi-VN", {
     style: "currency",

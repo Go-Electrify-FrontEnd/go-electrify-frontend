@@ -3,7 +3,7 @@ import type { DriverStats } from "@/types/dashboard-stats";
 import { redirect } from "next/navigation";
 import { getWallet } from "@/app/(app-layout)/dashboard/(driver)/wallet/page";
 import { DriverDashboard } from "@/features/dashboard/components/home/driver-dashboard";
-import { TransactionListApiSchema } from "@/lib/zod/wallet/wallet.schema";
+import { TransactionListApiSchema } from "@/features/wallet/schemas/wallet.schema";
 
 async function getTransactions() {
   const { token } = await getUser();

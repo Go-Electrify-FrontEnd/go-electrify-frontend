@@ -20,4 +20,9 @@ export const vehicleModelSchema = z.object({
     .min(1, "Phải có ít nhất một loại cổng kết nối"),
 });
 
+export const vehicleModelDeleteSchema = z.object({
+  confirmText: z.string().min(1, "Vui lòng nhập tên mẫu xe để xác nhận"),
+});
+
 export type VehicleModelFormData = z.infer<typeof vehicleModelSchema>;
+export type VehicleModelDeleteFormData = z.infer<typeof vehicleModelDeleteSchema>;

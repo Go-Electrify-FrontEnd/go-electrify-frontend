@@ -26,11 +26,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { Transaction } from "@/lib/zod/wallet/wallet.types";
 import { transactionColumns } from "./wallet-transaction-table-columns";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+import { Transaction } from "../schemas/wallet.schema";
 
 type TransactionTableProps = {
   transactions: Transaction[];

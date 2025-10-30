@@ -39,12 +39,12 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
-import {
-  stationCreateSchema,
-  type StationCreateFormData,
-} from "@/lib/zod/station/station.request";
 import { useServerAction } from "@/hooks/use-server-action";
 import { createStation } from "../services/stations-actions";
+import {
+  StationCreateFormData,
+  stationCreateSchema,
+} from "../schemas/station.request";
 
 interface StationCreateProps {
   onCancel?: () => void;
@@ -59,7 +59,6 @@ export default function StationCreate({ onCancel }: StationCreateProps) {
   const { execute, pending } = useServerAction(createStation, initialState, {
     onSettled: (result) => {
       if (result.success) {
-        // Don't reset form here to avoid triggering AddressSearch re-initialization
         setOpen(false);
         toast.success(result.msg);
       } else if (result.msg) {

@@ -20,10 +20,6 @@ import {
 } from "@/components/ui/field";
 import { Loader2 } from "lucide-react";
 import { useChargerUpdate } from "@/features/stations/contexts/charger-update-context";
-import {
-  chargerUpdateSchema,
-  type ChargerUpdateFormData,
-} from "@/lib/zod/charger/charger.request";
 import { useServerAction } from "@/hooks/use-server-action";
 import { updateCharger } from "@/features/stations/services/chargers-actions";
 import { toast } from "sonner";
@@ -37,6 +33,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { ConnectorType } from "@/types/connector";
+import {
+  ChargerUpdateFormData,
+  chargerUpdateSchema,
+} from "@/features/chargers/schemas/charger.request";
 
 interface UpdateChargerProps {
   connectorTypes: ConnectorType[];

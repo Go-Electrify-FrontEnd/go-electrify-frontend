@@ -13,6 +13,12 @@ export const reservationFormSchema = z.object({
 
 export type ReservationFormData = z.infer<typeof reservationFormSchema>;
 
+export const reservationCancelSchema = z.object({
+  reason: z.string().min(1, "Lý do hủy là bắt buộc").max(500, "Lý do không được vượt quá 500 ký tự"),
+});
+
+export type ReservationCancelFormData = z.infer<typeof reservationCancelSchema>;
+
 export const ReservationAPI = z.object({
   ok: z.boolean(),
   data: ReservationSchema.array(),

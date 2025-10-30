@@ -1,7 +1,7 @@
 "use client";
 
+import { Charger } from "@/features/chargers/schemas/charger.schema";
 import { createContext, useContext, useState } from "react";
-import type { Charger } from "@/lib/zod/charger/charger.types";
 
 interface ChargerUpdateContextValue {
   setCharger: (charger: Charger | null) => void;

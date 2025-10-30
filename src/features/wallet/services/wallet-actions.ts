@@ -3,9 +3,8 @@
 import { redirect } from "next/navigation";
 import { getUser } from "@/lib/auth/auth-server";
 import { forbidden } from "next/navigation";
-import { walletTopupSchema } from "@/lib/zod/wallet/wallet.request";
-import { TopupResponseApiSchema } from "@/lib/zod/wallet/wallet.schema";
-import type { TopupResponse } from "@/lib/zod/wallet/wallet.types";
+import { walletTopupSchema } from "../schemas/wallet.request";
+import { TopupResponseApiSchema } from "../schemas/wallet.schema";
 
 export async function handleCreateTopup(prev: unknown, formData: FormData) {
   const { user, token } = await getUser();
