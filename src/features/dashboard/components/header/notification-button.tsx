@@ -9,13 +9,12 @@ import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
 import { NotificationPopoverWrapper } from "./notification-popover-wrapper";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { NotificationDialog } from "./notification-dialog";
 import { useUser } from "@/features/users/contexts/user-context";
 
 function getNotificationIcon(type: string) {
   switch (type) {
-    case "booking":
     case "booking_confirmed":
     case "booking_deposit_succeeded":
     case "booking_canceled":
@@ -23,7 +22,7 @@ function getNotificationIcon(type: string) {
     case "user":
       return <User className="h-4 w-4 text-green-500" />;
     default:
-      return <Bell className="h-4 w-4" />;
+      return <Bell className="h-4 w-4 text-gray-500" />;
   }
 }
 
@@ -36,15 +35,17 @@ function formatDate(dateString: string) {
   }
 }
 
+interface NotificationItemProps {
+  notification: Notification;
+  onClick: () => void;
+  isUnread: boolean;
+}
+
 function NotificationItem({
   notification,
   onClick,
   isUnread,
-}: {
-  notification: Notification;
-  onClick: () => void;
-  isUnread: boolean;
-}) {
+}: NotificationItemProps) {
   return (
     <div
       className={`hover:bg-accent flex cursor-pointer gap-3 p-4 transition-colors ${
@@ -85,7 +86,8 @@ export function NotificationButton({
   const [selectedNotification, setSelectedNotification] =
     useState<Notification | null>(null);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [notifications, setNotifications] = useState(initialNotifications);
+  const [notifications, setNotifications] =
+    useState<Notification[]>(initialNotifications);
   const [isMarkingAllRead, setIsMarkingAllRead] = useState(false);
 
   // Sync với server data khi initialNotifications thay đổi
@@ -97,22 +99,24 @@ export function NotificationButton({
   const unreadCount = notifications.filter((n) => n.IsNew).length;
 
   // Mark single notification as read
-  const handleNotificationClick = async (notification: Notification) => {
-    setSelectedNotification(notification);
-    setIsPopoverOpen(false);
+  const handleNotificationClick = useCallback(
+    async (notification: Notification) => {
+      setSelectedNotification(notification);
+      setIsPopoverOpen(false);
 
-    // Only mark as read if it's unread
-    if (notification.IsNew) {
-      // Optimistic update
+      // Chỉ mark as read nếu notification này chưa đọc
+      if (!notification.IsNew) return;
+
+      // Optimistic update - CHỈ update notification được click
       setNotifications((prev) =>
         prev.map((n) =>
-          n.id === notification.id ? { ...n, IsNew: false } : n,
+          n.Id === notification.Id ? { ...n, IsNew: false } : n,
         ),
       );
 
       try {
         const response = await fetch(
-          `https://api.go-electrify.com/api/v1/notifications/${notification.id}/read`,
+          `https://api.go-electrify.com/api/v1/notifications/${notification.Id}/read`,
           {
             method: "POST",
             headers: {
@@ -124,28 +128,32 @@ export function NotificationButton({
 
         if (!response.ok) {
           console.error("Failed to mark notification as read");
-          // Revert on error
+          // Revert CHỈ notification này nếu lỗi
           setNotifications((prev) =>
             prev.map((n) =>
-              n.id === notification.id ? { ...n, IsNew: true } : n,
+              n.Id === notification.Id ? { ...n, IsNew: true } : n,
             ),
           );
         }
       } catch (err) {
         console.error("Mark notification as read failed", err);
-        // Revert on error
+        // Revert CHỈ notification này nếu lỗi
         setNotifications((prev) =>
           prev.map((n) =>
-            n.id === notification.id ? { ...n, IsNew: true } : n,
+            n.Id === notification.Id ? { ...n, IsNew: true } : n,
           ),
         );
       }
-    }
-  };
+    },
+    [token],
+  );
 
-  // Mark all as read and navigate to notifications page
-  const handleViewAll = async () => {
+  // Mark all as read and navigate
+  const handleViewAll = useCallback(async () => {
     setIsPopoverOpen(false);
+
+    // Navigate to notifications page
+    router.push("/dashboard/notifications");
 
     // Nếu có thông báo chưa đọc, gọi API mark all
     if (unreadCount > 0) {
@@ -168,21 +176,18 @@ export function NotificationButton({
 
         if (!response.ok) {
           console.error("Failed to mark all as read");
-          // Revert on error - restore original IsNew states
+          // Revert về initialNotifications nếu lỗi
           setNotifications(initialNotifications);
         }
       } catch (err) {
         console.error("Mark all as read failed", err);
-        // Revert on error
+        // Revert về initialNotifications nếu lỗi
         setNotifications(initialNotifications);
       } finally {
         setIsMarkingAllRead(false);
       }
     }
-
-    // Navigate to notifications page
-    router.push("/dashboard/notifications");
-  };
+  }, [router, unreadCount, token, initialNotifications]);
 
   const triggerButton = (
     <Button variant="ghost" size="icon" className="relative">
@@ -190,7 +195,7 @@ export function NotificationButton({
       {unreadCount > 0 && (
         <Badge
           variant="destructive"
-          className="absolute -top-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full p-0 text-xs"
+          className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full p-0 text-[10px]"
         >
           {unreadCount > 99 ? "99+" : unreadCount}
         </Badge>
@@ -218,9 +223,9 @@ export function NotificationButton({
           </div>
         ) : (
           <div className="divide-y">
-            {recentNotifications.map((notification, index) => (
+            {recentNotifications.map((notification) => (
               <NotificationItem
-                key={notification.id || index}
+                key={notification.Id}
                 notification={notification}
                 isUnread={notification.IsNew}
                 onClick={() => handleNotificationClick(notification)}
