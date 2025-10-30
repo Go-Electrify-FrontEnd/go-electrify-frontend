@@ -1,4 +1,3 @@
-// app/(app-layout)/dashboard/notifications/notifications-page-client.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -77,11 +76,10 @@ export function NotificationsPageClient({
   const { token } = useUser();
   const [selectedNotification, setSelectedNotification] =
     useState<Notification | null>(null);
-
-  // ✅ Sử dụng state riêng và sync với initialNotifications
   const [notifications, setNotifications] = useState(initialNotifications);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // ✅ Sync lại khi server data thay đổi (sau khi reload hoặc navigate)
+  // Sync lại khi server data thay đổi
   useEffect(() => {
     setNotifications(initialNotifications);
   }, [initialNotifications]);
@@ -92,16 +90,15 @@ export function NotificationsPageClient({
   const handleNotificationClick = async (notification: Notification) => {
     setSelectedNotification(notification);
 
-    // Only mark as read if it's unread
+    // Chỉ mark as read nếu notification này chưa đọc
     if (notification.IsNew) {
-      // Optimistic update - chỉ đánh dấu notification được click
+      // Optimistic update - CHỈ update notification được click
       setNotifications((prev) =>
         prev.map((n) =>
           n.id === notification.id ? { ...n, IsNew: false } : n,
         ),
       );
 
-      // Call API
       try {
         const response = await fetch(
           `https://api.go-electrify.com/api/v1/notifications/${notification.id}/read`,
@@ -115,29 +112,70 @@ export function NotificationsPageClient({
         );
 
         if (!response.ok) {
-          console.error("Failed to mark notification as read");
-          // Revert on error
+          console.error(
+            "Failed to mark notification as read:",
+            response.status,
+          );
+          // Revert CHỈ notification này nếu lỗi
           setNotifications((prev) =>
             prev.map((n) =>
               n.id === notification.id ? { ...n, IsNew: true } : n,
             ),
           );
         } else {
-          // ✅ Sau khi mark thành công, refresh data từ server
-          // Nhưng không refresh ngay lập tức để tránh flicker
-          setTimeout(() => {
-            router.refresh();
-          }, 1000);
+          // Refresh data từ server sau khi thành công
+          router.refresh();
         }
       } catch (err) {
-        console.error("Mark notification as read failed", err);
-        // Revert on error
+        console.error("Mark notification as read failed:", err);
+        // Revert CHỈ notification này nếu lỗi
         setNotifications((prev) =>
           prev.map((n) =>
             n.id === notification.id ? { ...n, IsNew: true } : n,
           ),
         );
       }
+    }
+  };
+
+  // Mark all notifications as read
+  const handleMarkAllAsRead = async () => {
+    if (unreadCount === 0) return;
+
+    setIsLoading(true);
+
+    // Lưu lại state ban đầu để revert nếu cần
+    const previousNotifications = notifications;
+
+    // Optimistic update - mark all as read
+    setNotifications((prev) => prev.map((n) => ({ ...n, IsNew: false })));
+
+    try {
+      const response = await fetch(
+        "https://api.go-electrify.com/api/v1/notifications/read-all",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      if (!response.ok) {
+        console.error("Failed to mark all as read:", response.status);
+        // Revert về state ban đầu
+        setNotifications(previousNotifications);
+      } else {
+        // Refresh data từ server sau khi thành công
+        router.refresh();
+      }
+    } catch (err) {
+      console.error("Mark all as read failed:", err);
+      // Revert về state ban đầu
+      setNotifications(previousNotifications);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -163,6 +201,15 @@ export function NotificationsPageClient({
               )}
             </p>
           </div>
+          {unreadCount > 0 && (
+            <Button
+              variant="outline"
+              onClick={handleMarkAllAsRead}
+              disabled={isLoading}
+            >
+              {isLoading ? "Đang xử lý..." : "Đánh dấu tất cả đã đọc"}
+            </Button>
+          )}
         </div>
       </div>
 
