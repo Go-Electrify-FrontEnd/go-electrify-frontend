@@ -18,11 +18,24 @@ async function getAllNotifications(token: string): Promise<Notification[]> {
     });
 
     if (!response.ok) {
+      console.error("Failed to fetch notifications:", response.statusText);
       return [];
     }
 
     const data = await response.json();
-    return data || [];
+
+    // Ensure we return an array and normalize the data
+    const notifications = Array.isArray(data) ? data : [];
+
+    return notifications.map((notification: any) => ({
+      id: notification.id || notification.Id || "",
+      Title: notification.Title || "",
+      Message: notification.Message || "",
+      Type: notification.Type || "booking",
+      Severity: notification.Severity,
+      CreatedAt: notification.CreatedAt || new Date().toISOString(),
+      IsNew: notification.IsNew ?? notification.isNew ?? true,
+    }));
   } catch (error) {
     console.error("Error fetching notifications:", error);
     return [];

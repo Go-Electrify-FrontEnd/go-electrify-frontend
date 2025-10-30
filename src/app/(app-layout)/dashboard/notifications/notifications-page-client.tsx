@@ -1,7 +1,7 @@
 // app/(app-layout)/dashboard/notifications/notifications-page-client.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Notification } from "@/types/notification";
 import { Bell, Bookmark, User, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,10 +11,14 @@ import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
 import { NotificationDialog } from "@/features/dashboard/components/header/notification-dialog";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/features/users/contexts/user-context";
 
 function getNotificationIcon(type: string) {
   switch (type) {
     case "booking":
+    case "booking_confirmed":
+    case "booking_deposit_succeeded":
+    case "booking_canceled":
       return <Bookmark className="h-5 w-5 text-blue-500" />;
     case "user":
       return <User className="h-5 w-5 text-green-500" />;
@@ -25,6 +29,14 @@ function getNotificationIcon(type: string) {
 
 function getNotificationTypeName(type: string) {
   switch (type) {
+    case "booking_confirmed":
+      return "Đặt phòng xác nhận";
+    case "booking_deposit_succeeded":
+      return "Đặt cọc thành công";
+    case "booking_canceled":
+      return "Hủy đặt phòng";
+    case "booking":
+      return "Đặt phòng";
     case "user":
       return "Người dùng";
     default:
@@ -41,7 +53,6 @@ function formatDate(dateString: string) {
   }
 }
 
-// Format date đầy đủ cho tooltip
 function formatFullDate(dateString: string) {
   try {
     const date = new Date(dateString);
@@ -58,13 +69,77 @@ function formatFullDate(dateString: string) {
 }
 
 export function NotificationsPageClient({
-  notifications,
+  notifications: initialNotifications,
 }: {
   notifications: Notification[];
 }) {
   const router = useRouter();
+  const { token } = useUser();
   const [selectedNotification, setSelectedNotification] =
     useState<Notification | null>(null);
+
+  // ✅ Sử dụng state riêng và sync với initialNotifications
+  const [notifications, setNotifications] = useState(initialNotifications);
+
+  // ✅ Sync lại khi server data thay đổi (sau khi reload hoặc navigate)
+  useEffect(() => {
+    setNotifications(initialNotifications);
+  }, [initialNotifications]);
+
+  const unreadCount = notifications.filter((n) => n.IsNew).length;
+
+  // Mark notification as read when clicked
+  const handleNotificationClick = async (notification: Notification) => {
+    setSelectedNotification(notification);
+
+    // Only mark as read if it's unread
+    if (notification.IsNew) {
+      // Optimistic update - chỉ đánh dấu notification được click
+      setNotifications((prev) =>
+        prev.map((n) =>
+          n.id === notification.id ? { ...n, IsNew: false } : n,
+        ),
+      );
+
+      // Call API
+      try {
+        const response = await fetch(
+          `https://api.go-electrify.com/api/v1/notifications/${notification.id}/read`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          },
+        );
+
+        if (!response.ok) {
+          console.error("Failed to mark notification as read");
+          // Revert on error
+          setNotifications((prev) =>
+            prev.map((n) =>
+              n.id === notification.id ? { ...n, IsNew: true } : n,
+            ),
+          );
+        } else {
+          // ✅ Sau khi mark thành công, refresh data từ server
+          // Nhưng không refresh ngay lập tức để tránh flicker
+          setTimeout(() => {
+            router.refresh();
+          }, 1000);
+        }
+      } catch (err) {
+        console.error("Mark notification as read failed", err);
+        // Revert on error
+        setNotifications((prev) =>
+          prev.map((n) =>
+            n.id === notification.id ? { ...n, IsNew: true } : n,
+          ),
+        );
+      }
+    }
+  };
 
   return (
     <div className="container mx-auto max-w-4xl p-6">
@@ -78,9 +153,14 @@ export function NotificationsPageClient({
           <div>
             <h1 className="text-3xl font-bold">Tất cả thông báo</h1>
             <p className="text-muted-foreground mt-1">
-              {notifications.length > 0
-                ? `${notifications.length} thông báo`
-                : "Không có thông báo nào"}
+              {notifications.length > 0 ? (
+                <>
+                  {notifications.length} thông báo
+                  {unreadCount > 0 && ` • ${unreadCount} chưa đọc`}
+                </>
+              ) : (
+                "Không có thông báo nào"
+              )}
             </p>
           </div>
         </div>
@@ -100,9 +180,13 @@ export function NotificationsPageClient({
         <div className="space-y-3">
           {notifications.map((notification, index) => (
             <Card
-              key={index}
-              className="hover:bg-accent cursor-pointer p-4 transition-colors"
-              onClick={() => setSelectedNotification(notification)}
+              key={notification.id || index}
+              className={`hover:bg-accent cursor-pointer p-4 transition-colors ${
+                notification.IsNew
+                  ? "border-l-4 border-l-blue-500 bg-blue-50/30"
+                  : ""
+              }`}
+              onClick={() => handleNotificationClick(notification)}
             >
               <div className="flex gap-4">
                 <div className="bg-muted flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
@@ -110,9 +194,18 @@ export function NotificationsPageClient({
                 </div>
                 <div className="flex-1 space-y-2">
                   <div className="flex items-start justify-between gap-4">
-                    <h3 className="leading-tight font-semibold">
-                      {notification.Title}
-                    </h3>
+                    <div className="flex items-center gap-2">
+                      <h3
+                        className={`leading-tight ${
+                          notification.IsNew ? "font-bold" : "font-semibold"
+                        }`}
+                      >
+                        {notification.Title}
+                      </h3>
+                      {notification.IsNew && (
+                        <div className="h-2 w-2 rounded-full bg-blue-500" />
+                      )}
+                    </div>
                     <span
                       className="text-muted-foreground text-xs whitespace-nowrap"
                       title={formatFullDate(notification.CreatedAt)}
@@ -123,9 +216,23 @@ export function NotificationsPageClient({
                   <p className="text-muted-foreground text-sm">
                     {notification.Message}
                   </p>
-                  <Badge variant="secondary" className="text-xs">
-                    {getNotificationTypeName(notification.Type)}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="secondary" className="text-xs">
+                      {getNotificationTypeName(notification.Type)}
+                    </Badge>
+                    {notification.Severity && (
+                      <Badge
+                        variant={
+                          notification.Severity === "HIGH"
+                            ? "destructive"
+                            : "outline"
+                        }
+                        className="text-xs"
+                      >
+                        {notification.Severity}
+                      </Badge>
+                    )}
+                  </div>
                 </div>
               </div>
             </Card>
