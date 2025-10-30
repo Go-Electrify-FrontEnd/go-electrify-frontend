@@ -88,7 +88,7 @@ export function NotificationButton({
   const [notifications, setNotifications] = useState(initialNotifications);
   const [isMarkingAllRead, setIsMarkingAllRead] = useState(false);
 
-  // ✅ Sync với server data khi initialNotifications thay đổi
+  // Sync với server data khi initialNotifications thay đổi
   useEffect(() => {
     setNotifications(initialNotifications);
   }, [initialNotifications]);
@@ -103,14 +103,13 @@ export function NotificationButton({
 
     // Only mark as read if it's unread
     if (notification.IsNew) {
-      // Optimistic update - chỉ update notification được click
+      // Optimistic update
       setNotifications((prev) =>
         prev.map((n) =>
           n.id === notification.id ? { ...n, IsNew: false } : n,
         ),
       );
 
-      // Call API
       try {
         const response = await fetch(
           `https://api.go-electrify.com/api/v1/notifications/${notification.id}/read`,
@@ -152,6 +151,9 @@ export function NotificationButton({
     if (unreadCount > 0) {
       setIsMarkingAllRead(true);
 
+      // Optimistic update - mark all as read locally
+      setNotifications((prev) => prev.map((n) => ({ ...n, IsNew: false })));
+
       try {
         const response = await fetch(
           "https://api.go-electrify.com/api/v1/notifications/read-all",
@@ -164,12 +166,15 @@ export function NotificationButton({
           },
         );
 
-        if (response.ok) {
-          // Optimistic update - mark all as read locally
-          setNotifications((prev) => prev.map((n) => ({ ...n, IsNew: false })));
+        if (!response.ok) {
+          console.error("Failed to mark all as read");
+          // Revert on error - restore original IsNew states
+          setNotifications(initialNotifications);
         }
       } catch (err) {
         console.error("Mark all as read failed", err);
+        // Revert on error
+        setNotifications(initialNotifications);
       } finally {
         setIsMarkingAllRead(false);
       }
@@ -178,14 +183,17 @@ export function NotificationButton({
     // Navigate to notifications page
     router.push("/dashboard/notifications");
   };
+
   const triggerButton = (
     <Button variant="ghost" size="icon" className="relative">
       <Bell className="h-5 w-5" />
       {unreadCount > 0 && (
         <Badge
           variant="destructive"
-          className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full p-0"
-        />
+          className="absolute -top-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full p-0 text-xs"
+        >
+          {unreadCount > 99 ? "99+" : unreadCount}
+        </Badge>
       )}
     </Button>
   );
