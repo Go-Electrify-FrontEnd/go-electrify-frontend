@@ -15,8 +15,8 @@ import { BarChartWrapper, LineChartWrapper } from "./client-charts";
 import type { DriverStats } from "@/types/dashboard-stats";
 import Link from "next/link";
 import SectionHeader from "@/components/shared/section-header";
-import { TransactionList } from "@/lib/zod/wallet/wallet.schema";
 import SectionContent from "@/components/shared/section-content";
+import { TransactionList } from "@/features/wallet/schemas/wallet.schema";
 
 interface DriverDashboardProps {
   user: User;

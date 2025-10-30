@@ -7,7 +7,7 @@ import {
 } from "@/components/kibo-ui/status";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
-import type { Station } from "@/lib/zod/station/station.types";
+import type { Station } from "@/features/stations/schemas/station.types";
 import { MapPin, Navigation, Phone, Zap } from "lucide-react";
 import Link from "next/link";
 

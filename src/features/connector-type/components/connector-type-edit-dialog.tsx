@@ -27,12 +27,12 @@ import {
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useConnectorTypeUpdate } from "@/contexts/connector-type-update-context";
-import {
-  connectorTypeUpdateSchema,
-  type ConnectorTypeUpdateFormData,
-} from "@/lib/zod/connector-type/connector-type.request";
 import { useServerAction } from "@/hooks/use-server-action";
 import { handleUpdateConnectorType } from "../services/connector-type-actions";
+import {
+  ConnectorTypeUpdateFormData,
+  connectorTypeUpdateSchema,
+} from "../schemas/connector-type.request";
 
 export const UpdateConnectorType = () => {
   const { connectorType, isEditDialogOpen, setEditDialogOpen } =

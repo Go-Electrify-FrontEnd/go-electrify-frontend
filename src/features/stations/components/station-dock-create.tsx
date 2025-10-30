@@ -29,10 +29,6 @@ import {
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { useServerAction } from "@/hooks/use-server-action";
-import {
-  chargerCreateSchema,
-  type ChargerCreateFormData,
-} from "@/lib/zod/charger/charger.request";
 import { ConnectorType } from "@/types/connector";
 import {
   Select,
@@ -44,6 +40,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createCharger } from "../services/chargers-actions";
+import {
+  ChargerCreateFormData,
+  chargerCreateSchema,
+} from "@/features/chargers/schemas/charger.request";
 
 const initialState = { success: false, msg: "" };
 

@@ -1,26 +1,38 @@
 "use client";
 
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { CarModel } from "@/lib/zod/vehicle-model/vehicle-model.types";
 import { Loader2 } from "lucide-react";
-import { useActionState, useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
-import { Field, FieldGroup } from "@/components/ui/field";
+import {
+  Field,
+  FieldGroup,
+  FieldLabel,
+  FieldError,
+} from "@/components/ui/field";
 import { deleteVehicleModel } from "../services/vehicle-models-actions";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm, type SubmitHandler } from "react-hook-form";
+import { useServerAction } from "@/hooks/use-server-action";
+import {
+  VehicleModelDeleteFormData,
+  vehicleModelDeleteSchema,
+} from "../schemas/vehicle-model.request";
+import { CarModel } from "@/types/car";
 
 interface VehicleModelDeleteProps {
   carModel: CarModel;
-  trigger: ReactNode;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 const initialState = {
@@ -30,100 +42,116 @@ const initialState = {
 
 export default function VehicleModelDeleteDialog({
   carModel: { id, modelName },
-  trigger,
+  open,
+  onOpenChange,
 }: VehicleModelDeleteProps) {
-  const t = {
-    title: "Xóa mẫu xe",
-    description: "Bạn sắp xóa mẫu xe",
-    confirmText: "Nhập tên mẫu xe để xác nhận",
-    placeholder: "Nhập tên mẫu xe",
-    "common.cancel": "Hủy",
-    deleting: "Đang xóa...",
-    deleteButton: "Xóa",
-  };
-  const [open, setOpen] = useState(false);
-  const [confirmationText, setConfirmationText] = useState("");
-  const [deleteState, deleteAction, pending] = useActionState(
-    deleteVehicleModel,
-    initialState,
-  );
+  const [pending, setPending] = useState(false);
 
-  useEffect(() => {
-    if (deleteState.msg) {
-      if (deleteState.success) {
-        toast.success(deleteState.msg);
-        // Close dialog after successful deletion
-        queueMicrotask(() => {
-          setOpen(false);
-          setConfirmationText("");
-        });
-      } else {
-        toast.error(deleteState.msg);
+  const { execute } = useServerAction(deleteVehicleModel, initialState, {
+    onSettled: (result) => {
+      if (result.success) {
+        toast.success("Mẫu xe đã được xóa", { description: result.msg });
+        onOpenChange(false);
+        form.reset();
+      } else if (result.msg) {
+        toast.error("Xóa mẫu xe thất bại", { description: result.msg });
       }
+      setPending(false);
+    },
+  });
+
+  const form = useForm<VehicleModelDeleteFormData>({
+    resolver: zodResolver(vehicleModelDeleteSchema),
+    defaultValues: {
+      confirmText: "",
+    },
+  });
+
+  const confirmText = form.watch("confirmText");
+  const isInputValid = confirmText === modelName;
+
+  const onSubmit: SubmitHandler<VehicleModelDeleteFormData> = (data) => {
+    if (data.confirmText !== modelName) {
+      form.setError("confirmText", {
+        type: "manual",
+        message: "Tên mẫu xe không khớp. Vui lòng nhập chính xác tên mẫu xe.",
+      });
+      return;
     }
-  }, [deleteState.success, deleteState.msg]);
 
-  const handleCancel = () => {
-    setOpen(false);
-    setConfirmationText("");
+    setPending(true);
+    const formData = new FormData();
+    formData.append("id", id.toString());
+    execute(formData);
   };
-
-  const isConfirmationValid = confirmationText === modelName;
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>{t.title}</DialogTitle>
-          <DialogDescription>
-            {t.description}
-            <span className="font-semibold"> &ldquo;{modelName}&rdquo;</span>
-          </DialogDescription>
-        </DialogHeader>
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Xóa mẫu xe</AlertDialogTitle>
+          <AlertDialogDescription>
+            <span className="block">
+              Bạn có chắc chắn muốn xóa mẫu xe{" "}
+              <span className="font-semibold">{modelName}</span>?
+            </span>
+            <br />
+            <span className="block">Hành động này không thể hoàn tác.</span>
+          </AlertDialogDescription>
+        </AlertDialogHeader>
 
-        <form className="space-y-6" action={deleteAction}>
+        <form
+          id="delete-form"
+          className="space-y-6"
+          onSubmit={form.handleSubmit(onSubmit)}
+        >
           <input type="hidden" name="id" value={id} />
-          <FieldGroup className="my-4">
-            <Field>
-              <div className="border-destructive/20 bg-destructive/5 rounded-lg border p-4">
-                <p className="text-muted-foreground mb-2 text-sm">
-                  {t.confirmText}:{" "}
-                  <span className="text-foreground font-semibold">
-                    {modelName}
-                  </span>
-                </p>
-                <Input
-                  placeholder={t.placeholder}
-                  onChange={(e) => setConfirmationText(e.target.value)}
-                  value={confirmationText}
-                  disabled={pending}
-                  autoComplete="off"
-                />
-              </div>
-            </Field>
 
-            <DialogFooter className="flex gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleCancel}
-                disabled={pending}
-              >
-                {t["common.cancel"]}
-              </Button>
-              <Button
-                type="submit"
-                variant="destructive"
-                disabled={!isConfirmationValid || pending}
-              >
-                {pending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {pending ? t.deleting : t.deleteButton}
-              </Button>
-            </DialogFooter>
+          <FieldGroup>
+            <Controller
+              control={form.control}
+              name="confirmText"
+              render={({ field, fieldState }) => (
+                <Field>
+                  <FieldLabel htmlFor="confirmText">
+                    Xác nhận xóa:{" "}
+                    <span className="font-semibold">{modelName}</span>
+                  </FieldLabel>
+                  <Input
+                    {...field}
+                    placeholder="Nhập tên mẫu xe để xác nhận"
+                    disabled={pending}
+                    aria-invalid={fieldState.invalid}
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
           </FieldGroup>
         </form>
-      </DialogContent>
-    </Dialog>
+
+        <AlertDialogFooter className="flex gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={pending}
+          >
+            Hủy
+          </Button>
+          <Button
+            form="delete-form"
+            variant="destructive"
+            type="submit"
+            disabled={pending || !isInputValid}
+          >
+            {pending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {pending ? "Đang xóa..." : "Xóa"}
+          </Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

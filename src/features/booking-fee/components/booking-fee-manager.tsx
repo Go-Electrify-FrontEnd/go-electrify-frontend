@@ -28,16 +28,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  bookingFeeUpdateSchema,
-  type BookingFeeUpdateFormData,
-} from "@/lib/zod/booking-fee/booking-fee.request";
 import { useServerAction } from "@/hooks/use-server-action";
 import { updateBookingFee } from "../services/booking-fee-actions";
 import { toast } from "sonner";
-import type { BookingFee } from "@/lib/zod/booking-fee/booking-fee.types";
 import { Percent, DollarSign } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { BookingFee } from "../schemas/booking-fee.types";
+import {
+  BookingFeeUpdateFormData,
+  bookingFeeUpdateSchema,
+} from "../schemas/booking-fee.request";
 
 interface BookingFeeManagerProps {
   bookingFee: BookingFee;

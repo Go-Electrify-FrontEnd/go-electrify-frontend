@@ -1,10 +1,8 @@
 "use client";
 
-import * as React from "react";
-import { toast } from "sonner";
 import { SharedDataTable } from "@/components/shared/shared-data-table";
 import { columns } from "./station-table-columns";
-import type { Station } from "@/lib/zod/station/station.types";
+import { Station } from "../schemas/station.schema";
 
 interface StationsTableProps {
   data: Station[];

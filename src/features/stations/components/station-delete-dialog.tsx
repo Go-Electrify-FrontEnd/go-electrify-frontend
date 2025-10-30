@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useCallback, useEffect, useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -11,9 +11,22 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
+import {
+  Field,
+  FieldLabel,
+  FieldError,
+  FieldGroup,
+} from "@/components/ui/field";
+import { Controller, useForm, type SubmitHandler } from "react-hook-form";
+import { useState } from "react";
 import { toast } from "sonner";
-import type { Station } from "@/lib/zod/station/station.types";
+import type { Station } from "../schemas/station.types";
 import { deleteStation } from "../services/stations-actions";
+import { useServerAction } from "@/hooks/use-server-action";
+import {
+stationDeleteSchema,
+type StationDeleteFormData,
+} from "../schemas/station.request";
 
 interface DeleteStationProps {
   station: Station;
@@ -21,35 +34,57 @@ interface DeleteStationProps {
   onOpenChange: (open: boolean) => void;
 }
 
+const initialState = { success: false, msg: "" };
+
 export function DeleteStation({
   station,
   open,
   onOpenChange,
 }: DeleteStationProps) {
-  const [confirmText, setConfirmText] = useState("");
-  const [deleteState, deleteAction, pending] = useActionState(deleteStation, {
-    success: false,
-    msg: "",
+  const [pending, setPending] = useState(false);
+
+  const { execute } = useServerAction(deleteStation, initialState, {
+    onSettled: (result) => {
+      if (result.success) {
+        toast.success("Trạm đã được xóa", { description: result.msg });
+        onOpenChange(false);
+        form.reset();
+      } else if (result.msg) {
+        toast.error("Xóa không thành công", { description: result.msg });
+      }
+      setPending(false);
+    },
   });
 
-  const resetForm = useCallback(() => setConfirmText(""), []);
+  const form = useForm<StationDeleteFormData>({
+    resolver: zodResolver(stationDeleteSchema),
+    defaultValues: {
+      confirmText: "",
+    },
+  });
 
-  useEffect(() => {
-    if (deleteState.success) {
-      toast.success("Trạm đã được xóa", { description: deleteState.msg });
-      onOpenChange(false);
-      // Schedule reset after dialog closes
-      queueMicrotask(() => resetForm());
-    } else if (!deleteState.success && deleteState.msg) {
-      toast.error("Xóa không thành công", { description: deleteState.msg });
+  const confirmText = form.watch("confirmText");
+  const isInputValid = confirmText === station.name;
+
+  const onSubmit: SubmitHandler<StationDeleteFormData> = async (data) => {
+    if (data.confirmText !== station.name) {
+      form.setError("confirmText", {
+        type: "manual",
+        message: "Tên trạm không khớp. Vui lòng nhập chính xác tên trạm.",
+      });
+      return;
     }
-  }, [deleteState.msg, deleteState.success, onOpenChange, resetForm]);
+
+    setPending(true);
+    const formData = new FormData();
+    formData.append("id", station.id.toString());
+    execute(formData);
+  };
 
   return (
     <AlertDialog
       open={open}
       onOpenChange={(newOpen) => {
-        if (!newOpen) resetForm();
         onOpenChange(newOpen);
       }}
     >
@@ -66,24 +101,36 @@ export function DeleteStation({
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        <div className="space-y-3">
-          <div className="border-destructive/20 bg-destructive/5 rounded-lg border p-4">
-            <p className="text-muted-foreground mb-2 text-sm">
-              Xác nhận xóa:{" "}
-              <span className="text-foreground font-semibold">
-                {station.name}
-              </span>
-            </p>
-            <Input
-              value={confirmText}
-              onChange={(e) => setConfirmText(e.target.value)}
-              disabled={pending}
-            />
-          </div>
-        </div>
-
-        <form id="delete-form" action={deleteAction}>
+        <form
+          id="delete-form"
+          className="space-y-6"
+          onSubmit={form.handleSubmit(onSubmit)}
+        >
           <input type="hidden" name="id" value={station.id} />
+
+          <FieldGroup>
+            <Controller
+              control={form.control}
+              name="confirmText"
+              render={({ field, fieldState }) => (
+                <Field>
+                  <FieldLabel htmlFor="confirmText">
+                    Xác nhận xóa:{" "}
+                    <span className="font-semibold">{station.name}</span>
+                  </FieldLabel>
+                  <Input
+                    {...field}
+                    placeholder="Nhập tên trạm để xác nhận"
+                    disabled={pending}
+                    aria-invalid={fieldState.invalid}
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+          </FieldGroup>
         </form>
 
         <AlertDialogFooter>
@@ -98,7 +145,7 @@ export function DeleteStation({
             form="delete-form"
             variant="destructive"
             type="submit"
-            disabled={pending || confirmText !== station.name}
+            disabled={pending || !isInputValid}
           >
             {pending ? "Đang xóa..." : "Xóa"}
           </Button>

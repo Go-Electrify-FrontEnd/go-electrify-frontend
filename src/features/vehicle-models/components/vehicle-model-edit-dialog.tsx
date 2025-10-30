@@ -14,10 +14,6 @@ import { startTransition, useActionState, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  vehicleModelSchema,
-  type VehicleModelFormData,
-} from "@/lib/zod/vehicle-model/vehicle-model.request";
-import {
   Field,
   FieldError,
   FieldGroup,
@@ -35,6 +31,10 @@ import { useConnectorTypes } from "@/contexts/connector-type-context";
 import { toast } from "sonner";
 import { useVehicleModelUpdate } from "@/contexts/vehicle-model-action-context";
 import { updateVehicleModel } from "../services/vehicle-models-actions";
+import {
+  VehicleModelFormData,
+  vehicleModelSchema,
+} from "../schemas/vehicle-model.request";
 
 export default function VehicleModelEditDialog() {
   const t = {

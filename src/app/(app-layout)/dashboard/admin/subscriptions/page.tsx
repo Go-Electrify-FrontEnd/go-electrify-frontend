@@ -1,8 +1,8 @@
 import SubscriptionCreateDialog from "@/features/subscriptions/components/subscription-create-dialog";
 import SectionHeader from "@/components/shared/section-header";
 import { SubscriptionsTable } from "@/features/subscriptions/components/subscription-table";
-import { SubscriptionSchema } from "@/lib/zod/subscription/subscription.schema";
-import type { Subscription } from "@/lib/zod/subscription/subscription.types";
+import { SubscriptionSchema } from "@/features/subscriptions/schemas/subscription.schema";
+import type { Subscription } from "@/features/subscriptions/schemas/subscription.types";
 import SectionContent from "@/components/shared/section-content";
 
 export async function getSubscriptions(): Promise<Subscription[]> {

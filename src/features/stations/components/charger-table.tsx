@@ -1,9 +1,8 @@
 "use client";
 
-import * as React from "react";
 import { SharedDataTable } from "@/components/shared/shared-data-table";
 import { columns } from "@/features/stations/components/charger-table-columns";
-import type { Charger } from "@/lib/zod/charger/charger.types";
+import { Charger } from "@/features/chargers/schemas/charger.schema";
 
 interface ChargersTableProps {
   data: Charger[];

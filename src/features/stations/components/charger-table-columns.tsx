@@ -1,13 +1,12 @@
 "use client";
 
-import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrencyVND } from "@/lib/formatters";
-const formatCurrency = (amount: number) => formatCurrencyVND(amount);
-import type { Charger } from "@/lib/zod/charger/charger.types";
 import { ActionsCell } from "@/features/stations/components/charger-actions";
+import { Charger } from "@/features/chargers/schemas/charger.schema";
 
+const formatCurrency = (amount: number) => formatCurrencyVND(amount);
 const formatPower = (power: number) => `${power} kW`;
 
 const getStatusVariant = (status: string) => {

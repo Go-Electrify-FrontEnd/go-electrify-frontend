@@ -1,8 +1,8 @@
-import { ConnectorType } from "@/lib/zod/connector-type/connector-type.schema";
-import { ReservationAPI } from "@/lib/zod/reservation/reservation.request";
-import { Reservation } from "@/lib/zod/reservation/reservation.schema";
-import { Station } from "@/lib/zod/station/station.schema";
+import { ConnectorType } from "@/features/connector-type/schemas/connector-type.schema";
+import { Station } from "@/features/stations/schemas/station.schema";
 import { CarModel } from "@/types/car";
+import { Reservation } from "../schemas/reservation.schema";
+import { ReservationAPI } from "../schemas/reservation.request";
 
 export interface ReservationDetails extends Reservation {
   stationName: string;

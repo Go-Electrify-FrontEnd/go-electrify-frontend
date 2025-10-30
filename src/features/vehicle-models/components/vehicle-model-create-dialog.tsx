@@ -29,12 +29,12 @@ import { useState } from "react";
 import { Controller, type Resolver, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useServerAction } from "@/hooks/use-server-action";
-import {
-  vehicleModelSchema,
-  type VehicleModelFormData,
-} from "@/lib/zod/vehicle-model/vehicle-model.request";
 import { useConnectorTypes } from "@/contexts/connector-type-context";
 import { createVehicleModel } from "../services/vehicle-models-actions";
+import {
+  VehicleModelFormData,
+  vehicleModelSchema,
+} from "../schemas/vehicle-model.request";
 // Translations removed; using Vietnamese literals
 
 const initialState = {

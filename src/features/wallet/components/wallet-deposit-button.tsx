@@ -25,9 +25,9 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { useServerAction } from "@/hooks/use-server-action";
 import { Spinner } from "@/components/ui/spinner";
-import { walletTopupSchema } from "@/lib/zod/wallet/wallet.request";
-import type { TopupResponse } from "@/lib/zod/wallet/wallet.types";
 import { handleCreateTopup } from "../services/wallet-actions";
+import { TopupResponse } from "../schemas/wallet.schema";
+import { walletTopupSchema } from "../schemas/wallet.request";
 
 const initialState = {
   success: false,
@@ -36,15 +36,6 @@ const initialState = {
 };
 
 export default function WalletDepositButton() {
-  const t = {
-    "button.deposit": "Nạp tiền",
-    "dialog.title": "Nạp tiền vào ví",
-    "dialog.description": "Chọn số tiền để nạp vào ví của bạn",
-    "dialog.amountLabel": "Số tiền (VND)",
-    "dialog.quickAmountsLabel": "Số tiền nhanh",
-    "button.depositing": "Đang nạp...",
-  };
-
   const [open, setOpen] = useState(false);
   const schema = walletTopupSchema;
 
@@ -89,16 +80,18 @@ export default function WalletDepositButton() {
       <DialogTrigger asChild>
         <Button className="gap-2">
           <Plus className="h-4 w-4" />
-          {t["button.deposit"]}
+          Nạp tiền
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Wallet className="h-5 w-5" />
-            {t["dialog.title"]}
+            Nạp tiền vào ví
           </DialogTitle>
-          <DialogDescription>{t["dialog.description"]}</DialogDescription>
+          <DialogDescription>
+            Chọn số tiền để nạp vào ví của bạn
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
@@ -109,9 +102,7 @@ export default function WalletDepositButton() {
                 name="amount"
                 render={({ field, fieldState }) => (
                   <Field>
-                    <FieldLabel htmlFor="amount">
-                      {t["dialog.amountLabel"]}
-                    </FieldLabel>
+                    <FieldLabel htmlFor="amount">Số tiền (VND)</FieldLabel>
                     <Input
                       {...field}
                       id="amount"
@@ -136,7 +127,7 @@ export default function WalletDepositButton() {
           </form>
 
           <div className="space-y-2">
-            <FieldLabel>{t["dialog.quickAmountsLabel"]}</FieldLabel>
+            <FieldLabel>Số tiền nhanh</FieldLabel>
             <div className="grid grid-cols-2 gap-2">
               {quickAmounts.map((quickAmount) => (
                 <Button
@@ -169,10 +160,10 @@ export default function WalletDepositButton() {
           <Button type="submit" onClick={handleSubmit} disabled={pending}>
             {pending ? (
               <>
-                <Spinner /> {t["button.depositing"]}
+                <Spinner /> Đang nạp...
               </>
             ) : (
-              t["button.deposit"]
+              "Nạp tiền"
             )}
           </Button>
         </DialogFooter>

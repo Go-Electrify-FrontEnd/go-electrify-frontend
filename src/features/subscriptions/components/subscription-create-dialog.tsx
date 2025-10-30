@@ -32,13 +32,12 @@ import { useServerAction } from "@/hooks/use-server-action";
 import {
   subscriptionCreateSchema,
   type SubscriptionCreateFormData,
-} from "@/lib/zod/subscription/subscription.request";
-import { createSubscription } from "../services/subscriptions";
+} from "../schemas/subscription.request";
+import { createSubscription } from "../services/subscriptions-actions";
 
 const initialState = { success: false, msg: "" };
 
 export default function SubscriptionCreateDialog() {
-  // Vietnamese text hardcoded
   const [open, setOpen] = useState(false);
 
   const { execute, pending } = useServerAction(

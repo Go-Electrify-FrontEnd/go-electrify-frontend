@@ -9,8 +9,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { BookingFeeResponseSchema } from "@/lib/zod/booking-fee/booking-fee.schema";
-import type { BookingFee } from "@/lib/zod/booking-fee/booking-fee.types";
+import { BookingFeeResponseSchema } from "@/features/booking-fee/schemas/booking-fee.schema";
+import type { BookingFee } from "@/features/booking-fee/schemas/booking-fee.types";
 import { BookingFeeManager } from "@/features/booking-fee/components/booking-fee-manager";
 import { AlertCircle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";

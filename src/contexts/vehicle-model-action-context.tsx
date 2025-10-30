@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState } from "react";
-import type { CarModel } from "@/lib/zod/vehicle-model/vehicle-model.types";
+import type { CarModel } from "@/features/vehicle-models/schemas/vehicle-model.types";
 
 interface VehicleModelActionContextValue {
   setVehicleModel: (vehicleModel: CarModel | null) => void;

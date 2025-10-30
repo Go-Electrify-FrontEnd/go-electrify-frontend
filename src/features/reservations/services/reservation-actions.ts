@@ -2,7 +2,10 @@
 
 import { getUser } from "@/lib/auth/auth-server";
 import { updateTag } from "next/cache";
-import { reservationFormSchema } from "@/lib/zod/reservation/reservation.request";
+import {
+  reservationCancelSchema,
+  reservationFormSchema,
+} from "../schemas/reservation.request";
 
 export async function createReservation(prev: unknown, formData: FormData) {
   const { user, token } = await getUser();
@@ -52,5 +55,56 @@ export async function createReservation(prev: unknown, formData: FormData) {
   } catch (error) {
     console.error("Error creating reservation:", error);
     return { success: false, msg: "Đã xảy ra lỗi khi tạo đặt chỗ" };
+  }
+}
+
+export async function cancelReservation(prev: unknown, formData: FormData) {
+  try {
+    const { token } = await getUser();
+    if (!token) {
+      return { success: false, msg: "Người dùng chưa xác thực" };
+    }
+
+    const reservationId = formData.get("id") as string;
+    const reason = formData.get("reason") as string;
+
+    if (!reservationId) {
+      return { success: false, msg: "ID đặt chỗ là bắt buộc" };
+    }
+
+    const { success, data, error } = reservationCancelSchema.safeParse({
+      reason,
+    });
+
+    if (!success) {
+      console.error("Validation error:", error);
+      return { success: false, msg: "Dữ liệu không hợp lệ" };
+    }
+
+    const url = `https://api.go-electrify.com/api/v1/bookings/${reservationId}/cancel`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        Reason: data.reason,
+      }),
+    });
+
+    if (response.ok) {
+      updateTag("reservations");
+      return { success: true, msg: "Đặt chỗ đã được hủy thành công" };
+    } else {
+      const errorData = await response.json().catch(() => ({}));
+      return {
+        success: false,
+        msg: errorData.message || `Không thể hủy đặt chỗ (${response.status})`,
+      };
+    }
+  } catch (error) {
+    console.error("Error canceling reservation:", error);
+    return { success: false, msg: "Đã xảy ra lỗi khi hủy đặt chỗ" };
   }
 }

@@ -1,10 +1,10 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { Transaction, Wallet } from "@/lib/zod/wallet/wallet.types";
 import { CreditCard, WalletIcon, Zap } from "lucide-react";
 import { useMemo } from "react";
-import { formatShortCurrency, formatCurrencyVND } from "@/lib/formatters";
+import { formatShortCurrency } from "@/lib/formatters";
+import { Transaction, Wallet } from "../schemas/wallet.schema";
 
 interface WalletOverviewProps {
   wallet: Wallet;

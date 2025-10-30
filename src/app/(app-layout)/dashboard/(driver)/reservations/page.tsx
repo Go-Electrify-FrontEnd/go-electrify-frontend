@@ -6,16 +6,27 @@ import { getVehicleModels } from "../../admin/vehicle-models/page";
 import SectionContent from "@/components/shared/section-content";
 import { getStations } from "@/features/stations/services/stations-api";
 import { getReservationsDetails } from "@/features/reservations/services/reservations-api";
+
+import { ReservationTable } from "@/features/reservations/components/reservation-table";
+import { ReservationSimple } from "@/features/reservations/components/reservation-simple";
+import {
+  Empty,
+  EmptyTitle,
+  EmptyDescription,
+  EmptyMedia,
+  EmptyHeader,
+  EmptyContent,
+} from "@/components/ui/empty";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
+  CardDescription,
 } from "@/components/ui/card";
-import { ReservationTable } from "@/features/reservations/components/reservation-table";
 import { Plus, Clock } from "lucide-react";
 import { getBookingFee } from "@/features/booking-fee/services/booking-fee-api";
+import { Button } from "@/components/ui/button";
 
 export default async function ReservationPage() {
   const { token } = await getUser();
@@ -30,10 +41,12 @@ export default async function ReservationPage() {
   );
   const bookingFee = await getBookingFee();
 
-  // Filter upcoming reservations (PENDING, CONFIRMED)
+  // Filter upcoming reservations (PENDING, CONFIRMED) and get the most recent one
   const upcomingReservations = allReservations.filter((r) =>
     ["PENDING", "CONFIRMED"].includes(r.status.toUpperCase()),
   );
+  const currentReservation =
+    upcomingReservations.length > 0 ? upcomingReservations[0] : null;
 
   return (
     <div className="flex flex-col gap-4 md:gap-6">
@@ -51,47 +64,52 @@ export default async function ReservationPage() {
 
       <SectionContent>
         <div className="space-y-6">
-          {/* Upcoming Reservations */}
+          {/* Current Reservation */}
           <Card>
-            <CardHeader className="border-b">
-              <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900">
-                  <Plus className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div>
-                  <CardTitle>Đặt Chỗ Sắp Tới</CardTitle>
-                  <CardDescription>
-                    Các đặt chỗ trong tương lai của bạn (
-                    {upcomingReservations.length} đặt chỗ)
-                  </CardDescription>
-                </div>
-              </div>
+            <CardHeader>
+              <CardTitle>Đặt Chỗ Hiện Tại</CardTitle>
+              <CardDescription>Đặt chỗ đang hoạt động của bạn</CardDescription>
             </CardHeader>
             <CardContent>
-              <ReservationTable data={upcomingReservations} />
+              {currentReservation ? (
+                <ReservationSimple reservation={currentReservation} />
+              ) : (
+                <Empty>
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                      <Plus />
+                    </EmptyMedia>
+                    <EmptyTitle>Không có đặt chỗ hiện tại</EmptyTitle>
+                    <EmptyDescription>
+                      Bạn chưa có đặt chỗ nào đang hoạt động. Tạo đặt chỗ mới để
+                      bắt đầu sạc xe điện.
+                    </EmptyDescription>
+                    <EmptyContent>
+                      <CreateReservationButton
+                        stations={stations}
+                        vehicleModels={vehicleModels}
+                        connectorTypes={connectorTypes}
+                        bookingFee={bookingFee!}
+                      />
+                    </EmptyContent>
+                  </EmptyHeader>
+                </Empty>
+              )}
             </CardContent>
           </Card>
 
           {/* All Reservations History */}
-          <Card>
-            <CardHeader className="border-b">
-              <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
-                  <Clock className="h-4 w-4 text-gray-600 dark:text-gray-400" />
-                </div>
-                <div>
-                  <CardTitle>Lịch Sử Đặt Chỗ</CardTitle>
-                  <CardDescription>
-                    Tất cả các đặt chỗ của bạn ({allReservations.length} đặt
-                    chỗ)
-                  </CardDescription>
-                </div>
+          <div className="mt-12 space-y-4">
+            <div className="flex items-center gap-2">
+              <div>
+                <h3 className="text-lg font-semibold">Lịch Sử Đặt Chỗ</h3>
+                <p className="text-muted-foreground text-sm">
+                  Tất cả các đặt chỗ của bạn ({allReservations.length} đặt chỗ)
+                </p>
               </div>
-            </CardHeader>
-            <CardContent>
-              <ReservationTable data={allReservations} />
-            </CardContent>
-          </Card>
+            </div>
+            <ReservationTable data={allReservations} />
+          </div>
         </div>
       </SectionContent>
     </div>

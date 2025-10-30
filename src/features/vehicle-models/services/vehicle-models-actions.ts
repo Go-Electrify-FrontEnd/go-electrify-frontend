@@ -2,7 +2,7 @@
 
 import { getUser } from "@/lib/auth/auth-server";
 import { updateTag } from "next/cache";
-import { vehicleModelSchema } from "@/lib/zod/vehicle-model/vehicle-model.request";
+import { vehicleModelSchema } from "../schemas/vehicle-model.request";
 
 export async function createVehicleModel(prev: unknown, formData: FormData) {
   const { user, token } = await getUser();

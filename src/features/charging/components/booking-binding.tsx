@@ -19,7 +19,6 @@ import {
   FieldError,
 } from "@/components/ui/field";
 import { CheckCircleIcon, Loader2, ZapIcon, InfoIcon } from "lucide-react";
-import { Reservation } from "@/lib/zod/reservation/reservation.schema";
 import {
   Select,
   SelectContent,
@@ -31,6 +30,7 @@ import {
 } from "@/components/ui/select";
 import { useBindingContext } from "../contexts/binding-context";
 import { useChannel } from "ably/react";
+import { Reservation } from "@/features/reservations/schemas/reservation.schema";
 
 interface CarInformation {
   currentCapacity: number;
