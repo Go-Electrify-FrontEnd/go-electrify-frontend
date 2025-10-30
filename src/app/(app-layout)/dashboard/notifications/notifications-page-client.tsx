@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Notification } from "@/types/notification";
 import { Bell, Bookmark, User, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,6 @@ import { useUser } from "@/features/users/contexts/user-context";
 
 function getNotificationIcon(type: string) {
   switch (type) {
-    case "booking":
     case "booking_confirmed":
     case "booking_deposit_succeeded":
     case "booking_canceled":
@@ -22,7 +21,7 @@ function getNotificationIcon(type: string) {
     case "user":
       return <User className="h-5 w-5 text-green-500" />;
     default:
-      return <Bell className="h-5 w-5" />;
+      return <Bell className="h-5 w-5 text-gray-500" />;
   }
 }
 
@@ -34,8 +33,6 @@ function getNotificationTypeName(type: string) {
       return "Đặt cọc thành công";
     case "booking_canceled":
       return "Hủy đặt phòng";
-    case "booking":
-      return "Đặt phòng";
     case "user":
       return "Người dùng";
     default:
@@ -76,10 +73,11 @@ export function NotificationsPageClient({
   const { token } = useUser();
   const [selectedNotification, setSelectedNotification] =
     useState<Notification | null>(null);
-  const [notifications, setNotifications] = useState(initialNotifications);
-  const [isLoading, setIsLoading] = useState(false);
+  const [notifications, setNotifications] =
+    useState<Notification[]>(initialNotifications);
+  const [isMarkingAllRead, setIsMarkingAllRead] = useState(false);
 
-  // Sync lại khi server data thay đổi
+  // Sync với server data khi initialNotifications thay đổi
   useEffect(() => {
     setNotifications(initialNotifications);
   }, [initialNotifications]);
@@ -87,21 +85,23 @@ export function NotificationsPageClient({
   const unreadCount = notifications.filter((n) => n.IsNew).length;
 
   // Mark notification as read when clicked
-  const handleNotificationClick = async (notification: Notification) => {
-    setSelectedNotification(notification);
+  const handleNotificationClick = useCallback(
+    async (notification: Notification) => {
+      setSelectedNotification(notification);
 
-    // Chỉ mark as read nếu notification này chưa đọc
-    if (notification.IsNew) {
+      // Chỉ mark as read nếu notification này chưa đọc
+      if (!notification.IsNew) return;
+
       // Optimistic update - CHỈ update notification được click
       setNotifications((prev) =>
         prev.map((n) =>
-          n.id === notification.id ? { ...n, IsNew: false } : n,
+          n.Id === notification.Id ? { ...n, IsNew: false } : n,
         ),
       );
 
       try {
         const response = await fetch(
-          `https://api.go-electrify.com/api/v1/notifications/${notification.id}/read`,
+          `https://api.go-electrify.com/api/v1/notifications/${notification.Id}/read`,
           {
             method: "POST",
             headers: {
@@ -119,30 +119,33 @@ export function NotificationsPageClient({
           // Revert CHỈ notification này nếu lỗi
           setNotifications((prev) =>
             prev.map((n) =>
-              n.id === notification.id ? { ...n, IsNew: true } : n,
+              n.Id === notification.Id ? { ...n, IsNew: true } : n,
             ),
           );
         } else {
-          // Refresh data từ server sau khi thành công
-          router.refresh();
+          // Refresh từ server sau 500ms để đồng bộ data
+          setTimeout(() => {
+            router.refresh();
+          }, 500);
         }
       } catch (err) {
         console.error("Mark notification as read failed:", err);
         // Revert CHỈ notification này nếu lỗi
         setNotifications((prev) =>
           prev.map((n) =>
-            n.id === notification.id ? { ...n, IsNew: true } : n,
+            n.Id === notification.Id ? { ...n, IsNew: true } : n,
           ),
         );
       }
-    }
-  };
+    },
+    [token, router],
+  );
 
   // Mark all notifications as read
-  const handleMarkAllAsRead = async () => {
+  const handleMarkAllAsRead = useCallback(async () => {
     if (unreadCount === 0) return;
 
-    setIsLoading(true);
+    setIsMarkingAllRead(true);
 
     // Lưu lại state ban đầu để revert nếu cần
     const previousNotifications = notifications;
@@ -167,17 +170,19 @@ export function NotificationsPageClient({
         // Revert về state ban đầu
         setNotifications(previousNotifications);
       } else {
-        // Refresh data từ server sau khi thành công
-        router.refresh();
+        // Refresh từ server sau khi thành công
+        setTimeout(() => {
+          router.refresh();
+        }, 500);
       }
     } catch (err) {
       console.error("Mark all as read failed:", err);
       // Revert về state ban đầu
       setNotifications(previousNotifications);
     } finally {
-      setIsLoading(false);
+      setIsMarkingAllRead(false);
     }
-  };
+  }, [unreadCount, notifications, token, router]);
 
   return (
     <div className="container mx-auto max-w-4xl p-6">
@@ -205,9 +210,9 @@ export function NotificationsPageClient({
             <Button
               variant="outline"
               onClick={handleMarkAllAsRead}
-              disabled={isLoading}
+              disabled={isMarkingAllRead}
             >
-              {isLoading ? "Đang xử lý..." : "Đánh dấu tất cả đã đọc"}
+              {isMarkingAllRead ? "Đang xử lý..." : "Đánh dấu tất cả đã đọc"}
             </Button>
           )}
         </div>
@@ -225,9 +230,9 @@ export function NotificationsPageClient({
         </Card>
       ) : (
         <div className="space-y-3">
-          {notifications.map((notification, index) => (
+          {notifications.map((notification) => (
             <Card
-              key={notification.id || index}
+              key={notification.Id}
               className={`hover:bg-accent cursor-pointer p-4 transition-colors ${
                 notification.IsNew
                   ? "border-l-4 border-l-blue-500 bg-blue-50/30"
