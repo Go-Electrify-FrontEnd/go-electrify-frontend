@@ -1,9 +1,12 @@
 "use client";
 
-import { Reservation } from "@/lib/zod/reservation/reservation.schema";
-import { BindingProvider, useBindingContext } from "../contexts/binding-context";
+import {
+  BindingProvider,
+  useBindingContext,
+} from "../contexts/binding-context";
 import { BookingBinding } from "./booking-binding";
 import { BindingActivePanel } from "./binding-active-panel";
+import { Reservation } from "@/features/reservations/schemas/reservation.schema";
 
 function InnerJoinPageWrapper({
   reservations,

@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { SharedDataTable } from "@/components/shared/shared-data-table";
 import { userColumns } from "./users-table-columns";
 import type { UserApi } from "@/lib/zod/user/user.types";

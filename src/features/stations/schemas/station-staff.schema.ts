@@ -4,7 +4,7 @@ export const StationStaffSchema = z
   .object({
     StationId: z.number(),
     UserId: z.number(),
-    UserEmail: z.string().email(),
+    UserEmail: z.email(),
     UserFullName: z.string().nullable(),
     AssignedAt: z.iso.datetime(),
     RevokedAt: z.iso.datetime().nullable(),

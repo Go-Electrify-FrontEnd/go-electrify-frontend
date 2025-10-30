@@ -2,11 +2,11 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
-import type { Transaction } from "@/lib/zod/wallet/wallet.types";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Transaction } from "../schemas/wallet.schema";
 
 const typeLabels: Record<Transaction["type"], string> = {
   DEPOSIT: "Nạp tiền",

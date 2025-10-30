@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -11,9 +11,22 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
+import {
+  Field,
+  FieldGroup,
+  FieldLabel,
+  FieldError,
+} from "@/components/ui/field";
+import { Controller, useForm, type SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import type { Subscription } from "@/lib/zod/subscription/subscription.types";
-import { deleteSubscription } from "../services/subscriptions";
+import type { Subscription } from "../schemas/subscription.types";
+import { useServerAction } from "@/hooks/use-server-action";
+import {
+  subscriptionDeleteSchema,
+  type SubscriptionDeleteFormData,
+} from "../schemas/subscription.request";
+import { deleteSubscription } from "../services/subscriptions-actions";
 
 interface DeleteSubscriptionProps {
   subscription: Subscription;
@@ -26,37 +39,56 @@ export function DeleteSubscription({
   open,
   onOpenChange,
 }: DeleteSubscriptionProps) {
-  // Vietnamese literals
-  const [confirmText, setConfirmText] = useState("");
-  const [deleteState, deleteAction, pending] = useActionState(
+  const [pending, setPending] = useState(false);
+
+  const { execute } = useServerAction(
     deleteSubscription,
     { success: false, msg: "" },
+    {
+      onSettled: (result) => {
+        if (result.success) {
+          toast.success("Loại đăng ký đã được xóa", {
+            description: result.msg,
+          });
+          onOpenChange(false);
+          form.reset();
+        } else if (result.msg) {
+          toast.error("Xóa không thành công", { description: result.msg });
+        }
+        setPending(false);
+      },
+    },
   );
 
-  const resetForm = useCallback(() => {
-    setConfirmText("");
-  }, []);
+  const form = useForm<SubscriptionDeleteFormData>({
+    resolver: zodResolver(subscriptionDeleteSchema),
+    defaultValues: {
+      confirmText: "",
+    },
+  });
 
-  useEffect(() => {
-    if (deleteState.success) {
-      toast.success("Loại đăng ký đã được xóa", {
-        description: deleteState.msg,
+  const confirmText = form.watch("confirmText");
+  const isInputValid = confirmText === subscription.name;
+
+  const onSubmit: SubmitHandler<SubscriptionDeleteFormData> = (data) => {
+    if (data.confirmText !== subscription.name) {
+      form.setError("confirmText", {
+        type: "manual",
+        message: "Tên gói đăng ký không khớp. Vui lòng nhập chính xác tên gói.",
       });
-      onOpenChange(false);
-      // Schedule reset after dialog closes
-      queueMicrotask(() => resetForm());
-    } else if (!deleteState.success && deleteState.msg) {
-      toast.error("Xóa không thành công", {
-        description: deleteState.msg,
-      });
+      return;
     }
-  }, [deleteState.msg, deleteState.success, onOpenChange, resetForm]);
+
+    setPending(true);
+    const formData = new FormData();
+    formData.append("id", subscription.id.toString());
+    execute(formData);
+  };
 
   return (
     <AlertDialog
       open={open}
       onOpenChange={(newOpen) => {
-        if (!newOpen) resetForm();
         onOpenChange(newOpen);
       }}
     >
@@ -75,24 +107,36 @@ export function DeleteSubscription({
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        <div className="space-y-3">
-          <div className="border-destructive/20 bg-destructive/5 rounded-lg border p-4">
-            <p className="text-muted-foreground mb-2 text-sm">
-              Xác nhận xóa:{" "}
-              <span className="text-foreground font-semibold">
-                {subscription.name}
-              </span>
-            </p>
-            <Input
-              value={confirmText}
-              onChange={(e) => setConfirmText(e.target.value)}
-              disabled={pending}
-            />
-          </div>
-        </div>
-
-        <form id="delete-form" action={deleteAction}>
+        <form
+          id="delete-form"
+          className="space-y-6"
+          onSubmit={form.handleSubmit(onSubmit)}
+        >
           <input type="hidden" name="id" value={subscription.id} />
+
+          <FieldGroup>
+            <Controller
+              control={form.control}
+              name="confirmText"
+              render={({ field, fieldState }) => (
+                <Field>
+                  <FieldLabel htmlFor="confirmText">
+                    Xác nhận xóa:{" "}
+                    <span className="font-semibold">{subscription.name}</span>
+                  </FieldLabel>
+                  <Input
+                    {...field}
+                    placeholder="Nhập tên gói đăng ký để xác nhận"
+                    disabled={pending}
+                    aria-invalid={fieldState.invalid}
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+          </FieldGroup>
         </form>
 
         <AlertDialogFooter>
@@ -107,7 +151,7 @@ export function DeleteSubscription({
             form="delete-form"
             variant="destructive"
             type="submit"
-            disabled={pending || confirmText !== subscription.name}
+            disabled={pending || !isInputValid}
           >
             {pending ? "Đang xóa..." : "Xóa"}
           </Button>

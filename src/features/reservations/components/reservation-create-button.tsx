@@ -44,15 +44,15 @@ import { toast } from "sonner";
 import {
   reservationFormSchema,
   type ReservationFormData,
-} from "@/lib/zod/reservation/reservation.request";
-import type { Station } from "@/lib/zod/station/station.types";
-import type { CarModel } from "@/lib/zod/vehicle-model/vehicle-model.types";
-import type { ConnectorType } from "@/lib/zod/connector-type/connector-type.types";
+} from "../schemas/reservation.request";
+import type { Station } from "@/features/stations/schemas/station.types";
+import type { CarModel } from "@/features/vehicle-models/schemas/vehicle-model.types";
+import type { ConnectorType } from "@/features/connector-type/schemas/connector-type.types";
 import { cn } from "@/lib/utils";
 import { createReservation } from "../services/reservation-actions";
-import { BookingFee } from "@/lib/zod/booking-fee/booking-fee.types";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
+import { BookingFee } from "@/features/booking-fee/schemas/booking-fee.types";
 
 const initialState = {
   success: false,

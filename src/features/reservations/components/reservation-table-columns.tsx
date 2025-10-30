@@ -1,21 +1,10 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrencyVND, formatDateTime } from "@/lib/formatters";
-import { Button } from "@/components/ui/button";
-import type { Reservation } from "@/lib/zod/reservation/reservation.types";
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { ReservationDetails } from "../services/reservations-api";
+import { ActionsCell } from "./reservation-actions-cell";
 
 const getStatusVariant = (status: string) => {
   switch (String(status).toUpperCase()) {
@@ -141,42 +130,6 @@ export const columns: ColumnDef<ReservationDetails>[] = [
     id: "actions",
     header: "",
     enableHiding: false,
-    cell: ({ row }) => {
-      const reservation = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="hover:bg-muted h-8 w-8 p-0">
-              <span className="sr-only">Mở menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuLabel className="font-semibold">
-              Hành động
-            </DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() =>
-                navigator.clipboard.writeText(reservation.id.toString())
-              }
-              className="cursor-pointer"
-            >
-              Sao chép ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer">
-              Xem chi tiết
-            </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer">
-              Chỉnh sửa
-            </DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive focus:text-destructive cursor-pointer">
-              Hủy đặt chỗ
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
+    cell: ({ row }) => <ActionsCell reservation={row.original} />,
   },
 ];

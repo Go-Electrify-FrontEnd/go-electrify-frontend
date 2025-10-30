@@ -3,11 +3,11 @@
 import { getUser } from "@/lib/auth/auth-server";
 import { updateTag } from "next/cache";
 import { forbidden } from "next/navigation";
+import { z } from "zod";
 import {
   connectorTypeCreateSchema,
   connectorTypeUpdateSchema,
-} from "@/lib/zod/connector-type/connector-type.request";
-import { z } from "zod";
+} from "../schemas/connector-type.request";
 
 export async function handleCreateConnectorType(
   prev: unknown,
@@ -16,12 +16,9 @@ export async function handleCreateConnectorType(
   const { user, token } = await getUser();
 
   if (!user || !token) {
-    // user not authenticated
     forbidden();
   }
 
-  // Ensure values are strings when passed to Zod so that missing values
-  // trigger the custom validation messages (e.g. required name).
   const { success, data, error } = connectorTypeCreateSchema.safeParse({
     name: String(formData.get("name") ?? ""),
     description: String(formData.get("description") ?? ""),

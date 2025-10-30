@@ -1,18 +1,15 @@
-import { ChargerAPI } from "@/lib/zod/charger/charger.request";
-import { Charger } from "@/lib/zod/charger/charger.schema";
 import {
   StationSession,
   StationSessionSchema,
 } from "@/lib/zod/session/session.schema";
-import {
-  StationStaffListSchema,
-  StationStaffSchema,
-} from "@/lib/zod/station/station-staff.schema";
+import { StationStaffListSchema } from "../schemas/station-staff.schema";
 import {
   StationApiSchema,
   StationBookingListApiSchema,
   type StationBooking,
-} from "@/lib/zod/station/station.schema";
+} from "../schemas/station.schema";
+import { Charger } from "@/features/chargers/schemas/charger.schema";
+import { ChargerAPI } from "@/features/chargers/schemas/charger.request";
 
 export async function getStationChargers(
   stationId: string,

@@ -1,6 +1,6 @@
 import { getUser } from "@/lib/auth/auth-server";
-import { BookingFeeResponseSchema } from "@/lib/zod/booking-fee/booking-fee.schema";
-import { BookingFee } from "@/lib/zod/booking-fee/booking-fee.types";
+import { BookingFeeResponseSchema } from "../schemas/booking-fee.schema";
+import { BookingFee } from "../schemas/booking-fee.types";
 
 export async function getBookingFee(): Promise<BookingFee | null> {
   try {

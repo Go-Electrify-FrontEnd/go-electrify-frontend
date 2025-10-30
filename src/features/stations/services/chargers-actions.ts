@@ -1,10 +1,12 @@
 "use server";
 
 import { getUser } from "@/lib/auth/auth-server";
-import { chargerCreateSchema } from "@/lib/zod/charger/charger.request";
 import { forbidden } from "next/navigation";
-import { chargerUpdateSchema } from "@/lib/zod/charger/charger.request";
 import { updateTag } from "next/cache";
+import {
+  chargerCreateSchema,
+  chargerUpdateSchema,
+} from "@/features/chargers/schemas/charger.request";
 
 export async function createCharger(prevState: unknown, formData: FormData) {
   const { user, token } = await getUser();
