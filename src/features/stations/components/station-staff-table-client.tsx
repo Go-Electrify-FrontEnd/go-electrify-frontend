@@ -2,7 +2,7 @@
 
 import { SharedDataTable } from "@/components/shared/shared-data-table";
 import { createStationStaffColumns } from "./station-staff-table-columns";
-import { StationStaff } from "@/lib/zod/station/station-staff.schema";
+import { StationStaff } from "../schemas/station-staff.schema";
 
 export function StationStaffTableClient({
   stationId,

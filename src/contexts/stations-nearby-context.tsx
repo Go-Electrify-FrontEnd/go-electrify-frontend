@@ -9,7 +9,7 @@ import {
   useRef,
   useState,
 } from "react";
-import type { Station } from "@/lib/zod/station/station.types";
+import type { Station } from "@/features/stations/schemas/station.types";
 
 type Coordinates = [number, number];
 

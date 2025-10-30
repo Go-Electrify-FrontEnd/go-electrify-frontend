@@ -12,8 +12,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { formatDateTime } from "@/lib/formatters";
-import { StationStaff } from "@/lib/zod/station/station-staff.schema";
 import { RevokeStaffAction } from "./revoke-staff-action";
+import { StationStaff } from "../schemas/station-staff.schema";
 
 export const createStationStaffColumns = (
   stationId: string,

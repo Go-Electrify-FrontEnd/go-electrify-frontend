@@ -21,9 +21,14 @@ export const connectorTypeUpdateSchema = connectorTypeCreateSchema.extend({
   id: z.string().trim().min(1, "ID cổng kết nối là bắt buộc"),
 });
 
+export const connectorTypeDeleteSchema = z.object({
+  confirmText: z.string().min(1, "Vui lòng nhập tên cổng kết nối để xác nhận"),
+});
+
 export type ConnectorTypeCreateFormData = z.infer<
   typeof connectorTypeCreateSchema
 >;
 export type ConnectorTypeUpdateFormData = z.infer<
   typeof connectorTypeUpdateSchema
 >;
+export type ConnectorTypeDeleteFormData = z.infer<typeof connectorTypeDeleteSchema>;

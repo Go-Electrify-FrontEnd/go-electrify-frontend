@@ -1,9 +1,9 @@
 "use client";
 
-import type { CarModel } from "@/lib/zod/vehicle-model/vehicle-model.types";
+import type { CarModel } from "@/features/vehicle-models/schemas/vehicle-model.types";
 import type { ChargingPort } from "@/lib/zod/charging-port/charging-port.types";
-import type { Reservation } from "@/lib/zod/reservation/reservation.types";
-import type { Station } from "@/lib/zod/station/station.types";
+import type { Reservation } from "@/features/reservations/schemas/reservation.types";
+import type { Station } from "@/features/stations/schemas/station.types";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 // Types

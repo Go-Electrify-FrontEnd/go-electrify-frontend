@@ -21,13 +21,13 @@ import {
 import { Controller, type Resolver, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-import type { Subscription } from "@/lib/zod/subscription/subscription.types";
+import type { Subscription } from "../schemas/subscription.types";
 import { useServerAction } from "@/hooks/use-server-action";
 import {
   subscriptionUpdateSchema,
   type SubscriptionUpdateFormData,
-} from "@/lib/zod/subscription/subscription.request";
-import { updateSubscription } from "../services/subscriptions";
+} from "../schemas/subscription.request";
+import { updateSubscription } from "../services/subscriptions-actions";
 
 interface UpdateSubscriptionProps {
   subscription: Subscription;

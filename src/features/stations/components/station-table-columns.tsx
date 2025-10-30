@@ -1,12 +1,10 @@
 "use client";
 
-import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { Badge } from "@/components/ui/badge";
-import type { Station } from "@/lib/zod/station/station.types";
 import { StationActions } from "./station-actions";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { Station } from "../schemas/station.schema";
 
 function StatusCell({ value }: { value: string }) {
   const upper = String(value).toUpperCase();

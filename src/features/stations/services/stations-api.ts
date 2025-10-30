@@ -1,4 +1,4 @@
-import { Station, StationApiSchema } from "@/lib/zod/station/station.schema";
+import { Station, StationApiSchema } from "../schemas/station.schema";
 
 export async function getStations(): Promise<Station[]> {
   const url = "https://api.go-electrify.com/api/v1/stations";

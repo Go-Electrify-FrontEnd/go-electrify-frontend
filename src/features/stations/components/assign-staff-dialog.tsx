@@ -43,7 +43,6 @@ export function AssignStaffDialog({
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   const router = useRouter();
 
-  // Fetch users when dialog opens
   useEffect(() => {
     if (open && users.length === 0) {
       fetchUsers();

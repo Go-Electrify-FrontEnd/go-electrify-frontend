@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -10,7 +9,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ActionsCell } from "./connector-type-actions";
-import type { ConnectorType } from "@/lib/zod/connector-type/connector-type.types";
+import { ConnectorType } from "@/types/connector";
 
 const formatPower = (power: number) => {
   return `${power} kW`;

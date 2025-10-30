@@ -19,5 +19,10 @@ export const stationUpdateSchema = stationCreateSchema.extend({
   id: z.coerce.number<number>().min(1, "ID trạm là bắt buộc"),
 });
 
+export const stationDeleteSchema = z.object({
+  confirmText: z.string().min(1, "Vui lòng nhập tên trạm để xác nhận"),
+});
+
 export type StationCreateFormData = z.infer<typeof stationCreateSchema>;
 export type StationUpdateFormData = z.infer<typeof stationUpdateSchema>;
+export type StationDeleteFormData = z.infer<typeof stationDeleteSchema>;

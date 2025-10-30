@@ -18,15 +18,10 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
-import { Controller, type Resolver, useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Loader2, MapPin } from "lucide-react";
-import type { Station } from "@/lib/zod/station/station.types";
 import { useServerAction } from "@/hooks/use-server-action";
-import {
-  stationUpdateSchema,
-  type StationUpdateFormData,
-} from "@/lib/zod/station/station.request";
 import {
   InputGroup,
   InputGroupAddon,
@@ -43,8 +38,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import AddressSearch from "@/components/shared/address-search";
-import { StationStatusType } from "@/lib/zod/station/station.schema";
 import { updateStation } from "../services/stations-actions";
+import { Station, StationStatusType } from "../schemas/station.schema";
+import {
+  StationUpdateFormData,
+  stationUpdateSchema,
+} from "../schemas/station.request";
 
 interface UpdateStationProps {
   station: Station;
@@ -71,8 +70,6 @@ export function UpdateStation({
     longitude,
     status,
   } = station;
-
-  // station status (debug removed)
 
   const defaultValues: StationUpdateFormData = {
     id,

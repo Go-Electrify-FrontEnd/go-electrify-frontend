@@ -3,9 +3,9 @@
 import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
-import type { CarModel } from "@/lib/zod/vehicle-model/vehicle-model.types";
 import { VehicleModelActionsCell } from "./vehicle-model-actions";
 import { useConnectorTypes } from "@/contexts/connector-type-context";
+import { CarModel } from "@/types/car";
 
 const formatPower = (power: number) => `${power} kW`;
 const formatBattery = (capacity: number) => `${capacity} kWh`;
