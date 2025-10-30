@@ -1,14 +1,23 @@
-//types/notification.ts
+// types/notification.ts
 export interface Notification {
   id: string;
   Title: string;
   Message: string;
-  Type: "booking" | "user";
+  Type:
+    | "booking"
+    | "user"
+    | "booking_confirmed"
+    | "booking_deposit_succeeded"
+    | "booking_canceled";
+  Severity?: "LOW" | "HIGH";
   CreatedAt: string;
-  isNew: boolean;
+  IsNew: boolean; // Changed from isNew to match API response
 }
-
 export interface NotificationResponse {
   notifications: Notification[];
   unreadCount: number;
+}
+export interface MarkAsReadResponse {
+  message?: string;
+  success?: boolean;
 }
