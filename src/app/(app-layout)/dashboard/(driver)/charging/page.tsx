@@ -18,7 +18,7 @@ import {
   FieldGroup,
 } from "@/components/ui/field";
 import { Controller, useForm, type SubmitHandler } from "react-hook-form";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { InfoIcon, ZapIcon, Loader2, QrCode, Keyboard } from "lucide-react";
 import { QRScanner } from "@/components/shared/qr-scanner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -28,7 +28,7 @@ import { handleJoin } from "@/features/charging/services/charging-actions";
 export default function StartChargingPage() {
   const [joinCode, setJoinCode] = useState("");
   const [activeTab, setActiveTab] = useState("qr");
-  const [pending, setPending] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<JoinFormData>({
     resolver: zodResolver(joinSchema),
@@ -38,15 +38,13 @@ export default function StartChargingPage() {
   });
 
   const handleFormSubmit = async (formData: FormData) => {
-    setPending(true);
-    try {
-      await handleJoin(null, formData);
-    } catch (error) {
-      // Handle error if needed
-      console.error("Form submission error:", error);
-    } finally {
-      setPending(false);
-    }
+    startTransition(async () => {
+      try {
+        await handleJoin(null, formData);
+      } catch (error) {
+        console.error("Form submission error:", error);
+      }
+    });
   };
 
   // Sync form value with joinCode state for QR scanner display
@@ -92,7 +90,11 @@ export default function StartChargingPage() {
 
           <Tabs
             value={activeTab}
-            onValueChange={setActiveTab}
+            onValueChange={(value) => {
+              if (!isPending) {
+                setActiveTab(value);
+              }
+            }}
             className="w-full"
           >
             <TabsList className="grid w-full grid-cols-2">
@@ -111,7 +113,9 @@ export default function StartChargingPage() {
                 onScan={(data) => {
                   setJoinCode(data);
                   form.setValue("joinCode", data);
-                  setActiveTab("manual");
+                  if (!isPending) {
+                    setActiveTab("manual");
+                  }
                 }}
                 onError={(error) => {
                   console.error("QR Scanner error:", error);
@@ -143,7 +147,7 @@ export default function StartChargingPage() {
                           {...field}
                           placeholder="Nhập mã tham gia"
                           className="text-lg"
-                          disabled={pending}
+                          disabled={isPending}
                           aria-invalid={fieldState.invalid}
                         />
                         {fieldState.invalid && (
@@ -156,11 +160,11 @@ export default function StartChargingPage() {
 
                 <Button
                   type="submit"
-                  disabled={pending}
+                  disabled={isPending}
                   className="w-full"
                   size="lg"
                 >
-                  {pending ? (
+                  {isPending ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Đang tham gia...

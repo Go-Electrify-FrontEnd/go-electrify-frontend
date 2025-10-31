@@ -22,7 +22,6 @@ async function getNotifications(token: string): Promise<Notification[]> {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      next: { revalidate: 5 },
     });
 
     if (!response.ok) {

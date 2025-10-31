@@ -17,6 +17,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
+  PaginationState,
 } from "@tanstack/react-table";
 import {
   Table,
@@ -29,18 +30,24 @@ import {
 import { transactionColumns } from "./wallet-transaction-table-columns";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Search, ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
 import { Transaction } from "../schemas/wallet.schema";
 
 type TransactionTableProps = {
   transactions: Transaction[];
   totalCount?: number;
+  currentPage?: number;
+  pageSize?: number;
   showViewAll?: boolean;
 };
 
 export function TransactionTable({
   transactions,
   totalCount,
+  currentPage = 1,
+  pageSize = 20,
   showViewAll = false,
 }: TransactionTableProps) {
   const [sorting, setSorting] = useState<SortingState>([
@@ -56,11 +63,12 @@ export function TransactionTable({
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onGlobalFilterChange: setGlobalFilter,
+    manualPagination: true,
+    rowCount: totalCount,
     globalFilterFn: "includesString",
     state: {
       sorting,
@@ -69,6 +77,11 @@ export function TransactionTable({
       globalFilter,
     },
   });
+
+  // Calculate pagination info
+  const totalPages = totalCount ? Math.ceil(totalCount / pageSize) : 1;
+  const hasNextPage = currentPage < totalPages;
+  const hasPrevPage = currentPage > 1;
 
   return (
     <Card>
@@ -148,15 +161,78 @@ export function TransactionTable({
           </Table>
         </div>
 
-        {/* Footer info */}
-        <div className="text-muted-foreground mt-6 text-sm">
-          {totalCount ? (
-            <>
-              Hiển thị {transactions.length} giao dịch gần nhất trong tổng số{" "}
-              {totalCount}
-            </>
+        {/* Footer info and pagination */}
+        <div className="mt-6 flex items-center justify-between">
+          <div className="text-muted-foreground text-sm">
+            {totalCount ? (
+              <>
+                Hiển thị {transactions.length} giao dịch (trang {currentPage} /{" "}
+                {totalPages}) trong tổng số {totalCount}
+              </>
+            ) : (
+              <>Hiển thị {transactions.length} giao dịch</>
+            )}
+          </div>
+
+          {/* Pagination controls or View All button */}
+          {showViewAll ? (
+            <Button asChild variant="outline" size="sm">
+              <Link href="/dashboard/wallet/transactions/1">
+                Xem Tất Cả Giao Dịch
+              </Link>
+            </Button>
           ) : (
-            <>Hiển thị 10 giao dịch gần nhất</>
+            totalPages > 1 &&
+            totalCount &&
+            totalCount > pageSize && (
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={!hasPrevPage}
+                  asChild={hasPrevPage}
+                >
+                  {hasPrevPage ? (
+                    <Link
+                      href={`/dashboard/wallet/transactions/${currentPage - 1}`}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      Trước
+                    </Link>
+                  ) : (
+                    <>
+                      <ChevronLeft className="h-4 w-4" />
+                      Trước
+                    </>
+                  )}
+                </Button>
+
+                <span className="text-muted-foreground text-sm">
+                  Trang {currentPage} / {totalPages}
+                </span>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={!hasNextPage}
+                  asChild={hasNextPage}
+                >
+                  {hasNextPage ? (
+                    <Link
+                      href={`/dashboard/wallet/transactions/${currentPage + 1}`}
+                    >
+                      Sau
+                      <ChevronRight className="h-4 w-4" />
+                    </Link>
+                  ) : (
+                    <>
+                      Sau
+                      <ChevronRight className="h-4 w-4" />
+                    </>
+                  )}
+                </Button>
+              </div>
+            )
           )}
         </div>
       </CardContent>

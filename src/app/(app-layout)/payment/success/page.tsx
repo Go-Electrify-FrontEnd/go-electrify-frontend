@@ -42,9 +42,6 @@ async function getOrderDetails(
   try {
     const res = await fetch(
       `https://api.go-electrify.com/api/payment/order/${orderCode}`,
-      {
-        cache: "no-store",
-      },
     );
 
     if (!res.ok) throw new Error("Fetch failed");

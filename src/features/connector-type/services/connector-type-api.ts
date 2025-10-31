@@ -8,7 +8,6 @@ export async function getConnectorTypes(): Promise<ConnectorType[]> {
     const response = await fetch(url, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
-      next: { revalidate: 3600, tags: ["connector-types"] },
     });
     const data = await response.json();
     const parsed = ConnectorTypeSchema.array().safeParse(data);

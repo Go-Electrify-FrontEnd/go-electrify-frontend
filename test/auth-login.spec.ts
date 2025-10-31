@@ -223,6 +223,99 @@ test.describe("Authentication - Passwordless Login", () => {
   });
 });
 
+test("should redirect to admin page", async ({ page }) => {
+  await page.goto("/login");
+  await expect(page).toHaveURL("/login");
+
+  const testEmail = process.env.TEST_ADMIN_MAIL!;
+
+  // Verify login form is visible
+  await expect(page.locator('[data-testid="login-form"]')).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Đăng nhập" })).toBeVisible();
+  await expect(page.locator('[data-testid="email-input"]')).toBeVisible();
+
+  // Enter email and submit
+  console.log("Filling email input:", testEmail);
+  await page.locator('[data-testid="email-input"]').fill(testEmail);
+  console.log("Clicking login submit button");
+  await page.locator('[data-testid="login-submit-button"]').click();
+
+  // Wait for the login form to disappear (indicating transition to OTP form)
+  await expect(page.locator('[data-testid="login-form"]')).not.toBeVisible();
+
+  // Wait for OTP form to be visible
+  console.log("Waiting for OTP form...");
+  await page.waitForSelector('[data-testid="otp-form"]', { timeout: 15000 });
+  await expect(page.locator('[data-testid="otp-form"]')).toBeVisible();
+
+  // Verify OTP form elements are present
+  await expect(
+    page.getByRole("heading", { name: "Xác thực OTP" }),
+  ).toBeVisible();
+  await expect(page.getByText(testEmail)).toBeVisible();
+
+  console.log("OTP form loaded successfully, waiting for email...");
+
+  // Wait for email to arrive (give it more time)
+  console.log("Waiting 15 seconds for email to arrive...");
+  await page.waitForTimeout(15000);
+
+  const email = await mailosaur.messages.get(serverId, {
+    sentTo: testEmail,
+  });
+
+  // Extract OTP code from email content
+  const otpCode = extractOTPCode(email);
+  console.log(`OTP Code received: ${otpCode}`);
+
+  // Verify OTP code is 6 digits
+  expect(otpCode).toMatch(/^\d{6}$/);
+
+  // Enter the OTP code - focus on the input and type directly
+  console.log("Entering OTP code...");
+  const otpInput = page.locator('[data-testid="otp-input"]');
+  await otpInput.focus(); // Focus the input
+  await page.keyboard.type(otpCode, { delay: 200 }); // Type with delay to ensure each digit is entered properly
+
+  // Verify the OTP was entered
+  const inputValue = await otpInput.inputValue();
+  console.log(`OTP input value: "${inputValue}"`);
+  expect(inputValue).toBe(otpCode);
+
+  // Submit OTP
+  console.log("Submitting OTP...");
+  const submitButton = page.locator('[data-testid="otp-submit-button"]');
+  await expect(submitButton).toBeEnabled();
+  await submitButton.click();
+
+  // Wait a bit and check for any error messages
+  await page.waitForTimeout(2000);
+  const errorMessages = await page
+    .locator('.text-destructive, [role="alert"]')
+    .allTextContents();
+  if (errorMessages.length > 0) {
+    console.log("Found error messages after OTP submission:", errorMessages);
+  }
+
+  // Check for success messages
+  const successMessages = await page
+    .locator(".text-green-600, .text-success")
+    .allTextContents();
+  if (successMessages.length > 0) {
+    console.log("Found success messages:", successMessages);
+  }
+
+  // Wait for successful login and redirect to dashboard
+  console.log("Waiting for redirect to dashboard...");
+  await page.waitForURL("/dashboard", { timeout: 10000 });
+  await expect(page).toHaveURL("/dashboard");
+  await expect(
+    page.getByRole("heading").filter({ hasText: "Chào mừng quản trị viên" }),
+  ).toBeVisible();
+
+  console.log("Login flow completed successfully!");
+});
+
 /**
  * Extract OTP code from Mailosaur email message
  * This function tries to find the 6-digit OTP code in the email content
