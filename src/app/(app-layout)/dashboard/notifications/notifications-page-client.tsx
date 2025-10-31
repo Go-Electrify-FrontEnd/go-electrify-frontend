@@ -8,9 +8,15 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
-import { NotificationDialog } from "@/features/dashboard/components/header/notification-dialog";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/features/users/contexts/user-context";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 function getNotificationIcon(type: string) {
   switch (type) {
@@ -44,7 +50,7 @@ function formatDate(dateString: string) {
   try {
     const date = new Date(dateString);
     return formatDistanceToNow(date, { addSuffix: true, locale: vi });
-  } catch (error) {
+  } catch {
     return dateString;
   }
 }
@@ -59,9 +65,51 @@ function formatFullDate(dateString: string) {
       hour: "2-digit",
       minute: "2-digit",
     }).format(date);
-  } catch (error) {
+  } catch {
     return dateString;
   }
+}
+
+function NotificationDialog({
+  notification,
+  open,
+  onOpenChange,
+}: {
+  notification: Notification | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  if (!notification) return null;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <div className="flex items-center gap-3">
+            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full">
+              {getNotificationIcon(notification.Type)}
+            </div>
+            <div className="flex-1">
+              <DialogTitle className="text-left">
+                {notification.Title}
+              </DialogTitle>
+              <div className="mt-1 flex items-center gap-2">
+                <Badge variant="secondary" className="text-xs">
+                  {getNotificationTypeName(notification.Type)}
+                </Badge>
+                <span className="text-muted-foreground text-xs">
+                  {formatDate(notification.CreatedAt)}
+                </span>
+              </div>
+            </div>
+          </div>
+        </DialogHeader>
+        <DialogDescription className="pt-4 text-left whitespace-pre-wrap">
+          {notification.Message}
+        </DialogDescription>
+      </DialogContent>
+    </Dialog>
+  );
 }
 
 export function NotificationsPageClient({
@@ -71,37 +119,26 @@ export function NotificationsPageClient({
 }) {
   const router = useRouter();
   const { token } = useUser();
+
   const [selectedNotification, setSelectedNotification] =
     useState<Notification | null>(null);
   const [notifications, setNotifications] =
     useState<Notification[]>(initialNotifications);
-  const [isMarkingAllRead, setIsMarkingAllRead] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  // Sync với server data khi initialNotifications thay đổi
+  // Sync với server data
   useEffect(() => {
     setNotifications(initialNotifications);
   }, [initialNotifications]);
 
   const unreadCount = notifications.filter((n) => n.IsNew).length;
 
-  // Mark notification as read when clicked
-  const handleNotificationClick = useCallback(
-    async (notification: Notification) => {
-      setSelectedNotification(notification);
-
-      // Chỉ mark as read nếu notification này chưa đọc
-      if (!notification.IsNew) return;
-
-      // Optimistic update - CHỈ update notification được click
-      setNotifications((prev) =>
-        prev.map((n) =>
-          n.Id === notification.Id ? { ...n, IsNew: false } : n,
-        ),
-      );
-
+  // Mark single notification as read
+  const markAsRead = useCallback(
+    async (notificationId: string) => {
       try {
         const response = await fetch(
-          `https://api.go-electrify.com/api/v1/notifications/${notification.Id}/read`,
+          `https://api.go-electrify.com/api/v1/notifications/${notificationId}/read`,
           {
             method: "POST",
             headers: {
@@ -111,48 +148,23 @@ export function NotificationsPageClient({
           },
         );
 
-        if (!response.ok) {
-          console.error(
-            "Failed to mark notification as read:",
-            response.status,
-          );
-          // Revert CHỈ notification này nếu lỗi
-          setNotifications((prev) =>
-            prev.map((n) =>
-              n.Id === notification.Id ? { ...n, IsNew: true } : n,
-            ),
-          );
-        } else {
-          // Refresh từ server sau 500ms để đồng bộ data
-          setTimeout(() => {
-            router.refresh();
-          }, 500);
+        const success = response.status === 204 || response.status === 200;
+
+        if (!success) {
+          console.error(`[Mark Read Failed] Status: ${response.status}`);
         }
+
+        return success;
       } catch (err) {
-        console.error("Mark notification as read failed:", err);
-        // Revert CHỈ notification này nếu lỗi
-        setNotifications((prev) =>
-          prev.map((n) =>
-            n.Id === notification.Id ? { ...n, IsNew: true } : n,
-          ),
-        );
+        console.error("[Mark Read Error]", err);
+        return false;
       }
     },
-    [token, router],
+    [token],
   );
 
   // Mark all notifications as read
-  const handleMarkAllAsRead = useCallback(async () => {
-    if (unreadCount === 0) return;
-
-    setIsMarkingAllRead(true);
-
-    // Lưu lại state ban đầu để revert nếu cần
-    const previousNotifications = notifications;
-
-    // Optimistic update - mark all as read
-    setNotifications((prev) => prev.map((n) => ({ ...n, IsNew: false })));
-
+  const markAllAsRead = useCallback(async () => {
     try {
       const response = await fetch(
         "https://api.go-electrify.com/api/v1/notifications/read-all",
@@ -165,24 +177,72 @@ export function NotificationsPageClient({
         },
       );
 
-      if (!response.ok) {
-        console.error("Failed to mark all as read:", response.status);
-        // Revert về state ban đầu
-        setNotifications(previousNotifications);
-      } else {
-        // Refresh từ server sau khi thành công
-        setTimeout(() => {
-          router.refresh();
-        }, 500);
+      const success = response.status === 204 || response.status === 200;
+
+      if (!success) {
+        console.error(`[Mark All Failed] Status: ${response.status}`);
       }
+
+      return success;
     } catch (err) {
-      console.error("Mark all as read failed:", err);
-      // Revert về state ban đầu
-      setNotifications(previousNotifications);
-    } finally {
-      setIsMarkingAllRead(false);
+      console.error("[Mark All Error]", err);
+      return false;
     }
-  }, [unreadCount, notifications, token, router]);
+  }, [token]);
+
+  // Handle notification click
+  const handleNotificationClick = useCallback(
+    async (notification: Notification) => {
+      setSelectedNotification(notification);
+
+      if (!notification.IsNew) return;
+
+      // Optimistic update
+      setNotifications((prev) =>
+        prev.map((n) =>
+          n.Id === notification.Id ? { ...n, IsNew: false } : n,
+        ),
+      );
+
+      const success = await markAsRead(notification.Id);
+
+      if (success) {
+        setTimeout(() => router.refresh(), 100);
+      } else {
+        // Revert nếu thất bại
+        setNotifications((prev) =>
+          prev.map((n) =>
+            n.Id === notification.Id ? { ...n, IsNew: true } : n,
+          ),
+        );
+      }
+    },
+    [markAsRead, router],
+  );
+
+  // Handle mark all as read
+  const handleMarkAllAsRead = useCallback(async () => {
+    if (unreadCount === 0 || isProcessing) return;
+
+    setIsProcessing(true);
+
+    // Lưu state ban đầu
+    const previousNotifications = notifications;
+
+    // Optimistic update
+    setNotifications((prev) => prev.map((n) => ({ ...n, IsNew: false })));
+
+    const success = await markAllAsRead();
+
+    if (success) {
+      setTimeout(() => router.refresh(), 100);
+    } else {
+      // Revert nếu thất bại
+      setNotifications(previousNotifications);
+    }
+
+    setIsProcessing(false);
+  }, [unreadCount, isProcessing, notifications, markAllAsRead, router]);
 
   return (
     <div className="container mx-auto max-w-4xl p-6">
@@ -210,9 +270,9 @@ export function NotificationsPageClient({
             <Button
               variant="outline"
               onClick={handleMarkAllAsRead}
-              disabled={isMarkingAllRead}
+              disabled={isProcessing}
             >
-              {isMarkingAllRead ? "Đang xử lý..." : "Đánh dấu tất cả đã đọc"}
+              {isProcessing ? "Đang xử lý..." : "Đánh dấu tất cả đã đọc"}
             </Button>
           )}
         </div>
