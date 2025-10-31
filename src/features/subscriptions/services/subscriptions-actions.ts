@@ -173,3 +173,50 @@ export async function subscribeToPlan(subscriptionId: number) {
     throw error;
   }
 }
+
+export async function purchaseSubscription(prev: unknown, data: FormData) {
+  const { user, token } = await getUser();
+  if (!user || !token) {
+    forbidden();
+  }
+
+  const subscriptionId = data.get("SubscriptionId")?.toString();
+
+  if (!subscriptionId) {
+    return {
+      success: false,
+      msg: "Vui lòng cung cấp Subscription ID",
+    };
+  }
+
+  const url =
+    "https://api.go-electrify.com/api/v1/wallet/subscriptions/purchase";
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        SubscriptionId: parseInt(subscriptionId, 10),
+        StartDate: new Date().toISOString(),
+      }),
+    });
+
+    if (response.ok) {
+      updateTag("user-subscriptions");
+      return { success: true, msg: "Mua gói đăng ký thành công" };
+    } else {
+      const jsonResponse = await response.json();
+      return { success: false, msg: jsonResponse.error || "Purchase failed" };
+    }
+  } catch (error) {
+    console.error("purchaseSubscription error", error);
+    return {
+      success: false,
+      msg: "Lỗi kết nối. Vui lòng thử lại",
+    };
+  }
+}

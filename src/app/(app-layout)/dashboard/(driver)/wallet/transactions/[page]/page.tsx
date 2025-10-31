@@ -1,13 +1,13 @@
 import TransactionTable from "@/features/wallet/components/wallet-transaction-table";
-import WalletDepositButton from "@/features/wallet/components/wallet-deposit-button";
-import { WalletOverview } from "@/features/wallet/components/wallet-overview";
 import { getUser } from "@/lib/auth/auth-server";
-import SectionHeader from "@/components/shared/section-header";
 import SectionContent from "@/components/shared/section-content";
 import {
   TransactionListApiSchema,
   WalletSchema,
 } from "@/features/wallet/schemas/wallet.schema";
+import { redirect } from "next/navigation";
+
+const PAGE_SIZE = 10;
 
 export async function getWallet() {
   const { token } = await getUser();
@@ -26,9 +26,12 @@ export async function getWallet() {
   return wallet;
 }
 
-export async function getTransactions(page: number = 1, limit: number = 50) {
+export async function getTransactions(
+  page: number = 1,
+  pageSize: number = PAGE_SIZE,
+) {
   const { token } = await getUser();
-  const url = `https://api.go-electrify.com/api/v1/wallet/me/transactions?page=${page}&pageSize=${limit}`;
+  const url = `https://api.go-electrify.com/api/v1/wallet/me/transactions?page=${page}&pageSize=${pageSize}`;
   const response = await fetch(url, {
     method: "GET",
     headers: { Authorization: `Bearer ${token}` },
@@ -37,7 +40,7 @@ export async function getTransactions(page: number = 1, limit: number = 50) {
 
   if (!response.ok) {
     console.error("Failed to fetch transactions, status: " + response.status);
-    return { transactions: [], total: 0 };
+    return { transactions: [], total: 0, page: 1, pageSize };
   }
 
   const { success, data, error } = TransactionListApiSchema.safeParse(
@@ -46,18 +49,41 @@ export async function getTransactions(page: number = 1, limit: number = 50) {
 
   if (!success) {
     console.error("Failed to parse transactions:", JSON.stringify(error));
-    return { transactions: [], total: 0 };
+    return { transactions: [], total: 0, page: 1, pageSize };
   }
 
+  // For now, return all transactions and disable pagination
   return {
     transactions: data.data,
     total: data.total,
+    page: 1,
+    pageSize: data.data.length, // Show all on one page
   };
 }
 
-export default async function WalletPage() {
+interface WalletPageProps {
+  params: Promise<{ page: string }>;
+}
+
+export default async function WalletPage({ params }: WalletPageProps) {
+  const { page: pageParam } = await params;
+  const page = parseInt(pageParam, 10);
+
+  // Validate page number
+  if (isNaN(page) || page < 1) {
+    redirect("/dashboard/wallet/page/1");
+  }
+
   const wallet = await getWallet();
-  const { transactions, total } = await getTransactions(1, 10);
+  const { transactions, total, pageSize } = await getTransactions(
+    page,
+    PAGE_SIZE,
+  );
+
+  const totalPages = Math.ceil(total / pageSize);
+  if (page > totalPages && totalPages > 0) {
+    redirect(`/dashboard/wallet/page/${totalPages}`);
+  }
 
   if (!wallet) {
     return <div>Đã xảy ra một số lỗi khi cố tải dữ liệu ví.</div>;
@@ -65,19 +91,12 @@ export default async function WalletPage() {
 
   return (
     <div>
-      <SectionHeader
-        title="Ví của tôi"
-        subtitle="Quản lý số dư và giao dịch của bạn"
-      >
-        <WalletDepositButton />
-      </SectionHeader>
-
       <SectionContent className="mt-8 flex flex-col gap-4 md:gap-6">
-        <WalletOverview wallet={wallet} transactions={transactions} />
         <TransactionTable
           transactions={transactions}
           totalCount={total}
-          showViewAll={true}
+          currentPage={page}
+          pageSize={pageSize}
         />
       </SectionContent>
     </div>
