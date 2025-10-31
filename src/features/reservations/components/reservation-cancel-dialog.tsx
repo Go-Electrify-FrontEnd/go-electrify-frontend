@@ -71,7 +71,6 @@ export function ReservationCancelDialog({
     execute(formData);
   };
 
-  // Reset form when dialog closes
   useEffect(() => {
     if (!open) {
       form.reset();
