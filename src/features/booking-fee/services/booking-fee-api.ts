@@ -9,7 +9,6 @@ export async function getBookingFee(): Promise<BookingFee | null> {
     const response = await fetch(url, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
-      next: { revalidate: 60, tags: ["booking-fee"] },
     });
 
     if (!response.ok) {

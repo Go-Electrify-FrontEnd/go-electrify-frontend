@@ -37,7 +37,6 @@ export async function getReservations(token: string) {
     const response = await fetch(url, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
-      next: { revalidate: 15, tags: ["reservations"] },
     });
 
     if (!response.ok) {

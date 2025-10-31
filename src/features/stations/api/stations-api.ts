@@ -28,7 +28,6 @@ export async function getStationChargers(
     const response = await fetch(url, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
-      next: { revalidate: 60, tags: ["chargers"] },
     });
 
     if (!response.ok) {
@@ -72,7 +71,6 @@ export async function getStationSessions(
     const response = await fetch(url, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
-      next: { revalidate: 15, tags: ["station-sessions"] },
     });
 
     if (!response.ok) {

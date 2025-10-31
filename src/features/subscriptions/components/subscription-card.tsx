@@ -2,7 +2,13 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Item, ItemContent, ItemDescription, ItemTitle, ItemActions } from "@/components/ui/item";
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemTitle,
+  ItemActions,
+} from "@/components/ui/item";
 import { formatCurrencyVND } from "@/lib/formatters";
 import type { Subscription } from "../schemas/subscription.types";
 import { SubscriptionDetailsDialog } from "./subscription-details-dialog";
@@ -20,7 +26,8 @@ export function SubscriptionCard({ subscription }: SubscriptionCardProps) {
         <ItemContent>
           <ItemTitle>{subscription.name}</ItemTitle>
           <ItemDescription>
-            {formatCurrencyVND(subscription.price)} • {subscription.durationDays} ngày • {subscription.totalKwh} kWh
+            {formatCurrencyVND(subscription.price)} •{" "}
+            {subscription.durationDays} ngày • {subscription.totalKwh} kWh
           </ItemDescription>
         </ItemContent>
         <ItemActions>

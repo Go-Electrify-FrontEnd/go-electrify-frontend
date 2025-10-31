@@ -9,7 +9,7 @@ export async function getSubscriptions(): Promise<Subscription[]> {
   const url = "https://api.go-electrify.com/api/v1/subscriptions";
   const response = await fetch(url, {
     method: "GET",
-    next: { revalidate: 60, tags: ["subscriptions"] },
+    next: { tags: ["subscriptions"] },
   });
 
   if (!response.ok) {

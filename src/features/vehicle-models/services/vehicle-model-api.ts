@@ -9,7 +9,6 @@ export async function getVehicleModels(token: string): Promise<CarModel[]> {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        next: { revalidate: 60, tags: ["vehicle-models"] },
       },
     );
 
