@@ -10,11 +10,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 import { formatCurrencyVND } from "@/lib/formatters";
 import { toast } from "sonner";
 import type { Subscription } from "../schemas/subscription.types";
-import { subscribeToPlan } from "../services/subscriptions-actions";
+import { useServerAction } from "@/hooks/use-server-action";
+import { purchaseSubscription } from "../services/subscriptions-actions";
 
 interface SubscriptionDetailsDialogProps {
   subscription: Subscription;
@@ -22,30 +24,38 @@ interface SubscriptionDetailsDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
+const initialState = { success: false, msg: "" };
+
 export function SubscriptionDetailsDialog({
   subscription,
   open,
   onOpenChange,
 }: SubscriptionDetailsDialogProps) {
-  const [pending, setPending] = useState(false);
+  const { execute, pending } = useServerAction(
+    purchaseSubscription,
+    initialState,
+    {
+      onSettled: (result) => {
+        if (result.success) {
+          toast.success("Mua gói đăng ký thành công!", {
+            description: `Bạn đã mua gói ${subscription.name}`,
+          });
+          onOpenChange(false);
+        } else {
+          toast.error("Mua gói đăng ký thất bại", {
+            description:
+              result.msg || "Có lỗi xảy ra khi mua gói này. Vui lòng thử lại.",
+          });
+        }
+      },
+    },
+  );
 
-  const handleSubscribe = async () => {
-    setPending(true);
-    try {
-      // Here you would integrate with your payment/subscription service
-      await subscribeToPlan(subscription.id);
+  const handlePurchase = () => {
+    const formData = new FormData();
+    formData.append("SubscriptionId", subscription.id.toString());
 
-      toast.success("Đăng ký thành công!", {
-        description: `Bạn đã đăng ký gói ${subscription.name}`,
-      });
-      onOpenChange(false);
-    } catch (error) {
-      toast.error("Đăng ký thất bại", {
-        description: "Có lỗi xảy ra khi đăng ký gói này. Vui lòng thử lại.",
-      });
-    } finally {
-      setPending(false);
-    }
+    execute(formData);
   };
 
   return (
@@ -98,11 +108,12 @@ export function SubscriptionDetailsDialog({
             Hủy
           </Button>
           <Button
-            onClick={handleSubscribe}
+            onClick={handlePurchase}
             disabled={pending}
             className="flex-1"
           >
-            {pending ? "Đang xử lý..." : "Đăng Ký"}
+            {pending && <Loader2 className="h-4 w-4 animate-spin" />}
+            {pending ? "Đang xử lý..." : "Mua gói"}
           </Button>
         </DialogFooter>
       </DialogContent>

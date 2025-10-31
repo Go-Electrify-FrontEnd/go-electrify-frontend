@@ -35,8 +35,10 @@ export const subscriptionUpdateSchema = subscriptionBaseSchema.extend({
 });
 
 export const subscriptionDeleteSchema = z.object({
-  confirmText: z.string().min(1, "Vui lòng nhập tên gói đăng ký để xác nhận"),
+confirmText: z.string().min(1, "Vui lòng nhập tên gói đăng ký để xác nhận"),
 });
+
+
 
 export type SubscriptionCreateFormData = z.infer<
   typeof subscriptionCreateSchema

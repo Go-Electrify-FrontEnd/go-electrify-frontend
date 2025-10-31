@@ -51,7 +51,6 @@ export async function handleJoin(_prev: unknown, formData: FormData) {
       };
     }
 
-    // Prepare redirect URL for finally block
     redirectUrl = `/dashboard/charging/binding?ablyToken=${data.token}&channelId=${data.channelId}&sessionId=${data.sessionId}&expiresAt=${data.expiresAt}`;
   } catch (error) {
     console.error("Join session error:", error);

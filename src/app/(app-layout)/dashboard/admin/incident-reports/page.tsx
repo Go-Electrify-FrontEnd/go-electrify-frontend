@@ -1,11 +1,4 @@
 import SectionHeader from "@/components/shared/section-header";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { getUser } from "@/lib/auth/auth-server";
 import SectionContent from "@/components/shared/section-content";
 import { ReportedIncidentTable } from "@/features/reported-incidents/components/reported-incident-table";
@@ -34,7 +27,7 @@ export async function getReportedIncidents(
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        next: { revalidate: 60, tags: ["reported-incidents"] },
+        next: { tags: ["reported-incidents"] },
       },
     );
 

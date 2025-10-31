@@ -8,7 +8,6 @@ export async function getUsers(): Promise<UserApi[]> {
     const response = await fetch(url, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
-      next: { revalidate: 60, tags: ["users"] },
     });
 
     if (!response.ok) {

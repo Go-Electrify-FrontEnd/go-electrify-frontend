@@ -11,6 +11,14 @@ interface WalletOverviewProps {
   transactions: Transaction[];
 }
 
+export const typeLabels: Record<Transaction["type"], string> = {
+  DEPOSIT: "Nạp tiền",
+  BOOKING_FEE: "Phí đặt chỗ",
+  CHARGING_FEE: "Sạc xe",
+  REFUND: "Hoàn tiền",
+  SUBSCRIPTION: "Mua gói",
+};
+
 export function WalletOverview({ wallet, transactions }: WalletOverviewProps) {
   const {
     totalDepositCurrentMonth,
@@ -80,13 +88,7 @@ export function WalletOverview({ wallet, transactions }: WalletOverviewProps) {
       }).format(latestDate);
       const sign =
         latest.type === "DEPOSIT" || latest.type === "REFUND" ? "+" : "−";
-      const typeLabelMap: Record<Transaction["type"], string> = {
-        DEPOSIT: "Nạp tiền",
-        BOOKING_FEE: "Phí đặt chỗ",
-        CHARGING_FEE: "Sạc",
-        REFUND: "Hoàn tiền",
-      };
-      lastActivityText = `${formatted} • ${typeLabelMap[latest.type]} ${sign}${latest.amount.toLocaleString("vi-VN")} ₫`;
+      lastActivityText = `${formatted} • ${typeLabels[latest.type]} ${sign}${latest.amount.toLocaleString("vi-VN")} ₫`;
     }
 
     return {
