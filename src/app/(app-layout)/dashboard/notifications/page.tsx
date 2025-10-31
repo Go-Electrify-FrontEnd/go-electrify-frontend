@@ -1,4 +1,3 @@
-// app/(app-layout)/dashboard/notifications/page.tsx
 import { getUser } from "@/lib/auth/auth-server";
 import { forbidden } from "next/navigation";
 import { Notification } from "@/types/notification";
@@ -22,7 +21,7 @@ async function getAllNotifications(token: string): Promise<Notification[]> {
 
     if (!response.ok) {
       console.error(
-        "Failed to fetch notifications:",
+        "[Notifications Page] Failed to fetch:",
         response.status,
         response.statusText,
       );
@@ -33,7 +32,7 @@ async function getAllNotifications(token: string): Promise<Notification[]> {
 
     // API trả về array trực tiếp
     if (!Array.isArray(data)) {
-      console.error("API response is not an array:", data);
+      console.error("[Notifications Page] API response is not an array:", data);
       return [];
     }
 
@@ -50,7 +49,7 @@ async function getAllNotifications(token: string): Promise<Notification[]> {
 
     return notifications;
   } catch (error) {
-    console.error("Error fetching notifications:", error);
+    console.error("[Notifications Page] Error fetching notifications:", error);
     return [];
   }
 }
