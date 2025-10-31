@@ -25,9 +25,9 @@ export async function getWallet() {
   return wallet;
 }
 
-export async function getTransactions(page: number = 1, pageSize: number = 20) {
+export async function getTransactions() {
   const { token } = await getUser();
-  const url = `https://api.go-electrify.com/api/v1/wallet/me/transactions?page=${page}&pageSize=${pageSize}`;
+  const url = `https://api.go-electrify.com/api/v1/wallet/me/transactions`;
   const response = await fetch(url, {
     method: "GET",
     headers: { Authorization: `Bearer ${token}` },
@@ -38,9 +38,14 @@ export async function getTransactions(page: number = 1, pageSize: number = 20) {
     return [];
   }
 
-  const { success, data } = TransactionListApiSchema.safeParse(
+  const { success, data, error } = TransactionListApiSchema.safeParse(
     await response.json(),
   );
+
+  if (!success) {
+    console.error("Failed to parse transactions:", JSON.stringify(error));
+    return [];
+  }
 
   const transactions = success ? data.data : [];
   return transactions;
