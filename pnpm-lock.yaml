@@ -265,6 +265,9 @@ importers:
       '@typescript-eslint/parser':
         specifier: ^8.46.2
         version: 8.46.2(eslint@9.36.0(jiti@2.6.1))(typescript@5.9.3)
+      dotenv:
+        specifier: ^17.2.3
+        version: 17.2.3
       eslint:
         specifier: ^9
         version: 9.36.0(jiti@2.6.1)
@@ -280,6 +283,9 @@ importers:
       jsdom:
         specifier: ^27.0.0
         version: 27.0.0(postcss@8.5.6)
+      mailosaur:
+        specifier: ^9.0.0
+        version: 9.0.0
       only-allow:
         specifier: ^1.2.1
         version: 1.2.1
@@ -3649,6 +3655,10 @@ packages:
 
   magic-string@0.30.19:
     resolution: {integrity: sha512-2N21sPY9Ws53PZvsEpVtNuSW+ScYbQdp4b9qUaL+9QkHUrGFKo56Lg9Emg5s9V/qrtNBmiR01sYhUOwu3H+VOw==}
+
+  mailosaur@9.0.0:
+    resolution: {integrity: sha512-ZRk113uu1psoQkJY6GHvzcA8azeN+de8HoyNFX0e+oTpuIp61LXxct57Kwz1Z8MfQj4ddjQF80hOt/pLvIy6bQ==}
+    engines: {node: '>= v6.0.0'}
 
   mapbox-gl@3.15.0:
     resolution: {integrity: sha512-I42ffZpiXwt0PG3PO6gMYQnoz+AInkirLe/+zoHjcfBTFoFkKYtu5gFwT1WGeSvNrVTqG2Bwp9zUjPw0PFGY+w==}
@@ -8635,6 +8645,12 @@ snapshots:
   magic-string@0.30.19:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  mailosaur@9.0.0:
+    dependencies:
+      https-proxy-agent: 7.0.6
+    transitivePeerDependencies:
+      - supports-color
 
   mapbox-gl@3.15.0:
     dependencies:
