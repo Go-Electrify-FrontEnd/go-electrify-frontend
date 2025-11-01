@@ -11,7 +11,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useChannel } from "ably/react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Progress } from "@/components/ui/progress";
+import SectionContent from "@/components/shared/section-content";
 import {
   Activity,
   BatteryCharging,
@@ -20,21 +24,36 @@ import {
   Play,
   Zap,
 } from "lucide-react";
-import { useBindingContext } from "../contexts/binding-context";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { useState } from "react";
-import { Message } from "ably";
-import { toast } from "sonner";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Progress } from "@/components/ui/progress";
-import SectionContent from "@/components/shared/section-content";
+import { toast } from "sonner";
+import { AblyProvider, ChannelProvider, useChannel } from "ably/react";
+import * as Ably from "ably";
+import type { Message } from "ably";
+import type { CurrentChargingSession } from "@/features/charging/schemas/current-session.schema";
 
-export function BindingActivePanel() {
-  const { booking, channelId } = useBindingContext();
+interface ChargingProgressClientProps {
+  sessionId: number;
+  ablyToken: string;
+  channelId: string;
+  expiresAt: string;
+  sessionData: CurrentChargingSession | null;
+  errorMessage?: string | null;
+}
+
+function ChargingProgressInner({
+  sessionData,
+  channelId,
+  errorMessage,
+}: {
+  sessionData: ChargingProgressClientProps["sessionData"];
+  channelId: string;
+  errorMessage?: string | null;
+}) {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [progress, setProgress] = useState<number>(0);
+  const [progress, setProgress] = useState<number>(sessionData?.socStart || 0);
+  const [isStartingSession, setIsStartingSession] = useState<boolean>(false);
+  const [sessionStarted, setSessionStarted] = useState<boolean>(false);
   const { push, refresh } = useRouter();
 
   const { publish } = useChannel(channelId, (message) => {
@@ -45,12 +64,17 @@ export function BindingActivePanel() {
         description: "Chuẩn bị tiến hành thanh toán.",
       });
 
+      setProgress(100);
+
       refresh();
       push("/dashboard/charging/success");
     } else if (message.name === "soc_update") {
-      console.log("SOC update received:", JSON.stringify(message.data));
-
       setProgress(Number(message.data.soc));
+
+      if (isStartingSession) {
+        setSessionStarted(true);
+        setIsStartingSession(false);
+      }
     } else if (message.name === "car_information") {
       toast.error("Lỗi trong phiên sạc", {
         description: message.data?.message || "Đã xảy ra lỗi không xác định.",
@@ -59,8 +83,39 @@ export function BindingActivePanel() {
   });
 
   const handlePublish = () => {
-    publish("start_session", { targetSOC: booking.TargetSoc });
+    if (!sessionData) return;
+
+    publish("start_session", { targetSOC: sessionData.targetSoc });
+
+    // Disable button for 5 seconds
+    setIsStartingSession(true);
+
+    // After 5 seconds, if no soc_update was received, re-enable the button
+    setTimeout(() => {
+      setIsStartingSession(false);
+    }, 5000);
   };
+
+  if (!sessionData) {
+    return (
+      <SectionContent className="mt-8">
+        <Alert variant="destructive">
+          <Info className="h-4 w-4" />
+          <AlertTitle>Không tìm thấy dữ liệu phiên</AlertTitle>
+          <AlertDescription>
+            {errorMessage ||
+              "Không thể tải thông tin phiên sạc. Vui lòng thử lại sau."}
+          </AlertDescription>
+        </Alert>
+        <div className="mt-4 flex gap-2">
+          <Button variant="outline" onClick={() => push("/dashboard/charging")}>
+            Quay lại trang sạc
+          </Button>
+          <Button onClick={() => refresh()}>Thử lại</Button>
+        </div>
+      </SectionContent>
+    );
+  }
 
   return (
     <SectionContent className="mt-8">
@@ -111,7 +166,7 @@ export function BindingActivePanel() {
           <CardHeader>
             <CardDescription>SOC Mục Tiêu</CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-              {booking?.TargetSoc}%
+              {sessionData.targetSoc}%
             </CardTitle>
             <CardAction>
               <Badge variant="outline">
@@ -140,7 +195,7 @@ export function BindingActivePanel() {
           </CardDescription>
           <CardAction>
             <Badge variant="default" className="text-[10px] sm:text-xs">
-              {progress}% / {booking?.TargetSoc}%
+              {progress}% / {sessionData.targetSoc}%
             </Badge>
           </CardAction>
         </CardHeader>
@@ -148,9 +203,9 @@ export function BindingActivePanel() {
           <div className="space-y-2">
             <Progress value={progress} className="h-4" />
             <div className="text-muted-foreground flex justify-between text-xs">
-              <span>Bắt đầu: {booking?.SocStart}%</span>
+              <span>Bắt đầu: {sessionData.socStart}%</span>
               <span>Hiện tại: {progress}%</span>
-              <span>Mục tiêu: {booking?.TargetSoc}%</span>
+              <span>Mục tiêu: {sessionData.targetSoc}%</span>
             </div>
           </div>
         </CardContent>
@@ -173,29 +228,27 @@ export function BindingActivePanel() {
             </CardAction>
           </CardHeader>
           <CardContent className="space-y-4">
-            {booking && (
-              <div className="space-y-3">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Mã đặt chỗ:</span>
-                  <span className="font-medium">{booking.BookingId}</span>
-                </div>
-                <Separator />
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">ID Phiên:</span>
-                  <span className="font-medium">{booking.Id}</span>
-                </div>
-                <Separator />
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">SOC Bắt Đầu:</span>
-                  <span className="font-medium">{booking.SocStart}%</span>
-                </div>
-                <Separator />
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">SOC Mục Tiêu:</span>
-                  <span className="font-medium">{booking.TargetSoc}%</span>
-                </div>
+            <div className="space-y-3">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Mã đặt chỗ:</span>
+                <span className="font-medium">{sessionData.bookingId}</span>
               </div>
-            )}
+              <Separator />
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">ID Phiên:</span>
+                <span className="font-medium">{sessionData.id}</span>
+              </div>
+              <Separator />
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">SOC Bắt Đầu:</span>
+                <span className="font-medium">{sessionData.socStart}%</span>
+              </div>
+              <Separator />
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">SOC Mục Tiêu:</span>
+                <span className="font-medium">{sessionData.targetSoc}%</span>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
@@ -226,7 +279,7 @@ export function BindingActivePanel() {
               <Input
                 id="targetSOC"
                 type="number"
-                value={booking?.TargetSoc}
+                value={sessionData.targetSoc}
                 disabled={true}
                 className="font-medium"
               />
@@ -237,12 +290,20 @@ export function BindingActivePanel() {
 
             <Button
               onClick={handlePublish}
-              disabled={messages.length > 0}
+              disabled={
+                messages.length > 0 || isStartingSession || sessionStarted
+              }
               className="w-full"
               size="lg"
             >
               <Play className="mr-2 h-4 w-4" />
-              {messages.length > 1 ? "Đang sạc..." : "Bắt đầu sạc"}
+              {sessionStarted
+                ? "Đang sạc..."
+                : isStartingSession
+                  ? "Đang khởi động..."
+                  : messages.length > 1
+                    ? "Đang sạc..."
+                    : "Bắt đầu sạc"}
             </Button>
           </CardContent>
         </Card>
@@ -259,5 +320,43 @@ export function BindingActivePanel() {
         </AlertDescription>
       </Alert>
     </SectionContent>
+  );
+}
+
+export function ChargingProgressClient({
+  sessionId,
+  ablyToken,
+  channelId,
+  expiresAt,
+  sessionData,
+  errorMessage,
+}: ChargingProgressClientProps) {
+  const realtimeClient = useMemo(
+    () =>
+      new Ably.Realtime({
+        token: ablyToken,
+        autoConnect: true,
+      }),
+    [ablyToken],
+  );
+
+  console.log("Current session token: ", ablyToken);
+  console.log("Current channelId: ", channelId);
+  console.log("Session ID:", sessionData?.id);
+  console.log("Attempting to connect to channel:", channelId);
+  console.log(
+    "Expected channel for session:",
+    sessionData ? `ge:session:${sessionData.id}` : "N/A",
+  );
+  return (
+    <AblyProvider client={realtimeClient}>
+      <ChannelProvider channelName={channelId}>
+        <ChargingProgressInner
+          sessionData={sessionData}
+          channelId={channelId}
+          errorMessage={errorMessage}
+        />
+      </ChannelProvider>
+    </AblyProvider>
   );
 }
