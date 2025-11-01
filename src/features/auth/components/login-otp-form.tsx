@@ -111,10 +111,10 @@ export function OTPForm({ email }: OTPFormProps) {
   });
 
   return (
-  <form
-  onSubmit={handleSubmit}
-  className="flex w-full max-w-md flex-col gap-8"
-    data-testid="otp-form"
+    <form
+      onSubmit={handleSubmit}
+      className="flex w-full max-w-md flex-col gap-8"
+      data-testid="otp-form"
     >
       <div className="flex flex-col items-center gap-3 text-center">
         <div className="bg-primary/10 mb-2 flex h-12 w-12 items-center justify-center rounded-full">
@@ -144,13 +144,13 @@ export function OTPForm({ email }: OTPFormProps) {
                   <input type="hidden" id="email" name="email" value={email} />
                   <div className="flex w-full justify-center">
                     <InputOTP
-                    {...field}
-                    minLength={6}
-                    maxLength={6}
-                    pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
-                    className="gap-3"
-                    aria-invalid={fieldState.invalid}
-                    disabled={pending}
+                      {...field}
+                      minLength={6}
+                      maxLength={6}
+                      pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
+                      className="gap-3"
+                      aria-invalid={fieldState.invalid}
+                      disabled={pending}
                       data-testid="otp-input"
                     >
                       <InputOTPGroup className="gap-3">
@@ -196,9 +196,9 @@ export function OTPForm({ email }: OTPFormProps) {
         </div>
         <div className="flex w-full flex-col gap-3">
           <Button
-          type="submit"
-          className="h-12 w-full text-lg font-medium"
-          disabled={pending}
+            type="submit"
+            className="h-12 w-full text-lg font-medium"
+            disabled={pending}
             data-testid="otp-submit-button"
           >
             {pending ? (
@@ -211,10 +211,10 @@ export function OTPForm({ email }: OTPFormProps) {
 
           <div className="flex items-center justify-center gap-3">
             <button
-            type="button"
-            className="text-primary text-sm underline disabled:opacity-60"
-            onClick={handleResend}
-            disabled={secondsRemaining > 0 || isResendPending}
+              type="button"
+              className="text-primary text-sm underline disabled:opacity-60"
+              onClick={handleResend}
+              disabled={secondsRemaining > 0 || isResendPending}
               data-testid="resend-otp-button"
             >
               Gửi lại mã OTP
