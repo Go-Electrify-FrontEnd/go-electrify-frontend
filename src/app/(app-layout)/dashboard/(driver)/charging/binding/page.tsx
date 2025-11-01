@@ -1,9 +1,36 @@
 import { getUser } from "@/lib/auth/auth-server";
 import { getReservations } from "@/features/reservations/services/reservations-api";
-import JoinPageWrapperNoSSR from "@/features/charging/components/join-no-ssr-wrapper";
+import { notFound } from "next/navigation";
+import { BookingBindingWrapper } from "@/features/charging/components/booking-binding-wrapper";
 
-export default async function JoinPage() {
+interface BindingPageProps {
+  searchParams: Promise<{
+    sessionId?: string;
+    ablyToken?: string;
+    channelId?: string;
+    expiresAt?: string;
+  }>;
+}
+
+export default async function BindingPage({ searchParams }: BindingPageProps) {
+  const params = await searchParams;
+  const { sessionId, ablyToken, channelId, expiresAt } = params;
+
+  // Validate required parameters
+  if (!sessionId || !ablyToken || !channelId || !expiresAt) {
+    notFound();
+  }
+
   const { token } = await getUser();
   const reservations = await getReservations(token!);
-  return <JoinPageWrapperNoSSR reservations={reservations} />;
+
+  return (
+    <BookingBindingWrapper
+      sessionId={sessionId}
+      ablyToken={ablyToken}
+      channelId={channelId}
+      expiresAt={expiresAt}
+      reservations={reservations}
+    />
+  );
 }

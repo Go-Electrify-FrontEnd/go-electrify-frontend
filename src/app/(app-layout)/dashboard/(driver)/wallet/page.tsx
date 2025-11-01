@@ -4,6 +4,7 @@ import { WalletOverview } from "@/features/wallet/components/wallet-overview";
 import { getUser } from "@/lib/auth/auth-server";
 import SectionHeader from "@/components/shared/section-header";
 import SectionContent from "@/components/shared/section-content";
+import Link from "next/link";
 import {
   TransactionListApiSchema,
   WalletSchema,
@@ -66,10 +67,17 @@ export default async function WalletPage() {
   return (
     <div>
       <SectionHeader
-        title="Ví của tôi"
-        subtitle="Quản lý số dư và giao dịch của bạn"
+      title="Ví của tôi"
+      subtitle="Quản lý số dư và giao dịch của bạn"
       >
-        <WalletDepositButton />
+      <div className="flex gap-2">
+          <WalletDepositButton />
+          <Link href="/transactions">
+            <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+              View All Transactions
+            </button>
+          </Link>
+        </div>
       </SectionHeader>
 
       <SectionContent className="mt-8 flex flex-col gap-4 md:gap-6">

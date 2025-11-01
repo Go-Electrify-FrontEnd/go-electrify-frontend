@@ -20,6 +20,8 @@ export async function handleJoin(_prev: unknown, formData: FormData) {
       };
     }
 
+    console.log("Joining dock with code:", joinCode);
+
     const response = await fetch(`${API_BASE_URL}/docks/join`, {
       method: "POST",
       headers: {
@@ -28,7 +30,7 @@ export async function handleJoin(_prev: unknown, formData: FormData) {
       },
       body: JSON.stringify({
         Code: joinCode,
-        role: "dashboard",
+        Role: "dashboard",
       }),
     });
 
@@ -51,6 +53,8 @@ export async function handleJoin(_prev: unknown, formData: FormData) {
       };
     }
 
+    console.log("Join received token: " + data.token);
+
     redirectUrl = `/dashboard/charging/binding?ablyToken=${data.token}&channelId=${data.channelId}&sessionId=${data.sessionId}&expiresAt=${data.expiresAt}`;
   } catch (error) {
     console.error("Join session error:", error);
@@ -68,6 +72,8 @@ export async function handleJoin(_prev: unknown, formData: FormData) {
 }
 
 export async function handleBindBooking(_prev: unknown, formData: FormData) {
+  let redirectUrl: string | null = null;
+
   try {
     const { token } = await getUser();
     const bookingCode = formData.get("bookingCode") as string;
@@ -96,7 +102,7 @@ export async function handleBindBooking(_prev: unknown, formData: FormData) {
     }
 
     const response = await fetch(
-      `${API_BASE_URL}/sessions/${sessionId}/bind-booking`,
+      `${API_BASE_URL}/charging-sessions/${sessionId}/bind-booking`,
       {
         method: "POST",
         headers: {
@@ -130,6 +136,16 @@ export async function handleBindBooking(_prev: unknown, formData: FormData) {
       };
     }
 
+    // Get the current URL params (ablyToken, channelId, expiresAt) to pass them forward
+    // Note: Since this is a server action, we'll need to receive these from the formData
+    const ablyToken = formData.get("ablyToken") as string;
+    const channelId = formData.get("channelId") as string;
+    const expiresAt = formData.get("expiresAt") as string;
+
+    if (ablyToken && channelId && expiresAt) {
+      redirectUrl = `/dashboard/charging/binding/progress?sessionId=${sessionId}&ablyToken=${ablyToken}&channelId=${channelId}&expiresAt=${expiresAt}`;
+    }
+
     return {
       success: true,
       msg: "Booking bound successfully!",
@@ -148,5 +164,10 @@ export async function handleBindBooking(_prev: unknown, formData: FormData) {
       msg: "An unexpected error occurred while binding the booking.",
       data: null,
     };
+  } finally {
+    // Perform redirect if URL was prepared successfully
+    if (redirectUrl) {
+      redirect(redirectUrl);
+    }
   }
 }

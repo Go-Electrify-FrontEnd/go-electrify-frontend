@@ -1,8 +1,6 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { handleBindBooking } from "../services/charging-actions";
-import { useActionState, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,7 +16,13 @@ import {
   FieldDescription,
   FieldError,
 } from "@/components/ui/field";
-import { CheckCircleIcon, Loader2, ZapIcon, InfoIcon } from "lucide-react";
+import {
+  CheckCircleIcon,
+  Loader2,
+  ZapIcon,
+  InfoIcon,
+  RefreshCwIcon,
+} from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -28,9 +32,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useBindingContext } from "../contexts/binding-context";
-import { useChannel } from "ably/react";
+import { useEffect, useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { AblyProvider, ChannelProvider, useChannel } from "ably/react";
+import * as Ably from "ably";
 import { Reservation } from "@/features/reservations/schemas/reservation.schema";
+import { useServerAction } from "@/hooks/use-server-action";
+import { handleBindBooking } from "@/features/charging/services/charging-actions";
 
 interface CarInformation {
   currentCapacity: number;
@@ -38,53 +47,70 @@ interface CarInformation {
   timestamp: string;
 }
 
-interface BookingBindingProps {
-  reservations: Reservation[];
+interface BookingBindingClientProps {
   sessionId: string;
-  channelName: string;
+  ablyToken: string;
+  channelId: string;
+  expiresAt: string;
+  reservations: Reservation[];
 }
 
-export function BookingBinding({
+function BookingBindingInner({
   sessionId,
+  channelId,
+  ablyToken,
+  expiresAt,
   reservations,
-}: BookingBindingProps) {
-  const [state, action, pending] = useActionState(handleBindBooking, {
-    success: false,
-    msg: "",
-    data: null,
-  });
-
-  const incomingReservations = reservations.filter((reservation) => {
-    return reservation.status == "CONFIRMED";
-  });
-
-  const { setBooking, setCurrentStep, channelId } = useBindingContext();
+}: {
+  sessionId: string;
+  channelId: string;
+  ablyToken: string;
+  expiresAt: string;
+  reservations: Reservation[];
+}) {
+  const router = useRouter();
   const [carInformation, setCarInformation] = useState<CarInformation | null>(
     null,
   );
   const [targetSOC, setTargetSOC] = useState("");
+  const [isReloadingCarInfo, setIsReloadingCarInfo] = useState(false);
+
+  const { state, execute, pending } = useServerAction(
+    handleBindBooking,
+    { success: false, msg: "", data: null },
+    {
+      onSuccess: (state) => {
+        toast.success(state.msg);
+        // The server action will handle the redirect
+      },
+      onError: (state) => {
+        toast.error(state.msg);
+      },
+    },
+  );
+
+  const incomingReservations = reservations.filter((reservation) => {
+    return reservation.status === "CONFIRMED";
+  });
 
   const { publish } = useChannel(channelId, (message) => {
     if (message.name === "car_information") {
       setCarInformation(message.data);
+      setIsReloadingCarInfo(false);
+
+      console.log("Received car information:", message.data);
     }
   });
+
+  const handleReloadCarInfo = () => {
+    setIsReloadingCarInfo(true);
+    publish("load_car_information", {});
+  };
 
   useEffect(() => {
     // Publish load_car_information message on component mount
     publish("load_car_information", {});
   }, [publish]);
-
-  useEffect(() => {
-    if (state.success) {
-      if (state.data) {
-        console.log("Binding successful:", JSON.stringify(state.data));
-        setBooking(state.data);
-
-        setCurrentStep("charging");
-      }
-    }
-  }, [state.success]);
 
   const currentSOC = carInformation
     ? (carInformation.currentCapacity / carInformation.maxCapacity) * 100
@@ -119,8 +145,18 @@ export function BookingBinding({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form action={action} className="space-y-6">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            const formData = new FormData(e.currentTarget);
+            execute(formData);
+          }}
+          className="space-y-6"
+        >
           <input type="hidden" name="sessionId" value={sessionId} />
+          <input type="hidden" name="ablyToken" value={ablyToken} />
+          <input type="hidden" name="channelId" value={channelId} />
+          <input type="hidden" name="expiresAt" value={expiresAt} />
 
           <Alert>
             <InfoIcon className="h-4 w-4" />
@@ -152,12 +188,26 @@ export function BookingBinding({
 
             <Field>
               <FieldLabel htmlFor="currentSOC">SOC hiện tại (%)</FieldLabel>
-              <Input
-                name="currentSOC"
-                type="number"
-                value={currentSOC.toFixed(2)}
-                disabled={true}
-              />
+              <div className="flex gap-2">
+                <Input
+                  name="currentSOC"
+                  type="number"
+                  value={currentSOC.toFixed(2)}
+                  disabled={true}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={handleReloadCarInfo}
+                  disabled={isReloadingCarInfo}
+                  title="Tải lại thông tin xe"
+                >
+                  <RefreshCwIcon
+                    className={`h-4 w-4 ${isReloadingCarInfo ? "animate-spin" : ""}`}
+                  />
+                </Button>
+              </div>
               <FieldDescription>Mức pin hiện tại của xe</FieldDescription>
             </Field>
           </Field>
@@ -212,5 +262,36 @@ export function BookingBinding({
         </form>
       </CardContent>
     </Card>
+  );
+}
+
+export function BookingBindingClient({
+  sessionId,
+  ablyToken,
+  channelId,
+  expiresAt,
+  reservations,
+}: BookingBindingClientProps) {
+  const realtimeClient = useMemo(
+    () =>
+      new Ably.Realtime({
+        token: ablyToken,
+        autoConnect: true,
+      }),
+    [ablyToken],
+  );
+
+  return (
+    <AblyProvider client={realtimeClient}>
+      <ChannelProvider channelName={channelId}>
+        <BookingBindingInner
+          sessionId={sessionId}
+          channelId={channelId}
+          ablyToken={ablyToken}
+          expiresAt={expiresAt}
+          reservations={reservations}
+        />
+      </ChannelProvider>
+    </AblyProvider>
   );
 }
