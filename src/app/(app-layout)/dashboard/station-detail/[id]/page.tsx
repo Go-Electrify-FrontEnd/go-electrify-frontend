@@ -341,8 +341,10 @@ async function StationStaffTable({ stationId }: { stationId: string }) {
 
   // Get IDs of already assigned staff
   const assignedStaffIds = staff
-    .filter((s) => !s.revokedAt)
-    .map((s) => s.userId);
+    ? staff?.filter((s) => !s.revokedAt).map((s) => s.userId)
+    : [];
+
+  console.log(assignedStaffIds);
 
   return (
     <Card>
