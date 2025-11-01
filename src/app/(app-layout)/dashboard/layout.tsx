@@ -16,7 +16,7 @@ export const dynamic = "force-dynamic";
 
 async function getNotifications(token: string): Promise<Notification[]> {
   try {
-    const url = "https://api.go-electrify.com/api/v1/notifications";
+    const url = "https://api.go-electrify.com/api/v1/notifications/dashboard";
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -29,7 +29,7 @@ async function getNotifications(token: string): Promise<Notification[]> {
     }
 
     const data = await response.json();
-    return data || [];
+    return data.items || [];
   } catch (error) {
     return [];
   }
