@@ -1,6 +1,7 @@
 import { getUser } from "@/lib/auth/auth-server";
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { NextResponse } from "next/server";
+import { API_BASE_URL } from "@/lib/api-config";
 
 export async function POST(request: Request): Promise<NextResponse> {
   const body = (await request.json()) as HandleUploadBody;
@@ -48,7 +49,7 @@ export async function POST(request: Request): Promise<NextResponse> {
           if (!clientId) {
             throw new Error("Could not find clientId in tokenPayload");
           }
-          const url = "https://api.go-electrify.com/api/v1/profile/avatar";
+          const url = `${API_BASE_URL}/profile/avatar`;
           const response = await fetch(url, {
             method: "PUT",
             headers: {

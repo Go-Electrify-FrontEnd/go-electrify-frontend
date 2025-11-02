@@ -19,7 +19,6 @@ export default async function FindStationsPage() {
         </SectionHeader>
 
         <SectionContent className="grid grid-cols-1 gap-6 xl:grid-cols-10">
-          {/* Map Section */}
           <div className="xl:col-span-7">
             <div className="text-muted-foreground mb-4 flex items-center gap-4 text-xs">
               <div className="flex items-center gap-1">
@@ -36,9 +35,18 @@ export default async function FindStationsPage() {
             </div>
           </div>
 
-          {/* Station List Section */}
           <div className="xl:col-span-3">
-            <div className="mt-9 h-[65vh] overflow-y-auto">
+            <div className="bg-muted/50 mb-3 rounded-lg border border-dashed p-3 text-xs">
+              <p className="text-muted-foreground">
+                <span className="font-medium">Lưu ý:</span> Khoảng cách hiển thị
+                chỉ mang tính tương đối. Nhấn{" "}
+                <span className="font-medium">Chỉ đường</span> để xem khoảng
+                cách chính xác. Nếu hiển thị{" "}
+                <span className="font-medium">N/A</span>, vui lòng nhấn biểu
+                tượng định vị.
+              </p>
+            </div>
+            <div className="no-scrollbar mt-3 h-[calc(65vh-5rem)] overflow-y-auto">
               <NearestStationsList />
             </div>
           </div>

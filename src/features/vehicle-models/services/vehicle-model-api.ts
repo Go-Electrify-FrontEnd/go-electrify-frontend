@@ -1,9 +1,10 @@
 import { CarModel, CarModelSchema } from "@/types/car";
+import { API_BASE_URL } from "@/lib/api-config";
 
 export async function getVehicleModels(token: string): Promise<CarModel[]> {
   try {
     const response = await fetch(
-      "https://api.go-electrify.com/api/v1/vehicle-models",
+      `${API_BASE_URL}/vehicle-models`,
       {
         method: "GET",
         headers: {

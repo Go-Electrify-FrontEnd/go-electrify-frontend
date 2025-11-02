@@ -8,6 +8,7 @@ import {
   type UserSubscription,
 } from "@/features/subscriptions/schemas/user-subscription.schema";
 import { getUser } from "@/lib/auth/auth-server";
+import { API_BASE_URL } from "@/lib/api-config";
 import {
   Card,
   CardAction,
@@ -35,7 +36,7 @@ async function getUserSubscriptions(): Promise<UserSubscription[]> {
   const { token } = await getUser();
   if (!token) return [];
 
-  const url = "https://api.go-electrify.com/api/v1/wallet/subscriptions";
+  const url = `${API_BASE_URL}/wallet/subscriptions`;
   const response = await fetch(url, {
     method: "GET",
     headers: {

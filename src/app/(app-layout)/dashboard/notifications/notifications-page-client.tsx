@@ -11,6 +11,7 @@ import { vi } from "date-fns/locale";
 import { NotificationDialog } from "@/features/dashboard/components/header/notification-dialog";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/features/users/contexts/user-context";
+import { API_BASE_URL } from "@/lib/api-config";
 
 function getNotificationIcon(type: string) {
   switch (type) {
@@ -101,7 +102,7 @@ export function NotificationsPageClient({
 
       try {
         const response = await fetch(
-          `https://api.go-electrify.com/api/v1/notifications/${notification.Id}/read`,
+          `${API_BASE_URL}/notifications/${notification.Id}/read`,
           {
             method: "POST",
             headers: {
@@ -155,7 +156,7 @@ export function NotificationsPageClient({
 
     try {
       const response = await fetch(
-        "https://api.go-electrify.com/api/v1/notifications/read-all",
+        `${API_BASE_URL}/notifications/read-all`,
         {
           method: "POST",
           headers: {

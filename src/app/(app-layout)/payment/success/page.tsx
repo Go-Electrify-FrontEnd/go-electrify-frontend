@@ -1,6 +1,7 @@
 import { CheckCircle, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { formatDateWithOptions, formatCurrencyVND } from "@/lib/formatters";
+import { API_PAYMENT_ORDER_URL } from "@/lib/api-config";
 
 interface TransactionData {
   code: string;
@@ -42,7 +43,7 @@ async function getOrderDetails(
 
   try {
     const res = await fetch(
-      `https://api.go-electrify.com/api/payment/order/${orderCode}`,
+      `${API_PAYMENT_ORDER_URL}/${orderCode}`,
     );
 
     if (!res.ok) throw new Error("Fetch failed");

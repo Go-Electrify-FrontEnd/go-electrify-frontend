@@ -9,6 +9,7 @@ import { cookies } from "next/headers";
 import type { User } from "@/lib/zod/user/user.types";
 import * as jose from "jose";
 import * as z from "zod";
+import { API_BASE_URL } from "@/lib/api-config";
 
 const DEFAULT_ACCESS_MAX_AGE = 60 * 15; // 15 minutes
 const DEFAULT_REFRESH_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
@@ -46,7 +47,7 @@ export async function performTokenRefresh(
   }) => void,
 ) {
   try {
-    const url = "https://api.go-electrify.com/api/v1/auth/refreshToken";
+    const url = `${API_BASE_URL}/auth/refreshToken`;
     const response = await fetch(url, {
       method: "POST",
       headers: {

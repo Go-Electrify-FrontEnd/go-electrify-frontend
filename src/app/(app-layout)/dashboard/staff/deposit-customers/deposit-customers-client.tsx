@@ -34,6 +34,7 @@ import * as z from "zod";
 import { useUser } from "@/features/users/contexts/user-context";
 import { Loader2, Wallet, Search } from "lucide-react";
 import { User } from "./page";
+import { API_BASE_URL } from "@/lib/api-config";
 
 const depositSchema = z.object({
   amount: z
@@ -104,7 +105,7 @@ export function DepositCustomersClient({
     setIsSubmitting(true);
     try {
       const response = await fetch(
-        `https://api.go-electrify.com/api/v1/users/${selectedUser.Id}/wallet/deposit-manual`,
+        `${API_BASE_URL}/users/${selectedUser.Id}/wallet/deposit-manual`,
         {
           method: "POST",
           headers: {

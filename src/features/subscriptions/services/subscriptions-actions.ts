@@ -3,6 +3,7 @@
 import { getUser } from "@/lib/auth/auth-server";
 import { updateTag } from "next/cache";
 import { forbidden } from "next/navigation";
+import { API_BASE_URL } from "@/lib/api-config";
 
 export async function createSubscription(prev: unknown, data: FormData) {
   const { user, token } = await getUser();
@@ -21,7 +22,7 @@ export async function createSubscription(prev: unknown, data: FormData) {
     };
   }
 
-  const url = "https://api.go-electrify.com/api/v1/subscriptions";
+  const url = `${API_BASE_URL}/subscriptions`;
   try {
     const response = await fetch(url, {
       method: "POST",
@@ -83,7 +84,7 @@ export async function updateSubscription(prev: unknown, data: FormData) {
     return { success: false, msg: "Vui lòng nhập các giá trị số hợp lệ" };
   }
 
-  const url = `https://api.go-electrify.com/api/v1/subscriptions/${id}`;
+  const url = `${API_BASE_URL}/subscriptions/${id}`;
   try {
     const response = await fetch(url, {
       method: "PUT",
@@ -125,7 +126,7 @@ export async function deleteSubscription(prev: unknown, dataForm: FormData) {
     return { success: false, msg: "Vui lòng cung cấp id để tiếp tục" };
   }
 
-  const url = `https://api.go-electrify.com/api/v1/subscriptions/${id}`;
+  const url = `${API_BASE_URL}/subscriptions/${id}`;
   try {
     const response = await fetch(url, {
       method: "DELETE",
@@ -149,7 +150,7 @@ export async function subscribeToPlan(subscriptionId: number) {
     forbidden();
   }
 
-  const url = `https://api.go-electrify.com/api/v1/subscriptions/${subscriptionId}/subscribe`;
+  const url = `${API_BASE_URL}/subscriptions/${subscriptionId}/subscribe`;
   try {
     const response = await fetch(url, {
       method: "POST",
@@ -189,8 +190,7 @@ export async function purchaseSubscription(prev: unknown, data: FormData) {
     };
   }
 
-  const url =
-    "https://api.go-electrify.com/api/v1/wallet/subscriptions/purchase";
+  const url = `${API_BASE_URL}/wallet/subscriptions/purchase`;
 
   try {
     const response = await fetch(url, {
