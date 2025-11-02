@@ -21,7 +21,7 @@ export const TransactionSchema = z
     Type: z.enum([
       "DEPOSIT",
       "BOOKING_FEE",
-      "CHARGING_FEE",
+      "CHARGING",
       "REFUND",
       "SUBSCRIPTION",
     ]),

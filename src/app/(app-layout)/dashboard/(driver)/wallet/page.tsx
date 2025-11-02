@@ -9,6 +9,7 @@ import {
   TransactionListApiSchema,
   WalletSchema,
 } from "@/features/wallet/schemas/wallet.schema";
+import { Button, buttonVariants } from "@/components/ui/button";
 
 export async function getWallet() {
   const { token } = await getUser();
@@ -67,15 +68,17 @@ export default async function WalletPage() {
   return (
     <div>
       <SectionHeader
-      title="Ví của tôi"
-      subtitle="Quản lý số dư và giao dịch của bạn"
+        title="Ví của tôi"
+        subtitle="Quản lý số dư và giao dịch của bạn"
       >
-      <div className="flex gap-2">
+        <div className="flex gap-2">
           <WalletDepositButton />
-          <Link href="/transactions">
-            <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-              View All Transactions
-            </button>
+          <Link
+            className={buttonVariants({ variant: "outline" })}
+            href="/dashboard/wallet/transactions/1"
+            prefetch={false}
+          >
+            Xem tất cả giao dịch
           </Link>
         </div>
       </SectionHeader>
