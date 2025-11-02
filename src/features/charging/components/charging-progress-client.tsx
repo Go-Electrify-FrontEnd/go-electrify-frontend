@@ -65,9 +65,8 @@ function ChargingProgressInner({
       });
 
       setProgress(100);
-
       refresh();
-      push("/dashboard/charging/success");
+      push(`/dashboard/charging/success/${sessionData?.id}`);
     } else if (message.name === "soc_update") {
       setProgress(Number(message.data.soc));
 

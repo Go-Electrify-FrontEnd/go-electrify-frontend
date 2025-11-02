@@ -2,6 +2,7 @@ import { getUser } from "@/lib/auth/auth-server";
 import { notFound } from "next/navigation";
 import { ChargingProgressWrapper } from "@/features/charging/components/charging-progress-wrapper";
 import { getCurrentSessionWithToken } from "@/features/charging/services/session-service";
+import type { CurrentChargingSession } from "@/features/charging/schemas/current-session.schema";
 
 export default async function ChargingProgressPage() {
   // Get authenticated user
@@ -10,27 +11,31 @@ export default async function ChargingProgressPage() {
     notFound();
   }
 
-  let sessionData = null;
+  let sessionData: CurrentChargingSession | null = null;
   let ablyToken = "";
   let channelId = "";
   let expiresAt = "";
-  let errorMessage = null;
+  let errorMessage: string | null = null;
 
   try {
     // Fetch current session with token using the new endpoint
     const data = await getCurrentSessionWithToken(token);
 
-    // Check if session has a booking bound to it
-    if (!data.session.bookingId) {
-      console.error("Session found but no booking bound:", data.session);
-      errorMessage =
-        "Phiên sạc chưa được liên kết với đặt chỗ. Vui lòng quay lại trang liên kết.";
+    if (!data) {
+      errorMessage = "Không tìm thấy phiên sạc đang hoạt động.";
     } else {
-      sessionData = data.session;
-      ablyToken = data.ablyToken;
-      // Use the channelId from the session data (this should match the token's capability)
-      channelId = data.session.channelId;
-      expiresAt = data.expiresAt;
+      // Check if session has a booking bound to it
+      if (!data.session.bookingId) {
+        console.error("Session found but no booking bound:", data.session);
+        errorMessage =
+          "Phiên sạc chưa được liên kết với đặt chỗ. Vui lòng quay lại trang liên kết.";
+      } else {
+        sessionData = data.session;
+        ablyToken = data.ablyToken;
+        // Use the channelId from the session data (this should match the token's capability)
+        channelId = data.session.channelId;
+        expiresAt = data.expiresAt;
+      }
     }
   } catch (error) {
     console.error("Failed to fetch current session:", error);
