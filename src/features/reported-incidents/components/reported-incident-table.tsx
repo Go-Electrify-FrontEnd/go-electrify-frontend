@@ -19,6 +19,7 @@ interface ReportedIncident {
   Id: number;
   StationId: number;
   StationName: string;
+  ReporterName: string;
   ChargerId: number;
   ReporterUserId: number;
   Title: string;
