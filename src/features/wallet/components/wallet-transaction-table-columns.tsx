@@ -8,6 +8,7 @@ import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Transaction } from "../schemas/wallet.schema";
 import { typeLabels } from "./wallet-overview";
+import { formatShortCurrency } from "@/lib/formatters";
 
 const statusVariants: Record<
   Transaction["status"],
@@ -116,7 +117,7 @@ export const transactionColumns: ColumnDef<Transaction>[] = [
             }
           >
             {isPositive ? "+" : "−"}
-            {amount.toLocaleString("vi-VN")} ₫
+            {formatShortCurrency(amount)}
           </span>
         </div>
       );

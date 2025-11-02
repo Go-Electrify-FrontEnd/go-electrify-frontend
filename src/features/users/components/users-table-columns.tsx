@@ -4,17 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { UserActionsCell } from "./user-actions";
 import type { UserApi } from "@/lib/zod/user/user.types";
-
-const formatCurrency = (amount: number) =>
-  new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(
-    amount,
-  );
-
-const formatDate = (iso?: Date | string) => {
-  if (!iso) return "-";
-  const d = iso instanceof Date ? iso : new Date(iso);
-  return d.toLocaleString();
-};
+import { formatCurrencyVND, formatDateTime } from "@/lib/formatters";
 
 const roleVariant = (role: string) => {
   switch (role.toLowerCase()) {
@@ -59,7 +49,7 @@ export const userColumns: ColumnDef<UserApi>[] = [
     header: "Số Dư (VND)",
     cell: ({ row }) => (
       <div className="font-semibold">
-        {formatCurrency(row.getValue("walletBalance") as number)}
+        {formatCurrencyVND(row.getValue("walletBalance") as number)}
       </div>
     ),
   },
@@ -67,7 +57,7 @@ export const userColumns: ColumnDef<UserApi>[] = [
     accessorKey: "createdAt",
     header: "Ngày Tạo",
     cell: ({ row }) => (
-      <div>{formatDate(row.getValue("createdAt") as Date)}</div>
+      <div>{formatDateTime(row.getValue("createdAt") as Date)}</div>
     ),
   },
   {
