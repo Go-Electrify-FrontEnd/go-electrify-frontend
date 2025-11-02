@@ -128,7 +128,7 @@ export function AssignStaffDialog({
           setSearchQuery("");
           router.refresh();
         } else {
-          toast.error(`Không thể phân công: ${result.error}`);
+          toast.error(`Không thể phân công: Nhân viên đã được phân công`);
         }
       } catch (error) {
         toast.error("Đã xảy ra lỗi khi phân công nhân viên");
