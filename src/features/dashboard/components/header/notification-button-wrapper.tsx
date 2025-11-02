@@ -7,7 +7,7 @@ import { NotificationButton } from "./notification-button";
 
 async function getRecentNotifications(token: string): Promise<Notification[]> {
   try {
-    const url = "https://api.go-electrify.com/api/v1/notifications";
+    const url = "https://api.go-electrify.com/api/v1/notifications/dashboard";
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -25,13 +25,13 @@ async function getRecentNotifications(token: string): Promise<Notification[]> {
 
     const data = await response.json();
 
-    if (!Array.isArray(data)) {
+    if (!Array.isArray(data.items)) {
       console.error("API response is not an array");
       return [];
     }
 
     // Map và lấy 10 notifications gần nhất
-    const notifications: Notification[] = data
+    const notifications: Notification[] = data.items
       .map((item: any) => ({
         Id: item.Id || item.id || "",
         Title: item.Title || "",
@@ -40,6 +40,7 @@ async function getRecentNotifications(token: string): Promise<Notification[]> {
         Severity: item.Severity || "LOW",
         CreatedAt: item.CreatedAt || new Date().toISOString(),
         IsNew: item.IsNew !== undefined ? item.IsNew : false,
+        IsUnread: item.IsUnread !== undefined ? item.IsUnread : false,
       }))
       .slice(0, 10); // Chỉ lấy 10 cái gần nhất cho header
 

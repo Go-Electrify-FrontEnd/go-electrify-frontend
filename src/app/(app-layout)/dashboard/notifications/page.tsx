@@ -9,7 +9,7 @@ export const revalidate = 0;
 
 async function getAllNotifications(token: string): Promise<Notification[]> {
   try {
-    const url = "https://api.go-electrify.com/api/v1/notifications";
+    const url = "https://api.go-electrify.com/api/v1/notifications/dashboard";
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -32,13 +32,13 @@ async function getAllNotifications(token: string): Promise<Notification[]> {
     const data = await response.json();
 
     // API trả về array trực tiếp
-    if (!Array.isArray(data)) {
+    if (!Array.isArray(data.items)) {
       console.error("API response is not an array:", data);
       return [];
     }
 
     // Map data từ API sang Notification type
-    const notifications: Notification[] = data.map((item: any) => ({
+    const notifications: Notification[] = data.items.map((item: any) => ({
       Id: item.Id || item.id || "",
       Title: item.Title || "",
       Message: item.Message || "",
@@ -46,6 +46,7 @@ async function getAllNotifications(token: string): Promise<Notification[]> {
       Severity: item.Severity || "LOW",
       CreatedAt: item.CreatedAt || new Date().toISOString(),
       IsNew: item.IsNew !== undefined ? item.IsNew : false,
+      IsUnread: item.IsUnread !== undefined ? item.IsUnread : false,
     }));
 
     return notifications;
