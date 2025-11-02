@@ -317,10 +317,10 @@ export async function completeSessionPayment(
 
     let successMessage = "Thanh toán thành công!";
     if (data.PaymentMethod === "WALLET") {
-      successMessage = `Thanh toán thành công ${formatNumber(data.BilledAmount)} VND từ ví điện tử cho ${data.EnergyKwh.toFixed(2)} kWh.`;
+      successMessage = `Thanh toán thành công ${formatNumber(data.BilledAmount)} VND từ ví điện tử cho ${formatNumber(data.EnergyKwh, 2)} kWh.`;
     } else if (data.PaymentMethod === "SUBSCRIPTION") {
       if (data.CoveredBySubscriptionKwh) {
-        successMessage = `Thanh toán thành công bằng gói đăng ký cho ${data.CoveredBySubscriptionKwh.toFixed(2)} kWh.`;
+        successMessage = `Thanh toán thành công bằng gói đăng ký cho ${formatNumber(data.CoveredBySubscriptionKwh, 2)} kWh.`;
       }
     }
 

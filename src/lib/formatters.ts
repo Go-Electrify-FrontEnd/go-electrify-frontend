@@ -69,7 +69,7 @@ export function formatDate(
   locale = "vi-VN",
 ) {
   if (!value) return "-";
-  const date = value instanceof Date ? value : new Date(value);
+  const date = new Date(value);
   if (Number.isNaN(date.getTime())) {
     return String(value);
   }
