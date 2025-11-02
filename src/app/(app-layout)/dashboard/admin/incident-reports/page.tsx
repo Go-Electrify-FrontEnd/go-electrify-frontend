@@ -5,6 +5,7 @@ import { ReportedIncidentTable } from "@/features/reported-incidents/components/
 
 interface ReportedIncident {
   Id: number;
+  ReporterName: string;
   StationId: number;
   StationName: string;
   ChargerId: number;
