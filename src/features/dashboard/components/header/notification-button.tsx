@@ -155,40 +155,49 @@ export function NotificationButton({
   const handleViewAll = useCallback(async () => {
     setIsPopoverOpen(false);
 
-    // Navigate to notifications page
-    router.push("/dashboard/notifications");
+    if (unreadCount === 0) {
+      router.push("/dashboard/notifications");
+      return;
+    }
 
-    // Nếu có thông báo chưa đọc, gọi API mark all
-    if (unreadCount > 0) {
-      setIsMarkingAllRead(true);
+    setIsMarkingAllRead(true);
 
-      // Optimistic update - mark all as read locally
-      setNotifications((prev) => prev.map((n) => ({ ...n, IsUnread: false })));
+    // Optimistic update cho mượt
+    setNotifications((prev) => prev.map((n) => ({ ...n, IsUnread: false })));
 
-      try {
-        const response = await fetch(
-          "https://api.go-electrify.com/api/v1/notifications/read-all",
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          },
-        );
+    try {
+      const unreadIds = initialNotifications
+        .filter((n) => n.IsUnread)
+        .map((n) => n.Id);
 
-        if (!response.ok) {
-          console.error("Failed to mark all as read");
-          // Revert về initialNotifications nếu lỗi
-          setNotifications(initialNotifications);
-        }
-      } catch (err) {
-        console.error("Mark all as read failed", err);
-        // Revert về initialNotifications nếu lỗi
-        setNotifications(initialNotifications);
-      } finally {
-        setIsMarkingAllRead(false);
+      if (unreadIds.length === 0) {
+        throw new Error("State bị lệch, không tìm thấy unread IDs.");
       }
+
+      const readPromises = unreadIds.map((id) =>
+        fetch(`https://api.go-electrify.com/api/v1/notifications/${id}/read`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }),
+      );
+
+      const results = await Promise.allSettled(readPromises);
+
+      const failedRequests = results.filter((r) => r.status === "rejected");
+      if (failedRequests.length > 0) {
+        console.error("Một số request 'read' đã thất bại:", failedRequests);
+        throw new Error("Một số request con thất bại.");
+      }
+    } catch (err) {
+      console.error("Lỗi khi gọi nhiều API 'read':", err);
+      setNotifications(initialNotifications);
+    } finally {
+      setIsMarkingAllRead(false);
+      router.push("/dashboard/notifications");
+      router.refresh();
     }
   }, [router, unreadCount, token, initialNotifications]);
 
