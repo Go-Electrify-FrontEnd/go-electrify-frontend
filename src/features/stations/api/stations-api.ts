@@ -311,18 +311,26 @@ export async function revokeStaffFromStation(
   stationId: string,
   userId: number,
   token: string,
+  reason: string,
 ) {
   if (!token) {
     console.error("revokeStaffFromStation: missing auth token");
     return { success: false, error: "Missing auth token" };
   }
 
-  try {
-    const url = `https://api.go-electrify.com/api/v1/stations/${encodeURIComponent(
-      stationId,
-    )}/staff/${userId}`;
+  if (!reason || reason.trim() === "") {
+    return { success: false, error: "Reason is required" };
+  }
 
-    const response = await fetch(`${url}?reason=string`, {
+  try {
+    const url = new URL(
+      `https://api.go-electrify.com/api/v1/stations/${encodeURIComponent(
+        stationId,
+      )}/staff/${userId}`,
+    );
+    url.searchParams.append("reason", reason.trim());
+
+    const response = await fetch(url.toString(), {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -332,7 +340,7 @@ export async function revokeStaffFromStation(
     if (!response.ok) {
       const error = await response.text();
       console.error("Failed to revoke staff, status:", response.status, error);
-      return { success: false, error: `Status ${response.status}` };
+      return { success: false, error: `Status ${response.status}: ${error}` };
     }
 
     return { success: true };
