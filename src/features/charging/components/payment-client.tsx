@@ -43,6 +43,7 @@ import {
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { formatCurrencyVND, formatDateWithOptions } from "@/lib/formatters";
 import {
   Loader2,
   CreditCard,
@@ -115,7 +116,7 @@ export default function PaymentClient({
   );
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString("vi-VN", {
+    return formatDateWithOptions(dateString, {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -126,10 +127,7 @@ export default function PaymentClient({
 
   const formatCurrency = (amount: number | null) => {
     if (amount === null) return "Chưa xác định";
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(amount);
+    return formatCurrencyVND(amount);
   };
 
   const sessionDuration = useMemo(() => {

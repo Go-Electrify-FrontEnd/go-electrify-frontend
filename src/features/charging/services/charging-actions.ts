@@ -4,8 +4,8 @@ import { JoinSessionResponseSchema } from "@/features/charging/schemas/join-sess
 import { getUser } from "@/lib/auth/auth-server";
 import { completePaymentSchema } from "@/lib/zod/session/complete-payment.request";
 import { redirect } from "next/navigation";
-
-const API_BASE_URL = "https://api.go-electrify.com/api/v1";
+import { API_BASE_URL, createJsonAuthHeaders } from "@/lib/api-config";
+import { formatNumber } from "@/lib/formatters";
 
 export type CompletePaymentActionState = {
   success: boolean;
@@ -31,10 +31,7 @@ export async function handleJoin(_prev: unknown, formData: FormData) {
 
     const response = await fetch(`${API_BASE_URL}/docks/join`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      headers: createJsonAuthHeaders(token),
       body: JSON.stringify({
         Code: joinCode,
         Role: "dashboard",
@@ -132,10 +129,7 @@ export async function handleBindBooking(_prev: unknown, formData: FormData) {
       `${API_BASE_URL}/charging-sessions/${sessionId}/bind-booking`,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers: createJsonAuthHeaders(token),
         body: JSON.stringify({
           bookingCode,
           initialSOC: 20, // Fixed initial SOC as per current implementation
@@ -247,10 +241,7 @@ export async function completeSessionPayment(
       `${API_BASE_URL}/charging-sessions/${sessionId}/complete-payment`,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers: createJsonAuthHeaders(token),
         body: JSON.stringify({
           Method: method, // WALLET or SUBSCRIPTION (case-sensitive)
         }),
@@ -326,10 +317,10 @@ export async function completeSessionPayment(
 
     let successMessage = "Thanh toán thành công!";
     if (data.PaymentMethod === "WALLET") {
-      successMessage = `Thanh toán thành công ${data.BilledAmount.toLocaleString("vi-VN")} VND từ ví điện tử cho ${data.EnergyKwh.toFixed(2)} kWh.`;
+      successMessage = `Thanh toán thành công ${formatNumber(data.BilledAmount)} VND từ ví điện tử cho ${formatNumber(data.EnergyKwh, 2)} kWh.`;
     } else if (data.PaymentMethod === "SUBSCRIPTION") {
       if (data.CoveredBySubscriptionKwh) {
-        successMessage = `Thanh toán thành công bằng gói đăng ký cho ${data.CoveredBySubscriptionKwh.toFixed(2)} kWh.`;
+        successMessage = `Thanh toán thành công bằng gói đăng ký cho ${formatNumber(data.CoveredBySubscriptionKwh, 2)} kWh.`;
       }
     }
 

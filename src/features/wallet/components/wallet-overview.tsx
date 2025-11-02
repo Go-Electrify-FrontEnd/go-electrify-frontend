@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreditCard, WalletIcon, Zap } from "lucide-react";
 import { useMemo } from "react";
-import { formatShortCurrency } from "@/lib/formatters";
+import { formatShortCurrency, formatCurrencyVND, formatDateTime } from "@/lib/formatters";
 import { Transaction, Wallet } from "../schemas/wallet.schema";
 
 interface WalletOverviewProps {
@@ -82,13 +82,10 @@ export function WalletOverview({ wallet, transactions }: WalletOverviewProps) {
         return cd > pd ? curr : prev;
       });
       const latestDate = toDate(latest.createdAt as Date | string);
-      const formatted = new Intl.DateTimeFormat("vi-VN", {
-        dateStyle: "short",
-        timeStyle: "short",
-      }).format(latestDate);
+      const formatted = formatDateTime(latestDate);
       const sign =
         latest.type === "DEPOSIT" || latest.type === "REFUND" ? "+" : "−";
-      lastActivityText = `${formatted} • ${typeLabels[latest.type]} ${sign}${latest.amount.toLocaleString("vi-VN")} ₫`;
+      lastActivityText = `${formatted} • ${typeLabels[latest.type]} ${sign}${formatShortCurrency(latest.amount)}`;
     }
 
     return {
@@ -111,10 +108,7 @@ export function WalletOverview({ wallet, transactions }: WalletOverviewProps) {
         </CardHeader>
         <CardContent>
           <div className="text-primary text-2xl font-bold">
-            {new Intl.NumberFormat("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            }).format(wallet.balance)}
+            {formatCurrencyVND(wallet.balance)}
           </div>
           <p className="text-muted-foreground mt-1 text-xs">{lastActivity}</p>
         </CardContent>

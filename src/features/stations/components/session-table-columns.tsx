@@ -1,6 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
-import { formatNumber } from "@/lib/formatters";
+import { formatNumber, formatDateTime } from "@/lib/formatters";
 import { SessionActionsCell } from "@/features/stations/components/session-actions";
 
 export type SessionRow = {
@@ -16,18 +16,6 @@ export type SessionRow = {
   vehicleMaxPowerKw: number | null;
   vehicleBatteryCapacityKwh: number | null;
   connectorMaxPowerKw: number | null;
-};
-
-const formatDateTime = (iso?: string | null) => {
-  if (!iso) return "-";
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) {
-    return String(iso);
-  }
-  return date.toLocaleString("vi-VN", {
-    dateStyle: "short",
-    timeStyle: "short",
-  });
 };
 
 // Use shared formatters but preserve previous '-' output for null/undefined values
