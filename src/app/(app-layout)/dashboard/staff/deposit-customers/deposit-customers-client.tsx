@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useTransition } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -32,10 +32,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useUser } from "@/features/users/contexts/user-context";
-import { Loader2, Wallet } from "lucide-react";
-import { User } from "./page"; // Import type từ file page.tsx
+import { Loader2, Wallet, Search } from "lucide-react";
+import { User } from "./page";
 
-// Schema validation cho form (đã BỎ userId)
 const depositSchema = z.object({
   amount: z
     .string()
@@ -45,7 +44,6 @@ const depositSchema = z.object({
     }),
   note: z.string().optional(),
 });
-
 type DepositFormValues = z.infer<typeof depositSchema>;
 
 interface DepositCustomersClientProps {
@@ -60,24 +58,49 @@ export function DepositCustomersClient({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { token } = useUser();
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
+
+  const [query, setQuery] = useState(searchParams.get("Search") || "");
+
+  console.log(users);
+
+  useEffect(() => {
+    setUsers(initialUsers);
+  }, [initialUsers]);
+
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      const currentSearch = searchParams.get("Search") || "";
+      if (query === currentSearch) {
+        return;
+      }
+      const params = new URLSearchParams(searchParams.toString());
+      if (query) {
+        params.set("Search", query);
+      } else {
+        params.delete("Search");
+      }
+
+      startTransition(() => {
+        router.replace(`${pathname}?${params.toString()}`);
+      });
+    }, 500);
+
+    return () => clearTimeout(timerId);
+  }, [query, pathname, router, searchParams]);
 
   const form = useForm<DepositFormValues>({
     resolver: zodResolver(depositSchema),
-    defaultValues: {
-      amount: "",
-      note: "",
-    },
+    defaultValues: { amount: "", note: "" },
   });
-
   useEffect(() => {
-    if (!selectedUser) {
-      form.reset();
-    }
+    if (!selectedUser) form.reset();
   }, [selectedUser, form]);
 
   const onSubmit = async (data: DepositFormValues) => {
     if (!token || !selectedUser) return;
-
     setIsSubmitting(true);
     try {
       const response = await fetch(
@@ -94,10 +117,7 @@ export function DepositCustomersClient({
           }),
         },
       );
-
-      if (!response.ok) {
-        throw new Error("Nạp tiền thất bại");
-      }
+      if (!response.ok) throw new Error("Nạp tiền thất bại");
 
       console.log("Nạp tiền thành công");
       setSelectedUser(null);
@@ -112,6 +132,19 @@ export function DepositCustomersClient({
 
   return (
     <>
+      <div className="mb-4 flex items-center gap-2">
+        <div className="relative w-full max-w-sm">
+          <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+          <Input
+            placeholder="Tìm theo email..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+        {isPending && <Loader2 className="h-5 w-5 animate-spin" />}
+      </div>
+
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -127,7 +160,7 @@ export function DepositCustomersClient({
             {users.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="h-24 text-center">
-                  Không tìm thấy user nào.
+                  {isPending ? "Đang tìm kiếm..." : "Không tìm thấy user nào."}
                 </TableCell>
               </TableRow>
             ) : (
@@ -159,9 +192,7 @@ export function DepositCustomersClient({
       <Dialog
         open={!!selectedUser}
         onOpenChange={(open) => {
-          if (!open) {
-            setSelectedUser(null);
-          }
+          if (!open) setSelectedUser(null);
         }}
       >
         <DialogContent className="sm:max-w-[425px]">
@@ -190,7 +221,6 @@ export function DepositCustomersClient({
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={form.control}
                 name="note"
@@ -207,7 +237,6 @@ export function DepositCustomersClient({
                   </FormItem>
                 )}
               />
-
               <DialogFooter>
                 <Button
                   type="button"
