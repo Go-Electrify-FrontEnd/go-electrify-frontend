@@ -16,8 +16,9 @@ import { UserMinus, Loader2 } from "lucide-react";
 import { revokeStaffFromStation } from "@/features/stations/api/stations-api";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { getAuthToken } from "@/features/stations/api/auth-actions";
 import { useUser } from "@/contexts/user-context";
+import { Textarea } from "@/components/ui/textarea"; // <-- Import Textarea
+import { Label } from "@/components/ui/label"; // <-- Import Label
 
 interface RevokeStaffActionProps {
   stationId: string;
@@ -31,11 +32,17 @@ export function RevokeStaffAction({
   userEmail,
 }: RevokeStaffActionProps) {
   const [open, setOpen] = useState(false);
+  const [reason, setReason] = useState("");
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const { token } = useUser();
 
   const handleRevoke = () => {
+    if (!reason.trim()) {
+      toast.error("Vui lòng nhập lý do thu hồi quyền.");
+      return;
+    }
+
     startTransition(async () => {
       try {
         if (!token) {
@@ -43,12 +50,17 @@ export function RevokeStaffAction({
           return;
         }
 
-        const result = await revokeStaffFromStation(stationId, userId, token);
-        console.log(result);
+        const result = await revokeStaffFromStation(
+          stationId,
+          userId,
+          token,
+          reason.trim(),
+        );
 
         if (result.success) {
           toast.success("Thu hồi quyền thành công");
           setOpen(false);
+          setReason("");
           router.refresh();
         } else {
           toast.error(`Không thể thu hồi quyền: ${result.error}`);
@@ -58,6 +70,13 @@ export function RevokeStaffAction({
         console.error(error);
       }
     });
+  };
+
+  const handleOpenChange = (isOpen: boolean) => {
+    if (!isOpen) {
+      setReason("");
+    }
+    setOpen(isOpen);
   };
 
   return (
@@ -70,19 +89,32 @@ export function RevokeStaffAction({
         Thu hồi quyền
       </button>
 
-      <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialog open={open} onOpenChange={handleOpenChange}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Xác nhận thu hồi quyền</AlertDialogTitle>
             <AlertDialogDescription>
-              Bạn có chắc chắn muốn thu hồi quyền quản lý trạm của nhân viên{" "}
+              Bạn có chắc chắn muốn thu hồi quyền của nhân viên{" "}
               <span className="text-foreground font-semibold">{userEmail}</span>
               ?
-              <br />
-              <br />
-              Nhân viên này sẽ không còn quyền truy cập và quản lý trạm này nữa.
             </AlertDialogDescription>
           </AlertDialogHeader>
+
+          <div className="space-y-2 py-2">
+            <Label htmlFor="reason">Lý do thu hồi (*)</Label>
+            <Textarea
+              id="reason"
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              placeholder="Vd: Nhân viên nghỉ việc, vi phạm quy định..."
+              disabled={isPending}
+              className="min-h-[100px]"
+            />
+            <p className="text-muted-foreground text-xs">
+              Lý do này là bắt buộc và sẽ được ghi lại.
+            </p>
+          </div>
+
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isPending}>Hủy</AlertDialogCancel>
             <AlertDialogAction
@@ -90,7 +122,7 @@ export function RevokeStaffAction({
                 e.preventDefault();
                 handleRevoke();
               }}
-              disabled={isPending}
+              disabled={isPending || !reason.trim()}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {isPending ? (
