@@ -1,9 +1,18 @@
 "use server";
 
+import { JoinSessionResponseSchema } from "@/features/charging/schemas/join-session.schema";
 import { getUser } from "@/lib/auth/auth-server";
+import { completePaymentSchema } from "@/lib/zod/session/complete-payment.request";
 import { redirect } from "next/navigation";
 
 const API_BASE_URL = "https://api.go-electrify.com/api/v1";
+
+export type CompletePaymentActionState = {
+  success: boolean;
+  msg: string;
+  suggestion: string | null;
+  code: string | null;
+};
 
 export async function handleJoin(_prev: unknown, formData: FormData) {
   let redirectUrl: string | null = null;
@@ -20,8 +29,6 @@ export async function handleJoin(_prev: unknown, formData: FormData) {
       };
     }
 
-    console.log("Joining dock with code:", joinCode);
-
     const response = await fetch(`${API_BASE_URL}/docks/join`, {
       method: "POST",
       headers: {
@@ -34,18 +41,20 @@ export async function handleJoin(_prev: unknown, formData: FormData) {
       }),
     });
 
+    const rawJson = await response.json().catch(() => null);
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
       return {
         success: false,
-        msg: errorData.message || `Failed to join session (${response.status})`,
+        msg:
+          (rawJson && typeof rawJson === "object" && "message" in rawJson
+            ? (rawJson as { message?: string }).message
+            : undefined) || `Failed to join session (${response.status})`,
         data: null,
       };
     }
 
-    const { data } = await response.json();
-
-    if (!data?.token || !data?.channelId || !data?.sessionId) {
+    const parsedResponse = JoinSessionResponseSchema.safeParse(rawJson);
+    if (!parsedResponse.success) {
       return {
         success: false,
         msg: "Invalid response from server.",
@@ -53,9 +62,27 @@ export async function handleJoin(_prev: unknown, formData: FormData) {
       };
     }
 
-    console.log("Join received token: " + data.token);
+    const parsedData = parsedResponse.data;
 
-    redirectUrl = `/dashboard/charging/binding?ablyToken=${data.token}&channelId=${data.channelId}&sessionId=${data.sessionId}&expiresAt=${data.expiresAt}`;
+    if (!parsedData.ok) {
+      return {
+        success: false,
+        msg:
+          parsedData.message || parsedData.error || "Failed to join session.",
+        data: null,
+      };
+    }
+
+    const { sessionId, channelId, ablyToken, expiresAt } = parsedData.data;
+
+    const queryParams = new URLSearchParams({
+      sessionId: String(sessionId),
+      channelId,
+      ablyToken,
+      expiresAt,
+    });
+
+    redirectUrl = `/dashboard/charging/binding?${queryParams.toString()}`;
   } catch (error) {
     console.error("Join session error:", error);
     return {
@@ -169,5 +196,158 @@ export async function handleBindBooking(_prev: unknown, formData: FormData) {
     if (redirectUrl) {
       redirect(redirectUrl);
     }
+  }
+}
+
+export async function completeSessionPayment(
+  _prev: CompletePaymentActionState,
+  formData: FormData,
+): Promise<CompletePaymentActionState> {
+  try {
+    console.log("[Payment] Starting payment process...");
+
+    // Validate input
+    const parsed = completePaymentSchema.safeParse({
+      sessionId: formData.get("sessionId"),
+      method: formData.get("method"),
+    });
+
+    if (!parsed.success) {
+      const firstError = parsed.error.issues[0]?.message;
+      console.error("[Payment] Validation failed:", parsed.error);
+      return {
+        success: false,
+        msg: firstError || "Dữ liệu thanh toán không hợp lệ.",
+        suggestion: null,
+        code: null,
+      };
+    }
+
+    const { sessionId, method } = parsed.data;
+    console.log("[Payment] Session ID:", sessionId, "Method:", method);
+
+    const { token } = await getUser();
+
+    if (!token) {
+      console.error("[Payment] Authentication token not found");
+      return {
+        success: false,
+        msg: "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
+        suggestion: null,
+        code: null,
+      };
+    }
+
+    // Call API - Method must be case-sensitive (WALLET or SUBSCRIPTION)
+    console.log(
+      "[Payment] Calling API:",
+      `${API_BASE_URL}/charging-sessions/${sessionId}/complete-payment`,
+    );
+    const response = await fetch(
+      `${API_BASE_URL}/charging-sessions/${sessionId}/complete-payment`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          Method: method, // WALLET or SUBSCRIPTION (case-sensitive)
+        }),
+        cache: "no-store",
+      },
+    );
+
+    console.log("[Payment] API response status:", response.status);
+
+    // Parse response
+    type ApiErrorResponse = {
+      ok: false;
+      code: string;
+      message: string;
+      suggestion?: string;
+    };
+
+    type ApiSuccessResponse = {
+      ok: true;
+      data: {
+        Status: string;
+        EnergyKwh: number;
+        BilledAmount: number;
+        PaymentMethod: string;
+        CoveredBySubscriptionKwh?: number;
+        Transactions?: Array<{ Type: string; Status: string }>;
+      };
+    };
+
+    type ApiResponse = ApiErrorResponse | ApiSuccessResponse | null;
+
+    const rawJson: ApiResponse = await response.json().catch(() => null);
+
+    if (!rawJson) {
+      console.error("[Payment] Failed to parse JSON response");
+      return {
+        success: false,
+        msg: `Không thể phân tích phản hồi từ server (${response.status})`,
+        suggestion: null,
+        code: null,
+      };
+    }
+
+    console.log("[Payment] Parsed response:", JSON.stringify(rawJson, null, 2));
+
+    // Handle error response
+    if (!rawJson.ok) {
+      const errorResponse = rawJson as ApiErrorResponse;
+      console.error("[Payment] Payment failed:", {
+        code: errorResponse.code,
+        message: errorResponse.message,
+        suggestion: errorResponse.suggestion,
+      });
+      return {
+        success: false,
+        msg: errorResponse.message || "Thanh toán không thành công",
+        suggestion: errorResponse.suggestion ?? null,
+        code: errorResponse.code ?? null,
+      };
+    }
+
+    // Handle success response
+    const successResponse = rawJson as ApiSuccessResponse;
+    const { data } = successResponse;
+
+    console.log("[Payment] Payment successful:", {
+      status: data.Status,
+      energyKwh: data.EnergyKwh,
+      billedAmount: data.BilledAmount,
+      paymentMethod: data.PaymentMethod,
+      coveredBySubscription: data.CoveredBySubscriptionKwh,
+    });
+
+    let successMessage = "Thanh toán thành công!";
+    if (data.PaymentMethod === "WALLET") {
+      successMessage = `Thanh toán thành công ${data.BilledAmount.toLocaleString("vi-VN")} VND từ ví điện tử cho ${data.EnergyKwh.toFixed(2)} kWh.`;
+    } else if (data.PaymentMethod === "SUBSCRIPTION") {
+      if (data.CoveredBySubscriptionKwh) {
+        successMessage = `Thanh toán thành công bằng gói đăng ký cho ${data.CoveredBySubscriptionKwh.toFixed(2)} kWh.`;
+      }
+    }
+
+    console.log("[Payment] Success message:", successMessage);
+
+    return {
+      success: true,
+      msg: successMessage,
+      suggestion: null,
+      code: null,
+    };
+  } catch (error) {
+    console.error("[Payment] Unexpected error:", error);
+    return {
+      success: false,
+      msg: "Đã xảy ra lỗi khi xử lý thanh toán. Vui lòng thử lại.",
+      suggestion: null,
+      code: null,
+    };
   }
 }

@@ -28,6 +28,14 @@ const segmentMap: Record<string, string> = {
   settings: "Cài Đặt",
   "station-me": "Trạm Của Tôi",
   "station-detail": "Chi Tiết Trạm",
+  binding: "Liên Kết Đặt Chỗ",
+  progress: "Tiến Trình Sạc",
+  payment: "Thanh Toán",
+  success: "Thành Công",
+  staff: "Nhân Viên",
+  "booking-fee": "Phí Đặt Chỗ",
+  "incident-reports": "Báo Cáo Sự Cố",
+  "deposit-customers": "Nạp Tiền Khách Hàng",
 };
 
 export default function HeaderBreadcrumb() {
