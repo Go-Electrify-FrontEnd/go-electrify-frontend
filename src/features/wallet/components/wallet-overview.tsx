@@ -14,7 +14,7 @@ interface WalletOverviewProps {
 export const typeLabels: Record<Transaction["type"], string> = {
   DEPOSIT: "Nạp tiền",
   BOOKING_FEE: "Phí đặt chỗ",
-  CHARGING_FEE: "Sạc xe",
+  CHARGING: "Sạc xe",
   REFUND: "Hoàn tiền",
   SUBSCRIPTION: "Mua gói",
 };
@@ -52,7 +52,7 @@ export function WalletOverview({ wallet, transactions }: WalletOverviewProps) {
     const chargesThisMonth = transactions.filter((transaction) => {
       const date = toDate(transaction.createdAt as Date | string);
       return (
-        transaction.type === "CHARGING_FEE" &&
+        transaction.type === "CHARGING" &&
         transaction.status === "SUCCEEDED" &&
         date.getMonth() === currentMonth &&
         date.getFullYear() === currentYear
