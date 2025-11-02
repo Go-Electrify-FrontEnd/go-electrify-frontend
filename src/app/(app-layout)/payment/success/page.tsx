@@ -1,5 +1,6 @@
 import { CheckCircle, AlertCircle } from "lucide-react";
 import Link from "next/link";
+import { formatDateWithOptions, formatCurrencyVND } from "@/lib/formatters";
 
 interface TransactionData {
   code: string;
@@ -66,18 +67,7 @@ export default async function Page({
     transactionData.status === "PAID" && !transactionData.cancel;
 
   const formatDateTime = (dateString?: string) => {
-    if (!dateString) {
-      return new Date().toLocaleString("vi-VN", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      });
-    }
-
-    return new Date(dateString).toLocaleString("vi-VN", {
+    return formatDateWithOptions(dateString || new Date().toISOString(), {
       hour: "2-digit",
       minute: "2-digit",
       second: "2-digit",
@@ -162,7 +152,7 @@ export default async function Page({
                   <div>
                     <p className="mb-1 text-sm text-gray-600">Giá</p>
                     <p className="text-lg font-semibold text-gray-900">
-                      {(orderDetails.amount / 100).toLocaleString("vi-VN")} ₫
+                      {formatCurrencyVND(orderDetails.amount / 100)}
                     </p>
                   </div>
                 </div>
