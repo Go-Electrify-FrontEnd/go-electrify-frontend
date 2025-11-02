@@ -7,6 +7,7 @@ import {
   chargerCreateSchema,
   chargerUpdateSchema,
 } from "@/features/chargers/schemas/charger.request";
+import { API_BASE_URL } from "@/lib/api-config";
 
 export async function createCharger(prevState: unknown, formData: FormData) {
   const { user, token } = await getUser();
@@ -27,7 +28,7 @@ export async function createCharger(prevState: unknown, formData: FormData) {
 
   const data = parsed.data;
   try {
-    const url = "https://api.go-electrify.com/api/v1/chargers";
+    const url = `${API_BASE_URL}/chargers`;
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -89,7 +90,7 @@ export async function updateCharger(prevState: unknown, formData: FormData) {
 
   const data = parsed.data;
 
-  const url = `https://api.go-electrify.com/api/v1/chargers/${encodeURIComponent(
+  const url = `${API_BASE_URL}/chargers/${encodeURIComponent(
     data.id,
   )}`;
 

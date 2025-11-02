@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { getAuthToken } from "@/features/stations/api/auth-actions";
 import { useUser } from "@/contexts/user-context";
+import { API_BASE_URL } from "@/lib/api-config";
 
 interface User {
   id: number;
@@ -58,7 +59,7 @@ export function AssignStaffDialog({
         throw new Error("User not authenticated");
       }
       const response = await fetch(
-        "https://api.go-electrify.com/api/v1/users?role=Staff",
+        `${API_BASE_URL}/users?role=Staff`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

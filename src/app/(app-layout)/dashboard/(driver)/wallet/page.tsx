@@ -10,10 +10,11 @@ import {
   WalletSchema,
 } from "@/features/wallet/schemas/wallet.schema";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { API_BASE_URL } from "@/lib/api-config";
 
 export async function getWallet() {
   const { token } = await getUser();
-  const url = "https://api.go-electrify.com/api/v1/wallet/me/balance";
+  const url = `${API_BASE_URL}/wallet/me/balance`;
   const response = await fetch(url, {
     method: "GET",
     headers: { Authorization: `Bearer ${token}` },
@@ -30,7 +31,7 @@ export async function getWallet() {
 
 export async function getTransactions(page: number = 1, limit: number = 50) {
   const { token } = await getUser();
-  const url = `https://api.go-electrify.com/api/v1/wallet/me/transactions?page=${page}&pageSize=${limit}`;
+  const url = `${API_BASE_URL}/wallet/me/transactions?page=${page}&pageSize=${limit}`;
   const response = await fetch(url, {
     method: "GET",
     headers: { Authorization: `Bearer ${token}` },

@@ -33,6 +33,7 @@ import { useUser } from "@/features/users/contexts/user-context";
 import { Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
+import { API_BASE_URL } from "@/lib/api-config";
 
 interface Incident {
   Id: number;
@@ -101,7 +102,7 @@ export function UpdateIncidentModal({
 
     try {
       const response = await fetch(
-        `https://api.go-electrify.com/api/v1/stations/${incident.StationId}/incidents/${incident.Id}/status`,
+        `${API_BASE_URL}/stations/${incident.StationId}/incidents/${incident.Id}/status`,
         {
           method: "PATCH",
           headers: {

@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
 import { NotificationDialog } from "./notification-dialog";
 import { useUser } from "@/features/users/contexts/user-context";
+import { API_BASE_URL } from "@/lib/api-config";
 
 function getNotificationIcon(type: string) {
   switch (type) {
@@ -116,7 +117,7 @@ export function NotificationButton({
 
       try {
         const response = await fetch(
-          `https://api.go-electrify.com/api/v1/notifications/${notification.Id}/read`,
+          `${API_BASE_URL}/notifications/${notification.Id}/read`,
           {
             method: "POST",
             headers: {
@@ -175,7 +176,7 @@ export function NotificationButton({
       }
 
       const readPromises = unreadIds.map((id) =>
-        fetch(`https://api.go-electrify.com/api/v1/notifications/${id}/read`, {
+        fetch(`${API_BASE_URL}/notifications/${id}/read`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,

@@ -2,8 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreditCard, WalletIcon, Zap } from "lucide-react";
-import { useMemo } from "react";
-import { formatShortCurrency, formatCurrencyVND, formatDateTime } from "@/lib/formatters";
+import { formatShortCurrency } from "@/lib/formatters";
 import { Transaction, Wallet } from "../schemas/wallet.schema";
 
 interface WalletOverviewProps {
@@ -20,82 +19,74 @@ export const typeLabels: Record<Transaction["type"], string> = {
 };
 
 export function WalletOverview({ wallet, transactions }: WalletOverviewProps) {
-  const {
-    totalDepositCurrentMonth,
-    depositCount,
-    totalSpentCurrentMonth,
-    chargingSessionsCount,
-    lastActivity,
-  } = useMemo(() => {
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
 
-    const toDate = (value: Date | string) =>
-      value instanceof Date ? value : new Date(String(value));
+  const toDate = (value: Date | string) =>
+    value instanceof Date ? value : new Date(String(value));
 
-    const depositsThisMonth = transactions.filter((transaction) => {
-      const date = toDate(transaction.createdAt as Date | string);
-      return (
-        transaction.type === "DEPOSIT" &&
-        transaction.status === "SUCCEEDED" &&
-        date.getMonth() === currentMonth &&
-        date.getFullYear() === currentYear
-      );
-    });
-
-    const totalDeposit = depositsThisMonth.reduce(
-      (sum, t) => sum + t.amount,
-      0,
+  const depositsThisMonth = transactions.filter((transaction) => {
+    const date = toDate(transaction.createdAt as Date | string);
+    return (
+      transaction.type === "DEPOSIT" &&
+      transaction.status === "SUCCEEDED" &&
+      date.getMonth() === currentMonth &&
+      date.getFullYear() === currentYear
     );
+  });
 
-    const chargesThisMonth = transactions.filter((transaction) => {
-      const date = toDate(transaction.createdAt as Date | string);
-      return (
-        transaction.type === "CHARGING" &&
-        transaction.status === "SUCCEEDED" &&
-        date.getMonth() === currentMonth &&
-        date.getFullYear() === currentYear
-      );
-    });
+  const totalDepositCurrentMonth = depositsThisMonth.reduce(
+    (sum, t) => sum + t.amount,
+    0,
+  );
 
-    const totalSpent = chargesThisMonth.reduce((sum, t) => sum + t.amount, 0);
+  const chargesThisMonth = transactions.filter((transaction) => {
+    const date = toDate(transaction.createdAt as Date | string);
+    return (
+      transaction.type === "CHARGING" &&
+      transaction.status === "SUCCEEDED" &&
+      date.getMonth() === currentMonth &&
+      date.getFullYear() === currentYear
+    );
+  });
 
-    const chargingSessionIds = new Set<number>();
-    chargesThisMonth.forEach((t) => {
-      if (typeof t.chargingSession === "number") {
-        chargingSessionIds.add(t.chargingSession);
-      }
-    });
+  const totalSpentCurrentMonth = chargesThisMonth.reduce(
+    (sum, t) => sum + t.amount,
+    0,
+  );
 
-    const chargingSessions =
-      chargingSessionIds.size > 0
-        ? chargingSessionIds.size
-        : chargesThisMonth.length;
-
-    // Determine last transaction (by createdAt) and render a short summary
-    let lastActivityText = "Chưa có giao dịch";
-    if (transactions.length > 0) {
-      const latest = transactions.reduce((prev, curr) => {
-        const pd = toDate(prev.createdAt as Date | string);
-        const cd = toDate(curr.createdAt as Date | string);
-        return cd > pd ? curr : prev;
-      });
-      const latestDate = toDate(latest.createdAt as Date | string);
-      const formatted = formatDateTime(latestDate);
-      const sign =
-        latest.type === "DEPOSIT" || latest.type === "REFUND" ? "+" : "−";
-      lastActivityText = `${formatted} • ${typeLabels[latest.type]} ${sign}${formatShortCurrency(latest.amount)}`;
+  const chargingSessionIds = new Set<number>();
+  chargesThisMonth.forEach((t) => {
+    if (typeof t.chargingSession === "number") {
+      chargingSessionIds.add(t.chargingSession);
     }
+  });
 
-    return {
-      totalDepositCurrentMonth: totalDeposit,
-      depositCount: depositsThisMonth.length,
-      totalSpentCurrentMonth: totalSpent,
-      chargingSessionsCount: chargingSessions,
-      lastActivity: lastActivityText,
-    };
-  }, [transactions]);
+  const chargingSessionsCount =
+    chargingSessionIds.size > 0
+      ? chargingSessionIds.size
+      : chargesThisMonth.length;
+
+  // Determine last transaction (by createdAt) and render a short summary
+  let lastActivity = "Chưa có giao dịch";
+  if (transactions.length > 0) {
+    const latest = transactions.reduce((prev, curr) => {
+      const pd = toDate(prev.createdAt as Date | string);
+      const cd = toDate(curr.createdAt as Date | string);
+      return cd > pd ? curr : prev;
+    });
+    const latestDate = toDate(latest.createdAt as Date | string);
+    const formatted = new Intl.DateTimeFormat("vi-VN", {
+      dateStyle: "short",
+      timeStyle: "short",
+    }).format(latestDate);
+    const sign =
+      latest.type === "DEPOSIT" || latest.type === "REFUND" ? "+" : "−";
+    lastActivity = `${formatted} • ${typeLabels[latest.type]} ${sign}${latest.amount.toLocaleString("vi-VN")} ₫`;
+  }
+
+  const depositCount = depositsThisMonth.length;
 
   // local helpers replaced by shared formatters
 
@@ -108,7 +99,10 @@ export function WalletOverview({ wallet, transactions }: WalletOverviewProps) {
         </CardHeader>
         <CardContent>
           <div className="text-primary text-2xl font-bold">
-            {formatCurrencyVND(wallet.balance)}
+            {new Intl.NumberFormat("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            }).format(wallet.balance)}
           </div>
           <p className="text-muted-foreground mt-1 text-xs">{lastActivity}</p>
         </CardContent>
