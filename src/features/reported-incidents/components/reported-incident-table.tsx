@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -9,9 +10,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { AlertCircle, Clock, CheckCircle2 } from "lucide-react";
+import { AlertCircle, Clock, CheckCircle2, XCircle } from "lucide-react";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
+import { IncidentDetailsModal } from "./incident-details-modal";
 
 interface ReportedIncident {
   Id: number;
@@ -24,6 +26,8 @@ interface ReportedIncident {
   Status: string;
   ReportedAt: string;
   ResolvedAt: string | null;
+  Description?: string;
+  Note?: string;
 }
 
 interface ReportedIncidentTableProps {
@@ -75,6 +79,12 @@ const getStatusBadge = (status: string) => {
       label: "Đã giải quyết",
       icon: <CheckCircle2 className="mr-1 h-3 w-3" />,
     },
+    CLOSED: {
+      // Thêm trạng thái "CLOSED"
+      variant: "destructive",
+      label: "Đã đóng",
+      icon: <XCircle className="mr-1 h-3 w-3" />,
+    },
   };
 
   const config = statusMap[status] || {
@@ -92,7 +102,24 @@ const getStatusBadge = (status: string) => {
 };
 
 export function ReportedIncidentTable({ data }: ReportedIncidentTableProps) {
-  if (!data || data.length === 0) {
+  const [incidents, setIncidents] = useState(data);
+  const [selectedIncident, setSelectedIncident] =
+    useState<ReportedIncident | null>(null);
+
+  useEffect(() => {
+    setIncidents(data);
+  }, [data]);
+
+  const handleUpdateSuccess = (updatedIncident: ReportedIncident) => {
+    setIncidents((prev) =>
+      prev.map((inc) =>
+        inc.Id === updatedIncident.Id ? updatedIncident : inc,
+      ),
+    );
+    setSelectedIncident(null);
+  };
+
+  if (!incidents || incidents.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
         <AlertCircle className="text-muted-foreground mb-4 h-12 w-12" />
@@ -107,64 +134,80 @@ export function ReportedIncidentTable({ data }: ReportedIncidentTableProps) {
   }
 
   return (
-    <div className="mt-4 rounded-md border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[60px]">ID</TableHead>
-            <TableHead>Tiêu đề</TableHead>
-            <TableHead>Trạm sạc</TableHead>
-            <TableHead>Cổng sạc</TableHead>
-            <TableHead>Mức độ</TableHead>
-            <TableHead>Trạng thái</TableHead>
-            <TableHead>Ngày báo cáo</TableHead>
-            <TableHead>Ngày giải quyết</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {data.map((incident) => (
-            <TableRow key={incident.Id}>
-              <TableCell className="font-medium">#{incident.Id}</TableCell>
-              <TableCell className="max-w-[300px] font-medium">
-                {incident.Title}
-              </TableCell>
-              <TableCell>
-                <div className="flex flex-col">
-                  <span className="font-medium">{incident.StationName}</span>
-                  <span className="text-muted-foreground text-xs">
-                    ID: {incident.StationId}
-                  </span>
-                </div>
-              </TableCell>
-              <TableCell>
-                <Badge variant="outline">Cổng #{incident.ChargerId}</Badge>
-              </TableCell>
-              <TableCell>{getSeverityBadge(incident.Severity)}</TableCell>
-              <TableCell>{getStatusBadge(incident.Status)}</TableCell>
-              <TableCell>
-                <span className="text-sm">
-                  {format(new Date(incident.ReportedAt), "dd/MM/yyyy HH:mm", {
-                    locale: vi,
-                  })}
-                </span>
-              </TableCell>
-              <TableCell>
-                {incident.ResolvedAt ? (
+    <>
+      <div className="mt-4 rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[60px]">ID</TableHead>
+              <TableHead>Tiêu đề</TableHead>
+              <TableHead>Trạm sạc</TableHead>
+              <TableHead>Cổng sạc</TableHead>
+              <TableHead>Mức độ</TableHead>
+              <TableHead>Trạng thái</TableHead>
+              <TableHead>Ngày báo cáo</TableHead>
+              <TableHead>Ngày giải quyết</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {incidents.map((incident) => (
+              <TableRow
+                key={incident.Id}
+                onClick={() => setSelectedIncident(incident)}
+                className="hover:bg-muted/50 cursor-pointer"
+              >
+                <TableCell className="font-medium">#{incident.Id}</TableCell>
+                <TableCell className="max-w-[300px] font-medium">
+                  {incident.Title}
+                </TableCell>
+                <TableCell>
+                  <div className="flex flex-col">
+                    <span className="font-medium">{incident.StationName}</span>
+                    <span className="text-muted-foreground text-xs">
+                      ID: {incident.StationId}
+                    </span>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Badge variant="outline">Cổng #{incident.ChargerId}</Badge>
+                </TableCell>
+                <TableCell>{getSeverityBadge(incident.Severity)}</TableCell>
+                <TableCell>{getStatusBadge(incident.Status)}</TableCell>
+                <TableCell>
                   <span className="text-sm">
-                    {format(new Date(incident.ResolvedAt), "dd/MM/yyyy HH:mm", {
+                    {format(new Date(incident.ReportedAt), "dd/MM/yyyy HH:mm", {
                       locale: vi,
                     })}
                   </span>
-                ) : (
-                  <span className="text-muted-foreground text-sm">
-                    Chưa giải quyết
-                  </span>
-                )}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+                </TableCell>
+                <TableCell>
+                  {incident.ResolvedAt ? (
+                    <span className="text-sm">
+                      {format(
+                        new Date(incident.ResolvedAt),
+                        "dd/MM/yyyy HH:mm",
+                        {
+                          locale: vi,
+                        },
+                      )}
+                    </span>
+                  ) : (
+                    <span className="text-muted-foreground text-sm">
+                      Chưa giải quyết
+                    </span>
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      <IncidentDetailsModal
+        incident={selectedIncident}
+        onOpenChange={() => setSelectedIncident(null)} // Đóng modal
+        onUpdateSuccess={handleUpdateSuccess}
+      />
+    </>
   );
 }

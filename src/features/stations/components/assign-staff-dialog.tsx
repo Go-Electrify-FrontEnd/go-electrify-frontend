@@ -18,6 +18,7 @@ import { assignStaffToStation } from "@/features/stations/api/stations-api";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { getAuthToken } from "@/features/stations/api/auth-actions";
+import { useUser } from "@/contexts/user-context";
 
 interface User {
   id: number;
@@ -42,6 +43,7 @@ export function AssignStaffDialog({
   const [users, setUsers] = useState<User[]>([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   const router = useRouter();
+  const { token } = useUser();
 
   useEffect(() => {
     if (open && users.length === 0) {
@@ -52,15 +54,11 @@ export function AssignStaffDialog({
   const fetchUsers = async () => {
     setIsLoadingUsers(true);
     try {
-      const token = await getAuthToken();
-
       if (!token) {
-        toast.error("Phiên đăng nhập hết hạn");
-        return;
+        throw new Error("User not authenticated");
       }
-
       const response = await fetch(
-        "https://api.go-electrify.com/api/v1/users",
+        "https://api.go-electrify.com/api/v1/users?role=Staff",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -73,10 +71,18 @@ export function AssignStaffDialog({
       }
 
       const payload = await response.json();
-      const allUsers = payload.data || [];
+
+      const allUsers = payload.Items || [];
+
+      const normalizedUsers: User[] = allUsers.map((u: any) => ({
+        id: u.Id,
+        email: u.Email,
+        fullName: u.FullName,
+        role: u.Role,
+      }));
 
       // Filter only staff users
-      const staffUsers = allUsers.filter(
+      const staffUsers = normalizedUsers.filter(
         (user: User) => user.role.toLowerCase() === "staff",
       );
 
@@ -104,8 +110,6 @@ export function AssignStaffDialog({
 
     startTransition(async () => {
       try {
-        const token = await getAuthToken();
-
         if (!token) {
           toast.error("Phiên đăng nhập hết hạn");
           return;
@@ -124,7 +128,7 @@ export function AssignStaffDialog({
           setSearchQuery("");
           router.refresh();
         } else {
-          toast.error(`Không thể phân công: ${result.error}`);
+          toast.error(`Không thể phân công: Nhân viên đã được phân công`);
         }
       } catch (error) {
         toast.error("Đã xảy ra lỗi khi phân công nhân viên");

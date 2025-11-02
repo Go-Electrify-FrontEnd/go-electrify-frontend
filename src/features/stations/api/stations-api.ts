@@ -194,14 +194,18 @@ export async function getStationStaff(stationId: string, token: string) {
     }
 
     const payload = await response.json();
-    const { success, data } = StationStaffListSchema.safeParse(payload);
-
-    if (!success) {
-      console.error("Failed to parse station staff data");
+    if (!payload.ok || !payload.data) {
+      console.error("Invalid station staff response format");
       return [];
     }
 
-    return data;
+    const parsed = StationStaffListSchema.safeParse(payload.data);
+    if (!parsed.success) {
+      console.error("Zod schema validation failed:", parsed.error);
+      return [];
+    }
+
+    return parsed.data;
   } catch (error) {
     console.error("Error fetching station staff:", error);
     return [];
@@ -293,7 +297,7 @@ export async function assignStaffToStation(
     if (!response.ok) {
       const error = await response.text();
       console.error("Failed to assign staff, status:", response.status, error);
-      return { success: false, error: `Status ${response.status}` };
+      return { success: false };
     }
 
     return { success: true };
@@ -318,7 +322,7 @@ export async function revokeStaffFromStation(
       stationId,
     )}/staff/${userId}`;
 
-    const response = await fetch(url, {
+    const response = await fetch(`${url}?reason=string`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,

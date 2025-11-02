@@ -17,6 +17,7 @@ import { revokeStaffFromStation } from "@/features/stations/api/stations-api";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { getAuthToken } from "@/features/stations/api/auth-actions";
+import { useUser } from "@/contexts/user-context";
 
 interface RevokeStaffActionProps {
   stationId: string;
@@ -32,18 +33,18 @@ export function RevokeStaffAction({
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const { token } = useUser();
 
   const handleRevoke = () => {
     startTransition(async () => {
       try {
-        const token = await getAuthToken();
-
         if (!token) {
           toast.error("Phiên đăng nhập hết hạn");
           return;
         }
 
         const result = await revokeStaffFromStation(stationId, userId, token);
+        console.log(result);
 
         if (result.success) {
           toast.success("Thu hồi quyền thành công");
