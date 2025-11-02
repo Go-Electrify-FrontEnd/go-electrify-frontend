@@ -1,6 +1,9 @@
 import { getUser } from "@/lib/auth/auth-server";
 import { forbidden } from "next/navigation";
 import { DepositCustomersClient } from "./deposit-customers-client";
+
+export const dynamic = "force-dynamic";
+
 export interface User {
   Id: number;
   Email: string;
@@ -10,18 +13,22 @@ export interface User {
   CreatedAt: string;
 }
 
-async function getUsers(token: string): Promise<User[]> {
+async function getUsers(token: string, searchQuery: string): Promise<User[]> {
   try {
-    const response = await fetch(
-      "https://api.go-electrify.com/api/v1/users?Role=Driver",
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        cache: "no-store",
+    const url = new URL("https://api.go-electrify.com/api/v1/users");
+    url.searchParams.append("Role", "Driver");
+
+    if (searchQuery) {
+      url.searchParams.append("Search", searchQuery);
+    }
+
+    const response = await fetch(url.toString(), {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
-    );
+      cache: "no-store",
+    });
 
     if (!response.ok) {
       console.error("Failed to fetch users:", response.status);
@@ -36,21 +43,29 @@ async function getUsers(token: string): Promise<User[]> {
   }
 }
 
-export default async function DepositCustomersPage() {
+export default async function DepositCustomersPage({
+  searchParams,
+}: {
+  searchParams?: { Search?: string };
+}) {
   const { user, token } = await getUser();
 
   if (!user || !token) {
     forbidden();
   }
 
-  const users = await getUsers(token);
+  const params = await searchParams;
+
+  const searchQuery = params?.Search || "";
+
+  const users = await getUsers(token, searchQuery);
 
   return (
     <div className="container mx-auto p-6">
       <div className="mb-6">
         <h1 className="text-3xl font-bold">Nạp tiền cho khách hàng</h1>
         <p className="text-muted-foreground mt-1">
-          Chọn một khách hàng (Driver) để nạp tiền thủ công.
+          Tìm kiếm và chọn một khách hàng (Driver) để nạp tiền thủ công.
         </p>
       </div>
       <DepositCustomersClient initialUsers={users} />
