@@ -37,6 +37,7 @@ import { vi } from "date-fns/locale";
 
 interface ReportedIncident {
   Id: number;
+  ReporterName: string;
   StationId: number;
   StationName: string;
   ChargerId: number;
@@ -144,7 +145,7 @@ export function IncidentDetailsModal({
           </div>
           <div>
             <span className="text-muted-foreground text-xs">Người báo cáo</span>
-            <p className="font-medium">User ID: {incident.ReporterUserId}</p>
+            <p className="font-medium">{incident.ReporterName}</p>
           </div>
           <div>
             <span className="text-muted-foreground text-xs">Mức độ</span>
