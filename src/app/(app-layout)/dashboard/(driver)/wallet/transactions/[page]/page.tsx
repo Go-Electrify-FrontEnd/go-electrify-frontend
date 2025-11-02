@@ -6,25 +6,9 @@ import {
   WalletSchema,
 } from "@/features/wallet/schemas/wallet.schema";
 import { redirect } from "next/navigation";
+import { getWallet } from "../../page";
 
 const PAGE_SIZE = 10;
-
-export async function getWallet() {
-  const { token } = await getUser();
-  const url = "https://api.go-electrify.com/api/v1/wallet/me/balance";
-  const response = await fetch(url, {
-    method: "GET",
-    headers: { Authorization: `Bearer ${token}` },
-    next: { tags: ["wallet-balance"] },
-  });
-  if (!response.ok) {
-    console.error("Failed to fetch wallet, status: " + response.status);
-    return null;
-  }
-  const { success, data } = WalletSchema.safeParse(await response.json());
-  const wallet = success ? data : null;
-  return wallet;
-}
 
 export async function getTransactions(
   page: number = 1,

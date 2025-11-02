@@ -1,9 +1,9 @@
 import { getUser } from "@/lib/auth/auth-server";
 import type { DriverStats } from "@/types/dashboard-stats";
 import { redirect } from "next/navigation";
-import { getWallet } from "@/app/(app-layout)/dashboard/(driver)/wallet/transactions/[page]/page";
 import { DriverDashboard } from "@/features/dashboard/components/home/driver-dashboard";
 import { TransactionListApiSchema } from "@/features/wallet/schemas/wallet.schema";
+import { getWallet } from "@/app/(app-layout)/dashboard/(driver)/wallet/page";
 
 async function getTransactions() {
   const { token } = await getUser();
