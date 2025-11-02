@@ -82,7 +82,7 @@ export function NotificationsPageClient({
     setNotifications(initialNotifications);
   }, [initialNotifications]);
 
-  const unreadCount = notifications.filter((n) => n.IsNew).length;
+  const unreadCount = notifications.filter((n) => n.IsUnread).length;
 
   // Mark notification as read when clicked
   const handleNotificationClick = useCallback(
@@ -90,12 +90,12 @@ export function NotificationsPageClient({
       setSelectedNotification(notification);
 
       // Chỉ mark as read nếu notification này chưa đọc
-      if (!notification.IsNew) return;
+      if (!notification.IsUnread) return;
 
       // Optimistic update - CHỈ update notification được click
       setNotifications((prev) =>
         prev.map((n) =>
-          n.Id === notification.Id ? { ...n, IsNew: false } : n,
+          n.Id === notification.Id ? { ...n, IsUnread: false } : n,
         ),
       );
 
@@ -119,7 +119,7 @@ export function NotificationsPageClient({
           // Revert CHỈ notification này nếu lỗi
           setNotifications((prev) =>
             prev.map((n) =>
-              n.Id === notification.Id ? { ...n, IsNew: true } : n,
+              n.Id === notification.Id ? { ...n, IsUnread: true } : n,
             ),
           );
         } else {
@@ -133,12 +133,12 @@ export function NotificationsPageClient({
         // Revert CHỈ notification này nếu lỗi
         setNotifications((prev) =>
           prev.map((n) =>
-            n.Id === notification.Id ? { ...n, IsNew: true } : n,
+            n.Id === notification.Id ? { ...n, IsUnread: true } : n,
           ),
         );
       }
     },
-    [token, router],
+    [token],
   );
 
   // Mark all notifications as read
@@ -151,7 +151,7 @@ export function NotificationsPageClient({
     const previousNotifications = notifications;
 
     // Optimistic update - mark all as read
-    setNotifications((prev) => prev.map((n) => ({ ...n, IsNew: false })));
+    setNotifications((prev) => prev.map((n) => ({ ...n, IsUnread: false })));
 
     try {
       const response = await fetch(
@@ -182,7 +182,7 @@ export function NotificationsPageClient({
     } finally {
       setIsMarkingAllRead(false);
     }
-  }, [unreadCount, notifications, token, router]);
+  }, [unreadCount, notifications, token]);
 
   return (
     <div className="container mx-auto max-w-4xl p-6">
@@ -234,7 +234,7 @@ export function NotificationsPageClient({
             <Card
               key={notification.Id}
               className={`hover:bg-accent cursor-pointer p-4 transition-colors ${
-                notification.IsNew
+                notification.IsUnread
                   ? "border-l-4 border-l-blue-500 bg-blue-50/30"
                   : ""
               }`}
@@ -249,12 +249,12 @@ export function NotificationsPageClient({
                     <div className="flex items-center gap-2">
                       <h3
                         className={`leading-tight ${
-                          notification.IsNew ? "font-bold" : "font-semibold"
+                          notification.IsUnread ? "font-bold" : "font-semibold"
                         }`}
                       >
                         {notification.Title}
                       </h3>
-                      {notification.IsNew && (
+                      {notification.IsUnread && (
                         <div className="h-2 w-2 rounded-full bg-blue-500" />
                       )}
                     </div>
