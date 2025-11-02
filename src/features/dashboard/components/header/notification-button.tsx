@@ -96,7 +96,7 @@ export function NotificationButton({
   }, [initialNotifications]);
 
   const recentNotifications = notifications.slice(0, 10);
-  const unreadCount = notifications.filter((n) => n.IsNew).length;
+  const unreadCount = notifications.filter((n) => n.IsUnread).length;
 
   // Mark single notification as read
   const handleNotificationClick = useCallback(
@@ -105,12 +105,12 @@ export function NotificationButton({
       setIsPopoverOpen(false);
 
       // Chỉ mark as read nếu notification này chưa đọc
-      if (!notification.IsNew) return;
+      if (!notification.IsUnread) return;
 
       // Optimistic update - CHỈ update notification được click
       setNotifications((prev) =>
         prev.map((n) =>
-          n.Id === notification.Id ? { ...n, IsNew: false } : n,
+          n.Id === notification.Id ? { ...n, IsUnread: false } : n,
         ),
       );
 
@@ -131,21 +131,24 @@ export function NotificationButton({
           // Revert CHỈ notification này nếu lỗi
           setNotifications((prev) =>
             prev.map((n) =>
-              n.Id === notification.Id ? { ...n, IsNew: true } : n,
+              n.Id === notification.Id ? { ...n, IsUnread: true } : n,
             ),
           );
         }
+
+        // Thêm router.refresh() ở đây để đồng bộ với trang /notifications
+        router.refresh();
       } catch (err) {
         console.error("Mark notification as read failed", err);
         // Revert CHỈ notification này nếu lỗi
         setNotifications((prev) =>
           prev.map((n) =>
-            n.Id === notification.Id ? { ...n, IsNew: true } : n,
+            n.Id === notification.Id ? { ...n, IsUnread: true } : n,
           ),
         );
       }
     },
-    [token],
+    [token, router],
   );
 
   // Mark all as read and navigate
@@ -160,7 +163,7 @@ export function NotificationButton({
       setIsMarkingAllRead(true);
 
       // Optimistic update - mark all as read locally
-      setNotifications((prev) => prev.map((n) => ({ ...n, IsNew: false })));
+      setNotifications((prev) => prev.map((n) => ({ ...n, IsUnread: false })));
 
       try {
         const response = await fetch(
@@ -227,7 +230,7 @@ export function NotificationButton({
               <NotificationItem
                 key={notification.Id}
                 notification={notification}
-                isUnread={notification.IsNew}
+                isUnread={notification.IsUnread}
                 onClick={() => handleNotificationClick(notification)}
               />
             ))}
