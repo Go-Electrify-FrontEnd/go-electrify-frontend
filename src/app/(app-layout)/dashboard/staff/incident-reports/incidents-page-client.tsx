@@ -14,6 +14,7 @@ import {
 import { ReportIncidentModal } from "./report-incident-modal";
 import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
+import { UpdateIncidentModal } from "./update-incident-modal";
 
 interface Incident {
   Id: number;
@@ -90,11 +91,25 @@ export function IncidentsPageClient({
 }: IncidentsPageClientProps) {
   const [incidents, setIncidents] = useState<Incident[]>(initialIncidents);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+
+  const [selectedIncident, setSelectedIncident] = useState<Incident | null>(
+    null,
+  );
 
   const handleReportSuccess = (newIncident: Incident) => {
-    // Thêm sự cố mới vào đầu danh sách
     setIncidents((prev) => [newIncident, ...prev]);
-    setIsModalOpen(false);
+    setIsReportModalOpen(false);
+  };
+
+  const handleUpdateSuccess = (updatedIncident: Incident) => {
+    // Cập nhật lại danh sách local (optimistic update)
+    setIncidents((prev) =>
+      prev.map((inc) =>
+        inc.Id === updatedIncident.Id ? updatedIncident : inc,
+      ),
+    );
+    setSelectedIncident(null); // Đóng modal
   };
 
   return (
@@ -122,7 +137,12 @@ export function IncidentsPageClient({
           </Card>
         ) : (
           incidents.map((incident) => (
-            <Card key={incident.Id}>
+            // === THÊM onClick VÀ CSS CURSOR ===
+            <Card
+              key={incident.Id}
+              onClick={() => setSelectedIncident(incident)}
+              className="hover:bg-muted/50 cursor-pointer transition-colors"
+            >
               <CardHeader>
                 <div className="flex items-start justify-between gap-4">
                   <div>
@@ -166,6 +186,12 @@ export function IncidentsPageClient({
         onOpenChange={setIsModalOpen}
         stations={stations}
         onReportSuccess={handleReportSuccess}
+      />
+
+      <UpdateIncidentModal
+        incident={selectedIncident}
+        onOpenChange={() => setSelectedIncident(null)}
+        onUpdateSuccess={handleUpdateSuccess}
       />
     </div>
   );
