@@ -46,6 +46,7 @@ async function getAllNotifications(token: string): Promise<Notification[]> {
       Severity: item.Severity || "LOW",
       CreatedAt: item.CreatedAt || new Date().toISOString(),
       IsNew: item.IsNew !== undefined ? item.IsNew : false,
+      IsUnread: item.IsUnread !== undefined ? item.IsUnread : false,
     }));
 
     return notifications;

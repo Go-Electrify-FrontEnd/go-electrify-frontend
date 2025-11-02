@@ -7,6 +7,7 @@ export interface Notification {
   Severity?: "LOW" | "HIGH";
   CreatedAt: string; // ISO 8601 datetime string
   IsNew: boolean; // true = chưa đọc, false = đã đọc
+  IsUnread: boolean;
 }
 
 export interface NotificationResponse {
