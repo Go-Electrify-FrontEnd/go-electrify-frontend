@@ -28,6 +28,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { formatShortCurrency } from "@/lib/formatters";
 import { Button } from "@/components/ui/button";
 
 async function getUserSubscriptions(): Promise<UserSubscription[]> {
@@ -216,7 +217,7 @@ export default async function BillingPage() {
                           </div>
                           <CardDescription className="text-xs">
                             Gói {subscription.totalKwh} kWh -{" "}
-                            {subscription.price.toLocaleString("vi-VN")} ₫
+                            {formatShortCurrency(subscription.price)}
                           </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-3 pb-3">

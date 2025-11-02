@@ -5,6 +5,7 @@ import { getUser } from "@/lib/auth/auth-server";
 import { completePaymentSchema } from "@/lib/zod/session/complete-payment.request";
 import { redirect } from "next/navigation";
 import { API_BASE_URL, createJsonAuthHeaders } from "@/lib/api-config";
+import { formatNumber } from "@/lib/formatters";
 
 export type CompletePaymentActionState = {
   success: boolean;
@@ -316,7 +317,7 @@ export async function completeSessionPayment(
 
     let successMessage = "Thanh toán thành công!";
     if (data.PaymentMethod === "WALLET") {
-      successMessage = `Thanh toán thành công ${data.BilledAmount.toLocaleString("vi-VN")} VND từ ví điện tử cho ${data.EnergyKwh.toFixed(2)} kWh.`;
+      successMessage = `Thanh toán thành công ${formatNumber(data.BilledAmount)} VND từ ví điện tử cho ${data.EnergyKwh.toFixed(2)} kWh.`;
     } else if (data.PaymentMethod === "SUBSCRIPTION") {
       if (data.CoveredBySubscriptionKwh) {
         successMessage = `Thanh toán thành công bằng gói đăng ký cho ${data.CoveredBySubscriptionKwh.toFixed(2)} kWh.`;
