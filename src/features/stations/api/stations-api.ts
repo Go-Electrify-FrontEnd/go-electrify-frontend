@@ -297,7 +297,7 @@ export async function assignStaffToStation(
     if (!response.ok) {
       const error = await response.text();
       console.error("Failed to assign staff, status:", response.status, error);
-      return { success: false, error: `Status ${response.status}` };
+      return { success: false };
     }
 
     return { success: true };
