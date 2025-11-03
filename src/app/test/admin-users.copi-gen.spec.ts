@@ -1,31 +1,31 @@
 import { test, expect } from "next/experimental/testmode/playwright";
 import { setupAuthState, mockAdminUser, waitForPageReady } from "./test-utils";
 
-// Mock data for users
+// Mock data for users - matches UserApiSchema
 const mockUsers = [
   {
     Id: 1,
     Email: "user1@example.com",
-    Username: "user1",
+    FullName: "User One",
     Role: "driver",
-    CreatedAt: "2024-01-01T00:00:00Z",
-    Status: "active",
+    WalletBalance: 100000,
+    CreateAt: "2024-01-01T00:00:00Z",
   },
   {
     Id: 2,
     Email: "user2@example.com",
-    Username: "user2",
+    FullName: "User Two",
     Role: "driver",
-    CreatedAt: "2024-01-02T00:00:00Z",
-    Status: "active",
+    WalletBalance: 50000,
+    CreateAt: "2024-01-02T00:00:00Z",
   },
   {
     Id: 3,
     Email: "admin@example.com",
-    Username: "admin",
+    FullName: "Admin User",
     Role: "admin",
-    CreatedAt: "2024-01-03T00:00:00Z",
-    Status: "active",
+    WalletBalance: 0,
+    CreateAt: "2024-01-03T00:00:00Z",
   },
 ];
 
