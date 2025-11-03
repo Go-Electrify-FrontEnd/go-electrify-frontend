@@ -16,6 +16,7 @@ import {
   Zap,
   ReceiptText,
   Package,
+  BarChart3,
 } from "lucide-react";
 const overview = {
   title: "Tổng Quan",
@@ -25,6 +26,11 @@ const overview = {
       url: "/dashboard",
       icon: House,
     },
+  {
+    title: "Insights",
+    url: "/dashboard/admin/insights",
+    icon: BarChart3,
+  },
     {
       title: "Bắt Đầu Sạc",
       url: "/dashboard/charging",
