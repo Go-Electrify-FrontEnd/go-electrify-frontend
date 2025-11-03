@@ -1,6 +1,7 @@
 "use server";
 
 import { getUser, refreshAccessToken } from "@/lib/auth/auth-server";
+import { API_BASE_URL } from "@/lib/api-config";
 import { forbidden } from "next/navigation";
 
 export async function updateUserName(prev: unknown, formData: FormData) {
@@ -15,7 +16,7 @@ export async function updateUserName(prev: unknown, formData: FormData) {
     return { success: false, msg: "Tên không hợp lệ (3-50 ký tự)" };
   }
 
-  const url = "https://api.go-electrify.com/api/v1/profile/name";
+  const url = `${API_BASE_URL}/profile/name`;
   const response = await fetch(url, {
     method: "PUT",
     headers: {

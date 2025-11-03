@@ -1,6 +1,7 @@
 "use server";
 
 import { getUser } from "@/lib/auth/auth-server";
+import { API_BASE_URL } from "@/lib/api-config";
 import { updateTag } from "next/cache";
 import {
   reservationCancelSchema,
@@ -29,7 +30,7 @@ export async function createReservation(prev: unknown, formData: FormData) {
   scheduledStart.setMinutes(scheduledStart.getMinutes() + 60);
 
   try {
-    const url = "https://api.go-electrify.com/api/v1/bookings";
+    const url = `${API_BASE_URL}/bookings`;
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -81,7 +82,7 @@ export async function cancelReservation(prev: unknown, formData: FormData) {
       return { success: false, msg: "Dữ liệu không hợp lệ" };
     }
 
-    const url = `https://api.go-electrify.com/api/v1/bookings/${reservationId}/cancel`;
+    const url = `${API_BASE_URL}/bookings/${reservationId}/cancel`;
     const response = await fetch(url, {
       method: "POST",
       headers: {

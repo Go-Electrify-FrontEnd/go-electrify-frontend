@@ -27,22 +27,10 @@ const MODE_LABEL: Record<SearchMode, string> = {
 };
 
 export default function NearbyStationSearch() {
-  const {
-    setSearchQuery,
-    searchQuery,
-    sortedStations,
-    searchMode,
-    setSearchMode,
-  } = useStationsNearby();
+  const { setSearchQuery, searchQuery, searchMode, setSearchMode } =
+    useStationsNearby();
   const [value, setValue] = useState<string>(() => searchQuery || "");
 
-  // Keep local input in sync when the query is changed externally (use key instead of effect).
-  const displayValue =
-    searchQuery !== undefined && searchQuery !== value.trim()
-      ? searchQuery
-      : value;
-
-  // Debounce calls to the provider to avoid filtering on every keystroke.
   useEffect(() => {
     const id = setTimeout(() => {
       setSearchQuery(value.trim());
@@ -50,13 +38,11 @@ export default function NearbyStationSearch() {
     return () => clearTimeout(id);
   }, [value, setSearchQuery]);
 
-  const label = useMemo(() => MODE_LABEL[searchMode], [searchMode]);
-
   return (
     <InputGroup>
       <InputGroupInput
         placeholder="Tìm kiếm trạm..."
-        value={displayValue}
+        value={value}
         onChange={(e) => setValue(e.target.value)}
       />
 
@@ -64,7 +50,7 @@ export default function NearbyStationSearch() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <InputGroupButton variant="ghost" className="!pr-1.5 text-xs">
-              {label} <ChevronDownIcon className="size-3" />
+              {MODE_LABEL[searchMode]} <ChevronDownIcon className="size-3" />
             </InputGroupButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="[--radius:0.95rem]">

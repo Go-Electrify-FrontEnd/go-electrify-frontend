@@ -1,7 +1,22 @@
 /**
  * Centralized API configuration
  */
-export const API_BASE_URL = "https://api.go-electrify.com/api/v1";
+export const API_BASE_URL = process.env.BACKEND_URL || "https://api.go-electrify.com/api/v1";
+
+/**
+ * Base API URL without version (for special endpoints like auth/logout)
+ */
+const API_BASE = API_BASE_URL.replace('/api/v1', '/api');
+
+/**
+ * Auth logout URL (uses /api/auth instead of /api/v1)
+ */
+export const API_AUTH_LOGOUT_URL = `${API_BASE}/auth/logout`;
+
+/**
+ * Payment order URL base (uses /api/payment instead of /api/v1)
+ */
+export const API_PAYMENT_ORDER_URL = `${API_BASE}/payment/order`;
 
 /**
  * Helper function to create authenticated fetch headers

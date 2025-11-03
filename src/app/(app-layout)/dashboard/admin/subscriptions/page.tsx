@@ -4,9 +4,10 @@ import { SubscriptionsTable } from "@/features/subscriptions/components/subscrip
 import { SubscriptionSchema } from "@/features/subscriptions/schemas/subscription.schema";
 import type { Subscription } from "@/features/subscriptions/schemas/subscription.types";
 import SectionContent from "@/components/shared/section-content";
+import { API_BASE_URL } from "@/lib/api-config";
 
 export async function getSubscriptions(): Promise<Subscription[]> {
-  const url = "https://api.go-electrify.com/api/v1/subscriptions";
+  const url = `${API_BASE_URL}/subscriptions`;
   const response = await fetch(url, {
     method: "GET",
     next: { tags: ["subscriptions"] },

@@ -2,6 +2,7 @@ import SectionHeader from "@/components/shared/section-header";
 import { getUser } from "@/lib/auth/auth-server";
 import SectionContent from "@/components/shared/section-content";
 import { ReportedIncidentTable } from "@/features/reported-incidents/components/reported-incident-table";
+import { API_BASE_URL } from "@/lib/api-config";
 
 interface ReportedIncident {
   Id: number;
@@ -22,7 +23,7 @@ export async function getReportedIncidents(
 ): Promise<ReportedIncident[]> {
   try {
     const response = await fetch(
-      "https://api.go-electrify.com/api/v1/admin/incidents",
+      `${API_BASE_URL}/admin/incidents`,
       {
         method: "GET",
         headers: {

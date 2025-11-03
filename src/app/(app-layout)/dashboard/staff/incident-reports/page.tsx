@@ -1,6 +1,7 @@
 import { getUser } from "@/lib/auth/auth-server";
 import { forbidden } from "next/navigation";
 import { IncidentsPageClient } from "./incidents-page-client";
+import { API_BASE_URL } from "@/lib/api-config";
 
 interface Incident {
   Id: number;
@@ -43,7 +44,7 @@ interface ApiIncident {
 // Hàm fetch trạm
 async function getStations(token: string): Promise<ApiStation[]> {
   try {
-    const res = await fetch("https://api.go-electrify.com/api/v1/stations/me", {
+    const res = await fetch(`${API_BASE_URL}/stations/me`, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
     });
@@ -63,7 +64,7 @@ async function getIncidentsForStation(
 ): Promise<ApiIncident[]> {
   try {
     const res = await fetch(
-      `https://api.go-electrify.com/api/v1/stations/${stationId}/incidents`,
+      `${API_BASE_URL}/stations/${stationId}/incidents`,
       {
         headers: { Authorization: `Bearer ${token}` },
         cache: "no-store",

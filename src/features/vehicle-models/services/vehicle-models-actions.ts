@@ -1,6 +1,7 @@
 "use server";
 
 import { getUser } from "@/lib/auth/auth-server";
+import { API_BASE_URL } from "@/lib/api-config";
 import { updateTag } from "next/cache";
 import { vehicleModelSchema } from "../schemas/vehicle-model.request";
 
@@ -24,7 +25,7 @@ export async function createVehicleModel(prev: unknown, formData: FormData) {
   }
 
   try {
-    const url = "https://api.go-electrify.com/api/v1/vehicle-models";
+    const url = `${API_BASE_URL}/vehicle-models`;
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -72,7 +73,7 @@ export async function updateVehicleModel(prev: unknown, formData: FormData) {
   }
 
   try {
-    const url = `https://api.go-electrify.com/api/v1/vehicle-models/${id}`;
+    const url = `${API_BASE_URL}/vehicle-models/${id}`;
     const response = await fetch(url, {
       method: "PUT",
       headers: {
@@ -111,7 +112,7 @@ export async function deleteVehicleModel(prev: unknown, formData: FormData) {
   }
 
   try {
-    const url = `https://api.go-electrify.com/api/v1/vehicle-models/${id}`;
+    const url = `${API_BASE_URL}/vehicle-models/${id}`;
     const response = await fetch(url, {
       method: "DELETE",
       headers: {

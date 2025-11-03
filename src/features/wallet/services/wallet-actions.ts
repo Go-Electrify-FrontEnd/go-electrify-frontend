@@ -5,6 +5,7 @@ import { getUser } from "@/lib/auth/auth-server";
 import { forbidden } from "next/navigation";
 import { walletTopupSchema } from "../schemas/wallet.request";
 import { TopupResponseApiSchema } from "../schemas/wallet.schema";
+import { API_BASE_URL } from "@/lib/api-config";
 
 export async function handleCreateTopup(prev: unknown, formData: FormData) {
   const { user, token } = await getUser();
@@ -21,7 +22,7 @@ export async function handleCreateTopup(prev: unknown, formData: FormData) {
     return { success: false, msg: "Giá trị truyền vào không hợp lệ." };
   }
 
-  const url = "https://api.go-electrify.com/api/v1/wallet/me/topup";
+  const url = `${API_BASE_URL}/wallet/me/topup`;
   const returnUrl = process.env.RETURN_URL;
   const cancelUrl = process.env.CANCEL_URL;
 
