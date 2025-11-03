@@ -44,6 +44,8 @@ export function RevenueChart({ data, loading, granularity }: RevenueChartProps) 
 
   const total = data?.Total?.toLocaleString("vi-VN") ?? "0";
 
+  const hideXAxisLabels = granularity === "hour";
+
   return (
     <Card>
       <CardHeader>
@@ -72,24 +74,32 @@ export function RevenueChart({ data, loading, granularity }: RevenueChartProps) 
         ) : (
           <div className="w-full overflow-x-auto">
             <ChartContainer config={chartConfig} className="h-64 w-full">
-              <BarChart 
-                width={chartWidth} 
-                height={320} 
-                data={formattedData} 
+              <BarChart
+                width={chartWidth}
+                height={320}
+                data={formattedData}
                 margin={{ top: 10, right: 10, left: 10, bottom: 10 }}
               >
                 <CartesianGrid vertical={false} />
-                <XAxis 
-                  dataKey="date" 
-                  tickLine={false} 
+                
+                <XAxis
+                  dataKey="date"
+                  tickLine={false}
                   tickMargin={10}
-                  interval={Math.max(0, Math.floor(formattedData.length / 10) - 1)} 
+                  interval={granularity === "day" ? Math.max(0, Math.floor(formattedData.length / 10) - 1) : "preserveStartEnd"}
+                  tick={hideXAxisLabels ? false : undefined}
                 />
+
                 <YAxis
                   tickLine={false}
                   tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
                 />
-                <ChartTooltip content={<ChartTooltipContent />} />
+
+                <ChartTooltip
+                  content={<ChartTooltipContent />}
+                  cursor={{ fill: "rgba(0,0,0,0.05)" }}
+                />
+
                 <Bar dataKey="Amount" fill="var(--chart-1)" radius={4} />
               </BarChart>
             </ChartContainer>
