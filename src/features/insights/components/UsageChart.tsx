@@ -39,14 +39,20 @@ export function UsageChart({ data, loading, granularity }: UsageChartProps) {
         parsedDate = new Date(item.Bucket);
       }
 
-      const timeLabel =
+      const axisLabel =
         granularity === "day"
           ? format(parsedDate, "dd/MM")
-          : format(parsedDate, "HH:mm dd/MM");
+          : format(parsedDate, "HH:mm");
+
+      const tooltipLabel =
+        granularity === "day"
+          ? format(parsedDate, "dd/MM/yyyy")
+          : format(parsedDate, "dd/MM/yyyy HH:mm");
 
       return {
         time: parsedDate.getTime(),
-        label: timeLabel,
+        axisLabel,
+        tooltipLabel,
         Count: item.Count,
       };
     })
@@ -54,8 +60,8 @@ export function UsageChart({ data, loading, granularity }: UsageChartProps) {
     ?? [];
 
   const chartWidth = Math.max(800, formattedData.length * (granularity === "day" ? 60 : 80));
-
-  const hideXAxisLabels = granularity === "hour";
+  const totalSessions = data?.TotalSessions ?? 0;
+  const peakHour = data?.PeakHour !== undefined ? `${data.PeakHour}h` : "-";
 
   return (
     <Card>
@@ -64,8 +70,7 @@ export function UsageChart({ data, loading, granularity }: UsageChartProps) {
           <div>
             <CardTitle>Lượt Sạc</CardTitle>
             <CardDescription>
-              Tổng {data?.TotalSessions ?? 0} phiên • Giờ cao điểm:{" "}
-              {data?.PeakHour !== undefined ? `${data.PeakHour}h` : "-"}
+              Tổng {totalSessions.toLocaleString("vi-VN")} phiên • Giờ cao điểm: {peakHour}
             </CardDescription>
           </div>
           <Zap className="h-6 w-6 text-yellow-500" />
@@ -92,23 +97,37 @@ export function UsageChart({ data, loading, granularity }: UsageChartProps) {
               >
                 <CartesianGrid stroke="#e5e7eb" strokeDasharray="3 3" />
                 
-              <XAxis
-                dataKey="label"
-                tickLine={false}
-                axisLine={true}
-                interval={
-                  granularity === "day"
-                    ? Math.max(0, Math.floor(formattedData.length / 10) - 1)
-                    : "preserveStartEnd"
-                }
-                tick={hideXAxisLabels ? false : { fontSize: 12 }}
-                tickFormatter={hideXAxisLabels ? () => "" : undefined}
-              />
+                <XAxis
+                  dataKey="axisLabel"
+                  tickLine={false}
+                  axisLine={true}
+                  interval={
+                    granularity === "day"
+                      ? Math.max(0, Math.floor(formattedData.length / 10) - 1)
+                      : "preserveStartEnd"
+                  }
+                  tick={{ fontSize: 12 }}
+                />
 
-                <YAxis tick={{ fontSize: 12 }} tickLine={false} />
+                <YAxis
+                  tick={{ fontSize: 12 }}
+                  tickLine={false}
+                  tickFormatter={(value) => value.toLocaleString("vi-VN")}
+                />
 
                 <ChartTooltip
-                  content={<ChartTooltipContent />}
+                  content={
+                    <ChartTooltipContent
+                      labelFormatter={(_, payload) => {
+                        if (payload && payload.length > 0) {
+                          const data = payload[0].payload as { tooltipLabel: string };
+                          return data.tooltipLabel;
+                        }
+                        return "";
+                      }}
+                      formatter={(value) => `${Number(value).toLocaleString("vi-VN")} phiên`}
+                    />
+                  }
                   cursor={{ stroke: "var(--chart-1)", strokeWidth: 1, strokeDasharray: "5 5" }}
                 />
 
