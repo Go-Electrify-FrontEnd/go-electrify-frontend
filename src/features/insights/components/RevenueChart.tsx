@@ -27,7 +27,7 @@ interface RevenueChartProps {
 const chartConfig = {
   Amount: {
     label: "Doanh thu (VNĐ)",
-    color: "hsl(var(--chart-2))",
+    color: "var(--color-desktop)",
   },
 } satisfies ChartConfig;
 
@@ -90,7 +90,7 @@ export function RevenueChart({ data, loading, granularity }: RevenueChartProps) 
                   tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
                 />
                 <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="Amount" fill="var(--color-Amount)" radius={4} />
+                <Bar dataKey="Amount" fill="var(--chart-1)" radius={4} />
               </BarChart>
             </ChartContainer>
           </div>
