@@ -32,6 +32,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useUser } from "@/features/users/contexts/user-context";
 import { Loader2 } from "lucide-react";
+import { API_BASE_URL } from "@/lib/api-config";
 
 interface Incident {
   Id: number;
@@ -115,7 +116,7 @@ export function ReportIncidentModal({
       form.resetField("chargerId"); // Xóa bộ sạc đã chọn
       try {
         const res = await fetch(
-          `https://api.go-electrify.com/api/v1/stations/${selectedStationId}/chargers`,
+          `${API_BASE_URL}/stations/${selectedStationId}/chargers`,
           {
             headers: { Authorization: `Bearer ${token}` },
             cache: "no-store",
@@ -153,7 +154,7 @@ export function ReportIncidentModal({
 
     try {
       const res = await fetch(
-        `https://api.go-electrify.com/api/v1/stations/${data.stationId}/incidents`,
+        `${API_BASE_URL}/stations/${data.stationId}/incidents`,
         {
           method: "POST",
           headers: {

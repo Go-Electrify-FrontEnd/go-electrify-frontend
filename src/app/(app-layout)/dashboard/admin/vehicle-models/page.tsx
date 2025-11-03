@@ -16,18 +16,16 @@ import { VehicleModelTable } from "@/features/vehicle-models/components/vehicle-
 import { VehicleModelUpdateProvider } from "@/contexts/vehicle-model-action-context";
 import VehicleModelEditDialog from "@/features/vehicle-models/components/vehicle-model-edit-dialog";
 import SectionContent from "@/components/shared/section-content";
+import { API_BASE_URL } from "@/lib/api-config";
 
 export async function getVehicleModels(token: string): Promise<CarModel[]> {
   try {
-    const response = await fetch(
-      "https://api.go-electrify.com/api/v1/vehicle-models",
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    const response = await fetch(`${API_BASE_URL}/vehicle-models`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
-    );
+    });
 
     if (!response.ok) {
       console.log("Failed to fetch vehicle models, status: " + response.status);

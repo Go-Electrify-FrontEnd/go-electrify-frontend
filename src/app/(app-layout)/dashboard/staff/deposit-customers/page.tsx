@@ -1,6 +1,7 @@
 import { getUser } from "@/lib/auth/auth-server";
 import { forbidden } from "next/navigation";
 import { DepositCustomersClient } from "./deposit-customers-client";
+import { API_BASE_URL } from "@/lib/api-config";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,7 @@ export interface User {
 
 async function getUsers(token: string, searchQuery: string): Promise<User[]> {
   try {
-    const url = new URL("https://api.go-electrify.com/api/v1/users");
+    const url = new URL(`${API_BASE_URL}/users`);
     url.searchParams.append("Role", "Driver");
 
     if (searchQuery) {

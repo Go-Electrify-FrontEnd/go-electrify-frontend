@@ -1,7 +1,8 @@
 import { Station, StationApiSchema } from "../schemas/station.schema";
+import { API_BASE_URL } from "@/lib/api-config";
 
 export async function getStations(): Promise<Station[]> {
-  const url = "https://api.go-electrify.com/api/v1/stations";
+  const url = `${API_BASE_URL}/stations`;
   const response = await fetch(url, {
     method: "GET",
     next: { tags: ["stations"] },

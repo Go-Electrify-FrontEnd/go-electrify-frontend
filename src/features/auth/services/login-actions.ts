@@ -2,13 +2,14 @@
 
 import { cookies } from "next/headers";
 import { refreshAccessToken, refreshTokenSchema } from "@/lib/auth/auth-server";
+import { API_BASE_URL } from "@/lib/api-config";
 
 export async function requestOtp(email: string) {
   if (!email) {
     return { success: false, msg: "Email là bắt buộc" };
   }
 
-  const url = "https://api.go-electrify.com/api/v1/auth/request-otp";
+  const url = `${API_BASE_URL}/auth/request-otp`;
   try {
     const response = await fetch(url, {
       method: "POST",
@@ -60,7 +61,7 @@ export async function handleVerifyOTP(prevState: unknown, data: FormData) {
   }
 
   // Verify OTP with backend
-  const url = "https://api.go-electrify.com/api/v1/auth/verify-otp";
+  const url = `${API_BASE_URL}/auth/verify-otp`;
   try {
     const response = await fetch(url, {
       method: "POST",
