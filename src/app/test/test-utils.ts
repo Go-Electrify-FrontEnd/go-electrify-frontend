@@ -1,38 +1,75 @@
 import type { Page } from "@playwright/test";
+import * as jose from "jose";
 
 /**
  * Mock data for admin user authentication
  * This simulates an authenticated admin session without real email flow
  */
 export const mockAdminUser = {
-  id: 1,
+  uid: "1",
   email: "admin@test.local",
   name: "Test Admin",
   role: "admin",
-  token: "mock-jwt-token-for-testing",
+  avatar: null,
 };
 
 /**
  * Mock data for driver user authentication
  */
 export const mockDriverUser = {
-  id: 2,
+  uid: "2",
   email: "driver@test.local",
   name: "Test Driver",
   role: "driver",
-  token: "mock-jwt-token-driver",
+  avatar: null,
 };
 
 /**
+ * Generate a valid JWT token for testing
+ * Uses the AUTH_SECRET_KEY environment variable if available, otherwise uses a test secret
+ */
+async function generateTestJWT(user: typeof mockAdminUser) {
+  const secret = new TextEncoder().encode(
+    process.env.AUTH_SECRET_KEY || "test-secret-key-for-testing-only"
+  );
+  
+  const jwt = await new jose.SignJWT({
+    uid: user.uid,
+    email: user.email,
+    name: user.name,
+    role: user.role,
+    avatar: user.avatar,
+  })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("2h")
+    .sign(secret);
+
+  return jwt;
+}
+
+/**
  * Setup authentication state for testing
- * Creates cookies and session storage to simulate logged-in user
+ * Creates cookies with valid JWT tokens to simulate logged-in user
  */
 export async function setupAuthState(page: Page, user = mockAdminUser) {
-  // Set up authentication cookies
+  const accessToken = await generateTestJWT(user);
+  const refreshToken = await generateTestJWT(user); // In tests, we can use the same token
+
+  // Set up authentication cookies with the correct names
   await page.context().addCookies([
     {
-      name: "auth-token",
-      value: user.token,
+      name: "accessToken",
+      value: accessToken,
+      domain: "localhost",
+      path: "/",
+      httpOnly: true,
+      secure: false,
+      sameSite: "Lax",
+    },
+    {
+      name: "refreshToken",
+      value: refreshToken,
       domain: "localhost",
       path: "/",
       httpOnly: true,
@@ -40,11 +77,6 @@ export async function setupAuthState(page: Page, user = mockAdminUser) {
       sameSite: "Lax",
     },
   ]);
-
-  // Set up user data in localStorage if needed
-  await page.addInitScript((userData) => {
-    localStorage.setItem("user", JSON.stringify(userData));
-  }, user);
 }
 
 /**

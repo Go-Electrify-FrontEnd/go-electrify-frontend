@@ -39,10 +39,11 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
 
-    {
-      name: "firefox",
-      use: { ...devices["Desktop Firefox"] },
-    },
+    // Disabled firefox for now due to installation issues in CI
+    // {
+    //   name: "firefox",
+    //   use: { ...devices["Desktop Firefox"] },
+    // },
 
     /* Test against mobile viewports. */
     // {
