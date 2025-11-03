@@ -96,26 +96,30 @@ export function UsageChart({ data, loading, granularity }: UsageChartProps) {
                   tick={{ fontSize: 12 }}
                   tickLine={false}
                   axisLine={true}
-                  interval={Math.max(0, Math.floor(formattedData.length / 10) - 1)} // Giảm số tick nếu data nhiều để tránh chật
+                  interval={Math.max(0, Math.floor(formattedData.length / 10) - 1)} 
                 />
                 <YAxis tick={{ fontSize: 12 }} tickLine={false} />
-                <Tooltip
-                  cursor={{ strokeDasharray: "3 3" }}
-                  contentStyle={{
-                    backgroundColor: "white",
-                    border: "1px solid #ddd",
-                    borderRadius: "6px",
-                    padding: "8px 12px",
-                  }}
-                  formatter={(value: number, name: string, props: any) => [
-                    `${value} phiên sạc`,
-                    `Ngày ${props.payload.label}`,
-                  ]}
+                     <ChartTooltip
+                  cursor={{ strokeDasharray: "3 3", stroke: "hsl(var(--muted-foreground))" }}
+                  content={
+                    <ChartTooltipContent
+                      className="bg-background border-border text-foreground"
+                      labelFormatter={(value) => `${value}`}
+                      formatter={(value: number) => [
+                        <span key="value" className="font-medium">
+                          {value} phiên sạc
+                        </span>,
+                        <span key="label" className="text-muted-foreground text-xs">
+                          Lượt sạc
+                        </span>,
+                      ]}
+                    />
+                  }
                 />
                 <Line
                   type="monotone"
                   dataKey="Count"
-                  stroke="#000000"
+                  stroke="var(--chart-1)"
                   strokeWidth={2}
                 />
               </LineChart>
