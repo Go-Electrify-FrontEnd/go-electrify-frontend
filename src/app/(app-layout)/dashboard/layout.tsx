@@ -10,13 +10,13 @@ import { forbidden } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import HeaderBreadcrumb from "@/features/dashboard/components/sidebar/header-breadcrumb";
 import { NotificationButton } from "@/features/dashboard/components/header/notification-button";
-import { Notification } from "@/types/notification";
+import { Notification } from "@/features/dashboard/types/notification";
 
 export const dynamic = "force-dynamic";
 
 async function getNotifications(token: string): Promise<Notification[]> {
   try {
-    const url = "https://api.go-electrify.com/api/v1/notifications/dashboard";
+    const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/notifications/dashboard`;
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -59,7 +59,7 @@ export default async function DashboardLayout({
               <NotificationButton notifications={notifications} />
             </div>
           </header>
-          <div className="flex flex-1 flex-col gap-4 pb-4">{children}</div>
+          <div className="flex flex-1 flex-col gap-4">{children}</div>
         </SidebarInset>
       </UserProvider>
     </SidebarProvider>

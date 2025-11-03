@@ -174,6 +174,7 @@ export function NotificationButton({
     //     throw new Error("State bị lệch, không tìm thấy unread IDs.");
     //   }
 
+<<<<<<< HEAD
     //   const readPromises = unreadIds.map((id) =>
     //     fetch(`https://api.go-electrify.com/api/v1/notifications/${id}/read`, {
     //       method: "POST",

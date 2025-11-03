@@ -1,6 +1,6 @@
 "use client";
 
-import type { User } from "@/lib/zod/user/user.types";
+import type { User } from "@/features/users/schemas/user.types";
 import React, { createContext, useContext } from "react";
 
 interface UserProviderProps extends React.PropsWithChildren {

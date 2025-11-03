@@ -7,6 +7,7 @@ import {
 } from "@/features/wallet/schemas/wallet.schema";
 import { redirect } from "next/navigation";
 import { getWallet } from "../../page";
+import { API_BASE_URL } from "@/lib/api-config";
 
 const PAGE_SIZE = 10;
 
@@ -15,7 +16,7 @@ export async function getTransactions(
   pageSize: number = PAGE_SIZE,
 ) {
   const { token } = await getUser();
-  const url = `https://api.go-electrify.com/api/v1/wallet/me/transactions?page=${page}&pageSize=${pageSize}`;
+  const url = `${API_BASE_URL}/wallet/me/transactions?page=${page}&pageSize=${pageSize}`;
   const response = await fetch(url, {
     method: "GET",
     headers: { Authorization: `Bearer ${token}` },

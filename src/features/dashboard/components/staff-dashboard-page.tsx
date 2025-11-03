@@ -1,5 +1,5 @@
 import { getUser } from "@/lib/auth/auth-server";
-import type { StaffStats } from "@/types/dashboard-stats";
+import type { StaffStats } from "@/features/dashboard/types/dashboard-stats";
 import { redirect } from "next/navigation";
 import { StaffDashboard } from "@/features/dashboard/components/home/staff-dashboard";
 import { getStations } from "@/features/stations/services/stations-api";

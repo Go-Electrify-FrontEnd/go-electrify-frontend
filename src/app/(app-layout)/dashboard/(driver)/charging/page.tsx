@@ -89,8 +89,8 @@ export default async function StartChargingPage() {
             <AlertTriangle className="h-4 w-4" />
             <AlertTitle>Phiên trước chưa hoàn tất</AlertTitle>
             <AlertDescription>
-              Bạn có một phiên sạc với trạng thái "{status}" (ID: {id}). Vui
-              lòng kiểm tra lịch sử sạc nếu cần thiết.
+              Bạn có một phiên sạc với trạng thái &ldquo;{status}&rdquo; (ID:{" "}
+              {id}). Vui lòng kiểm tra lịch sử sạc nếu cần thiết.
             </AlertDescription>
           </Alert>
 

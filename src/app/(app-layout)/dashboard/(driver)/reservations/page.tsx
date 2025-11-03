@@ -24,11 +24,17 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Plus, Clock } from "lucide-react";
+import { Plus } from "lucide-react";
 import { getBookingFee } from "@/features/booking-fee/services/booking-fee-api";
-import { Button } from "@/components/ui/button";
 
-export default async function ReservationPage() {
+interface ReservationPageProps {
+  searchParams: Promise<{ stationId?: string }>;
+}
+
+export default async function ReservationPage({
+  searchParams,
+}: ReservationPageProps) {
+  const { stationId } = await searchParams;
   const { token } = await getUser();
   const stations = await getStations();
   const vehicleModels = await getVehicleModels(token!);
@@ -43,7 +49,7 @@ export default async function ReservationPage() {
 
   // Filter upcoming reservations (PENDING, CONFIRMED) and get the most recent one
   const upcomingReservations = allReservations.filter((r) =>
-    ["PENDING", "CONFIRMED"].includes(r.status.toUpperCase()),
+    ["CONFIRMED"].includes(r.status.toUpperCase()),
   );
   const currentReservation =
     upcomingReservations.length > 0 ? upcomingReservations[0] : null;
@@ -59,6 +65,8 @@ export default async function ReservationPage() {
           vehicleModels={vehicleModels}
           connectorTypes={connectorTypes}
           bookingFee={bookingFee!}
+          preSelectedStationId={stationId}
+          defaultOpen={!!stationId}
         />
       </SectionHeader>
 

@@ -5,7 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { VehicleModelActionsCell } from "./vehicle-model-actions";
 import { useConnectorTypes } from "@/contexts/connector-type-context";
-import { CarModel } from "@/types/car";
+import { CarModel } from "@/features/vehicle-models/schemas/vehicle-model.schema";
 
 const formatPower = (power: number) => `${power} kW`;
 const formatBattery = (capacity: number) => `${capacity} kWh`;

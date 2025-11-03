@@ -26,10 +26,10 @@ import {
   type SubmitHandler,
   useForm,
 } from "react-hook-form";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { useServerAction } from "@/hooks/use-server-action";
-import { ConnectorType } from "@/types/connector";
+import { ConnectorType } from "@/features/connector-type/schemas/connector-type.schema";
 import {
   Select,
   SelectContent,
@@ -44,8 +44,13 @@ import {
   ChargerCreateFormData,
   chargerCreateSchema,
 } from "@/features/chargers/schemas/charger.request";
+import { SecretKeyDialog } from "./secret-key-dialog";
 
-const initialState = { success: false, msg: "" };
+const initialState = {
+  success: false,
+  msg: "",
+  data: undefined as { secretKey: string } | undefined,
+};
 
 interface StationDockCreateProps {
   stationId: number;
@@ -57,6 +62,8 @@ export default function StationDockCreate({
   connectorTypes,
 }: StationDockCreateProps) {
   const [open, setOpen] = useState(false);
+  const [secretKey, setSecretKey] = useState<string>("");
+  const [showSecretDialog, setShowSecretDialog] = useState(false);
 
   const { execute, pending } = useServerAction(createCharger, initialState, {
     onSettled: (result) => {
@@ -66,6 +73,12 @@ export default function StationDockCreate({
         });
         setOpen(false);
         form.reset();
+
+        // Show the secret key dialog if we have a secret key
+        if (result.data?.secretKey) {
+          setSecretKey(result.data.secretKey);
+          setShowSecretDialog(true);
+        }
       } else if (result.msg) {
         toast.error("Tạo sạc điện thất bại", {
           description: result.msg,
@@ -85,27 +98,12 @@ export default function StationDockCreate({
       powerKw: 7,
       status: "ONLINE",
       pricePerKwh: 5000,
-      dockSecretHash: "",
     },
   });
 
-  const generateRandomSecret = useCallback((length = 16) => {
-    const charset =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let result = "";
-    const array = new Uint32Array(length);
-    crypto.getRandomValues(array);
-    for (let i = 0; i < length; i++) {
-      result += charset[array[i]! % charset.length];
-    }
-    return result;
-  }, []);
-
   const onSubmit: SubmitHandler<ChargerCreateFormData> = (data) => {
-    // debug: station dock create submitted
-    try {
-      toast("Đang gửi yêu cầu tạo trụ sạc...");
-    } catch {}
+    toast("Đang gửi yêu cầu tạo trụ sạc...");
+
     const formData = new FormData();
     formData.append("stationId", data.stationId.toString());
     formData.append("connectorTypeId", data.connectorTypeId.toString());
@@ -113,7 +111,6 @@ export default function StationDockCreate({
     formData.append("powerKw", data.powerKw.toString());
     formData.append("status", data.status);
     formData.append("pricePerKwh", data.pricePerKwh.toString());
-    formData.append("dockSecretHash", data.dockSecretHash);
 
     execute(formData);
   };
@@ -288,58 +285,13 @@ export default function StationDockCreate({
                 </Field>
               )}
             />
-
-            <Controller
-              control={form.control}
-              name="dockSecretHash"
-              render={({ field, fieldState }) => {
-                const handleGenerate = () => {
-                  const secret = generateRandomSecret(16);
-                  field.onChange(secret);
-                  // clear validation error if any
-                  try {
-                    form.clearErrors("dockSecretHash");
-                  } catch {}
-                };
-
-                return (
-                  <Field>
-                    <FieldLabel htmlFor="dockSecretHash">
-                      Hash Bí Mật
-                    </FieldLabel>
-                    <Input
-                      {...field}
-                      placeholder="hash_value_here"
-                      aria-invalid={fieldState.invalid}
-                      autoComplete="off"
-                    />
-
-                    <p className="-mt-1 text-sm">
-                      <span
-                        role="button"
-                        tabIndex={0}
-                        onClick={handleGenerate}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
-                            handleGenerate();
-                          }
-                        }}
-                        className="text-primary cursor-pointer *:underline"
-                        aria-label="Sinh mã bí mật 16 ký tự"
-                      >
-                        Sinh mã 16 ký tự
-                      </span>
-                    </p>
-
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                );
-              }}
-            />
           </FieldGroup>
+          <div className="rounded-lg border border-blue-500/50 bg-blue-500/10 p-3">
+            <p className="text-sm text-blue-600">
+              <strong>Lưu ý:</strong> Khóa bí mật sẽ được tự động tạo sau khi
+              trụ sạc được khởi tạo thành công.
+            </p>
+          </div>
           <DialogFooter className="flex flex-col gap-2 sm:flex-row sm:justify-end">
             <DialogClose asChild>
               <Button
@@ -357,6 +309,12 @@ export default function StationDockCreate({
           </DialogFooter>
         </form>
       </DialogContent>
+
+      <SecretKeyDialog
+        open={showSecretDialog}
+        onOpenChange={setShowSecretDialog}
+        secretKey={secretKey}
+      />
     </Dialog>
   );
 }

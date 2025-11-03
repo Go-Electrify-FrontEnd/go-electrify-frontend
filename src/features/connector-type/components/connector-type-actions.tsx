@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { DeleteConnectorType } from "./connector-type-delete-dialog";
 import { useConnectorTypeUpdate } from "@/contexts/connector-type-update-context";
-import { ConnectorType } from "@/types/connector";
+import { ConnectorType } from "@/features/connector-type/schemas/connector-type.schema";
 
 interface ActionsCellProps {
   connectorType: ConnectorType;

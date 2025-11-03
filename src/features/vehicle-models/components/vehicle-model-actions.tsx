@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import VehicleModelDeleteDialog from "./vehicle-model-delete-dialog";
 import { useVehicleModelUpdate } from "@/contexts/vehicle-model-action-context";
-import { CarModel } from "@/types/car";
+import { CarModel } from "@/features/vehicle-models/schemas/vehicle-model.schema";
 
 interface VehicleModelActionsCellProps {
   carModel: CarModel;

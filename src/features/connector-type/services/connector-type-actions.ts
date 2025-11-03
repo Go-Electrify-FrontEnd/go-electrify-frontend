@@ -8,6 +8,7 @@ import {
   connectorTypeCreateSchema,
   connectorTypeUpdateSchema,
 } from "../schemas/connector-type.request";
+import { API_BASE_URL } from "@/lib/api-config";
 
 export async function handleCreateConnectorType(
   prev: unknown,
@@ -30,7 +31,7 @@ export async function handleCreateConnectorType(
     return { success: false, msg };
   }
 
-  const url = "https://api.go-electrify.com/api/v1/connector-types";
+  const url = `${API_BASE_URL}/connector-types`;
   let response;
   try {
     response = await fetch(url, {
@@ -85,7 +86,7 @@ export async function handleDeleteConnectorType(
     return { success: false, msg };
   }
 
-  const url = `https://api.go-electrify.com/api/v1/connector-types/${data.id}`;
+  const url = `${API_BASE_URL}/connector-types/${data.id}`;
   let response;
   try {
     response = await fetch(url, {
@@ -133,7 +134,7 @@ export async function handleUpdateConnectorType(
     return { success: false, msg };
   }
 
-  const url = `https://api.go-electrify.com/api/v1/connector-types/${data.id}`;
+  const url = `${API_BASE_URL}/connector-types/${data.id}`;
   let response;
   try {
     response = await fetch(url, {

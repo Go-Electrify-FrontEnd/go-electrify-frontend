@@ -1,10 +1,11 @@
 import { getUser } from "@/lib/auth/auth-server";
-import { UserApi, UserApiSchema } from "@/lib/zod/user/user.schema";
+import { API_BASE_URL } from "@/lib/api-config";
+import { UserApi, UserApiSchema } from "@/features/users/schemas/user.schema";
 
 export async function getUsers(): Promise<UserApi[]> {
   try {
     const { token } = await getUser();
-    const url = "https://api.go-electrify.com/api/v1/users";
+    const url = `${API_BASE_URL}/users`;
     const response = await fetch(url, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },

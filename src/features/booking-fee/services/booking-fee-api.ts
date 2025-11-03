@@ -1,11 +1,12 @@
 import { getUser } from "@/lib/auth/auth-server";
+import { API_BASE_URL } from "@/lib/api-config";
 import { BookingFeeResponseSchema } from "../schemas/booking-fee.schema";
 import { BookingFee } from "../schemas/booking-fee.types";
 
 export async function getBookingFee(): Promise<BookingFee | null> {
   try {
     const { token } = await getUser();
-    const url = "https://api.go-electrify.com/api/v1/admin/booking-fee";
+    const url = `${API_BASE_URL}/admin/booking-fee`;
     const response = await fetch(url, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },

@@ -1,4 +1,4 @@
-import { User } from "@/lib/zod/user/user.types";
+import { User } from "@/features/users/schemas/user.types";
 import { Wallet, Calendar, MapPin, TrendingUp, Zap } from "lucide-react";
 import {
   Card,
@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { type ChartConfig } from "@/components/ui/chart";
 import { BarChartWrapper, LineChartWrapper } from "./client-charts";
-import type { DriverStats } from "@/types/dashboard-stats";
+import type { DriverStats } from "@/features/dashboard/types/dashboard-stats";
 import Link from "next/link";
 import SectionHeader from "@/components/shared/section-header";
 import SectionContent from "@/components/shared/section-content";

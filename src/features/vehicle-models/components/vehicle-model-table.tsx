@@ -2,7 +2,7 @@
 
 import { SharedDataTable } from "@/components/shared/shared-data-table";
 import { vehicleModelTableColumns } from "./vehicle-model-table-columns";
-import { CarModel } from "@/types/car";
+import { CarModel } from "@/features/vehicle-models/schemas/vehicle-model.schema";
 
 interface VehicleModelTableProps {
   data: CarModel[];
