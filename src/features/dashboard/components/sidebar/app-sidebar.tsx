@@ -18,7 +18,7 @@ import {
   Package,
   BarChart3,
 } from "lucide-react";
-const overview = {
+const overviewBase = {
   title: "Tổng Quan",
   items: [
     {
@@ -26,11 +26,6 @@ const overview = {
       url: "/dashboard",
       icon: House,
     },
-  {
-    title: "Insights",
-    url: "/dashboard/admin/insights",
-    icon: BarChart3,
-  },
     {
       title: "Bắt Đầu Sạc",
       url: "/dashboard/charging",
@@ -160,6 +155,22 @@ import { NavUser } from "./nav-user";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useUser();
+
+  const overview = {
+    ...overviewBase,
+    items: [
+      ...overviewBase.items,
+      ...(user?.role.toLowerCase() === "admin"
+        ? [
+            {
+              title: "Insights",
+              url: "/dashboard/admin/insights",
+              icon: BarChart3,
+            },
+          ]
+        : []),
+    ],
+  };
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>
