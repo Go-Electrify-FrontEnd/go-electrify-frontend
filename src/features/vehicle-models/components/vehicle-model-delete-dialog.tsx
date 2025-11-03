@@ -27,7 +27,7 @@ import {
   VehicleModelDeleteFormData,
   vehicleModelDeleteSchema,
 } from "../schemas/vehicle-model.request";
-import { CarModel } from "@/types/car";
+import { CarModel } from "@/features/vehicle-models/schemas/vehicle-model.schema";
 
 interface VehicleModelDeleteProps {
   carModel: CarModel;

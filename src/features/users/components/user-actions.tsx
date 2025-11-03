@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Eye, Copy } from "lucide-react";
-import type { UserApi } from "@/lib/zod/user/user.types";
+import type { UserApi } from "@/features/users/schemas/user.types";
 
 interface UserActionsProps {
   user: UserApi;

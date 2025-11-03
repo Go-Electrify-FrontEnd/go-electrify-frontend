@@ -28,7 +28,7 @@ import { useServerAction } from "@/hooks/use-server-action";
 import {
   completePaymentFormSchema,
   type CompletePaymentFormValues,
-} from "@/lib/zod/session/complete-payment.request";
+} from "@/features/charging/schemas/complete-payment.request";
 import {
   completeSessionPayment,
   type CompletePaymentActionState,

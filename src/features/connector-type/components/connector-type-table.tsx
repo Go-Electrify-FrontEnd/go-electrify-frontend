@@ -2,7 +2,7 @@
 
 import { SharedDataTable } from "@/components/shared/shared-data-table";
 import { columns } from "./connector-type-table-columns";
-import { ConnectorType } from "@/types/connector";
+import { ConnectorType } from "@/features/connector-type/schemas/connector-type.schema";
 interface ConnectorTypesTableProps {
   data: ConnectorType[];
 }

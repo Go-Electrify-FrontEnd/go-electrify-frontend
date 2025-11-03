@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { UserActionsCell } from "./user-actions";
-import type { UserApi } from "@/lib/zod/user/user.types";
+import type { UserApi } from "@/features/users/schemas/user.types";
 import { formatCurrencyVND, formatDateTime } from "@/lib/formatters";
 
 const roleVariant = (role: string) => {

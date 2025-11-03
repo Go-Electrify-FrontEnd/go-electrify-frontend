@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Notification } from "@/types/notification";
+import { Notification } from "@/features/dashboard/types/notification";
 import { Bell, Bookmark, User, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -155,16 +155,13 @@ export function NotificationsPageClient({
     setNotifications((prev) => prev.map((n) => ({ ...n, IsUnread: false })));
 
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/notifications/read-all`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+      const response = await fetch(`${API_BASE_URL}/notifications/read-all`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-      );
+      });
 
       if (!response.ok) {
         console.error("Failed to mark all as read:", response.status);

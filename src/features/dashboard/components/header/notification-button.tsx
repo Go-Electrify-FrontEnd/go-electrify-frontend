@@ -4,7 +4,7 @@ import { Bell, Bookmark, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { Notification } from "@/types/notification";
+import { Notification } from "@/features/dashboard/types/notification";
 import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
 import { NotificationPopoverWrapper } from "./notification-popover-wrapper";

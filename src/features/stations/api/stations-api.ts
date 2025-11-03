@@ -1,7 +1,7 @@
 import {
   StationSession,
   StationSessionSchema,
-} from "@/lib/zod/session/session.schema";
+} from "@/features/stations/schemas/station-session.schema";
 import { API_BASE_URL } from "@/lib/api-config";
 import { StationStaffListSchema } from "../schemas/station-staff.schema";
 import {

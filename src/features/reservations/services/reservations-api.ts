@@ -1,7 +1,7 @@
 import { ConnectorType } from "@/features/connector-type/schemas/connector-type.schema";
 import { Station } from "@/features/stations/schemas/station.schema";
 import { API_BASE_URL } from "@/lib/api-config";
-import { CarModel } from "@/types/car";
+import { CarModel } from "@/features/vehicle-models/schemas/vehicle-model.schema";
 import { Reservation } from "../schemas/reservation.schema";
 import { ReservationAPI } from "../schemas/reservation.request";
 

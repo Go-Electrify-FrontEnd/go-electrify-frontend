@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Notification } from "@/types/notification";
+import { Notification } from "@/features/dashboard/types/notification";
 import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
 import { Bell, Bookmark, User } from "lucide-react";

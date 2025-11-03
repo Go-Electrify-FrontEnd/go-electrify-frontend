@@ -9,7 +9,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ActionsCell } from "./connector-type-actions";
-import { ConnectorType } from "@/types/connector";
+import { ConnectorType } from "@/features/connector-type/schemas/connector-type.schema";
 
 const formatPower = (power: number) => {
   return `${power} kW`;

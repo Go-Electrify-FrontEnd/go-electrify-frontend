@@ -1,6 +1,6 @@
 import { getUser } from "@/lib/auth/auth-server";
 import { API_BASE_URL } from "@/lib/api-config";
-import { UserApi, UserApiSchema } from "@/lib/zod/user/user.schema";
+import { UserApi, UserApiSchema } from "@/features/users/schemas/user.schema";
 
 export async function getUsers(): Promise<UserApi[]> {
   try {

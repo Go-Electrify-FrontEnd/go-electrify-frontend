@@ -54,8 +54,10 @@ function ChargingProgressInner({
   const [progress, setProgress] = useState<number>(sessionData?.socStart || 0);
   const [isStarted, setStarted] = useState<boolean>(false);
   const [countdown, setCountdown] = useState<number>(5);
-  const [isCountdownActive, setIsCountdownActive] = useState<boolean>(true);
   const { push, refresh } = useRouter();
+
+  // Derived state - countdown is active when countdown > 0
+  const isCountdownActive = countdown > 0;
 
   // 5-second countdown on mount
   useEffect(() => {
@@ -64,8 +66,6 @@ function ChargingProgressInner({
         setCountdown((prev) => prev - 1);
       }, 1000);
       return () => clearTimeout(timer);
-    } else {
-      setIsCountdownActive(false);
     }
   }, [countdown]);
 
