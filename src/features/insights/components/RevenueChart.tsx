@@ -32,19 +32,19 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function RevenueChart({ data, loading, granularity }: RevenueChartProps) {
-  const formattedData = data?.Series.map((item) => ({
-    date:
-      granularity === "day"
-        ? format(new Date(item.Bucket), "dd/MM")
-        : format(new Date(item.Bucket), "HH:mm"),
-    Amount: item.Amount,
-  })) ?? [];
+  const formattedData = data?.Series.map((item) => {
+    const date = new Date(item.Bucket);
+    return {
+      date: format(date, granularity === "day" ? "dd/MM" : "HH:mm"),
+      label: granularity === "day" 
+        ? format(date, "dd/MM/yyyy") 
+        : format(date, "dd/MM/yyyy HH:mm"),
+      Amount: item.Amount,
+    };
+  }) ?? [];
 
   const chartWidth = Math.max(800, formattedData.length * (granularity === "day" ? 60 : 80));
-
   const total = data?.Total?.toLocaleString("vi-VN") ?? "0";
-
-  const hideXAxisLabels = granularity === "hour";
 
   return (
     <Card>
@@ -86,8 +86,7 @@ export function RevenueChart({ data, loading, granularity }: RevenueChartProps) 
                   dataKey="date"
                   tickLine={false}
                   tickMargin={10}
-                  interval={granularity === "day" ? Math.max(0, Math.floor(formattedData.length / 10) - 1) : "preserveStartEnd"}
-                  tick={hideXAxisLabels ? false : undefined}
+interval={granularity === "day" ? Math.max(0, Math.floor(formattedData.length / 10) - 1) : "preserveStartEnd"}
                 />
 
                 <YAxis
@@ -96,7 +95,18 @@ export function RevenueChart({ data, loading, granularity }: RevenueChartProps) 
                 />
 
                 <ChartTooltip
-                  content={<ChartTooltipContent />}
+                  content={
+                    <ChartTooltipContent
+                      labelFormatter={(_, payload) => {
+                        if (payload && payload.length > 0) {
+                          const data = payload[0].payload as { label: string };
+                          return data.label;
+                        }
+                        return "";
+                      }}
+                      formatter={(value) => `${Number(value).toLocaleString("vi-VN")} ₫`}
+                    />
+                  }
                   cursor={{ fill: "rgba(0,0,0,0.05)" }}
                 />
 
