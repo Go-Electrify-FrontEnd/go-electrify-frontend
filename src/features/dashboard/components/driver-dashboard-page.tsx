@@ -1,5 +1,5 @@
 import { getUser } from "@/lib/auth/auth-server";
-import type { DriverStats } from "@/types/dashboard-stats";
+import type { DriverStats } from "@/features/dashboard/types/dashboard-stats";
 import { redirect } from "next/navigation";
 import { DriverDashboard } from "@/features/dashboard/components/home/driver-dashboard";
 import { TransactionListApiSchema } from "@/features/wallet/schemas/wallet.schema";

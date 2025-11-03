@@ -22,7 +22,10 @@ import { useState, useEffect, useTransition } from "react";
 import { InfoIcon, ZapIcon, Loader2, QrCode, Keyboard } from "lucide-react";
 import { QRScanner } from "@/components/shared/qr-scanner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { joinSchema, type JoinFormData } from "@/lib/zod/join/join.request";
+import {
+  joinSchema,
+  type JoinFormData,
+} from "@/features/charging/schemas/join.request";
 import { handleJoin } from "@/features/charging/services/charging-actions";
 
 export default function StartChargingClient() {

@@ -1,5 +1,8 @@
 import { getUser } from "@/lib/auth/auth-server";
-import { ConnectorType, ConnectorTypeSchema } from "@/types/connector";
+import {
+  ConnectorType,
+  ConnectorTypeSchema,
+} from "@/features/connector-type/schemas/connector-type.schema";
 import { API_BASE_URL } from "@/lib/api-config";
 
 export async function getConnectorTypes(): Promise<ConnectorType[]> {

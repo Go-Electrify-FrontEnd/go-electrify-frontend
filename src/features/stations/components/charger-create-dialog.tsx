@@ -29,7 +29,7 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import { useServerAction } from "@/hooks/use-server-action";
-import { ConnectorType } from "@/types/connector";
+import { ConnectorType } from "@/features/connector-type/schemas/connector-type.schema";
 import {
   Select,
   SelectContent,

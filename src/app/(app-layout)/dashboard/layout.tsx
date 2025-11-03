@@ -10,7 +10,7 @@ import { forbidden } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import HeaderBreadcrumb from "@/features/dashboard/components/sidebar/header-breadcrumb";
 import { NotificationButton } from "@/features/dashboard/components/header/notification-button";
-import { Notification } from "@/types/notification";
+import { Notification } from "@/features/dashboard/types/notification";
 
 export const dynamic = "force-dynamic";
 

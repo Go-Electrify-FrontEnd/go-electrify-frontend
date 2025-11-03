@@ -1,17 +1,17 @@
-import { CarModel, CarModelSchema } from "@/types/car";
+import {
+  CarModel,
+  CarModelSchema,
+} from "@/features/vehicle-models/schemas/vehicle-model.schema";
 import { API_BASE_URL } from "@/lib/api-config";
 
 export async function getVehicleModels(token: string): Promise<CarModel[]> {
   try {
-    const response = await fetch(
-      `${API_BASE_URL}/vehicle-models`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    const response = await fetch(`${API_BASE_URL}/vehicle-models`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
-    );
+    });
 
     if (!response.ok) {
       console.log("Failed to fetch vehicle models, status: " + response.status);

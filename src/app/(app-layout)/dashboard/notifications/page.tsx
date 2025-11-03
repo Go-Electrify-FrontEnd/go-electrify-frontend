@@ -1,7 +1,7 @@
 // app/(app-layout)/dashboard/notifications/page.tsx
 import { getUser } from "@/lib/auth/auth-server";
 import { forbidden } from "next/navigation";
-import { Notification } from "@/types/notification";
+import { Notification } from "@/features/dashboard/types/notification";
 import { NotificationsPageClient } from "./notifications-page-client";
 import { API_BASE_URL } from "@/lib/api-config";
 

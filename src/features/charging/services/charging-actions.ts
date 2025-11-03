@@ -2,7 +2,7 @@
 
 import { JoinSessionResponseSchema } from "@/features/charging/schemas/join-session.schema";
 import { getUser } from "@/lib/auth/auth-server";
-import { completePaymentSchema } from "@/lib/zod/session/complete-payment.request";
+import { completePaymentSchema } from "@/features/charging/schemas/complete-payment.request";
 import { redirect } from "next/navigation";
 import { API_BASE_URL, createJsonAuthHeaders } from "@/lib/api-config";
 import { formatNumber } from "@/lib/formatters";

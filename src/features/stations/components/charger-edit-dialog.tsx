@@ -32,7 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { ConnectorType } from "@/types/connector";
+import type { ConnectorType } from "@/features/connector-type/schemas/connector-type.schema";
 import {
   ChargerUpdateFormData,
   chargerUpdateSchema,

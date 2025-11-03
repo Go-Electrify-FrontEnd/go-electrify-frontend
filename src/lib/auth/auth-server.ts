@@ -6,7 +6,7 @@ const __serverOnlySpecifier = "server-only";
 void import(__serverOnlySpecifier).catch(() => {});
 
 import { cookies } from "next/headers";
-import type { User } from "@/lib/zod/user/user.types";
+import type { User } from "@/features/users/schemas/user.types";
 import * as jose from "jose";
 import * as z from "zod";
 import { API_BASE_URL } from "@/lib/api-config";

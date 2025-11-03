@@ -2,7 +2,7 @@
 
 import { SharedDataTable } from "@/components/shared/shared-data-table";
 import { userColumns } from "./users-table-columns";
-import type { UserApi } from "@/lib/zod/user/user.types";
+import type { UserApi } from "@/features/users/schemas/user.types";
 
 interface UsersTableProps {
   data: UserApi[];

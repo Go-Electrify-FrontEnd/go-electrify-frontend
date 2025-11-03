@@ -2,7 +2,7 @@
 // Server Component - fetch notifications và pass vào NotificationButton
 
 import { getUser } from "@/lib/auth/auth-server";
-import { Notification } from "@/types/notification";
+import { Notification } from "@/features/dashboard/types/notification";
 import { NotificationButton } from "./notification-button";
 import { API_BASE_URL } from "@/lib/api-config";
 

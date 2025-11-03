@@ -1,8 +1,8 @@
 import SectionHeader from "@/components/shared/section-header";
 import { getUser } from "@/lib/auth/auth-server";
 import { UsersTable } from "@/features/users/components/users-table";
-import { UserApiSchema } from "@/lib/zod/user/user.schema";
-import type { UserApi } from "@/lib/zod/user/user.types";
+import { UserApiSchema } from "@/features/users/schemas/user.schema";
+import type { UserApi } from "@/features/users/schemas/user.types";
 import {
   Card,
   CardContent,
