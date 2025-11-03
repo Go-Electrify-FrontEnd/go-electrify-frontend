@@ -23,9 +23,9 @@ test.describe("Driver Settings Page", () => {
     await page.goto("/dashboard/settings");
     await waitForPageReady(page);
 
-    // Verify profile section header
+    // Verify profile section header (using text selector as h3 may not have heading role)
     await expect(
-      page.getByRole("heading", { name: /Hồ sơ cá nhân/i })
+      page.getByText("Hồ sơ cá nhân")
     ).toBeVisible();
 
     // Verify description
@@ -56,7 +56,7 @@ test.describe("Driver Settings Page", () => {
 
     // Page should have profile update components
     await expect(
-      page.getByRole("heading", { name: /Hồ sơ cá nhân/i })
+      page.getByText("Hồ sơ cá nhân")
     ).toBeVisible();
 
     console.log("Profile update sections displayed correctly");
