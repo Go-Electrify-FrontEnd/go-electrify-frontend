@@ -114,6 +114,9 @@ importers:
       '@tanstack/react-table':
         specifier: ^8.21.3
         version: 8.21.3(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      '@turf/distance':
+        specifier: ^7.2.0
+        version: 7.2.0
       '@vercel/blob':
         specifier: ^2.0.0
         version: 2.0.0
@@ -1764,6 +1767,9 @@ packages:
 
   '@turf/boolean-point-in-polygon@7.2.0':
     resolution: {integrity: sha512-lvEOjxeXIp+wPXgl9kJA97dqzMfNexjqHou+XHVcfxQgolctoJiRYmcVCWGpiZ9CBf/CJha1KmD1qQoRIsjLaA==}
+
+  '@turf/distance@7.2.0':
+    resolution: {integrity: sha512-HBjjXIgEcD/wJYjv7/6OZj5yoky2oUvTtVeIAqO3lL80XRvoYmVg6vkOIu6NswkerwLDDNT9kl7+BFLJoHbh6Q==}
 
   '@turf/helpers@7.2.0':
     resolution: {integrity: sha512-cXo7bKNZoa7aC7ydLmUR02oB3IgDe7MxiPuRz3cCtYQHn+BJ6h1tihmamYDWWUlPHgSNF0i3ATc4WmDECZafKw==}
@@ -6652,6 +6658,13 @@ snapshots:
       '@turf/invariant': 7.2.0
       '@types/geojson': 7946.0.16
       point-in-polygon-hao: 1.2.4
+      tslib: 2.8.1
+
+  '@turf/distance@7.2.0':
+    dependencies:
+      '@turf/helpers': 7.2.0
+      '@turf/invariant': 7.2.0
+      '@types/geojson': 7946.0.16
       tslib: 2.8.1
 
   '@turf/helpers@7.2.0':

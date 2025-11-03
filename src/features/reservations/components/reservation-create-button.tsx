@@ -64,6 +64,8 @@ interface CreateReservationButtonProps {
   vehicleModels: CarModel[];
   connectorTypes: ConnectorType[];
   bookingFee: BookingFee;
+  preSelectedStationId?: string;
+  defaultOpen?: boolean;
 }
 
 export default function CreateReservationButton({
@@ -71,8 +73,10 @@ export default function CreateReservationButton({
   vehicleModels,
   connectorTypes,
   bookingFee,
+  preSelectedStationId,
+  defaultOpen = false,
 }: CreateReservationButtonProps) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const [step, setStep] = useState<1 | 2>(1);
   const [openStation, setOpenStation] = useState(false);
   const [openVehicleModel, setOpenVehicleModel] = useState(false);
@@ -86,7 +90,7 @@ export default function CreateReservationButton({
   const form = useForm<ReservationFormData>({
     resolver: zodResolver(reservationFormSchema),
     defaultValues: {
-      stationId: "",
+      stationId: preSelectedStationId || "",
       vehicleModelId: "",
       connectorTypeId: "",
       initialSoc: 20,

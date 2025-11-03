@@ -27,7 +27,14 @@ import {
 import { Plus } from "lucide-react";
 import { getBookingFee } from "@/features/booking-fee/services/booking-fee-api";
 
-export default async function ReservationPage() {
+interface ReservationPageProps {
+  searchParams: Promise<{ stationId?: string }>;
+}
+
+export default async function ReservationPage({
+  searchParams,
+}: ReservationPageProps) {
+  const { stationId } = await searchParams;
   const { token } = await getUser();
   const stations = await getStations();
   const vehicleModels = await getVehicleModels(token!);
@@ -58,6 +65,8 @@ export default async function ReservationPage() {
           vehicleModels={vehicleModels}
           connectorTypes={connectorTypes}
           bookingFee={bookingFee!}
+          preSelectedStationId={stationId}
+          defaultOpen={!!stationId}
         />
       </SectionHeader>
 
