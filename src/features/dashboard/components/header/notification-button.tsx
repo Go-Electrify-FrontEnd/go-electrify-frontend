@@ -4,7 +4,7 @@ import { Bell, Bookmark, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { Notification } from "@/types/notification";
+import { Notification } from "@/features/dashboard/types/notification";
 import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
 import { NotificationPopoverWrapper } from "./notification-popover-wrapper";
@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
 import { NotificationDialog } from "./notification-dialog";
 import { useUser } from "@/features/users/contexts/user-context";
+import { API_BASE_URL } from "@/lib/api-config";
 
 function getNotificationIcon(type: string) {
   switch (type) {
@@ -116,7 +117,7 @@ export function NotificationButton({
 
       try {
         const response = await fetch(
-          `https://api.go-electrify.com/api/v1/notifications/${notification.Id}/read`,
+          `${API_BASE_URL}/notifications/${notification.Id}/read`,
           {
             method: "POST",
             headers: {
@@ -174,7 +175,6 @@ export function NotificationButton({
     //     throw new Error("State bị lệch, không tìm thấy unread IDs.");
     //   }
 
-<<<<<<< HEAD
     //   const readPromises = unreadIds.map((id) =>
     //     fetch(`https://api.go-electrify.com/api/v1/notifications/${id}/read`, {
     //       method: "POST",
