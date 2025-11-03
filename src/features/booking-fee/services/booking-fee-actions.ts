@@ -4,8 +4,9 @@ import { getUser } from "@/lib/auth/auth-server";
 import { forbidden } from "next/navigation";
 import { updateTag } from "next/cache";
 import { bookingFeeUpdateSchema } from "../schemas/booking-fee.request";
+import { API_BASE_URL, createJsonAuthHeaders } from "@/lib/api-config";
 
-const BACKEND_URL = "https://api.go-electrify.com/api/v1/admin/booking-fee";
+const BACKEND_URL = `${API_BASE_URL}/admin/booking-fee`;
 
 export async function updateBookingFee(prev: unknown, formData: FormData) {
   const { user, token } = await getUser();
@@ -31,10 +32,7 @@ export async function updateBookingFee(prev: unknown, formData: FormData) {
   try {
     response = await fetch(BACKEND_URL, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      headers: createJsonAuthHeaders(token),
       body: JSON.stringify({
         Type: data.type,
         Value: data.value,

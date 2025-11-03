@@ -23,7 +23,7 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { handleDeleteConnectorType } from "../services/connector-type-actions";
 import { useServerAction } from "@/hooks/use-server-action";
-import { ConnectorType } from "@/types/connector";
+import { ConnectorType } from "@/features/connector-type/schemas/connector-type.schema";
 import {
   ConnectorTypeDeleteFormData,
   connectorTypeDeleteSchema,

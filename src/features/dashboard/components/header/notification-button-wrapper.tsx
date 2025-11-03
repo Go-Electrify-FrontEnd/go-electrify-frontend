@@ -2,12 +2,13 @@
 // Server Component - fetch notifications và pass vào NotificationButton
 
 import { getUser } from "@/lib/auth/auth-server";
-import { Notification } from "@/types/notification";
+import { Notification } from "@/features/dashboard/types/notification";
 import { NotificationButton } from "./notification-button";
+import { API_BASE_URL } from "@/lib/api-config";
 
 async function getRecentNotifications(token: string): Promise<Notification[]> {
   try {
-    const url = "https://api.go-electrify.com/api/v1/notifications/dashboard";
+    const url = `${API_BASE_URL}/notifications/dashboard`;
     const response = await fetch(url, {
       method: "GET",
       headers: {

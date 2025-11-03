@@ -24,16 +24,54 @@ export function formatShortCurrency(value: number | null | undefined) {
 }
 
 export function formatDateTime(
-value: string | Date | null | undefined,
-locale = "vi-VN",
+  value: string | Date | null | undefined,
+  locale = "vi-VN",
 ) {
-if (!value) return "-";
-const date = new Date(value);
-if (Number.isNaN(date.getTime())) {
-return String(value);
+  if (!value) return "-";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return String(value);
+  }
+  return date.toLocaleString(locale, {
+    dateStyle: "short",
+    timeStyle: "short",
+  });
 }
-return date.toLocaleString(locale, {
-dateStyle: "short",
-timeStyle: "short",
-});
+
+/**
+ * Format date with custom options
+ * @param value - Date value to format
+ * @param options - Intl.DateTimeFormatOptions
+ * @param locale - Locale string (default: "vi-VN")
+ * @returns Formatted date string or "-" if invalid
+ */
+export function formatDateWithOptions(
+  value: string | Date | null | undefined,
+  options: Intl.DateTimeFormatOptions,
+  locale = "vi-VN",
+) {
+  if (!value) return "-";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return String(value);
+  }
+  return date.toLocaleString(locale, options);
+}
+
+/**
+ * Format date only (no time)
+ * @param value - Date value to format
+ * @param locale - Locale string (default: "vi-VN")
+ * @returns Formatted date string or "-" if invalid
+ */
+export function formatDate(
+  value: string | Date | null | undefined,
+  locale = "vi-VN",
+) {
+  if (!value) return "-";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return String(value);
+  }
+  return date.toLocaleDateString(locale);
 }

@@ -1,7 +1,8 @@
 import {
   StationSession,
   StationSessionSchema,
-} from "@/lib/zod/session/session.schema";
+} from "@/features/stations/schemas/station-session.schema";
+import { API_BASE_URL } from "@/lib/api-config";
 import { StationStaffListSchema } from "../schemas/station-staff.schema";
 import {
   StationApiSchema,
@@ -21,7 +22,7 @@ export async function getStationChargers(
   }
 
   try {
-    const url = `https://api.go-electrify.com/api/v1/stations/${encodeURIComponent(
+    const url = `${API_BASE_URL}/stations/${encodeURIComponent(
       stationId,
     )}/chargers`;
 
@@ -64,7 +65,7 @@ export async function getStationSessions(
   }
 
   try {
-    const url = `https://api.go-electrify.com/api/v1/stations/${encodeURIComponent(
+    const url = `${API_BASE_URL}/stations/${encodeURIComponent(
       stationId,
     )}/sessions`;
 
@@ -103,7 +104,7 @@ export async function getStationById(id: string, token: string) {
   }
 
   try {
-    const url = `https://api.go-electrify.com/api/v1/stations/${encodeURIComponent(id)}`;
+    const url = `${API_BASE_URL}/stations/${encodeURIComponent(id)}`;
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -140,7 +141,7 @@ export async function getBookingsByStationId(
   }
 
   try {
-    const url = `https://api.go-electrify.com/api/v1/stations/${encodeURIComponent(
+    const url = `${API_BASE_URL}/stations/${encodeURIComponent(
       stationId,
     )}/bookings`;
     const response = await fetch(url, {
@@ -177,7 +178,7 @@ export async function getStationStaff(stationId: string, token: string) {
   }
 
   try {
-    const url = `https://api.go-electrify.com/api/v1/stations/${encodeURIComponent(
+    const url = `${API_BASE_URL}/stations/${encodeURIComponent(
       stationId,
     )}/staff`;
 
@@ -219,7 +220,7 @@ export async function getSelfStationId(token: string) {
   }
 
   try {
-    const url = `https://api.go-electrify.com/api/v1/stations/me`;
+    const url = `${API_BASE_URL}/stations/me`;
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -249,7 +250,7 @@ export async function getAllUsers(token: string) {
   }
 
   try {
-    const url = `https://api.go-electrify.com/api/v1/users`;
+    const url = `${API_BASE_URL}/users`;
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -281,7 +282,7 @@ export async function assignStaffToStation(
   }
 
   try {
-    const url = `https://api.go-electrify.com/api/v1/stations/${encodeURIComponent(
+    const url = `${API_BASE_URL}/stations/${encodeURIComponent(
       stationId,
     )}/staff`;
 
@@ -324,7 +325,7 @@ export async function revokeStaffFromStation(
 
   try {
     const url = new URL(
-      `https://api.go-electrify.com/api/v1/stations/${encodeURIComponent(
+      `${API_BASE_URL}/stations/${encodeURIComponent(
         stationId,
       )}/staff/${userId}`,
     );

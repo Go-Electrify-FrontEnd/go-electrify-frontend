@@ -1,6 +1,6 @@
 "use client";
 
-import { User } from "@/lib/zod/user/user.types";
+import { User } from "@/features/users/schemas/user.types";
 import {
   MapPin,
   Users,
@@ -21,7 +21,7 @@ import SectionHeader from "@/components/shared/section-header";
 import StatCard from "@/components/shared/stat-card";
 import { Badge } from "@/components/ui/badge";
 import { type ChartConfig } from "@/components/ui/chart";
-import type { AdminStats } from "@/types/dashboard-stats";
+import type { AdminStats } from "@/features/dashboard/types/dashboard-stats";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import {

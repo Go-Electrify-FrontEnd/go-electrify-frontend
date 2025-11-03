@@ -6,8 +6,9 @@ import {
   stationCreateSchema,
   stationUpdateSchema,
 } from "../schemas/station.request";
+import { API_BASE_URL } from "@/lib/api-config";
 
-const BASE_URL = "https://api.go-electrify.com/api/v1/stations";
+const BASE_URL = `${API_BASE_URL}/stations`;
 
 export async function createStation(prev: unknown, formData: FormData) {
   const { user, token } = await getUser();

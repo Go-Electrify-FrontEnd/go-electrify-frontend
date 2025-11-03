@@ -1,8 +1,8 @@
 import SectionHeader from "@/components/shared/section-header";
 import { getUser } from "@/lib/auth/auth-server";
 import { UsersTable } from "@/features/users/components/users-table";
-import { UserApiSchema } from "@/lib/zod/user/user.schema";
-import type { UserApi } from "@/lib/zod/user/user.types";
+import { UserApiSchema } from "@/features/users/schemas/user.schema";
+import type { UserApi } from "@/features/users/schemas/user.types";
 import {
   Card,
   CardContent,
@@ -11,11 +11,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import SectionContent from "@/components/shared/section-content";
+import { API_BASE_URL } from "@/lib/api-config";
 
 export async function getUsers(): Promise<UserApi[]> {
   try {
     const { token } = await getUser();
-    const url = "https://api.go-electrify.com/api/v1/users";
+    const url = `${API_BASE_URL}/users`;
     const response = await fetch(url, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },

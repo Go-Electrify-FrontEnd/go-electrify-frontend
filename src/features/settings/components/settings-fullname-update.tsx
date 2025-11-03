@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { useUser } from "@/features/users/contexts/user-context";
 import { updateUserName } from "@/features/users/services/user-actions";
 import { useServerAction } from "@/hooks/use-server-action";
-import { UserNameUpdateSchema } from "@/lib/zod/user/user.schema";
+import { UserNameUpdateSchema } from "@/features/users/schemas/user.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";

@@ -1,49 +1,49 @@
-import { NearestStationsList } from "@/features/stations-nearby/components/stations-nearby-list";
 import { StationMap } from "@/features/stations-nearby/components/stations-map";
-import SectionHeader from "@/components/shared/section-header";
-import SectionContent from "@/components/shared/section-content";
+import { StationsSidebar } from "@/features/stations-nearby/components/stations-sidebar";
 import { StationsNearbyProvider } from "@/contexts/stations-nearby-context";
-import NearbyStationSearch from "@/features/stations-nearby/components/search-input";
 import { getStations } from "@/features/stations/services/stations-api";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Menu } from "lucide-react";
 
 export default async function FindStationsPage() {
   const chargingStations = await getStations();
 
   return (
-    <div className="flex flex-col gap-4 md:gap-6">
-      <StationsNearbyProvider stations={chargingStations}>
-        <SectionHeader title="Tìm trạm sạc" subtitle="Tìm trạm sạc gần bạn">
-          <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center">
-            <NearbyStationSearch />
-          </div>
-        </SectionHeader>
+    <StationsNearbyProvider stations={chargingStations}>
+      {/* Full-page layout - Flex container for map and sidebar */}
+      <div className="relative flex h-[calc(100vh-4rem)] overflow-hidden">
+        {/* Map - Takes remaining space */}
+        <div className="flex-1">
+          <StationMap />
+        </div>
 
-        <SectionContent className="grid grid-cols-1 gap-6 xl:grid-cols-10">
-          {/* Map Section */}
-          <div className="xl:col-span-7">
-            <div className="text-muted-foreground mb-4 flex items-center gap-4 text-xs">
-              <div className="flex items-center gap-1">
-                <div className="h-2 w-2 rounded-full bg-green-500" />
-                <span>Khả dụng</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="h-2 w-2 rounded-full bg-red-500" />
-                <span>Bận</span>
-              </div>
-            </div>
-            <div className="h-[65vh] overflow-hidden rounded-xl border">
-              <StationMap />
-            </div>
-          </div>
+        {/* Desktop Sidebar - Side by side with map (only on xl screens) */}
+        <div className="border-border bg-background hidden h-full w-[420px] flex-shrink-0 border-l shadow-lg xl:block">
+          <StationsSidebar />
+        </div>
 
-          {/* Station List Section */}
-          <div className="xl:col-span-3">
-            <div className="mt-9 h-[65vh] overflow-y-auto">
-              <NearestStationsList />
-            </div>
-          </div>
-        </SectionContent>
-      </StationsNearbyProvider>
-    </div>
+        {/* Mobile menu trigger */}
+        <div className="absolute right-6 bottom-6 z-50 xl:hidden">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button size="lg" className="shadow-lg">
+                <Menu className="mr-2 h-5 w-5" />
+                Danh sách trạm
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[85vw] p-0 sm:max-w-md">
+              <SheetTitle></SheetTitle>
+              <StationsSidebar />
+            </SheetContent>
+          </Sheet>
+        </div>
+      </div>
+    </StationsNearbyProvider>
   );
 }

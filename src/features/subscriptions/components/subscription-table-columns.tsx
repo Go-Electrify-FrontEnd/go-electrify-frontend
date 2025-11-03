@@ -4,19 +4,14 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { ActionsCell } from "./subscription-actions";
 import type { Subscription } from "../schemas/subscription.types";
+import { formatCurrencyVND, formatNumber } from "@/lib/formatters";
 
 function PriceCell({ value }: { value: number }) {
-  const nf = new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-    maximumFractionDigits: 0,
-  });
-  return <div className="font-medium">{nf.format(value)}</div>;
+  return <div className="font-medium">{formatCurrencyVND(value)}</div>;
 }
 
 function KwhCell({ value }: { value: number }) {
-  const nf = new Intl.NumberFormat("vi-VN", { maximumFractionDigits: 0 });
-  return <div className="font-medium">{nf.format(value)} kWh</div>;
+  return <div className="font-medium">{formatNumber(value)} kWh</div>;
 }
 
 export const columns: ColumnDef<Subscription>[] = [

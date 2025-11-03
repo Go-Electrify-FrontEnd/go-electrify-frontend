@@ -1,13 +1,14 @@
 import { getUser } from "@/lib/auth/auth-server";
-import type { DriverStats } from "@/types/dashboard-stats";
+import type { DriverStats } from "@/features/dashboard/types/dashboard-stats";
 import { redirect } from "next/navigation";
 import { DriverDashboard } from "@/features/dashboard/components/home/driver-dashboard";
 import { TransactionListApiSchema } from "@/features/wallet/schemas/wallet.schema";
 import { getWallet } from "@/app/(app-layout)/dashboard/(driver)/wallet/page";
+import { API_BASE_URL } from "@/lib/api-config";
 
 async function getTransactions() {
   const { token } = await getUser();
-  const url = `https://api.go-electrify.com/api/v1/wallet/me/transactions?page=1&pageSize=50`;
+  const url = `${API_BASE_URL}/wallet/me/transactions?page=1&pageSize=50`;
   const response = await fetch(url, {
     method: "GET",
     headers: { Authorization: `Bearer ${token}` },

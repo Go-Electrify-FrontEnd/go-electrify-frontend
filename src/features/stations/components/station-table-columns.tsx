@@ -5,6 +5,7 @@ import { StationActions } from "./station-actions";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Station } from "../schemas/station.schema";
+import { formatDate } from "@/lib/formatters";
 
 function StatusCell({ value }: { value: string }) {
   const upper = String(value).toUpperCase();
@@ -33,10 +34,7 @@ function StatusCell({ value }: { value: string }) {
 }
 
 function DateCell({ value }: { value: Date }) {
-  if (!value || isNaN(value.getTime())) {
-    return <div className="font-medium">-</div>;
-  }
-  return <div className="font-medium">{value.toLocaleDateString("vi-VN")}</div>;
+  return <div className="font-medium">{formatDate(value)}</div>;
 }
 
 export const columns: ColumnDef<Station>[] = [

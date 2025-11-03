@@ -30,7 +30,7 @@ import {
 import { SharedDataTable } from "@/components/shared/shared-data-table";
 import bookingColumns from "@/features/stations/components/bookings-table-columns";
 import { notFound } from "next/navigation";
-import StationDockCreate from "@/features/stations/components/station-dock-create";
+import StationDockCreate from "@/features/stations/components/charger-create-dialog";
 import { ChargerUpdateProvider } from "@/features/stations/contexts/charger-update-context";
 import UpdateCharger from "@/features/stations/components/charger-edit-dialog";
 import SectionContent from "@/components/shared/section-content";

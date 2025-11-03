@@ -223,3 +223,36 @@
     letter-spacing: var(--tracking-normal);
   }
 }
+
+/* Custom Mapbox Popup Styling for Station Map */
+.mapboxgl-popup.station-popup .mapboxgl-popup-content {
+  padding: 0;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  background: white;
+}
+
+.mapboxgl-popup.station-popup .mapboxgl-popup-close-button {
+  width: 28px;
+  height: 28px;
+  font-size: 20px;
+  color: #64748b;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  border-radius: 6px;
+  margin: 8px;
+}
+
+.mapboxgl-popup.station-popup .mapboxgl-popup-close-button:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.mapboxgl-popup.station-popup .mapboxgl-popup-tip {
+  border-top-color: white;
+  border-width: 8px;
+}

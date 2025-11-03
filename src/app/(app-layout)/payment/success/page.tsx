@@ -1,5 +1,7 @@
 import { CheckCircle, AlertCircle } from "lucide-react";
 import Link from "next/link";
+import { formatDateWithOptions, formatCurrencyVND } from "@/lib/formatters";
+import { API_PAYMENT_ORDER_URL } from "@/lib/api-config";
 
 interface TransactionData {
   code: string;
@@ -41,7 +43,7 @@ async function getOrderDetails(
 
   try {
     const res = await fetch(
-      `https://api.go-electrify.com/api/payment/order/${orderCode}`,
+      `${API_PAYMENT_ORDER_URL}/${orderCode}`,
     );
 
     if (!res.ok) throw new Error("Fetch failed");
@@ -66,18 +68,7 @@ export default async function Page({
     transactionData.status === "PAID" && !transactionData.cancel;
 
   const formatDateTime = (dateString?: string) => {
-    if (!dateString) {
-      return new Date().toLocaleString("vi-VN", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      });
-    }
-
-    return new Date(dateString).toLocaleString("vi-VN", {
+    return formatDateWithOptions(dateString || new Date().toISOString(), {
       hour: "2-digit",
       minute: "2-digit",
       second: "2-digit",
@@ -162,7 +153,7 @@ export default async function Page({
                   <div>
                     <p className="mb-1 text-sm text-gray-600">Giá</p>
                     <p className="text-lg font-semibold text-gray-900">
-                      {(orderDetails.amount / 100).toLocaleString("vi-VN")} ₫
+                      {formatCurrencyVND(orderDetails.amount / 100)}
                     </p>
                   </div>
                 </div>

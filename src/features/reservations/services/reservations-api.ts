@@ -1,6 +1,7 @@
 import { ConnectorType } from "@/features/connector-type/schemas/connector-type.schema";
 import { Station } from "@/features/stations/schemas/station.schema";
-import { CarModel } from "@/types/car";
+import { API_BASE_URL } from "@/lib/api-config";
+import { CarModel } from "@/features/vehicle-models/schemas/vehicle-model.schema";
 import { Reservation } from "../schemas/reservation.schema";
 import { ReservationAPI } from "../schemas/reservation.request";
 
@@ -33,7 +34,7 @@ export async function getReservationsDetails(
 
 export async function getReservations(token: string) {
   try {
-    const url = "https://api.go-electrify.com/api/v1/bookings/my";
+    const url = `${API_BASE_URL}/bookings/my`;
     const response = await fetch(url, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },

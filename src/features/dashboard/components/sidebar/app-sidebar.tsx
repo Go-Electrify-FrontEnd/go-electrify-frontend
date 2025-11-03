@@ -16,8 +16,9 @@ import {
   Zap,
   ReceiptText,
   Package,
+  BarChart3,
 } from "lucide-react";
-const overview = {
+const overviewBase = {
   title: "Tổng Quan",
   items: [
     {
@@ -154,6 +155,22 @@ import { NavUser } from "./nav-user";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useUser();
+
+  const overview = {
+    ...overviewBase,
+    items: [
+      ...overviewBase.items,
+      ...(user?.role.toLowerCase() === "admin"
+        ? [
+            {
+              title: "Insights",
+              url: "/dashboard/admin/insights",
+              icon: BarChart3,
+            },
+          ]
+        : []),
+    ],
+  };
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>

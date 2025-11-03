@@ -1,4 +1,4 @@
-import { User } from "@/lib/zod/user/user.types";
+import { User } from "@/features/users/schemas/user.types";
 import {
   MapPin,
   Zap,
@@ -17,7 +17,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import SectionHeader from "@/components/shared/section-header";
-import type { StaffStats } from "@/types/dashboard-stats";
+import type { StaffStats } from "@/features/dashboard/types/dashboard-stats";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { type ChartConfig } from "@/components/ui/chart";

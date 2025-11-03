@@ -1,10 +1,11 @@
 "use client";
 
 import type { CarModel } from "@/features/vehicle-models/schemas/vehicle-model.types";
-import type { ChargingPort } from "@/lib/zod/charging-port/charging-port.types";
+
 import type { Reservation } from "@/features/reservations/schemas/reservation.types";
 import type { Station } from "@/features/stations/schemas/station.types";
 import React, { createContext, useContext, useState, ReactNode } from "react";
+import { ChargingPort } from "@/features/reservations/schemas/charging-port.schema";
 
 // Types
 export interface ReservationState {

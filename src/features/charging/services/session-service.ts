@@ -2,8 +2,8 @@ import {
   CurrentSessionWithTokenResponseSchema,
   type CurrentSessionData,
 } from "@/features/charging/schemas/current-session.schema";
+import { API_BASE_URL } from "@/lib/api-config";
 
-const API_BASE_URL = "https://api.go-electrify.com/api/v1";
 const isDevelopment = process.env.NODE_ENV === "development";
 
 /**
