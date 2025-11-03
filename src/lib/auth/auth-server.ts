@@ -1,9 +1,4 @@
-// `server-only` is a Next.js runtime helper that isn't resolvable in the
-// vitest/browser-like test runner. Use a dynamic import with an indirect
-// specifier so Vite's static import analysis doesn't try to resolve it.
-// In Next.js server runtime the module will still be loaded.
-const __serverOnlySpecifier = "server-only";
-void import(__serverOnlySpecifier).catch(() => {});
+import "server-only";
 
 import { cookies } from "next/headers";
 import type { User } from "@/features/users/schemas/user.types";
@@ -18,9 +13,6 @@ const secret = new TextEncoder().encode(process.env.AUTH_SECRET_KEY);
 
 export const refreshTokenSchema = z
   .object({
-    // Accept any string for AccessToken in test environments where a
-    // real JWT is not present. In production we still expect a valid
-    // access token but runtime validation is done when verifying.
     AccessToken: z.string(),
     RefreshToken: z.string(),
     AccessExpires: z.coerce

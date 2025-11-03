@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -21,11 +22,13 @@ interface StationsNearbyContextValue {
   sortedStations: Station[];
   searchQuery: string;
   searchMode: SearchMode;
+  selectedStation: Station | null;
 
   setSearchQuery: (query: string) => void;
   setSearchMode: (mode: SearchMode) => void;
   updateUserLocation: (coords: Coordinates) => void;
   resetStations: () => void;
+  setSelectedStation: (station: Station | null) => void;
 }
 
 const StationsNearbyContext = createContext<
@@ -42,12 +45,13 @@ export function StationsNearbyProvider({
   children,
 }: StationsNearbyProviderProps) {
   const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
-  const [sortedStations, setSortedStations] = useState<Station[]>([]);
+  const [selectedStation, setSelectedStationState] = useState<Station | null>(null);
 
   const [searchQuery, setSearchQueryState] = useState<string>("");
   const [searchMode, setSearchModeState] = useState<SearchMode>("ALL");
 
-  const displayStations = (() => {
+  // Filter stations based on search query and mode
+  const displayStations = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     if (!q) {
       return stations;
@@ -71,41 +75,26 @@ export function StationsNearbyProvider({
     return stations.filter((station) =>
       station.address.toLowerCase().includes(q),
     );
-  })();
+  }, [stations, searchQuery, searchMode]);
 
-  useEffect(() => {
-    let isCancelled = false;
+  // Sort stations by distance from user location
+  const sortedStations = useMemo(() => {
+    if (!userLocation) {
+      return displayStations;
+    }
 
-    const sortStations = async () => {
-      if (!userLocation) {
-        setSortedStations(displayStations);
-        return;
-      }
+    // Calculate distances and sort stations by proximity
+    const stationsWithDistances = displayStations.map((station) => {
+      const distance = calculateDistance(userLocation, [
+        station.longitude,
+        station.latitude,
+      ]);
+      return { station, distance };
+    });
 
-      const stationsWithDistances = await Promise.all(
-        displayStations.map(async (station) => {
-          const distance = await calculateDistance(userLocation, [
-            station.longitude,
-            station.latitude,
-          ]);
-          return { station, distance };
-        }),
-      );
-
-      if (isCancelled) return;
-
-      const sorted = stationsWithDistances
-        .sort((a, b) => a.distance - b.distance)
-        .map(({ station }) => station);
-
-      setSortedStations(sorted);
-    };
-
-    sortStations();
-
-    return () => {
-      isCancelled = true;
-    };
+    return stationsWithDistances
+      .sort((a, b) => a.distance - b.distance)
+      .map(({ station }) => station);
   }, [displayStations, userLocation]);
 
   const updateUserLocation = useCallback((coords: Coordinates) => {
@@ -124,16 +113,22 @@ export function StationsNearbyProvider({
     setSearchQueryState("");
   }, []);
 
+  const setSelectedStation = useCallback((station: Station | null) => {
+    setSelectedStationState(station);
+  }, []);
+
   const contextValue = {
     userLocation,
     stations: displayStations,
     sortedStations,
     searchQuery,
     searchMode,
+    selectedStation,
     setSearchQuery,
     setSearchMode,
     resetStations,
     updateUserLocation,
+    setSelectedStation,
   };
 
   return (

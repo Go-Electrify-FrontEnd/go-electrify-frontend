@@ -27,40 +27,18 @@ export function getBackendUrl(path: string = ""): string {
 }
 
 /**
- * Calculate distance between two geographic coordinates using Haversine formula (async)
- * Lag vai nen phai sai async thoi! lan dau tien can dung den async lmao
+ * Calculate distance between two geographic coordinates using Turf.js
+ * Uses the Haversine formula for accurate distance calculation
  * @param origin - Origin coordinates as [longitude, latitude]
  * @param destination - Destination coordinates as [longitude, latitude]
- * @returns Promise that resolves to distance in kilometers
+ * @returns Distance in kilometers
  */
-export async function calculateDistance(
+export function calculateDistance(
   origin: [number, number],
   destination: [number, number],
-): Promise<number> {
-  return new Promise((resolve) => {
-    // Use setTimeout to defer execution and not block the main thread
-    const EARTH_RADIUS_KM = 6371;
-    const toRadians = (value: number) => (value * Math.PI) / 180;
-
-    const [originLng, originLat] = origin;
-    const [targetLng, targetLat] = destination;
-
-    const dLat = toRadians(targetLat - originLat);
-    const dLng = toRadians(targetLng - originLng);
-    const originLatRad = toRadians(originLat);
-    const targetLatRad = toRadians(targetLat);
-
-    const haversine =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(originLatRad) *
-        Math.cos(targetLatRad) *
-        Math.sin(dLng / 2) *
-        Math.sin(dLng / 2);
-
-    const centralAngle =
-      2 * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine));
-
-    const distance = EARTH_RADIUS_KM * centralAngle;
-    resolve(distance);
-  });
+): number {
+  // Lazy import turf/distance to reduce initial bundle size
+  // This is synchronous and more efficient than the previous async wrapper
+  const distance = require("@turf/distance").default;
+  return distance(origin, destination, { units: "kilometers" });
 }
