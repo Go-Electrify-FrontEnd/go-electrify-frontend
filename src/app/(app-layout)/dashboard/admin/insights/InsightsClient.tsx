@@ -49,10 +49,11 @@ export default function InsightsClient() {
       <SectionContent>
         <InsightsFilter onChange={setFilters} loading={loading} />
 
-        <div className="mt-8 grid gap-6 md:grid-cols-2">
-          <RevenueChart data={revenue} loading={loading} granularity={filters.granularity} />
-          <UsageChart data={usage} loading={loading} granularity={filters.granularity} />
-        </div>
+      <div className="mt-8 grid gap-6 grid-cols-1">
+  <RevenueChart data={revenue} loading={loading} granularity={filters.granularity} />
+  <UsageChart data={usage} loading={loading} granularity={filters.granularity} />
+</div>
+
 
         {loading && (
           <div className="mt-6 text-center text-muted-foreground">
