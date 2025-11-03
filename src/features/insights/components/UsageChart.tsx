@@ -15,7 +15,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { Line, LineChart, CartesianGrid, XAxis, YAxis, Tooltip } from "recharts";
+import { Line, LineChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { UsageInsights } from "../types/insights.types";
 
 const chartConfig = {
@@ -53,8 +53,9 @@ export function UsageChart({ data, loading, granularity }: UsageChartProps) {
       .sort((a, b) => a.time - b.time)
     ?? [];
 
-  // Tính toán width động dựa trên số lượng data để hỗ trợ cuộn ngang khi data nhiều
   const chartWidth = Math.max(800, formattedData.length * (granularity === "day" ? 60 : 80));
+
+  const hideXAxisLabels = granularity === "hour";
 
   return (
     <Card>
@@ -81,7 +82,6 @@ export function UsageChart({ data, loading, granularity }: UsageChartProps) {
             <p className="text-muted-foreground">Không có dữ liệu sử dụng</p>
           </div>
         ) : (
-          // Wrap chart trong div hỗ trợ cuộn ngang
           <div className="w-full overflow-x-auto">
             <ChartContainer config={chartConfig} className="h-64 w-full">
               <LineChart
@@ -91,21 +91,34 @@ export function UsageChart({ data, loading, granularity }: UsageChartProps) {
                 margin={{ top: 10, right: 20, left: 10, bottom: 10 }}
               >
                 <CartesianGrid stroke="#e5e7eb" strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="label"
-                  tick={{ fontSize: 12 }}
-                  tickLine={false}
-                  axisLine={true}
-                  interval={Math.max(0, Math.floor(formattedData.length / 10) - 1)} 
-                />
+                
+              <XAxis
+                dataKey="label"
+                tickLine={false}
+                axisLine={true}
+                interval={
+                  granularity === "day"
+                    ? Math.max(0, Math.floor(formattedData.length / 10) - 1)
+                    : "preserveStartEnd"
+                }
+                tick={hideXAxisLabels ? false : { fontSize: 12 }}
+                tickFormatter={hideXAxisLabels ? () => "" : undefined}
+              />
+
                 <YAxis tick={{ fontSize: 12 }} tickLine={false} />
-                           <ChartTooltip content={<ChartTooltipContent />} />
+
+                <ChartTooltip
+                  content={<ChartTooltipContent />}
+                  cursor={{ stroke: "var(--chart-1)", strokeWidth: 1, strokeDasharray: "5 5" }}
+                />
 
                 <Line
                   type="monotone"
                   dataKey="Count"
                   stroke="var(--chart-1)"
                   strokeWidth={2}
+                  dot={{ fill: "var(--chart-1)", r: 4 }}
+                  activeDot={{ r: 6 }}
                 />
               </LineChart>
             </ChartContainer>
