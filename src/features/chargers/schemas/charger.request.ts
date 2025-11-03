@@ -26,10 +26,6 @@ export const chargerCreateSchema = z.object({
     .number<number>()
     .nonnegative("Giá phải lớn hơn hoặc bằng 0")
     .max(1000000, "Giá không vượt quá 1,000,000"),
-  dockSecretHash: z
-    .string()
-    .min(1, "Hash bí mật là bắt buộc")
-    .max(255, "Hash bí mật không vượt quá 255 ký tự"),
 });
 
 export type ChargerCreateFormData = z.infer<typeof chargerCreateSchema>;

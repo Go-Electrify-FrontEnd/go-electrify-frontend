@@ -24,7 +24,7 @@ import {
   Play,
   Zap,
 } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { AblyProvider, ChannelProvider, useChannel } from "ably/react";
@@ -52,9 +52,22 @@ function ChargingProgressInner({
 }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [progress, setProgress] = useState<number>(sessionData?.socStart || 0);
-  const [isStartingSession, setIsStartingSession] = useState<boolean>(false);
-  const [sessionStarted, setSessionStarted] = useState<boolean>(false);
+  const [isStarted, setStarted] = useState<boolean>(false);
+  const [countdown, setCountdown] = useState<number>(5);
+  const [isCountdownActive, setIsCountdownActive] = useState<boolean>(true);
   const { push, refresh } = useRouter();
+
+  // 5-second countdown on mount
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => {
+        setCountdown((prev) => prev - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else {
+      setIsCountdownActive(false);
+    }
+  }, [countdown]);
 
   const { publish } = useChannel(channelId, (message) => {
     setMessages((prevMessages) => [...prevMessages, message]);
@@ -66,13 +79,16 @@ function ChargingProgressInner({
 
       setProgress(100);
       refresh();
-      push(`/dashboard/charging/success/${sessionData?.id}`);
+      push(`/dashboard/charging/payment/${sessionData?.id}`);
     } else if (message.name === "soc_update") {
       setProgress(Number(message.data.soc));
 
-      if (isStartingSession) {
-        setSessionStarted(true);
-        setIsStartingSession(false);
+      if (!isStarted) {
+        toast.success("Phiên sạc đã bắt đầu!", {
+          description: `Mức pin hiện tại: ${message.data.soc}%`,
+        });
+
+        setStarted(true);
       }
     } else if (message.name === "car_information") {
       toast.error("Lỗi trong phiên sạc", {
@@ -85,14 +101,6 @@ function ChargingProgressInner({
     if (!sessionData) return;
 
     publish("start_session", { targetSOC: sessionData.targetSoc });
-
-    // Disable button for 5 seconds
-    setIsStartingSession(true);
-
-    // After 5 seconds, if no soc_update was received, re-enable the button
-    setTimeout(() => {
-      setIsStartingSession(false);
-    }, 5000);
   };
 
   if (!sessionData) {
@@ -289,20 +297,14 @@ function ChargingProgressInner({
 
             <Button
               onClick={handlePublish}
-              disabled={
-                messages.length > 0 || isStartingSession || sessionStarted
-              }
+              disabled={isStarted || isCountdownActive}
               className="w-full"
               size="lg"
             >
               <Play className="mr-2 h-4 w-4" />
-              {sessionStarted
-                ? "Đang sạc..."
-                : isStartingSession
-                  ? "Đang khởi động..."
-                  : messages.length > 1
-                    ? "Đang sạc..."
-                    : "Bắt đầu sạc"}
+              {isCountdownActive
+                ? `Vui lòng chờ (${countdown}s)`
+                : "Bắt đầu sạc"}
             </Button>
           </CardContent>
         </Card>
