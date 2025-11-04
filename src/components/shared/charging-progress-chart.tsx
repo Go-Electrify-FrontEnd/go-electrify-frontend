@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { TrendingUp, Battery, Zap } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
@@ -48,17 +49,23 @@ export function ChargingProgressChart({
   targetSOC = 100,
 }: ChargingProgressChartProps) {
   const latestData = data[data.length - 1];
-  const chartData = data.map((point) => ({
-    time: new Date(point.at).toLocaleTimeString("vi-VN", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    }),
-    soc: Number(point.currentSOC.toFixed(1)),
-    energy: Number(point.energyKwh.toFixed(2)),
-    power: point.powerKw ? Number(point.powerKw.toFixed(2)) : null,
-    timestamp: point.at,
-  }));
+  
+  // Memoize chart data transformation to avoid recalculating on every render
+  const chartData = useMemo(
+    () =>
+      data.map((point) => ({
+        time: new Date(point.at).toLocaleTimeString("vi-VN", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        }),
+        soc: Number(point.currentSOC.toFixed(1)),
+        energy: Number(point.energyKwh.toFixed(2)),
+        power: point.powerKw ? Number(point.powerKw.toFixed(2)) : null,
+        timestamp: point.at,
+      })),
+    [data],
+  );
 
   const progress = latestData
     ? ((latestData.currentSOC / targetSOC) * 100).toFixed(1)
