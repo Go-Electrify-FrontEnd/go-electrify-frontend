@@ -43,7 +43,6 @@ export default function TeamSection() {
                     alt={member.name}
                     height={460}
                     width={460}
-                    loading="lazy"
                   />
                 </div>
                 <span className="mt-2 block text-center text-sm">{member.name}</span>
@@ -70,7 +69,6 @@ export default function TeamSection() {
                     alt={member.name}
                     height={460}
                     width={460}
-                    loading="lazy"
                   />
                 </div>
                 <span className="mt-2 block text-center text-sm">{member.name}</span>
@@ -97,7 +95,6 @@ export default function TeamSection() {
                     alt={member.name}
                     height={460}
                     width={460}
-                    loading="lazy"
                   />
                 </div>
                 <span className="mt-2 block text-center text-sm">{member.name}</span>

@@ -34,19 +34,19 @@ interface InsightsFilterProps {
 }
 
 export function InsightsFilter({ onChange, loading }: InsightsFilterProps) {
-  const today = startOfDay(new Date());
-  const [from, setFrom] = useState<Date | undefined>(today);
-  const [to, setTo] = useState<Date | undefined>(today);
+  const [from, setFrom] = useState<Date | undefined>(() => startOfDay(new Date()));
+  const [to, setTo] = useState<Date | undefined>(() => startOfDay(new Date()));
   const [stationId, setStationId] = useState<string>("all");
   const [granularity, setGranularity] = useState<Granularity>("day");
   const [stations, setStations] = useState<Station[]>([]);
   const [loadingStations, setLoadingStations] = useState(true);
 
   const resetToToday = useCallback(() => {
+    const today = startOfDay(new Date());
     setFrom(today);
     setTo(today);
     toast.error("Ngày kết thúc không được nhỏ hơn ngày bắt đầu. Đã đặt lại về hôm nay.");
-  }, [today]);
+  }, []);
 
   useEffect(() => {
     async function loadStations() {
