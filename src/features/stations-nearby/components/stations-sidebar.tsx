@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useStationsNearby } from "@/contexts/stations-nearby-context";
 import type { Station } from "@/features/stations/schemas/station.types";
 import { Badge } from "@/components/ui/badge";
@@ -37,25 +37,28 @@ export function StationsSidebar({ className = "" }: StationsSidebarProps) {
     }
   }, [selectedStation]);
 
-  const generateURL = (coordinates: [number, number]) => {
+  const generateURL = useCallback((coordinates: [number, number]) => {
     const [lat, lng] = coordinates;
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
       `${lat},${lng}`,
     )}`;
-  };
+  }, []);
 
-  const getDistance = (station: Station): string => {
-    if (!userLocation) return "N/A";
+  const getDistance = useCallback(
+    (station: Station): string => {
+      if (!userLocation) return "N/A";
 
-    const distanceKm = calculateDistance(userLocation, [
-      station.longitude,
-      station.latitude,
-    ]);
+      const distanceKm = calculateDistance(userLocation, [
+        station.longitude,
+        station.latitude,
+      ]);
 
-    return distanceKm < 1
-      ? `${Math.round(distanceKm * 1000)} m`
-      : `${distanceKm.toFixed(1)} km`;
-  };
+      return distanceKm < 1
+        ? `${Math.round(distanceKm * 1000)} m`
+        : `${distanceKm.toFixed(1)} km`;
+    },
+    [userLocation],
+  );
 
   return (
     <div className={`flex h-full flex-col ${className}`}>

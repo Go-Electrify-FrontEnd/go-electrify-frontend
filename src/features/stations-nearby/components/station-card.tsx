@@ -8,7 +8,7 @@ import type { Station } from "@/features/stations/schemas/station.types";
 import { calculateDistance } from "@/lib/utils";
 import { Heart, MapPin, Navigation } from "lucide-react";
 import Link from "next/link";
-import { memo, useEffect, useState, startTransition } from "react";
+import { memo, useMemo } from "react";
 
 interface StationCardProps {
   station: Station;
@@ -19,7 +19,6 @@ export const StationCard = memo(function StationCard({
   station,
 }: StationCardProps) {
   const { userLocation } = useStationsNearby();
-  const [distance, setDistance] = useState<string>("N/A");
 
   const generateURL = (coordinates: [number, number], name: string) => {
     const [lat, lng] = coordinates;
@@ -28,48 +27,26 @@ export const StationCard = memo(function StationCard({
     )}`;
   };
 
-  // Calculate and format distance based on user location asynchronously
-  useEffect(() => {
-    let isCancelled = false;
+  // Calculate and format distance based on user location using useMemo
+  const distance = useMemo(() => {
+    if (!userLocation) {
+      return "N/A";
+    }
 
-    const calculateDistanceAsync = async () => {
-      if (!userLocation) {
-        setDistance("N/A");
-        return;
-      }
+    try {
+      // calculateDistance is synchronous
+      const distanceKm = calculateDistance(userLocation, [
+        station.longitude,
+        station.latitude,
+      ]);
 
-      if (isCancelled) return;
-
-      try {
-        // Now calculateDistance is async
-        const distanceKm = await calculateDistance(userLocation, [
-          station.longitude,
-          station.latitude,
-        ]);
-
-        if (isCancelled) return;
-
-        const formattedDistance =
-          distanceKm < 1
-            ? `${Math.round(distanceKm * 1000)} m`
-            : `${distanceKm.toFixed(1)} km`;
-
-        startTransition(() => {
-          setDistance(formattedDistance);
-        });
-      } catch (error) {
-        console.error("Error calculating distance:", error);
-        if (!isCancelled) {
-          setDistance("N/A");
-        }
-      }
-    };
-
-    calculateDistanceAsync();
-
-    return () => {
-      isCancelled = true;
-    };
+      return distanceKm < 1
+        ? `${Math.round(distanceKm * 1000)} m`
+        : `${distanceKm.toFixed(1)} km`;
+    } catch (error) {
+      console.error("Error calculating distance:", error);
+      return "N/A";
+    }
   }, [userLocation, station.latitude, station.longitude]);
   return (
     <Card className="border-border bg-background transition-shadow hover:shadow-md">
