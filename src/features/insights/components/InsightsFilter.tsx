@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { format, isAfter, startOfDay } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -42,11 +42,11 @@ export function InsightsFilter({ onChange, loading }: InsightsFilterProps) {
   const [stations, setStations] = useState<Station[]>([]);
   const [loadingStations, setLoadingStations] = useState(true);
 
-  const resetToToday = () => {
+  const resetToToday = useCallback(() => {
     setFrom(today);
     setTo(today);
     toast.error("Ngày kết thúc không được nhỏ hơn ngày bắt đầu. Đã đặt lại về hôm nay.");
-  };
+  }, [today]);
 
   useEffect(() => {
     async function loadStations() {
@@ -84,7 +84,7 @@ export function InsightsFilter({ onChange, loading }: InsightsFilterProps) {
         granularity,
       });
     }
-  }, [from, to, stationId, granularity, onChange]);
+  }, [from, to, stationId, granularity, onChange, resetToToday]);
 
   return (
     <div className="grid gap-4 md:grid-cols-4">

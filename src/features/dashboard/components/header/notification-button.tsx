@@ -200,7 +200,7 @@ export function NotificationButton({
     //   router.push("/dashboard/notifications");
     //   router.refresh();
     // }
-  }, [router, unreadCount, token, initialNotifications]);
+  }, [router]);
 
   const triggerButton = (
     <Button variant="ghost" size="icon" className="relative">

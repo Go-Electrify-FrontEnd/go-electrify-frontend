@@ -94,12 +94,12 @@ export default async function IncidentsPage() {
   const incidentsPerStation = await Promise.all(incidentPromises);
 
   // 3. Gộp tất cả sự cố vào 1 mảng duy nhất và sắp xếp mới nhất lên đầu
-  const allIncidents = incidentsPerStation
-    .flat()
-    .sort(
-      (a, b) =>
-        new Date(b.ReportedAt).getTime() - new Date(a.ReportedAt).getTime(),
-    );
+  // Cache Date objects to avoid parsing them multiple times
+  const allIncidents = incidentsPerStation.flat().sort((a, b) => {
+    const aTime = new Date(a.ReportedAt).getTime();
+    const bTime = new Date(b.ReportedAt).getTime();
+    return bTime - aTime;
+  });
 
   // (Bạn nên tạo type chuẩn trong @/types/ thay vì map ở đây)
   // Đảm bảo props truyền đi khớp với type client

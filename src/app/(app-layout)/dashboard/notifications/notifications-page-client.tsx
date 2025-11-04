@@ -139,7 +139,7 @@ export function NotificationsPageClient({
         );
       }
     },
-    [token],
+    [token, router],
   );
 
   // Mark all notifications as read
@@ -180,7 +180,7 @@ export function NotificationsPageClient({
     } finally {
       setIsMarkingAllRead(false);
     }
-  }, [unreadCount, notifications, token]);
+  }, [unreadCount, notifications, token, router]);
 
   return (
     <div className="container mx-auto max-w-4xl p-6">

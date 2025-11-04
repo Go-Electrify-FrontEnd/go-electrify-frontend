@@ -38,7 +38,7 @@ import {
   Info,
   DollarSign,
 } from "lucide-react";
-import { startTransition, useActionState, useEffect, useState } from "react";
+import { startTransition, useActionState, useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import {
@@ -99,14 +99,18 @@ export default function CreateReservationButton({
 
   const selectedVehicleModelId = form.watch("vehicleModelId");
 
-  const availableConnectorTypes = selectedVehicleModelId
-    ? connectorTypes.filter((ct) => {
-        const vehicleModel = vehicleModels.find(
-          (vm) => vm.id.toString() === selectedVehicleModelId,
-        );
-        return vehicleModel?.connectorTypeIds.includes(ct.id.toString());
-      })
-    : [];
+  const availableConnectorTypes = useMemo(
+    () =>
+      selectedVehicleModelId
+        ? connectorTypes.filter((ct) => {
+            const vehicleModel = vehicleModels.find(
+              (vm) => vm.id.toString() === selectedVehicleModelId,
+            );
+            return vehicleModel?.connectorTypeIds.includes(ct.id.toString());
+          })
+        : [],
+    [selectedVehicleModelId, connectorTypes, vehicleModels],
+  );
 
   useEffect(() => {
     if (!createState.msg) return;
