@@ -45,7 +45,9 @@ export function InsightsFilter({ onChange, loading }: InsightsFilterProps) {
   const resetToToday = () => {
     setFrom(today);
     setTo(today);
-    toast.error("Ngày kết thúc không được nhỏ hơn ngày bắt đầu. Đã đặt lại về hôm nay.");
+    toast.error(
+      "Ngày kết thúc không được nhỏ hơn ngày bắt đầu. Đã đặt lại về hôm nay.",
+    );
   };
 
   useEffect(() => {
@@ -96,7 +98,7 @@ export function InsightsFilter({ onChange, loading }: InsightsFilterProps) {
               variant="outline"
               className={cn(
                 "w-full justify-start text-left font-normal",
-                !from && "text-muted-foreground"
+                !from && "text-muted-foreground",
               )}
               disabled={loading}
             >
@@ -112,7 +114,9 @@ export function InsightsFilter({ onChange, loading }: InsightsFilterProps) {
                 if (date) {
                   const selected = startOfDay(date);
                   if (to && isAfter(selected, startOfDay(to))) {
-                    toast.error("Ngày bắt đầu không được lớn hơn ngày kết thúc.");
+                    toast.error(
+                      "Ngày bắt đầu không được lớn hơn ngày kết thúc.",
+                    );
                     return;
                   }
                   setFrom(selected);
@@ -132,7 +136,7 @@ export function InsightsFilter({ onChange, loading }: InsightsFilterProps) {
               variant="outline"
               className={cn(
                 "w-full justify-start text-left font-normal",
-                !to && "text-muted-foreground"
+                !to && "text-muted-foreground",
               )}
               disabled={loading}
             >
@@ -148,7 +152,9 @@ export function InsightsFilter({ onChange, loading }: InsightsFilterProps) {
                 if (date) {
                   const selected = startOfDay(date);
                   if (from && isAfter(startOfDay(from), selected)) {
-                    toast.error("Ngày kết thúc không được nhỏ hơn ngày bắt đầu.");
+                    toast.error(
+                      "Ngày kết thúc không được nhỏ hơn ngày bắt đầu.",
+                    );
                     return;
                   }
                   setTo(selected);
