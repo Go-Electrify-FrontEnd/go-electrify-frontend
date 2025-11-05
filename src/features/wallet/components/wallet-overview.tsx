@@ -16,6 +16,7 @@ export const typeLabels: Record<Transaction["type"], string> = {
   CHARGING: "Sạc xe",
   REFUND: "Hoàn tiền",
   SUBSCRIPTION: "Mua gói",
+  SUBSCRIPTION_USAGE: "Sử dụng gói",
 };
 
 export function WalletOverview({ wallet, transactions }: WalletOverviewProps) {

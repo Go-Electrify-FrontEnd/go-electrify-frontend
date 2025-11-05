@@ -10,8 +10,6 @@ import {
   fetchUsageInsightsAction,
 } from "@/features/insights/services/insights-actions";
 import { InsightsFilters } from "@/features/insights/types/insights.types";
-import SectionHeader from "@/components/shared/section-header";
-import SectionContent from "@/components/shared/section-content";
 
 export default function InsightsClient() {
   const today = new Date();

@@ -2,6 +2,7 @@ import {
   CurrentSessionWithTokenResponseSchema,
   type CurrentSessionData,
 } from "@/features/charging/schemas/current-session.schema";
+import type { ChargingHistoryResponse } from "@/features/charging/types/session.types";
 import { API_BASE_URL } from "@/lib/api-config";
 
 const isDevelopment = process.env.NODE_ENV === "development";
@@ -104,5 +105,45 @@ function validateChannelId(sessionId: number, channelId: string): void {
     console.warn(
       `⚠️ Channel ID mismatch!\nReceived: ${channelId}\nExpected: ${expectedChannel}`,
     );
+  }
+}
+
+/**
+ * Fetch charging session history with pagination
+ * @param token - User authentication token
+ * @param page - Page number (default: 1)
+ * @param pageSize - Items per page (default: 20)
+ * @returns Charging history response or null if an error occurs
+ */
+export async function getChargingHistory(
+  token: string,
+  page: number = 1,
+  pageSize: number = 20,
+): Promise<ChargingHistoryResponse | null> {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/charging-sessions/me/history?page=${page}&pageSize=${pageSize}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      },
+    );
+
+    if (!response.ok) {
+      if (isDevelopment) {
+        console.error(`Failed to fetch charging history (${response.status})`);
+      }
+      return null;
+    }
+
+    const data: ChargingHistoryResponse = await response.json();
+    return data;
+  } catch (error) {
+    if (isDevelopment) {
+      console.error("Error fetching charging history:", error);
+    }
+    return null;
   }
 }

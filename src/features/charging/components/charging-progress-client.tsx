@@ -99,7 +99,6 @@ function ChargingProgressInner({
 
   const handlePublish = () => {
     if (!sessionData) return;
-
     publish("start_session", { targetSOC: sessionData.targetSoc });
   };
 

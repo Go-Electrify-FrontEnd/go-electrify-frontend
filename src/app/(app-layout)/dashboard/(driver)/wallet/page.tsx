@@ -9,7 +9,7 @@ import {
   TransactionListApiSchema,
   WalletSchema,
 } from "@/features/wallet/schemas/wallet.schema";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { API_BASE_URL } from "@/lib/api-config";
 
 export async function getWallet() {
@@ -43,11 +43,12 @@ export async function getTransactions(page: number = 1, limit: number = 50) {
     return { transactions: [], total: 0 };
   }
 
-  const { success, data, error } = TransactionListApiSchema.safeParse(
-    await response.json(),
-  );
+  const jsonResponse = await response.json();
+  const { success, data, error } =
+    TransactionListApiSchema.safeParse(jsonResponse);
 
   if (!success) {
+    console.log("Failed to parse transactions:", JSON.stringify(jsonResponse));
     console.error("Failed to parse transactions:", JSON.stringify(error));
     return { transactions: [], total: 0 };
   }

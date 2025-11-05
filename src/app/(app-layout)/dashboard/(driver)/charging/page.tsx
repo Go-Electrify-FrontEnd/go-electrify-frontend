@@ -15,24 +15,19 @@ export default async function StartChargingPage() {
     redirect("/login");
   }
 
-  // Fetch current charging session
   const currentSession = await getCurrentSessionWithToken(token);
 
-  // Handle existing session states
   if (currentSession) {
     const { status, id } = currentSession.session;
 
-    // UNPAID session - redirect to payment page
     if (status === "UNPAID") {
-      redirect("/dashboard/charging/payment/" + encodeURIComponent(id));
+      redirect("/dashboard/charging/payment/");
     }
 
-    // PENDING or RUNNING session - redirect to progress page (session is binded)
     if (status === "PENDING" || status === "RUNNING") {
       redirect("/dashboard/charging/binding/progress");
     }
 
-    // Other statuses (COMPLETED, TIMEOUT, FAILED, PAID) - show warning but allow new session
     if (["COMPLETED", "TIMEOUT", "FAILED", "PAID"].includes(status)) {
       return (
         <div className="container mx-auto max-w-2xl px-4 py-8">

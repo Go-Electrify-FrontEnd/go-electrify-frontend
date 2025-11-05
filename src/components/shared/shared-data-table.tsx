@@ -47,6 +47,14 @@ interface SharedDataTableProps<TData extends Record<string, unknown>, TValue> {
   searchPlaceholder?: string;
   emptyMessage?: string;
   emptyTitle?: string;
+  // Server-side pagination props
+  serverSidePagination?: {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    pageSize: number;
+    onPageChange: (page: number) => void;
+  };
 }
 
 function isDataColumn(column: Column<any, unknown>): boolean {
@@ -83,21 +91,27 @@ export function SharedDataTable<TData extends Record<string, unknown>, TValue>({
   searchPlaceholder = "Tìm kiếm...",
   emptyMessage = "Không có dữ liệu.",
   emptyTitle = "Không tìm thấy dữ liệu",
+  serverSidePagination,
 }: SharedDataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
+  // Use server-side pagination if provided, otherwise use client-side
+  const isServerSide = !!serverSidePagination;
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: isServerSide ? undefined : getPaginationRowModel(),
+    getSortedRowModel: isServerSide ? undefined : getSortedRowModel(),
+    getFilteredRowModel: isServerSide ? undefined : getFilteredRowModel(),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
+    manualPagination: isServerSide,
+    pageCount: serverSidePagination?.totalPages ?? -1,
     state: {
       sorting,
       columnFilters,
@@ -175,11 +189,32 @@ export function SharedDataTable<TData extends Record<string, unknown>, TValue>({
 
       <TableFooter
         currentRows={table.getRowModel().rows.length}
-        totalRows={data.length}
-        canPreviousPage={table.getCanPreviousPage()}
-        canNextPage={table.getCanNextPage()}
-        onPreviousPage={() => table.previousPage()}
-        onNextPage={() => table.nextPage()}
+        totalRows={serverSidePagination?.totalItems ?? data.length}
+        canPreviousPage={
+          serverSidePagination
+            ? serverSidePagination.currentPage > 1
+            : table.getCanPreviousPage()
+        }
+        canNextPage={
+          serverSidePagination
+            ? serverSidePagination.currentPage < serverSidePagination.totalPages
+            : table.getCanNextPage()
+        }
+        onPreviousPage={() =>
+          serverSidePagination
+            ? serverSidePagination.onPageChange(
+                serverSidePagination.currentPage - 1,
+              )
+            : table.previousPage()
+        }
+        onNextPage={() =>
+          serverSidePagination
+            ? serverSidePagination.onPageChange(
+                serverSidePagination.currentPage + 1,
+              )
+            : table.nextPage()
+        }
+        serverSidePagination={serverSidePagination}
       />
     </div>
   );
@@ -233,6 +268,7 @@ function TableFooter({
   canNextPage,
   onPreviousPage,
   onNextPage,
+  serverSidePagination,
 }: {
   currentRows: number;
   totalRows: number;
@@ -240,12 +276,20 @@ function TableFooter({
   canNextPage: boolean;
   onPreviousPage: () => void;
   onNextPage: () => void;
+  serverSidePagination?: {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    pageSize: number;
+  };
 }) {
+  const displayText = serverSidePagination
+    ? `Trang ${serverSidePagination.currentPage} của ${serverSidePagination.totalPages} (${serverSidePagination.totalItems} dòng)`
+    : `Đang hiển thị ${currentRows} trong tổng ${totalRows} dòng.`;
+
   return (
     <div className="flex items-center justify-between space-x-2 py-4">
-      <div className="text-muted-foreground flex-1 text-sm">
-        Đang hiển thị {currentRows} trong tổng {totalRows} dòng.
-      </div>
+      <div className="text-muted-foreground flex-1 text-sm">{displayText}</div>
       <div className="flex items-center space-x-2">
         <Button
           variant="outline"
