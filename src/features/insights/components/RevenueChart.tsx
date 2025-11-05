@@ -27,21 +27,23 @@ interface RevenueChartProps {
 const chartConfig = {
   Amount: {
     label: "Doanh thu (VNĐ)",
-    color: "hsl(var(--chart-2))",
+    color: "var(--color-desktop)",
   },
 } satisfies ChartConfig;
 
 export function RevenueChart({ data, loading, granularity }: RevenueChartProps) {
-  const formattedData = data?.Series.map((item) => ({
-    date:
-      granularity === "day"
-        ? format(new Date(item.Bucket), "dd/MM")
-        : format(new Date(item.Bucket), "HH:mm"),
-    Amount: item.Amount,
-  })) ?? [];
+  const formattedData = data?.Series.map((item) => {
+    const date = new Date(item.Bucket);
+    return {
+      date: format(date, granularity === "day" ? "dd/MM" : "HH:mm"),
+      label: granularity === "day" 
+        ? format(date, "dd/MM/yyyy") 
+        : format(date, "dd/MM/yyyy HH:mm"),
+      Amount: item.Amount,
+    };
+  }) ?? [];
 
   const chartWidth = Math.max(800, formattedData.length * (granularity === "day" ? 60 : 80));
-
   const total = data?.Total?.toLocaleString("vi-VN") ?? "0";
 
   return (
@@ -72,25 +74,43 @@ export function RevenueChart({ data, loading, granularity }: RevenueChartProps) 
         ) : (
           <div className="w-full overflow-x-auto">
             <ChartContainer config={chartConfig} className="h-64 w-full">
-              <BarChart 
-                width={chartWidth} 
-                height={320} 
-                data={formattedData} 
+              <BarChart
+                width={chartWidth}
+                height={320}
+                data={formattedData}
                 margin={{ top: 10, right: 10, left: 10, bottom: 10 }}
               >
                 <CartesianGrid vertical={false} />
-                <XAxis 
-                  dataKey="date" 
-                  tickLine={false} 
+                
+                <XAxis
+                  dataKey="date"
+                  tickLine={false}
                   tickMargin={10}
-                  interval={Math.max(0, Math.floor(formattedData.length / 10) - 1)} 
+interval={granularity === "day" ? Math.max(0, Math.floor(formattedData.length / 10) - 1) : "preserveStartEnd"}
                 />
+
                 <YAxis
                   tickLine={false}
                   tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
                 />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="Amount" fill="var(--color-Amount)" radius={4} />
+
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent
+                      labelFormatter={(_, payload) => {
+                        if (payload && payload.length > 0) {
+                          const data = payload[0].payload as { label: string };
+                          return data.label;
+                        }
+                        return "";
+                      }}
+                      formatter={(value) => `${Number(value).toLocaleString("vi-VN")} ₫`}
+                    />
+                  }
+                  cursor={{ fill: "rgba(0,0,0,0.05)" }}
+                />
+
+                <Bar dataKey="Amount" fill="var(--chart-1)" radius={4} />
               </BarChart>
             </ChartContainer>
           </div>

@@ -15,7 +15,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { Line, LineChart, CartesianGrid, XAxis, YAxis, Tooltip } from "recharts";
+import { Line, LineChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { UsageInsights } from "../types/insights.types";
 
 const chartConfig = {
@@ -39,22 +39,29 @@ export function UsageChart({ data, loading, granularity }: UsageChartProps) {
         parsedDate = new Date(item.Bucket);
       }
 
-      const timeLabel =
+      const axisLabel =
         granularity === "day"
           ? format(parsedDate, "dd/MM")
-          : format(parsedDate, "HH:mm dd/MM");
+          : format(parsedDate, "HH:mm");
+
+      const tooltipLabel =
+        granularity === "day"
+          ? format(parsedDate, "dd/MM/yyyy")
+          : format(parsedDate, "dd/MM/yyyy HH:mm");
 
       return {
         time: parsedDate.getTime(),
-        label: timeLabel,
+        axisLabel,
+        tooltipLabel,
         Count: item.Count,
       };
     })
       .sort((a, b) => a.time - b.time)
     ?? [];
 
-  // Tính toán width động dựa trên số lượng data để hỗ trợ cuộn ngang khi data nhiều
   const chartWidth = Math.max(800, formattedData.length * (granularity === "day" ? 60 : 80));
+  const totalSessions = data?.TotalSessions ?? 0;
+  const peakHour = data?.PeakHour !== undefined ? `${data.PeakHour}h` : "-";
 
   return (
     <Card>
@@ -63,8 +70,7 @@ export function UsageChart({ data, loading, granularity }: UsageChartProps) {
           <div>
             <CardTitle>Lượt Sạc</CardTitle>
             <CardDescription>
-              Tổng {data?.TotalSessions ?? 0} phiên • Giờ cao điểm:{" "}
-              {data?.PeakHour !== undefined ? `${data.PeakHour}h` : "-"}
+              Tổng {totalSessions.toLocaleString("vi-VN")} phiên • Giờ cao điểm: {peakHour}
             </CardDescription>
           </div>
           <Zap className="h-6 w-6 text-yellow-500" />
@@ -81,7 +87,6 @@ export function UsageChart({ data, loading, granularity }: UsageChartProps) {
             <p className="text-muted-foreground">Không có dữ liệu sử dụng</p>
           </div>
         ) : (
-          // Wrap chart trong div hỗ trợ cuộn ngang
           <div className="w-full overflow-x-auto">
             <ChartContainer config={chartConfig} className="h-64 w-full">
               <LineChart
@@ -91,32 +96,48 @@ export function UsageChart({ data, loading, granularity }: UsageChartProps) {
                 margin={{ top: 10, right: 20, left: 10, bottom: 10 }}
               >
                 <CartesianGrid stroke="#e5e7eb" strokeDasharray="3 3" />
+                
                 <XAxis
-                  dataKey="label"
-                  tick={{ fontSize: 12 }}
+                  dataKey="axisLabel"
                   tickLine={false}
                   axisLine={true}
-                  interval={Math.max(0, Math.floor(formattedData.length / 10) - 1)} // Giảm số tick nếu data nhiều để tránh chật
+                  interval={
+                    granularity === "day"
+                      ? Math.max(0, Math.floor(formattedData.length / 10) - 1)
+                      : "preserveStartEnd"
+                  }
+                  tick={{ fontSize: 12 }}
                 />
-                <YAxis tick={{ fontSize: 12 }} tickLine={false} />
-                <Tooltip
-                  cursor={{ strokeDasharray: "3 3" }}
-                  contentStyle={{
-                    backgroundColor: "white",
-                    border: "1px solid #ddd",
-                    borderRadius: "6px",
-                    padding: "8px 12px",
-                  }}
-                  formatter={(value: number, name: string, props: any) => [
-                    `${value} phiên sạc`,
-                    `Ngày ${props.payload.label}`,
-                  ]}
+
+                <YAxis
+                  tick={{ fontSize: 12 }}
+                  tickLine={false}
+                  tickFormatter={(value) => value.toLocaleString("vi-VN")}
                 />
+
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent
+                      labelFormatter={(_, payload) => {
+                        if (payload && payload.length > 0) {
+                          const data = payload[0].payload as { tooltipLabel: string };
+                          return data.tooltipLabel;
+                        }
+                        return "";
+                      }}
+                      formatter={(value) => `${Number(value).toLocaleString("vi-VN")} phiên`}
+                    />
+                  }
+                  cursor={{ stroke: "var(--chart-1)", strokeWidth: 1, strokeDasharray: "5 5" }}
+                />
+
                 <Line
                   type="monotone"
                   dataKey="Count"
-                  stroke="#000000"
+                  stroke="var(--chart-1)"
                   strokeWidth={2}
+                  dot={{ fill: "var(--chart-1)", r: 4 }}
+                  activeDot={{ r: 6 }}
                 />
               </LineChart>
             </ChartContainer>
