@@ -46,7 +46,7 @@ export default function InsightsClient() {
     <div suppressHydrationWarning={true} className="space-y-8">
       <InsightsFilter onChange={setFilters} loading={loading} />
 
-      <div className="mt-8 grid gap-6 md:grid-cols-2">
+      <div className="mt-8 grid gap-6">
         <RevenueChart
           data={revenue}
           loading={loading}
@@ -66,7 +66,7 @@ export default function InsightsClient() {
       )}
 
       {!loading && !revenue?.Series?.length && !usage?.Series?.length && (
-        <div className="text-muted-foreground mt-6 text-center">
+        <div className="text-muted-foreground mt-6 mb-6 text-center">
           Không có dữ liệu cho ngày hôm nay.
         </div>
       )}
