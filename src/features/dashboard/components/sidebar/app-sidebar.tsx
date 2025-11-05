@@ -26,11 +26,6 @@ const overview = {
       url: "/dashboard",
       icon: House,
     },
-  {
-    title: "Insights",
-    url: "/dashboard/admin/insights",
-    icon: BarChart3,
-  },
     {
       title: "Bắt Đầu Sạc",
       url: "/dashboard/charging",

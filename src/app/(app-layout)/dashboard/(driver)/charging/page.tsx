@@ -27,53 +27,13 @@ export default async function StartChargingPage() {
       redirect("/dashboard/charging/payment/" + encodeURIComponent(id));
     }
 
-    // RUNNING session - show redirect button to progress page
-    if (status === "RUNNING") {
-      return (
-        <div className="container mx-auto max-w-2xl px-4 py-8">
-          <div className="mb-8">
-            <h1 className="mb-2 text-3xl font-bold tracking-tight">
-              Bắt đầu sạc
-            </h1>
-            <p className="text-muted-foreground">
-              Bạn đang có phiên sạc đang hoạt động
-            </p>
-          </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <ZapIcon className="text-primary h-5 w-5" />
-                Phiên sạc đang hoạt động
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Alert>
-                <InfoIcon className="h-4 w-4" />
-                <AlertTitle>Phiên sạc đang chạy</AlertTitle>
-                <AlertDescription>
-                  Bạn có một phiên sạc đang hoạt động (ID: {id}). Vui lòng xem
-                  tiến trình sạc hoặc hoàn thành phiên hiện tại trước khi bắt
-                  đầu phiên mới.
-                </AlertDescription>
-              </Alert>
-
-              <Button asChild className="w-full" size="lg">
-                <Link href="/dashboard/charging/binding/progress">
-                  <ZapIcon className="mr-2 h-4 w-4" />
-                  Xem tiến trình sạc
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      );
+    // PENDING or RUNNING session - redirect to progress page (session is binded)
+    if (status === "PENDING" || status === "RUNNING") {
+      redirect("/dashboard/charging/binding/progress");
     }
 
-    // Other statuses (COMPLETED, TIMEOUT, FAILED, PAID, PENDING) - show warning but allow new session
-    if (
-      ["COMPLETED", "TIMEOUT", "FAILED", "PAID", "PENDING"].includes(status)
-    ) {
+    // Other statuses (COMPLETED, TIMEOUT, FAILED, PAID) - show warning but allow new session
+    if (["COMPLETED", "TIMEOUT", "FAILED", "PAID"].includes(status)) {
       return (
         <div className="container mx-auto max-w-2xl px-4 py-8">
           <div className="mb-8">

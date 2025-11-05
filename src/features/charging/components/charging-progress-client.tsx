@@ -79,7 +79,7 @@ function ChargingProgressInner({
 
       setProgress(100);
       refresh();
-      push(`/dashboard/charging/payment/${sessionData?.id}`);
+      push(`/dashboard/charging/payment`);
     } else if (message.name === "soc_update") {
       setProgress(Number(message.data.soc));
 

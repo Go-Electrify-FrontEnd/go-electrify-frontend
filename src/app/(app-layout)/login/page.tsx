@@ -15,7 +15,7 @@ export default async function LoginPage() {
       </div>
       <div className="bg-muted relative hidden lg:flex lg:flex-col lg:items-center lg:justify-center lg:p-12">
         <div className="max-w-md space-y-6 text-center">
-          <blockquote className="text-foreground text-2xl leading-relaxed font-medium italic">
+          <blockquote className="text-foreground text-2xl font-medium italic">
             Chuyển đổi xanh và chuyển đổi số là xu thế tất yếu để phát triển bền
             vững.
           </blockquote>

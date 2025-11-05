@@ -4,7 +4,7 @@ import SectionContent from "@/components/shared/section-content";
 import { ReportedIncidentTable } from "@/features/reported-incidents/components/reported-incident-table";
 import { API_BASE_URL } from "@/lib/api-config";
 
-interface ReportedIncident {
+export interface ReportedIncident {
   Id: number;
   ReporterName: string;
   StationId: number;
@@ -22,16 +22,13 @@ export async function getReportedIncidents(
   token: string,
 ): Promise<ReportedIncident[]> {
   try {
-    const response = await fetch(
-      `${API_BASE_URL}/admin/incidents`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        next: { tags: ["reported-incidents"] },
+    const response = await fetch(`${API_BASE_URL}/admin/incidents`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
-    );
+      next: { tags: ["reported-incidents"] },
+    });
 
     if (!response.ok) {
       console.log(
