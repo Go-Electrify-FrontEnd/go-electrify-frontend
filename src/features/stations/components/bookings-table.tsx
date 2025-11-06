@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { SharedDataTable } from "@/components/shared/shared-data-table";
+import { SharedDataTable } from "@/components/shared-data-table";
 import bookingColumns from "@/features/stations/components/bookings-table-columns";
 import type { Booking } from "@/features/stations/components/bookings-table-columns";
 

@@ -37,7 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import AddressSearch from "@/components/shared/address-search";
+import AddressSearch from "@/components/address-search";
 import { updateStation } from "../services/stations-actions";
 import { Station, StationStatusType } from "../schemas/station.schema";
 import {

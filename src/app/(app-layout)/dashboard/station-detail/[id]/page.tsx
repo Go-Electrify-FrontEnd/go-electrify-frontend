@@ -2,7 +2,7 @@ import { getUser } from "@/lib/auth/auth-server";
 import { ChargersTable } from "@/features/stations/components/charger-table";
 import { SessionsTable } from "@/features/stations/components/session-table";
 import type { SessionRow } from "@/features/stations/components/session-table-columns";
-import SectionHeader from "@/components/shared/section-header";
+import SectionHeader from "@/components/section-header";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -27,13 +27,13 @@ import {
   Users,
   Zap,
 } from "lucide-react";
-import { SharedDataTable } from "@/components/shared/shared-data-table";
+import { SharedDataTable } from "@/components/shared-data-table";
 import bookingColumns from "@/features/stations/components/bookings-table-columns";
 import { notFound } from "next/navigation";
 import StationDockCreate from "@/features/stations/components/charger-create-dialog";
 import { ChargerUpdateProvider } from "@/features/stations/contexts/charger-update-context";
 import UpdateCharger from "@/features/stations/components/charger-edit-dialog";
-import SectionContent from "@/components/shared/section-content";
+import SectionContent from "@/components/section-content";
 import {
   getSelfStationId,
   getStationChargers,

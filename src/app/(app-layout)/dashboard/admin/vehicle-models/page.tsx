@@ -1,5 +1,5 @@
 import VehicleModelCreateDialog from "@/features/vehicle-models/components/vehicle-model-create-dialog";
-import SectionHeader from "@/components/shared/section-header";
+import SectionHeader from "@/components/section-header";
 import {
   Card,
   CardContent,
@@ -15,7 +15,7 @@ import { ConnectorTypeProvider } from "@/contexts/connector-type-context";
 import { VehicleModelTable } from "@/features/vehicle-models/components/vehicle-model-table";
 import { VehicleModelUpdateProvider } from "@/contexts/vehicle-model-action-context";
 import VehicleModelEditDialog from "@/features/vehicle-models/components/vehicle-model-edit-dialog";
-import SectionContent from "@/components/shared/section-content";
+import SectionContent from "@/components/section-content";
 import { API_BASE_URL } from "@/lib/api-config";
 
 export async function getVehicleModels(token: string): Promise<CarModel[]> {

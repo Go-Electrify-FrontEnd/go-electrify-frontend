@@ -16,9 +16,7 @@ export default async function FindStationsPage() {
 
   return (
     <StationsNearbyProvider stations={chargingStations}>
-      {/* Full-page layout - Flex container for map and sidebar */}
       <div className="relative flex h-[calc(100vh-4rem)] overflow-hidden">
-        {/* Map - Takes remaining space */}
         <div className="flex-1">
           <StationMap />
         </div>

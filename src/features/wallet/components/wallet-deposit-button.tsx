@@ -25,7 +25,7 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { useServerAction } from "@/hooks/use-server-action";
 import { Spinner } from "@/components/ui/spinner";
-import { handleCreateTopup } from "../services/wallet-actions";
+import { handleCreateTopup } from "../actions/wallet-actions";
 import { TopupResponse } from "../schemas/wallet.schema";
 import { walletTopupSchema } from "../schemas/wallet.request";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { SharedDataTable } from "@/components/shared/shared-data-table";
+import { SharedDataTable } from "@/components/shared-data-table";
 import {
   sessionColumns,
   type SessionRow,

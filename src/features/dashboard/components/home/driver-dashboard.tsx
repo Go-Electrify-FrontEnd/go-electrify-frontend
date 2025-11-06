@@ -1,5 +1,12 @@
 import { User } from "@/features/users/schemas/user.types";
-import { Wallet, Calendar, MapPin, TrendingUp, Zap } from "lucide-react";
+import {
+  Wallet,
+  Calendar,
+  Zap,
+  TrendingUp,
+  MapPin,
+  Activity,
+} from "lucide-react";
 import {
   Card,
   CardContent,
@@ -7,53 +14,54 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { type ChartConfig } from "@/components/ui/chart";
-import { BarChartWrapper, LineChartWrapper } from "./client-charts";
+import { buttonVariants } from "@/components/ui/button";
 import type { DriverStats } from "@/features/dashboard/types/dashboard-stats";
 import Link from "next/link";
-import SectionHeader from "@/components/shared/section-header";
-import SectionContent from "@/components/shared/section-content";
-import { TransactionList } from "@/features/wallet/schemas/wallet.schema";
+import SectionHeader from "@/components/section-header";
+import SectionContent from "@/components/section-content";
+import { Transaction } from "@/features/wallet/schemas/wallet.schema";
+import StatCard from "../shared/stat-card";
+import { formatCurrencyVND } from "@/lib/formatters";
 
 interface DriverDashboardProps {
   user: User;
   stats: DriverStats;
-  transactions: TransactionList | null;
+  transactions: Transaction[];
 }
 
-export async function DriverDashboard({
+export function DriverDashboard({
   user,
   stats,
   transactions,
 }: DriverDashboardProps) {
-  // Mock data for charts - in production, this would come from API
-  const spendingData = [
-    { month: "T7", amount: stats.totalSpent * 0.15 },
-    { month: "T8", amount: stats.totalSpent * 0.2 },
-    { month: "T9", amount: stats.totalSpent * 0.25 },
-    { month: "T10", amount: stats.totalSpent * 0.4 },
-  ];
+  const averageCostPerSession =
+    stats.chargingSessions > 0 ? stats.totalSpent / stats.chargingSessions : 0;
 
-  const sessionData = [
-    { month: "T7", sessions: Math.floor(stats.chargingSessions * 0.2) },
-    { month: "T8", sessions: Math.floor(stats.chargingSessions * 0.25) },
-    { month: "T9", sessions: Math.floor(stats.chargingSessions * 0.3) },
-    { month: "T10", sessions: Math.floor(stats.chargingSessions * 0.25) },
-  ];
+  const getTransactionTypeLabel = (type: string) => {
+    const typeLabels: Record<string, string> = {
+      DEPOSIT: "Nạp tiền",
+      DEPOSIT_MANUAL: "Nạp tiền",
+      CHARGING: "Thanh toán sạc",
+      BOOKING_FEE: "Phí đặt chỗ",
+      REFUND: "Hoàn tiền",
+      SUBSCRIPTION: "Đăng ký gói",
+      SUBSCRIPTION_USAGE: "Sử dụng gói",
+    };
 
-  const chartConfig = {
-    amount: {
-      label: "Chi tiêu",
-      color: "hsl(var(--chart-1))",
-    },
-    sessions: {
-      label: "Phiên sạc",
-      color: "hsl(var(--chart-2))",
-    },
-  } satisfies ChartConfig;
+    return typeLabels[type] || type;
+  };
+
+  const getTransactionColor = (type: string) => {
+    return type === "DEPOSIT" || type === "DEPOSIT_MANUAL" || type === "REFUND"
+      ? "text-green-600"
+      : "text-red-600";
+  };
+
+  const getTransactionSign = (type: string) => {
+    return type === "DEPOSIT" || type === "DEPOSIT_MANUAL" || type === "REFUND"
+      ? "+"
+      : "-";
+  };
 
   return (
     <div>
@@ -62,108 +70,111 @@ export async function DriverDashboard({
         subtitle="Tổng quan hoạt động sạc điện của bạn"
       />
 
-      {/* Stats Overview */}
-      <SectionContent>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Số Dư Ví</CardTitle>
-              <Wallet className="text-muted-foreground h-4 w-4" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {new Intl.NumberFormat("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                }).format(stats.walletBalance)}
-              </div>
-              <Button variant="link" className="h-auto p-0 text-xs" asChild>
-                <Link href="/dashboard/wallet">Nạp tiền →</Link>
-              </Button>
-            </CardContent>
-          </Card>
+      <SectionContent className="mt-8 space-y-6">
+        {/* Stats Overview */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <StatCard
+            title="Số Dư Ví"
+            icon={<Wallet className="text-muted-foreground h-4 w-4" />}
+            value={formatCurrencyVND(stats.walletBalance)}
+          >
+            <Link
+              href="/dashboard/wallet"
+              className="text-primary text-xs hover:underline"
+            >
+              Nạp tiền →
+            </Link>
+          </StatCard>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Đặt Chỗ</CardTitle>
-              <Calendar className="text-muted-foreground h-4 w-4" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {stats.upcomingReservations}
-              </div>
-              <p className="text-muted-foreground text-xs">Lịch sắp tới</p>
-            </CardContent>
-          </Card>
+          <StatCard
+            title="Đặt Chỗ"
+            icon={<Calendar className="text-muted-foreground h-4 w-4" />}
+            value={stats.upcomingReservations}
+          >
+            Lịch sắp tới
+          </StatCard>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Phiên Sạc</CardTitle>
-              <Zap className="text-muted-foreground h-4 w-4" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.chargingSessions}</div>
-              <p className="text-muted-foreground text-xs">Tổng số phiên</p>
-            </CardContent>
-          </Card>
+          <StatCard
+            title="Phiên Sạc"
+            icon={<Zap className="text-muted-foreground h-4 w-4" />}
+            value={stats.chargingSessions}
+          >
+            Tổng số phiên
+          </StatCard>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Chi Tiêu</CardTitle>
-              <TrendingUp className="text-muted-foreground h-4 w-4" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {new Intl.NumberFormat("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                }).format(stats.totalSpent)}
-              </div>
-              <p className="text-muted-foreground text-xs">Tích lũy</p>
-            </CardContent>
-          </Card>
+          <StatCard
+            title="Chi Tiêu"
+            icon={<TrendingUp className="text-muted-foreground h-4 w-4" />}
+            value={formatCurrencyVND(stats.totalSpent)}
+          >
+            Tích lũy
+          </StatCard>
         </div>
 
-        {/* Charts */}
-        <div className="grid gap-4 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Chi Tiêu Theo Tháng</CardTitle>
-              <CardDescription>
-                Biểu đồ chi phí sạc 4 tháng gần đây
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <BarChartWrapper
-                data={spendingData}
-                dataKey="amount"
-                config={chartConfig}
-              />
-            </CardContent>
-          </Card>
+        {/* Activity Summary */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Thống Kê Hoạt Động</CardTitle>
+            <CardDescription>
+              Tổng quan chi tiết về hoạt động sạc điện của bạn
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between rounded-lg border p-3">
+                  <div className="flex items-center gap-2">
+                    <Activity className="text-muted-foreground h-4 w-4" />
+                    <span className="text-sm font-medium">Tổng phiên sạc</span>
+                  </div>
+                  <span className="text-lg font-bold">
+                    {stats.chargingSessions}
+                  </span>
+                </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Phiên Sạc Theo Tháng</CardTitle>
-              <CardDescription>
-                Số lượng phiên sạc 4 tháng gần đây
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <LineChartWrapper
-                data={sessionData}
-                dataKey="sessions"
-                config={chartConfig}
-              />
-            </CardContent>
-          </Card>
-        </div>
+                <div className="flex items-center justify-between rounded-lg border p-3">
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="text-muted-foreground h-4 w-4" />
+                    <span className="text-sm font-medium">
+                      Chi phí TB/phiên
+                    </span>
+                  </div>
+                  <span className="text-lg font-bold">
+                    {formatCurrencyVND(averageCostPerSession)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between rounded-lg border p-3">
+                  <div className="flex items-center gap-2">
+                    <Wallet className="text-muted-foreground h-4 w-4" />
+                    <span className="text-sm font-medium">Tổng chi tiêu</span>
+                  </div>
+                  <span className="text-lg font-bold">
+                    {formatCurrencyVND(stats.totalSpent)}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between rounded-lg border p-3">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="text-muted-foreground h-4 w-4" />
+                    <span className="text-sm font-medium">Đặt chỗ sắp tới</span>
+                  </div>
+                  <span className="text-lg font-bold">
+                    {stats.upcomingReservations}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Quick Actions */}
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Link href="/dashboard/stations-nearby" className="block">
             <Card className="hover:bg-accent/50 h-full cursor-pointer transition-colors">
-              <CardHeader>
+              <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base">
                   <MapPin className="h-5 w-5" />
                   Tìm Trạm Gần Đây
@@ -171,7 +182,7 @@ export async function DriverDashboard({
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground text-sm">
-                  Xem trạm sạc xung quanh và tình trạng hoạt động
+                  Khám phá trạm sạc xung quanh bạn
                 </p>
               </CardContent>
             </Card>
@@ -179,7 +190,7 @@ export async function DriverDashboard({
 
           <Link href="/dashboard/reservations" className="block">
             <Card className="hover:bg-accent/50 h-full cursor-pointer transition-colors">
-              <CardHeader>
+              <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base">
                   <Calendar className="h-5 w-5" />
                   Quản Lý Đặt Chỗ
@@ -187,7 +198,23 @@ export async function DriverDashboard({
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground text-sm">
-                  Đặt trước và quản lý lịch sạc của bạn
+                  Xem và quản lý lịch đặt chỗ
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href="/dashboard/charging-history" className="block">
+            <Card className="hover:bg-accent/50 h-full cursor-pointer transition-colors">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Zap className="h-5 w-5" />
+                  Lịch Sử Sạc
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground text-sm">
+                  Theo dõi các phiên sạc đã thực hiện
                 </p>
               </CardContent>
             </Card>
@@ -195,7 +222,7 @@ export async function DriverDashboard({
 
           <Link href="/dashboard/wallet" className="block">
             <Card className="hover:bg-accent/50 h-full cursor-pointer transition-colors">
-              <CardHeader>
+              <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base">
                   <Wallet className="h-5 w-5" />
                   Quản Lý Ví
@@ -203,59 +230,70 @@ export async function DriverDashboard({
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground text-sm">
-                  Nạp tiền và xem lịch sử giao dịch
+                  Nạp tiền và xem giao dịch
                 </p>
               </CardContent>
             </Card>
           </Link>
         </div>
 
-        {/* Activity Summary */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Tổng Quan Hoạt Động</CardTitle>
-            <CardDescription>
-              Thống kê chi tiết về hoạt động sạc điện
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-medium">Tổng phiên sạc</p>
-                <p className="text-2xl font-bold">{stats.chargingSessions}</p>
+        {/* Recent Transactions */}
+        {transactions && transactions.length > 0 && (
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Giao Dịch Gần Đây</CardTitle>
+                  <CardDescription>
+                    5 giao dịch gần đây trong ví của bạn
+                  </CardDescription>
+                </div>
+                <Link
+                  href="/dashboard/wallet"
+                  className={buttonVariants({ variant: "outline", size: "sm" })}
+                >
+                  Xem Tất Cả
+                </Link>
               </div>
-              <Badge variant="secondary" className="text-xs">
-                <TrendingUp className="mr-1 h-3 w-3" />
-                Hoạt động tốt
-              </Badge>
-            </div>
-            <Separator />
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">
-                  Chi phí trung bình/phiên
-                </span>
-                <span className="font-medium">
-                  {stats.chargingSessions > 0
-                    ? new Intl.NumberFormat("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      }).format(stats.totalSpent / stats.chargingSessions)
-                    : "0 ₫"}
-                </span>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {transactions.map((transaction) => (
+                  <div
+                    key={transaction.id}
+                    className="hover:bg-accent/50 flex items-center justify-between rounded-lg border p-3 transition-colors"
+                  >
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">
+                        {getTransactionTypeLabel(transaction.type)}
+                      </p>
+                      <p className="text-muted-foreground text-xs">
+                        {new Date(transaction.createdAt).toLocaleString(
+                          "vi-VN",
+                        )}
+                      </p>
+                      {transaction.note && (
+                        <p className="text-muted-foreground mt-1 text-xs">
+                          {transaction.note}
+                        </p>
+                      )}
+                    </div>
+                    <div className="text-right">
+                      <p
+                        className={`text-sm font-bold ${getTransactionColor(
+                          transaction.type,
+                        )}`}
+                      >
+                        {getTransactionSign(transaction.type)}
+                        {formatCurrencyVND(Math.abs(transaction.amount))}
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Đặt chỗ sắp tới</span>
-                <span className="font-medium">
-                  {stats.upcomingReservations} lịch
-                </span>
-              </div>
-            </div>
-            <Button className="w-full" asChild>
-              <Link href="/dashboard/wallet">Xem Chi Tiết Giao Dịch</Link>
-            </Button>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
       </SectionContent>
     </div>
   );

@@ -1,9 +1,9 @@
 import CreateReservationButton from "@/features/reservations/components/reservation-create-button";
-import SectionHeader from "@/components/shared/section-header";
+import SectionHeader from "@/components/section-header";
 import { getUser } from "@/lib/auth/auth-server";
 import { getConnectorTypes } from "../../admin/connector-type/page";
 import { getVehicleModels } from "../../admin/vehicle-models/page";
-import SectionContent from "@/components/shared/section-content";
+import SectionContent from "@/components/section-content";
 import { getStations } from "@/features/stations/services/stations-api";
 import { getReservationsDetails } from "@/features/reservations/services/reservations-api";
 
@@ -47,7 +47,6 @@ export default async function ReservationPage({
   );
   const bookingFee = await getBookingFee();
 
-  // Filter upcoming reservations (PENDING, CONFIRMED) and get the most recent one
   const upcomingReservations = allReservations.filter((r) =>
     ["CONFIRMED"].includes(r.status.toUpperCase()),
   );
@@ -72,7 +71,6 @@ export default async function ReservationPage({
 
       <SectionContent>
         <div className="space-y-6">
-          {/* Current Reservation */}
           <Card>
             <CardHeader>
               <CardTitle>Đặt Chỗ Hiện Tại</CardTitle>
@@ -106,7 +104,6 @@ export default async function ReservationPage({
             </CardContent>
           </Card>
 
-          {/* All Reservations History */}
           <div className="mt-12 space-y-4">
             <div className="flex items-center gap-2">
               <div>

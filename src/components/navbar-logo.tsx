@@ -2,17 +2,17 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 
-interface AppLogoProps {
+interface NavbarLogoProps {
   width?: number;
   height?: number;
   className?: string;
 }
 
-export default function AppLogo({
+export default function NavbarLogo({
   width = 60,
   height = 60,
   className,
-}: AppLogoProps) {
+}: NavbarLogoProps) {
   return (
     <Link
       href="/"

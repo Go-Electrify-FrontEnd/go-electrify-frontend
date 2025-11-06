@@ -1,14 +1,6 @@
-import { getSubscriptions } from "../../admin/subscriptions/page";
-import type { Subscription } from "@/features/subscriptions/schemas/subscription.types";
-import SectionHeader from "@/components/shared/section-header";
-import SectionContent from "@/components/shared/section-content";
+import SectionHeader from "@/components/section-header";
+import SectionContent from "@/components/section-content";
 import { SubscriptionCard } from "@/features/subscriptions/components/subscription-card";
-import {
-  UserSubscriptionSchema,
-  type UserSubscription,
-} from "@/features/subscriptions/schemas/user-subscription.schema";
-import { getUser } from "@/lib/auth/auth-server";
-import { API_BASE_URL } from "@/lib/api-config";
 import {
   Card,
   CardAction,
@@ -31,38 +23,8 @@ import {
 } from "@/components/ui/empty";
 import { formatShortCurrency } from "@/lib/formatters";
 import { Button } from "@/components/ui/button";
-
-async function getUserSubscriptions(): Promise<UserSubscription[]> {
-  const { token } = await getUser();
-  if (!token) return [];
-
-  const url = `${API_BASE_URL}/wallet/subscriptions`;
-  const response = await fetch(url, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    // next: { tags: ["user-subscriptions"] },
-  });
-
-  if (!response.ok) {
-    console.error(
-      "Failed to fetch user subscriptions, status: " + response.status,
-    );
-    return [];
-  }
-
-  const parsed = UserSubscriptionSchema.array().safeParse(
-    await response.json(),
-  );
-
-  if (!parsed.success) {
-    console.error("Failed to parse user subscriptions:", parsed.error);
-    return [];
-  }
-
-  return parsed.data;
-}
+import { getUserSubscriptions } from "@/features/plans-billing/api/subscriptions-api";
+import { getSubscriptions } from "@/features/subscriptions/api/subscriptions-api";
 
 export default async function BillingPage() {
   const subscriptions = await getSubscriptions();

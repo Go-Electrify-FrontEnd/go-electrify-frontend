@@ -31,13 +31,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Inbox, Search, SlidersHorizontal } from "lucide-react";
+import { Inbox, Search } from "lucide-react";
 import { useState, useMemo } from "react";
 
 interface SharedDataTableProps<TData extends Record<string, unknown>, TValue> {
@@ -47,7 +41,6 @@ interface SharedDataTableProps<TData extends Record<string, unknown>, TValue> {
   searchPlaceholder?: string;
   emptyMessage?: string;
   emptyTitle?: string;
-  // Server-side pagination props
   serverSidePagination?: {
     currentPage: number;
     totalPages: number;

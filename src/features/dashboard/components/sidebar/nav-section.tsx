@@ -13,6 +13,7 @@ import Link from "next/link";
 
 export function NavSection({
   items,
+  userRole,
 }: {
   items: {
     title: string;
@@ -20,14 +21,42 @@ export function NavSection({
       title: string;
       url: string;
       icon?: LucideIcon;
+      roles?: string[];
     }[];
   };
+  userRole?: string;
 }) {
+  // Filter items based on user role
+  const filteredItems = items.items.filter((item) => {
+    // If no roles specified, show to everyone
+    if (!item.roles || item.roles.length === 0) {
+      return true;
+    }
+
+    // If user role is not available, hide items with role restrictions
+    if (!userRole) {
+      return false;
+    }
+
+    // Check if user role matches any allowed role (case-insensitive)
+    const normalizedUserRole = userRole.toLowerCase();
+    const normalizedAllowedRoles = item.roles.map((role) =>
+      role.toLowerCase()
+    );
+
+    return normalizedAllowedRoles.includes(normalizedUserRole);
+  });
+
+  // Don't render section if no items are visible
+  if (filteredItems.length === 0) {
+    return null;
+  }
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel className="uppercase">{items.title}</SidebarGroupLabel>
       <SidebarMenu>
-        {items.items.map((item) => (
+        {filteredItems.map((item) => (
           <SidebarMenuItem
             className="!flex !items-center !justify-center !align-middle"
             key={item.title}

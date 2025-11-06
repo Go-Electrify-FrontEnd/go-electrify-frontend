@@ -96,25 +96,6 @@ export const columns: ColumnDef<ChargingHistoryItem>[] = [
     },
   },
   {
-    id: "socProgress",
-    header: "Tiến độ SOC",
-    cell: ({ row }) => {
-      const session = row.original;
-      return (
-        <div>
-          <span className="text-muted-foreground">
-            {session.socStart}% → {session.finalSoc}%
-          </span>
-          {session.targetSoc && (
-            <span className="text-muted-foreground ml-1 text-xs">
-              (mục tiêu: {session.targetSoc}%)
-            </span>
-          )}
-        </div>
-      );
-    },
-  },
-  {
     accessorKey: "energyKwh",
     header: "Năng lượng",
     cell: ({ row }) => {

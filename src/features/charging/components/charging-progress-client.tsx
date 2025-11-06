@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
-import SectionContent from "@/components/shared/section-content";
+import SectionContent from "@/components/section-content";
 import {
   Activity,
   BatteryCharging,

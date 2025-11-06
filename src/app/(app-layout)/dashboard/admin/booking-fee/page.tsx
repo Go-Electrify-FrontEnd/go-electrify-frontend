@@ -1,6 +1,6 @@
 import { getUser } from "@/lib/auth/auth-server";
-import SectionHeader from "@/components/shared/section-header";
-import SectionContent from "@/components/shared/section-content";
+import SectionHeader from "@/components/section-header";
+import SectionContent from "@/components/section-content";
 import {
   Card,
   CardContent,
@@ -9,8 +9,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { BookingFeeResponseSchema } from "@/features/booking-fee/schemas/booking-fee.schema";
-import type { BookingFee } from "@/features/booking-fee/schemas/booking-fee.types";
 import { BookingFeeManager } from "@/features/booking-fee/components/booking-fee-manager";
 import { AlertCircle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";

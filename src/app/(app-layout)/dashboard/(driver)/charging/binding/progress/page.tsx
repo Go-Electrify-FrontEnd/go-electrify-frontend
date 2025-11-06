@@ -15,16 +15,7 @@ export default async function ChargingProgressPage() {
   }
 
   if (!data.session.bookingId) {
-    return (
-      <ChargingProgressWrapper
-        sessionId={data.session.id}
-        ablyToken=""
-        channelId=""
-        expiresAt=""
-        sessionData={data.session}
-        errorMessage="Phiên sạc chưa được liên kết với đặt chỗ. Vui lòng quay lại trang liên kết."
-      />
-    );
+    permanentRedirect(`/dashboard/charging`);
   }
 
   return (

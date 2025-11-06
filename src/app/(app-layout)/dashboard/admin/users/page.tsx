@@ -1,16 +1,9 @@
-import SectionHeader from "@/components/shared/section-header";
+import SectionHeader from "@/components/section-header";
 import { getUser } from "@/lib/auth/auth-server";
 import { UsersTable } from "@/features/users/components/users-table";
 import { UserApiSchema } from "@/features/users/schemas/user.schema";
 import type { UserApi } from "@/features/users/schemas/user.types";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import SectionContent from "@/components/shared/section-content";
+import SectionContent from "@/components/section-content";
 import { API_BASE_URL } from "@/lib/api-config";
 
 export async function getUsers(): Promise<UserApi[]> {

@@ -1,7 +1,6 @@
 "use client";
 
-import * as React from "react";
-import { SharedDataTable } from "@/components/shared/shared-data-table";
+import { SharedDataTable } from "@/components/shared-data-table";
 import { columns } from "./subscription-table-columns";
 import type { Subscription } from "../schemas/subscription.types";
 

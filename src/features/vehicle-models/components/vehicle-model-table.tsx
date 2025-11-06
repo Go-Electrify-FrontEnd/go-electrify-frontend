@@ -1,6 +1,6 @@
 "use client";
 
-import { SharedDataTable } from "@/components/shared/shared-data-table";
+import { SharedDataTable } from "@/components/shared-data-table";
 import { vehicleModelTableColumns } from "./vehicle-model-table-columns";
 import { CarModel } from "@/features/vehicle-models/schemas/vehicle-model.schema";
 
@@ -19,7 +19,6 @@ export function VehicleModelTable({ data }: VehicleModelTableProps) {
     <SharedDataTable
       columns={vehicleModelTableColumns}
       data={data}
-      // use accessorKey for searching (column id), not the header label
       searchColumn="modelName"
       searchPlaceholder={tCommon.search}
       emptyMessage={tCommon.noData}

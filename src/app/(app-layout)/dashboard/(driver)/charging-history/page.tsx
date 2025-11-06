@@ -2,8 +2,8 @@ import { getUser } from "@/lib/auth/auth-server";
 import { getChargingHistory } from "@/features/charging/services/session-service";
 import { redirect } from "next/navigation";
 import { ChargingHistoryTable } from "@/features/charging/components/charging-history-table";
-import SectionHeader from "@/components/shared/section-header";
-import SectionContent from "@/components/shared/section-content";
+import SectionHeader from "@/components/section-header";
+import SectionContent from "@/components/section-content";
 
 type SearchParams = Promise<{
   page?: string;
@@ -31,17 +31,7 @@ export default async function ChargingHistoryPage({
   if (!historyData || !historyData.ok) {
     return (
       <div className="flex flex-col gap-4 md:gap-6">
-        <SectionHeader
-          title="Lịch sử sạc"
-          subtitle="Xem các phiên sạc và giao dịch trong quá khứ của bạn"
-        />
-        <SectionContent>
-          <div className="py-12 text-center">
-            <p className="text-muted-foreground">
-              Không thể tải lịch sử sạc. Vui lòng thử lại sau.
-            </p>
-          </div>
-        </SectionContent>
+        Không thể tải lịch sử sạc
       </div>
     );
   }

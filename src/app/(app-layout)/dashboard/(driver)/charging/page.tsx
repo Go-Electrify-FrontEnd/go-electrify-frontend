@@ -55,6 +55,5 @@ export default async function StartChargingPage() {
     }
   }
 
-  // No active session - show normal form
   return <StartChargingClient />;
 }

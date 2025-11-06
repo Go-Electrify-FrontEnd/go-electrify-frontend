@@ -12,7 +12,7 @@ import {
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import { useState } from "react";
-import AppLogo from "./logo";
+import NavbarLogo from "./navbar-logo";
 
 const navigationLinks = [
   { name: "Sản phẩm", href: "/products" },
@@ -28,7 +28,7 @@ export default function Navbar() {
       <div className="container mx-auto flex h-16 items-center px-4 md:px-6">
         {/* Logo - Fixed width */}
         <div className="flex w-48 flex-shrink-0 items-center">
-          <AppLogo />
+          <NavbarLogo />
         </div>
 
         {/* Desktop Navigation - Centered */}

@@ -17,8 +17,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import SectionHeader from "@/components/shared/section-header";
-import StatCard from "@/components/shared/stat-card";
+import SectionHeader from "@/components/section-header";
+import StatCard from "../shared/stat-card";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -29,7 +29,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Link from "next/link";
-import SectionContent from "@/components/shared/section-content";
+import SectionContent from "@/components/section-content";
 import { Station } from "@/features/stations/schemas/station.schema";
 import { useUser } from "@/contexts/user-context";
 import { ConnectorType } from "@/features/connector-type/schemas/connector-type.schema";

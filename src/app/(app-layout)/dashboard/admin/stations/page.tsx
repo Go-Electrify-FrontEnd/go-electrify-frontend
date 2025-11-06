@@ -1,7 +1,7 @@
-import SectionHeader from "@/components/shared/section-header";
+import SectionHeader from "@/components/section-header";
 import StationCreate from "@/features/stations/components/station-create-dialog";
 import { StationsTable } from "@/features/stations/components/station-table";
-import SectionContent from "@/components/shared/section-content";
+import SectionContent from "@/components/section-content";
 import { getStations } from "@/features/stations/services/stations-api";
 
 export default async function StationsManagementPage() {

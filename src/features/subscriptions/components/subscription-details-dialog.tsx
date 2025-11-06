@@ -72,7 +72,6 @@ export function SubscriptionDetailsDialog({
         </DialogHeader>
 
         <div className="space-y-6 py-4">
-          {/* Key Information */}
           <div className="grid grid-cols-2 gap-4 text-center">
             <div>
               <div className="text-lg font-semibold">
@@ -90,7 +89,6 @@ export function SubscriptionDetailsDialog({
             </div>
           </div>
 
-          {/* Terms */}
           <div className="text-muted-foreground space-y-2 text-sm">
             <div className="text-center">
               Không thể hoàn tiền sau khi kích hoạt

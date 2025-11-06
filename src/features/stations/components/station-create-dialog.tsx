@@ -24,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import AddressSearch from "@/components/shared/address-search";
+import AddressSearch from "@/components/address-search";
 import {
   InputGroup,
   InputGroupAddon,

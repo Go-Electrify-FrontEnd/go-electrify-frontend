@@ -2,15 +2,13 @@ import TransactionTable from "@/features/wallet/components/wallet-transaction-ta
 import WalletDepositButton from "@/features/wallet/components/wallet-deposit-button";
 import { WalletOverview } from "@/features/wallet/components/wallet-overview";
 import { getUser } from "@/lib/auth/auth-server";
-import SectionHeader from "@/components/shared/section-header";
-import SectionContent from "@/components/shared/section-content";
+import SectionHeader from "@/components/section-header";
+import SectionContent from "@/components/section-content";
 import Link from "next/link";
-import {
-  TransactionListApiSchema,
-  WalletSchema,
-} from "@/features/wallet/schemas/wallet.schema";
+import { WalletSchema } from "@/features/wallet/schemas/wallet.schema";
 import { buttonVariants } from "@/components/ui/button";
 import { API_BASE_URL } from "@/lib/api-config";
+import { getTransactions } from "@/features/wallet/api/wallet-api";
 
 export async function getWallet() {
   const { token } = await getUser();
@@ -27,36 +25,6 @@ export async function getWallet() {
   const { success, data } = WalletSchema.safeParse(await response.json());
   const wallet = success ? data : null;
   return wallet;
-}
-
-export async function getTransactions(page: number = 1, limit: number = 50) {
-  const { token } = await getUser();
-  const url = `${API_BASE_URL}/wallet/me/transactions?page=${page}&pageSize=${limit}`;
-  const response = await fetch(url, {
-    method: "GET",
-    headers: { Authorization: `Bearer ${token}` },
-    next: { tags: ["wallet-transactions"] },
-  });
-
-  if (!response.ok) {
-    console.error("Failed to fetch transactions, status: " + response.status);
-    return { transactions: [], total: 0 };
-  }
-
-  const jsonResponse = await response.json();
-  const { success, data, error } =
-    TransactionListApiSchema.safeParse(jsonResponse);
-
-  if (!success) {
-    console.log("Failed to parse transactions:", JSON.stringify(jsonResponse));
-    console.error("Failed to parse transactions:", JSON.stringify(error));
-    return { transactions: [], total: 0 };
-  }
-
-  return {
-    transactions: data.data,
-    total: data.total,
-  };
 }
 
 export default async function WalletPage() {

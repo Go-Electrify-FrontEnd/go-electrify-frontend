@@ -35,7 +35,6 @@ import {
   VehicleModelFormData,
   vehicleModelSchema,
 } from "../schemas/vehicle-model.request";
-// Translations removed; using Vietnamese literals
 
 const initialState = {
   success: false,
@@ -43,7 +42,6 @@ const initialState = {
 };
 
 export default function VehicleModelCreateDialog() {
-  // Inline Vietnamese labels (no external i18n wrapper here)
   const connectorTypes = useConnectorTypes();
   const [open, setOpen] = useState(false);
 
@@ -72,7 +70,6 @@ export default function VehicleModelCreateDialog() {
       connectorTypeIds: [],
     },
   });
-  // useServerAction callbacks handle success/error — no local effect required
 
   function onSubmit(data: VehicleModelFormData) {
     const formData = new FormData();

@@ -9,11 +9,10 @@ export const UserSchema = z.object({
 });
 export type User = z.infer<typeof UserSchema>;
 
-// API response schema for /api/v1/users (PascalCase -> camelCase)
 export const UserApiSchema = z
   .object({
     Id: z.number(),
-    Email: z.string().email(),
+    Email: z.email(),
     FullName: z.string().nullable(),
     Role: z.string(),
     WalletBalance: z.number().optional(),

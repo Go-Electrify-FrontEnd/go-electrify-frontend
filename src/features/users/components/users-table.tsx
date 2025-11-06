@@ -1,6 +1,6 @@
 "use client";
 
-import { SharedDataTable } from "@/components/shared/shared-data-table";
+import { SharedDataTable } from "@/components/shared-data-table";
 import { userColumns } from "./users-table-columns";
 import type { UserApi } from "@/features/users/schemas/user.types";
 

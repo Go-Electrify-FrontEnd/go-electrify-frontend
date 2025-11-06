@@ -1,6 +1,6 @@
 "use client";
 
-import { SharedDataTable } from "@/components/shared/shared-data-table";
+import { SharedDataTable } from "@/components/shared-data-table";
 import { columns } from "./reservation-table-columns";
 import type { ReservationDetails } from "../services/reservations-api";
 

@@ -27,24 +27,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "next-themes";
-// Navigation hooks removed for locale switching
 import Link from "next/link";
 import { SidebarMenuButton } from "@/components/ui/sidebar";
 import { useUser } from "@/features/users/contexts/user-context";
 
 export function NavUser() {
-  // Vietnamese-only UI; locale switching removed
-  const tUser = {
-    darkMode: "Chế độ tối",
-    lightMode: "Chế độ sáng",
-    systemMode: "Theo hệ thống",
-    billing: "Thanh toán",
-    notifications: "Thông báo",
-  };
-  const tAuth = {
-    logout: "Đăng xuất",
-  };
-
   const { user } = useUser();
   const { setTheme } = useTheme();
 
@@ -79,21 +66,27 @@ export function NavUser() {
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => setTheme("dark")}>
           <Moon />
-          {tUser.darkMode}
+          Chế độ tối
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme("light")}>
           <Sun />
-          {tUser.lightMode}
+          Chế độ sáng
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme("system")}>
           <Computer />
-          {tUser.systemMode}
+          Theo hệ thống
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <CreditCard />
-            Thanh toán
+          <DropdownMenuItem asChild>
+            <Link
+              prefetch={false}
+              href="/dashboard/plans-billing"
+              className="flex h-full w-full cursor-pointer items-center gap-2"
+            >
+              <CreditCard />
+              Thanh toán
+            </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />

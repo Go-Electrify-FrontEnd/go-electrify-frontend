@@ -8,8 +8,6 @@ import {
   SupportCard,
 } from "@/components/ui/feature-cards-canvas";
 
-export const revalidate = 3600;
-
 export default function HomePage() {
   return (
     <main className="bg-background text-foreground min-h-screen">

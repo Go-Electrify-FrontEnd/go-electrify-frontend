@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { SharedDataTable } from "@/components/shared/shared-data-table";
+import { SharedDataTable } from "@/components/shared-data-table";
 import { columns } from "./charging-history-table-columns";
 import type { ChargingHistoryItem } from "../types/session.types";
 

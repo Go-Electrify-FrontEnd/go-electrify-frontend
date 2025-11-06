@@ -1,20 +1,13 @@
 import { ConnectorTypesTable } from "@/features/connector-type/components/connector-type-table";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { ConnectorTypeSchema } from "@/features/connector-type/schemas/connector-type.schema";
 import type { ConnectorType } from "@/features/connector-type/schemas/connector-type.types";
 import { z } from "zod";
 import ConnectorTypeCreateDialog from "@/features/connector-type/components/connector-type-create-dialog";
-import SectionHeader from "@/components/shared/section-header";
+import SectionHeader from "@/components/section-header";
 import { ConnectorTypeUpdateProvider } from "@/contexts/connector-type-update-context";
 import { UpdateConnectorType } from "@/features/connector-type/components/connector-type-edit-dialog";
 import { getUser } from "@/lib/auth/auth-server";
-import SectionContent from "@/components/shared/section-content";
+import SectionContent from "@/components/section-content";
 import { API_BASE_URL } from "@/lib/api-config";
 
 export async function getConnectorTypes(): Promise<ConnectorType[]> {

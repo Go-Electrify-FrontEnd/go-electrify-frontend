@@ -1,6 +1,6 @@
 "use client";
 
-import { SharedDataTable } from "@/components/shared/shared-data-table";
+import { SharedDataTable } from "@/components/shared-data-table";
 import { columns } from "./station-table-columns";
 import { Station } from "../schemas/station.schema";
 
