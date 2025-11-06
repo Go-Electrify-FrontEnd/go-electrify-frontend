@@ -3,7 +3,15 @@ import { z } from "zod";
 export const StationSessionSchema = z
   .object({
     Id: z.number(),
-    Status: z.enum(["STOPPED"]),
+    Status: z.enum([
+      "COMPLETED",
+      "TIMEOUT",
+      "FAILED",
+      "PAID",
+      "PENDING",
+      "RUNNING",
+      "UNPAID",
+    ]),
     StartedAt: z.string(),
     ChargerId: z.number(),
     StationId: z.number(),

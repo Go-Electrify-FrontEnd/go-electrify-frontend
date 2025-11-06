@@ -11,12 +11,13 @@ import { Separator } from "@/components/ui/separator";
 import HeaderBreadcrumb from "@/features/dashboard/components/sidebar/header-breadcrumb";
 import { NotificationButton } from "@/features/dashboard/components/header/notification-button";
 import { Notification } from "@/features/dashboard/types/notification";
+import { API_BASE_URL } from "@/lib/api-config";
 
 export const dynamic = "force-dynamic";
 
 async function getNotifications(token: string): Promise<Notification[]> {
   try {
-    const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/notifications/dashboard`;
+    const url = `${API_BASE_URL}/notifications/dashboard`;
     const response = await fetch(url, {
       method: "GET",
       headers: {

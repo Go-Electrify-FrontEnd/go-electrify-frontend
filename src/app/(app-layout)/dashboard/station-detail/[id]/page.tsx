@@ -37,6 +37,7 @@ import SectionContent from "@/components/shared/section-content";
 import {
   getSelfStationId,
   getStationChargers,
+  getStationSessions,
 } from "@/features/stations/api/stations-api";
 import {
   getBookingsByStationId,
@@ -81,19 +82,21 @@ export default async function StationPage({
   const chargers = await getStationChargers(id, token!);
   const bookings = await getBookingsByStationId(id, token!);
   const connectorTypes = await getConnectorTypes();
-  const sessions: SessionRow[] = [];
+  const sessions = await getStationSessions(id, token!);
 
-  const totalChargers = chargers?.length ?? 0;
+  const totalChargers = chargers.length;
+  const totalSessions = sessions.length > 0 ? chargers.length : 0;
   const activeChargers =
     chargers?.filter((c) => c.status === "ONLINE")?.length ?? 0;
+
   const activeSessions = sessions.filter((session) => {
-    const normalized = session.status.toLowerCase();
-    return ["active", "charging", "in_progress"].includes(normalized);
+    const normalized = session.status.toUpperCase();
+    return ["RUNNING"].includes(normalized);
   }).length;
 
   const upcomingBookings = bookings.length;
   const utilizationRate =
-    totalChargers > 0 ? Math.round((activeSessions / totalChargers) * 100) : 0;
+    totalSessions > 0 ? Math.round((activeSessions / totalSessions) * 100) : 0;
 
   return (
     <div className="flex flex-col gap-6 md:gap-6">

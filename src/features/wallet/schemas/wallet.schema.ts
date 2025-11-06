@@ -25,6 +25,7 @@ export const TransactionSchema = z
       "REFUND",
       "SUBSCRIPTION",
       "SUBSCRIPTION_USAGE",
+      "DEPOSIT_MANUAL",
     ]),
     Status: z.enum(["SUCCEEDED", "PENDING", "FAILED"]),
     Note: z.string().nullable(),
