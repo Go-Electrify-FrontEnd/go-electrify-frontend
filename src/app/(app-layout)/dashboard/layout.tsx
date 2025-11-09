@@ -12,6 +12,7 @@ import HeaderBreadcrumb from "@/features/dashboard/components/sidebar/header-bre
 import { NotificationButton } from "@/features/dashboard/components/header/notification-button";
 import { Notification } from "@/features/dashboard/types/notification";
 import { API_BASE_URL } from "@/lib/api-config";
+import { ChatPopup } from "@/features/chatbot/components/chat-popup";
 
 export const dynamic = "force-dynamic";
 
@@ -62,6 +63,7 @@ export default async function DashboardLayout({
           </header>
           <div className="flex flex-1 flex-col gap-4">{children}</div>
         </SidebarInset>
+        <ChatPopup />
       </UserProvider>
     </SidebarProvider>
   );

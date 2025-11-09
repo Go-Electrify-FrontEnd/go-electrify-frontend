@@ -83,7 +83,6 @@ export default function StationCreate({ onCancel }: StationCreateProps) {
     },
   });
 
-  // Get current location using browser geolocation API
   const handleGetCurrentLocation = () => {
     if (!navigator.geolocation) {
       toast.error("Định vị địa lý không được hỗ trợ bởi trình duyệt của bạn");

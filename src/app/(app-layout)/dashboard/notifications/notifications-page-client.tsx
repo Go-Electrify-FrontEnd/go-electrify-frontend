@@ -18,11 +18,11 @@ function getNotificationIcon(type: string) {
     case "booking_confirmed":
     case "booking_deposit_succeeded":
     case "booking_canceled":
-      return <Bookmark className="h-5 w-5 text-blue-500" />;
+      return <Bookmark className="text-primary h-5 w-5" />;
     case "user":
-      return <User className="h-5 w-5 text-green-500" />;
+      return <User className="text-foreground h-5 w-5" />;
     default:
-      return <Bell className="h-5 w-5 text-gray-500" />;
+      return <Bell className="text-muted-foreground h-5 w-5" />;
   }
 }
 
@@ -233,7 +233,7 @@ export function NotificationsPageClient({
               key={notification.Id}
               className={`hover:bg-accent cursor-pointer p-4 transition-colors ${
                 notification.IsUnread
-                  ? "border-l-4 border-l-blue-500 bg-blue-50/30"
+                  ? "border-l-primary bg-accent/50 border-l-4"
                   : ""
               }`}
               onClick={() => handleNotificationClick(notification)}
