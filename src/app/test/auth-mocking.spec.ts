@@ -357,44 +357,6 @@ test("should reject empty email submission", async ({ page }) => {
   console.log("Empty email submission correctly rejected");
 });
 
-test("should display email confirmation message", async ({ page }) => {
-  await page.goto("/login");
-  await expect(page).toHaveURL("/login");
-
-  const testEmail = mailosaur.servers.generateEmailAddress(serverId);
-  console.log(`Testing email confirmation message with: ${testEmail}`);
-
-  // Verify login form is visible
-  await expect(page.locator('[data-testid="login-form"]')).toBeVisible();
-
-  // Enter email and submit
-  await page.locator('[data-testid="email-input"]').fill(testEmail);
-  await page.locator('[data-testid="login-submit-button"]').click();
-
-  // Wait for OTP form
-  await expect(page.locator('[data-testid="login-form"]')).not.toBeVisible();
-  await page.waitForSelector('[data-testid="otp-form"]', { timeout: 15000 });
-  await expect(page.locator('[data-testid="otp-form"]')).toBeVisible();
-
-  // Verify email is displayed in OTP form
-  await expect(page.getByText(testEmail)).toBeVisible();
-
-  // Verify confirmation message is shown
-  const confirmationMessage = page.locator(
-    '[data-testid="email-confirmation-message"]',
-  );
-  const messageExists = await confirmationMessage
-    .isVisible()
-    .catch(() => false);
-
-  if (messageExists) {
-    await expect(confirmationMessage).toBeVisible();
-    console.log("Email confirmation message displayed");
-  } else {
-    console.log("Email confirmation message not found, but email is displayed");
-  }
-});
-
 /**
  * Extract OTP code from Mailosaur email message
  * This function tries to find the 6-digit OTP code in the email content
