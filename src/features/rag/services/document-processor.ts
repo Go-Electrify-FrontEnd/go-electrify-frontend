@@ -1,4 +1,9 @@
-import { RecursiveChunker, type Chunk } from "@chonkiejs/core";
+import {
+  RecursiveChunker,
+  RecursiveRules,
+  Chunk,
+  type RecursiveChunkerOptions,
+} from "@chonkiejs/core";
 import type { ChunkConfig } from "../types";
 
 /**
@@ -11,22 +16,81 @@ const DEFAULT_CHUNK_CONFIG: ChunkConfig = {
   separator: "\n\n", // Paragraph separator
 };
 
-// Singleton chunker instance to avoid recreating
-let chunkerInstance: RecursiveChunker | null = null;
+/**
+ * Create custom Chonkie rules for different document types
+ */
+const CHUNKING_RULES = {
+  // Default rules for general text
+  default: new RecursiveRules({
+    levels: [
+      { delimiters: ["\n\n", "\r\n\r\n"], includeDelim: "none" }, // Paragraphs
+      { delimiters: [".", "!", "?"], includeDelim: "prev" }, // Sentences
+      { delimiters: [",", ";", ":"], includeDelim: "prev" }, // Clauses
+      { whitespace: true, includeDelim: "none" }, // Words
+    ],
+  }),
+
+  // Optimized for markdown documents
+  markdown: new RecursiveRules({
+    levels: [
+      { delimiters: ["\n## ", "\n### "], includeDelim: "next" }, // Headers
+      { delimiters: ["\n\n"], includeDelim: "none" }, // Paragraphs
+      { delimiters: [".", "!", "?"], includeDelim: "prev" }, // Sentences
+      { whitespace: true, includeDelim: "none" }, // Words
+    ],
+  }),
+
+  // Optimized for code-heavy documents
+  code: new RecursiveRules({
+    levels: [
+      { delimiters: ["\n\n"], includeDelim: "none" }, // Code blocks
+      { delimiters: ["\n"], includeDelim: "prev" }, // Lines
+      { delimiters: [";", "{", "}"], includeDelim: "prev" }, // Statements
+      { whitespace: true, includeDelim: "none" }, // Tokens
+    ],
+  }),
+};
+
+// Cache for chunker instances (keyed by chunkSize)
+const chunkerCache = new Map<number, RecursiveChunker>();
 
 /**
- * Get or create the Chonkie chunker instance
- * Uses character-based tokenization (built-in, no dependencies)
+ * Get or create a Chonkie chunker instance
+ * Uses caching to avoid recreating chunkers with the same configuration
+ *
+ * @param chunkSize - Maximum tokens per chunk
+ * @param rules - Optional custom rules for chunking
+ * @returns RecursiveChunker instance
  */
-async function getChunker(chunkSize: number): Promise<RecursiveChunker> {
-  if (!chunkerInstance || chunkerInstance.chunkSize !== chunkSize) {
-    chunkerInstance = await RecursiveChunker.create({
+async function getChunker(
+  chunkSize: number,
+  rules?: RecursiveRules,
+): Promise<RecursiveChunker> {
+  // Create a cache key based on configuration
+  const cacheKey = chunkSize;
+
+  if (!chunkerCache.has(cacheKey)) {
+    const options: RecursiveChunkerOptions = {
       chunkSize,
-      minCharactersPerChunk: 24, // Minimum chunk size to avoid tiny fragments
-    });
+      minCharactersPerChunk: 24, // Avoid tiny fragments
+      tokenizer: "character", // Built-in, no dependencies
+    };
+
+    if (rules) {
+      options.rules = rules;
+    }
+
+    const chunker = await RecursiveChunker.create(options);
+    chunkerCache.set(cacheKey, chunker);
   }
-  return chunkerInstance;
+
+  return chunkerCache.get(cacheKey)!;
 }
+
+/**
+ * Document type for specialized chunking rules
+ */
+export type DocumentType = "default" | "markdown" | "code";
 
 /**
  * Split text into chunks using Chonkie's RecursiveChunker
@@ -39,11 +103,13 @@ async function getChunker(chunkSize: number): Promise<RecursiveChunker> {
  *
  * @param text - Text to chunk
  * @param config - Chunking configuration
- * @returns Array of text chunks
+ * @param documentType - Type of document for specialized rules
+ * @returns Array of text chunks with metadata
  */
 export async function chunkText(
   text: string,
   config: Partial<ChunkConfig> = {},
+  documentType: DocumentType = "default",
 ): Promise<string[]> {
   const fullConfig = { ...DEFAULT_CHUNK_CONFIG, ...config };
   const { chunkSize, chunkOverlap } = fullConfig;
@@ -54,15 +120,18 @@ export async function chunkText(
   }
 
   try {
-    // Get Chonkie chunker instance
-    const chunker = await getChunker(chunkSize);
+    // Select appropriate rules based on document type
+    const rules = CHUNKING_RULES[documentType];
 
-    // Chunk the text
+    // Get Chonkie chunker instance with custom rules
+    const chunker = await getChunker(chunkSize, rules);
+
+    // Chunk the text using Chonkie's intelligent hierarchical splitting
     const chunks: Chunk[] = await chunker.chunk(normalizedText);
 
-    // If overlap is requested, apply it manually
-    // (Chonkie's core package doesn't have built-in overlap for RecursiveChunker)
-    if (chunkOverlap > 0) {
+    // Apply overlap if requested
+    // Chonkie preserves semantic boundaries, so overlap helps maintain context
+    if (chunkOverlap > 0 && chunks.length > 1) {
       return applyOverlap(chunks, chunkOverlap);
     }
 
@@ -76,8 +145,52 @@ export async function chunkText(
 }
 
 /**
- * Apply overlap to chunks manually
- * Takes trailing content from previous chunk and prepends to next chunk
+ * Advanced chunking with full metadata
+ * Returns Chunk objects with startIndex, endIndex, and tokenCount
+ *
+ * @param text - Text to chunk
+ * @param config - Chunking configuration
+ * @param documentType - Type of document for specialized rules
+ * @returns Array of Chunk objects with metadata
+ */
+export async function chunkTextWithMetadata(
+  text: string,
+  config: Partial<ChunkConfig> = {},
+  documentType: DocumentType = "default",
+): Promise<Chunk[]> {
+  const fullConfig = { ...DEFAULT_CHUNK_CONFIG, ...config };
+  const { chunkSize } = fullConfig;
+
+  const normalizedText = text.trim().replace(/\r\n/g, "\n");
+  if (!normalizedText) {
+    return [];
+  }
+
+  try {
+    const rules = CHUNKING_RULES[documentType];
+    const chunker = await getChunker(chunkSize, rules);
+    return await chunker.chunk(normalizedText);
+  } catch (error) {
+    console.error("Chonkie chunking error:", error);
+    // Fallback: return whole text as single chunk
+    return [
+      new Chunk({
+        text: normalizedText,
+        startIndex: 0,
+        endIndex: normalizedText.length,
+        tokenCount: Math.ceil(normalizedText.length / 4), // Rough estimate
+      }),
+    ];
+  }
+}
+
+/**
+ * Apply overlap to chunks using Chonkie's metadata
+ * Creates sliding window effect while preserving semantic boundaries
+ *
+ * @param chunks - Array of Chunk objects from Chonkie
+ * @param overlapTokens - Target number of tokens to overlap
+ * @returns Array of text chunks with overlap applied
  */
 function applyOverlap(chunks: Chunk[], overlapTokens: number): string[] {
   if (chunks.length <= 1 || overlapTokens <= 0) {
@@ -93,12 +206,24 @@ function applyOverlap(chunks: Chunk[], overlapTokens: number): string[] {
       // First chunk - no overlap needed
       result.push(chunk.text);
     } else {
-      // Get overlap from previous chunk
+      // Get overlap from previous chunk using Chonkie's token count
       const prevChunk = chunks[i - 1];
-      const overlapText = getTrailingText(prevChunk.text, overlapTokens);
+      const overlapText = getTrailingText(
+        prevChunk.text,
+        prevChunk.tokenCount,
+        overlapTokens,
+      );
 
-      // Prepend overlap to current chunk
-      result.push(overlapText ? `${overlapText}\n\n${chunk.text}` : chunk.text);
+      // Prepend overlap to current chunk with separator
+      if (overlapText && overlapText.length > 0) {
+        // Preserve semantic context with smart joining
+        const separator = shouldAddSeparator(overlapText, chunk.text)
+          ? "\n\n"
+          : " ";
+        result.push(`${overlapText}${separator}${chunk.text}`);
+      } else {
+        result.push(chunk.text);
+      }
     }
   }
 
@@ -106,23 +231,64 @@ function applyOverlap(chunks: Chunk[], overlapTokens: number): string[] {
 }
 
 /**
- * Get trailing text from a chunk for overlap
- * Approximates token count as characters/4
+ * Determine if a separator is needed between overlap and chunk
  */
-function getTrailingText(text: string, targetTokens: number): string {
-  const approxChars = targetTokens * 4;
-  if (text.length <= approxChars) {
+function shouldAddSeparator(overlapText: string, chunkText: string): boolean {
+  // Add separator if overlap ends with sentence boundary
+  if (/[.!?]\s*$/.test(overlapText.trim())) {
+    return true;
+  }
+  // Add separator if chunk starts with capital letter or number
+  if (/^[A-Z0-9]/.test(chunkText.trim())) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Get trailing text from a chunk for overlap
+ * Uses actual token count from Chonkie for accurate overlap
+ *
+ * @param text - The chunk text
+ * @param actualTokens - Actual token count from Chonkie
+ * @param targetTokens - Desired overlap in tokens
+ * @returns Trailing portion of text
+ */
+function getTrailingText(
+  text: string,
+  actualTokens: number,
+  targetTokens: number,
+): string {
+  if (actualTokens <= targetTokens) {
     return text;
   }
 
-  // Try to break at sentence boundary
-  const trailing = text.slice(-approxChars);
-  const sentenceMatch = trailing.match(/[.!?]\s+/);
+  // Calculate approximate character position based on token ratio
+  const tokenRatio = targetTokens / actualTokens;
+  const approxCharPos = Math.floor(text.length * (1 - tokenRatio));
 
+  // Try to find a good semantic boundary (sentence, paragraph, or word)
+  const trailing = text.slice(approxCharPos);
+
+  // First, try to break at sentence boundary
+  const sentenceMatch = trailing.match(/([.!?])\s+/);
   if (sentenceMatch && sentenceMatch.index !== undefined) {
     return trailing.slice(sentenceMatch.index + sentenceMatch[0].length);
   }
 
+  // Second, try to break at paragraph boundary
+  const paragraphMatch = trailing.match(/\n\n+/);
+  if (paragraphMatch && paragraphMatch.index !== undefined) {
+    return trailing.slice(paragraphMatch.index + paragraphMatch[0].length);
+  }
+
+  // Third, try to break at word boundary
+  const wordMatch = trailing.match(/\s+/);
+  if (wordMatch && wordMatch.index !== undefined) {
+    return trailing.slice(wordMatch.index + wordMatch[0].length);
+  }
+
+  // Fallback: return from character position
   return trailing;
 }
 
@@ -164,13 +330,19 @@ export async function parseTextFile(content: Buffer): Promise<string> {
 
 /**
  * Parse markdown file
- * Similar to text but preserves markdown structure
+ * Preserves markdown structure for better chunking
  *
  * @param content - File content buffer
  * @returns Parsed markdown text
  */
 export async function parseMarkdownFile(content: Buffer): Promise<string> {
-  return cleanText(content.toString("utf-8"));
+  const text = content.toString("utf-8");
+  // Clean text but preserve markdown structure (headers, code blocks, lists)
+  return text
+    .replace(/\r\n/g, "\n")
+    .replace(/[ \t]+/g, " ")
+    .replace(/\n{4,}/g, "\n\n\n") // Keep max 3 newlines for markdown spacing
+    .trim();
 }
 
 /**
