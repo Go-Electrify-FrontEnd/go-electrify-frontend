@@ -32,7 +32,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Inbox, Search } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 
 interface SharedDataTableProps<TData extends Record<string, unknown>, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -112,23 +112,58 @@ export function SharedDataTable<TData extends Record<string, unknown>, TValue>({
     },
   });
 
-  const resolvedSearchColumn = useMemo(
-    () => getSearchColumn(table, searchColumn),
-    [table, searchColumn],
-  );
+  const resolvedSearchColumn = getSearchColumn(table, searchColumn);
+  const rawSearchValue = resolvedSearchColumn?.getFilterValue();
+  const searchValue = typeof rawSearchValue === "string" ? rawSearchValue : "";
+  const rowModel = table.getRowModel();
+  const hasRows = rowModel.rows.length > 0;
+  const totalRows = serverSidePagination?.totalItems ?? data.length;
+  const canPreviousPage = serverSidePagination
+    ? serverSidePagination.currentPage > 1
+    : table.getCanPreviousPage();
+  const canNextPage = serverSidePagination
+    ? serverSidePagination.currentPage < serverSidePagination.totalPages
+    : table.getCanNextPage();
 
-  const searchValue = (resolvedSearchColumn?.getFilterValue() as string) ?? "";
-  const hasRows = table.getRowModel().rows.length > 0;
+  const handleSearchChange = (value: string) => {
+    resolvedSearchColumn?.setFilterValue(value ? value : undefined);
+  };
+
+  const handlePreviousPage = () => {
+    if (serverSidePagination) {
+      serverSidePagination.onPageChange(
+        Math.max(1, serverSidePagination.currentPage - 1),
+      );
+      return;
+    }
+
+    table.previousPage();
+  };
+
+  const handleNextPage = () => {
+    if (serverSidePagination) {
+      serverSidePagination.onPageChange(
+        Math.min(
+          serverSidePagination.totalPages,
+          serverSidePagination.currentPage + 1,
+        ),
+      );
+      return;
+    }
+
+    table.nextPage();
+  };
+
+  const canSearch = Boolean(resolvedSearchColumn);
 
   return (
     <div className="w-full space-y-4">
       <TableToolbar
         searchValue={searchValue}
-        onSearchChange={(value) =>
-          resolvedSearchColumn?.setFilterValue(value || undefined)
-        }
+        onSearchChange={handleSearchChange}
         searchPlaceholder={searchPlaceholder}
         searchColumn={searchColumn}
+        disabled={!canSearch}
       />
 
       <div className="rounded-md border p-2">
@@ -181,48 +216,30 @@ export function SharedDataTable<TData extends Record<string, unknown>, TValue>({
       </div>
 
       <TableFooter
-        currentRows={table.getRowModel().rows.length}
-        totalRows={serverSidePagination?.totalItems ?? data.length}
-        canPreviousPage={
-          serverSidePagination
-            ? serverSidePagination.currentPage > 1
-            : table.getCanPreviousPage()
-        }
-        canNextPage={
-          serverSidePagination
-            ? serverSidePagination.currentPage < serverSidePagination.totalPages
-            : table.getCanNextPage()
-        }
-        onPreviousPage={() =>
-          serverSidePagination
-            ? serverSidePagination.onPageChange(
-                serverSidePagination.currentPage - 1,
-              )
-            : table.previousPage()
-        }
-        onNextPage={() =>
-          serverSidePagination
-            ? serverSidePagination.onPageChange(
-                serverSidePagination.currentPage + 1,
-              )
-            : table.nextPage()
-        }
+        currentRows={rowModel.rows.length}
+        totalRows={totalRows}
+        canPreviousPage={canPreviousPage}
+        canNextPage={canNextPage}
+        onPreviousPage={handlePreviousPage}
+        onNextPage={handleNextPage}
         serverSidePagination={serverSidePagination}
       />
     </div>
   );
 }
 
-function TableToolbar<TData>({
+function TableToolbar({
   searchValue,
   onSearchChange,
   searchPlaceholder,
   searchColumn,
+  disabled,
 }: {
   searchValue: string;
   onSearchChange: (value: string) => void;
   searchPlaceholder: string;
   searchColumn: string;
+  disabled: boolean;
 }) {
   return (
     <div className="flex items-center justify-between">
@@ -232,8 +249,11 @@ function TableToolbar<TData>({
           aria-label={`Tìm kiếm ${searchColumn}`}
           placeholder={searchPlaceholder}
           value={searchValue}
-          onChange={(e) => onSearchChange(e.target.value)}
+          onChange={
+            disabled ? undefined : (e) => onSearchChange(e.target.value)
+          }
           className="max-w-sm pl-8"
+          disabled={disabled}
         />
       </div>
     </div>

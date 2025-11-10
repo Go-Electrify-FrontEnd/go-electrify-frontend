@@ -36,6 +36,7 @@ const segmentMap: Record<string, string> = {
   "booking-fee": "Phí Đặt Chỗ",
   "incident-reports": "Báo Cáo Sự Cố",
   "deposit-customers": "Nạp Tiền Khách Hàng",
+  documents: "Tài Liệu",
 };
 
 export default function HeaderBreadcrumb() {

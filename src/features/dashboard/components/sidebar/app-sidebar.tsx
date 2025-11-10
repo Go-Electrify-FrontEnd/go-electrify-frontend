@@ -122,6 +122,12 @@ const admin = {
       icon: Package,
       roles: ["admin"],
     },
+    {
+      title: "Tài liệu (Chưa Xong)",
+      url: "/dashboard/admin/documents",
+      icon: BookOpen,
+      roles: ["admin"],
+    },
   ],
 };
 
