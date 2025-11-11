@@ -21,8 +21,9 @@
   "dependencies": {
     "@ai-sdk/gateway": "^2.0.7",
     "@ai-sdk/openai": "^2.0.64",
+    "@ai-sdk/provider": "^2.0.0",
     "@ai-sdk/react": "^2.0.89",
-    "@chonkiejs/core": "^0.0.5",
+    "@ai-sdk/xai": "^2.0.32",
     "@gsap/react": "^2.1.2",
     "@hookform/resolvers": "^5.2.1",
     "@next-safe-action/adapter-react-hook-form": "^2.0.0",
@@ -59,7 +60,6 @@
     "@react-three/fiber": "9.0.0-alpha.8",
     "@tanstack/react-table": "^8.21.3",
     "@turf/distance": "^7.2.0",
-    "@upstash/vector": "^1.2.2",
     "@vercel/blob": "^2.0.0",
     "@vis.gl/react-google-maps": "^1.5.5",
     "@yudiel/react-qr-scanner": "^2.4.1",

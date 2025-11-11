@@ -8,8 +8,12 @@ export default async function AdminLayout({
 }) {
   const { user } = await getUser();
 
-  const role = user!.role.toLowerCase();
-  
+  if (!user) {
+    forbidden();
+  }
+
+  const role = user.role.toLowerCase();
+
   if (role !== "admin") {
     forbidden();
   }

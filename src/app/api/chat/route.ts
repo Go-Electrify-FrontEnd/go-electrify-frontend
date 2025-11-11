@@ -1,4 +1,10 @@
-import { convertToModelMessages, stepCountIs, streamText, tool } from "ai";
+import {
+  convertToModelMessages,
+  stepCountIs,
+  streamText,
+  tool,
+  wrapLanguageModel,
+} from "ai";
 import { gateway } from "@ai-sdk/gateway";
 import { z } from "zod";
 import { findRelevantContent } from "@/features/rag/services/vector-operations";
@@ -7,8 +13,8 @@ import { forbidden } from "next/navigation";
 
 export const maxDuration = 30;
 
-const systemPrompt = `You are the Go-Electrify EV charging assistant answering only about Go-Electrify.
-
+const systemPrompt = `
+You are the Go-Electrify EV charging assistant answering only about Go-Electrify.
 Follow these directives in order:
 
 1. Scope & Assumptions
@@ -41,8 +47,8 @@ export async function POST(req: Request) {
   }
 
   if (
-    user.role.toLowerCase() !== "admin" ||
-    user.email !== "phungthequan030@gmail.com"
+    user.email !== "phungthequan030@gmail.com" &&
+    user.email !== "dnhuy207@gmail.com"
   ) {
     forbidden();
   }
@@ -53,6 +59,17 @@ export async function POST(req: Request) {
     messages: convertToModelMessages(messages),
     system: systemPrompt,
     stopWhen: stepCountIs(5),
+    prepareStep: async ({ messages }) => {
+      if (messages.length > 5) {
+        return {
+          messages: [
+            messages[0],
+            ...messages.slice(-3), // Keep last 3 messages
+          ],
+        };
+      }
+      return {};
+    },
     tools: {
       getUserInfo: tool({
         description:
@@ -60,7 +77,7 @@ export async function POST(req: Request) {
         inputSchema: z.object({}),
         execute: async () => {
           return {
-            name: user.name || "User",
+            name: user.name || "No Name",
             email: user.email,
             role: user.role,
             userId: user.uid,
@@ -73,8 +90,34 @@ export async function POST(req: Request) {
           question: z.string().describe("The question to search for"),
         }),
         execute: async ({ question }) => {
-          const hits = await findRelevantContent(question);
-          return hits;
+          const hits = await findRelevantContent(question, 2);
+
+          // Filter hits based on user role and targetActors
+          const userRole = user.role.toLowerCase();
+
+          const filteredHits = hits.filter((hit) => {
+            const metadata = hit.metadata;
+            if (!metadata?.targetActors) {
+              return true;
+            }
+
+            const targetActors = String(metadata.targetActors);
+            return targetActors.includes(userRole) && (hit.score ?? 0) >= 0.65;
+          });
+
+          // Map to compact format to reduce token usage
+          const compactResults = filteredHits.map((hit) => ({
+            content: String(hit.metadata?.content || ""),
+            documentName: String(hit.metadata?.documentName || ""),
+            chunkIndex: Number(hit.metadata?.chunkIndex || 0),
+            score: hit.score ?? 0,
+          }));
+
+          console.log(
+            `[RAG] Returning ${compactResults.length} results, avg score: ${compactResults.length > 0 ? (compactResults.reduce((sum, r) => sum + r.score, 0) / compactResults.length).toFixed(3) : "N/A"}`,
+          );
+
+          return compactResults;
         },
       }),
     },

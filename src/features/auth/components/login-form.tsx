@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Field,
@@ -17,11 +17,15 @@ import { toast } from "sonner";
 import { OTPForm } from "./login-otp-form";
 import { handleLogin } from "../services/login-actions";
 import { useServerAction } from "@/hooks/use-server-action";
+import Link from "next/link";
+import { API_BASE_URL } from "@/lib/api-config";
 
 const initialState = {
   success: false,
   msg: "",
 };
+
+const REDIRECT_URL = process.env.NEXT_PUBLIC_REDIRECT_URL;
 
 const loginSchema = z.object({
   email: z.email("Vui lòng nhập địa chỉ email hợp lệ"),
@@ -72,9 +76,9 @@ export function LoginForm({
 
   return (
     <form
-    onSubmit={handleSubmit}
-    className={cn("flex flex-col gap-6", className)}
-    data-testid="login-form"
+      onSubmit={handleSubmit}
+      className={cn("flex flex-col gap-6", className)}
+      data-testid="login-form"
       {...props}
     >
       <div className="flex flex-col items-center gap-2 text-center">
@@ -94,11 +98,11 @@ export function LoginForm({
                   Email
                 </FieldLabel>
                 <Input
-                {...field}
-                className="h-[45px]"
-                placeholder="email@example.com"
-                aria-invalid={fieldState.invalid}
-                disabled={pending}
+                  {...field}
+                  className="h-[45px]"
+                  placeholder="email@example.com"
+                  aria-invalid={fieldState.invalid}
+                  disabled={pending}
                   data-testid="email-input"
                 />
                 {fieldState.invalid && (
@@ -108,20 +112,30 @@ export function LoginForm({
             )}
           />
         </FieldGroup>
-        <Button type="submit" className="w-full" size="lg" disabled={pending} data-testid="login-submit-button">
-        <div className="text-base font-medium">
-        {pending ? "Đang gửi..." : "Đăng nhập"}
-        </div>
+        <Button
+          type="submit"
+          className="w-full"
+          size="lg"
+          disabled={pending}
+          data-testid="login-submit-button"
+        >
+          <div className="text-base font-medium">
+            {pending ? "Đang gửi..." : "Đăng nhập"}
+          </div>
         </Button>
         <div className="after:border-border relative text-center after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
           <span className="bg-background text-muted-foreground relative z-10 px-2">
             Hoặc tiếp tục với
           </span>
         </div>
-        <Button
-          variant="outline"
-          className="flex h-11 items-center justify-center gap-2 transition-colors hover:border-red-200 hover:bg-red-50"
-          disabled
+        <Link
+          className={buttonVariants({
+            variant: "outline",
+            className:
+              "flex h-11 items-center justify-center gap-2 transition-colors hover:border-gray-300 hover:bg-gray-50",
+          })}
+          // parameter is return url after login
+          href={`${API_BASE_URL}/auth/login/google?returnUrl=${encodeURIComponent(REDIRECT_URL!)}`}
         >
           <svg
             className="h-5 w-5"
@@ -147,7 +161,7 @@ export function LoginForm({
             />
           </svg>
           <span className="text-base font-medium">Đăng nhập với Google</span>
-        </Button>
+        </Link>
       </div>
     </form>
   );

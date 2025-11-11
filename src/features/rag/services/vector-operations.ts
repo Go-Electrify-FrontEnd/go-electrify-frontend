@@ -1,15 +1,17 @@
 import type { DocumentMetadata } from "../types";
-import { getIndex } from "./upstash-client";
+import { getIndex } from "./pinecone-client";
 import { generateEmbedding, generateEmbeddings } from "./embeddings";
 
+const DEFAULT_NAMESPACE = "go-electrify";
+
 /**
- * Upsert document chunks to Upstash Vector
+ * Upsert document chunks to Pinecone Vector Database
  *
  * @param documentId - Unique document identifier
  * @param documentName - Display name of document
  * @param documentType - Category of document
  * @param chunks - Array of text chunks
- * @param metadata - Additional metadata (source, description)
+ * @param metadata - Additional metadata (source, description, targetActors)
  * @returns Success result with message
  */
 export async function upsertDocumentChunks(
@@ -17,7 +19,7 @@ export async function upsertDocumentChunks(
   documentName: string,
   documentType: string,
   chunks: Array<{ content: string }>,
-  metadata: { source: string; description?: string },
+  metadata: { source: string; description?: string; targetActors: string[] },
 ): Promise<{ success: boolean; message: string }> {
   try {
     const index = getIndex();
@@ -36,10 +38,10 @@ export async function upsertDocumentChunks(
     const chunkEmbeddings = await generateEmbeddings(chunkTexts);
     console.log(`Embeddings generated in ${Date.now() - startEmbed}ms`);
 
-    // Convert to Upstash upsert format
-    const toUpsert = chunkEmbeddings.map((chunk, i) => ({
+    // Convert to Pinecone upsert format (flat metadata structure)
+    const records = chunkEmbeddings.map((chunk, i) => ({
       id: `${documentId}-${i}`,
-      vector: chunk.embedding,
+      values: chunk.embedding,
       metadata: {
         content: chunk.content,
         documentId,
@@ -49,15 +51,14 @@ export async function upsertDocumentChunks(
         uploadDate,
         description: metadata.description || "",
         source: metadata.source,
+        targetActors: metadata.targetActors.join(","),
       },
     }));
 
-    // Upsert all vectors in a single batch (Upstash supports up to 1000 vectors per request)
-    console.log(
-      `Upserting ${toUpsert.length} vectors to Upstash in 1 request...`,
-    );
+    // Upsert all vectors in a single request
+    console.log(`Upserting ${records.length} vectors to Pinecone...`);
     const startUpsert = Date.now();
-    await index.upsert(toUpsert);
+    await index.namespace(DEFAULT_NAMESPACE).upsert(records);
     console.log(`Upsert completed in ${Date.now() - startUpsert}ms`);
 
     console.log(
@@ -98,9 +99,9 @@ export async function deleteDocumentById(
       vectorIds.push(`${documentId}-${i}`);
     }
 
-    // Delete all in a single request (Upstash supports up to 1000 IDs)
+    // Delete all in batches (Pinecone supports deleteMany)
     const startDelete = Date.now();
-    await index.delete(vectorIds);
+    await index.namespace(DEFAULT_NAMESPACE).deleteMany(vectorIds);
     console.log(`Delete completed in ${Date.now() - startDelete}ms`);
 
     console.log(`Deleted chunks for document ${documentId}`);
@@ -127,38 +128,75 @@ export async function listAllDocuments(): Promise<DocumentMetadata[]> {
   try {
     const index = getIndex();
 
-    const result = await index.range({
-      cursor: "",
-      limit: 1000,
-      includeMetadata: true,
-    });
+    // Use listPaginated to get all vector IDs
+    const allVectors: Array<{ id: string }> = [];
+    let paginationToken: string | undefined = undefined;
 
-    if (!result.vectors?.length) {
+    console.log("Fetching all document IDs from Pinecone...");
+
+    do {
+      const result = await index.namespace(DEFAULT_NAMESPACE).listPaginated({
+        limit: 100,
+        paginationToken,
+      });
+
+      if (result.vectors && result.vectors.length > 0) {
+        // Filter out vectors without IDs
+        const validVectors = result.vectors
+          .filter((v) => v.id !== undefined)
+          .map((v) => ({ id: v.id! }));
+        allVectors.push(...validVectors);
+      }
+
+      paginationToken = result.pagination?.next;
+    } while (paginationToken);
+
+    if (!allVectors.length) {
+      console.log("No vectors found in index");
       return [];
     }
 
+    console.log(
+      `Found ${allVectors.length} total vectors, fetching metadata...`,
+    );
+
+    // Fetch metadata for all vectors in batches
+    const vectorIds = allVectors.map((v) => v.id);
+    const metadataBatchSize = 1000;
     const documentsMap = new Map<string, DocumentMetadata>();
 
-    for (const vector of result.vectors) {
-      const metadata = vector.metadata;
-      if (!metadata?.documentId) continue;
+    for (let i = 0; i < vectorIds.length; i += metadataBatchSize) {
+      const batch = vectorIds.slice(i, i + metadataBatchSize);
+      const fetchResult = await index.namespace(DEFAULT_NAMESPACE).fetch(batch);
 
-      const docId = metadata.documentId;
-      const existing = documentsMap.get(docId);
+      if (fetchResult.records) {
+        for (const [_id, record] of Object.entries(fetchResult.records)) {
+          const metadata = record.metadata as Record<string, any>;
+          if (!metadata?.documentId) continue;
 
-      if (existing) {
-        existing.chunkCount++;
-      } else {
-        documentsMap.set(docId, {
-          id: docId,
-          name: metadata.documentName || "Unknown",
-          type: (metadata.documentType as any) || "Other",
-          description: metadata.description || "",
-          chunkCount: 1,
-          uploadDate: new Date(metadata.uploadDate || Date.now()).toISOString(),
-          status: "indexed",
-          source: metadata.source || "Unknown",
-        });
+          const docId = String(metadata.documentId);
+          const existing = documentsMap.get(docId);
+
+          if (existing) {
+            existing.chunkCount++;
+          } else {
+            documentsMap.set(docId, {
+              id: docId,
+              name: String(metadata.documentName || "Unknown"),
+              type: (metadata.documentType as any) || "Other",
+              description: String(metadata.description || ""),
+              chunkCount: 1,
+              uploadDate: new Date(
+                metadata.uploadDate || Date.now(),
+              ).toISOString(),
+              status: "indexed",
+              source: String(metadata.source || "Unknown"),
+              targetActors: String(
+                metadata.targetActors || "admin,staff,driver",
+              ),
+            });
+          }
+        }
       }
     }
 
@@ -180,20 +218,25 @@ export async function listAllDocuments(): Promise<DocumentMetadata[]> {
  * Find relevant content using semantic similarity search
  *
  * @param query - Search query text
- * @param k - Number of results to return (default: 4)
- * @returns Raw Upstash query results with metadata
+ * @param k - Number of results to return (default: 1)
+ * @returns Pinecone query results with metadata
  */
-export async function findRelevantContent(query: string, k = 6) {
+export async function findRelevantContent(query: string, k = 1) {
   const index = getIndex();
   const userEmbedding = await generateEmbedding(query);
 
-  const result = await index.query({
-    vector: userEmbedding,
-    topK: k,
-    includeMetadata: true,
-  });
+  try {
+    const result = await index.namespace(DEFAULT_NAMESPACE).query({
+      vector: userEmbedding,
+      topK: k,
+      includeMetadata: true,
+    });
 
-  return result;
+    return result.matches || [];
+  } catch (error) {
+    console.error("Error during semantic search:", error);
+    return [];
+  }
 }
 
 /**
@@ -217,10 +260,10 @@ export async function getDocumentStats(
     }
 
     // Fetch all in one request
-    const results = await index.fetch(sampleIds);
+    const results = await index.namespace(DEFAULT_NAMESPACE).fetch(sampleIds);
 
-    // Count non-null results
-    const count = results.filter((result) => result !== null).length;
+    // Count existing records
+    const count = Object.keys(results.records || {}).length;
 
     console.log(`Document ${documentId} has ${count} chunks`);
 
@@ -247,6 +290,7 @@ export async function updateDocumentMetadata(
     documentName: string;
     documentType: string;
     description: string;
+    targetActors: string[];
   }>,
 ): Promise<{ success: boolean; message: string }> {
   try {
@@ -262,33 +306,37 @@ export async function updateDocumentMetadata(
 
     // Fetch all vectors in one request
     const startFetch = Date.now();
-    const vectors = await index.fetch(vectorIds, {
-      includeMetadata: true,
-      includeVectors: true,
-    });
+    const fetchResult = await index
+      .namespace(DEFAULT_NAMESPACE)
+      .fetch(vectorIds);
     console.log(`Fetched vectors in ${Date.now() - startFetch}ms`);
 
     // Prepare updated vectors
     const vectorsToUpdate: Array<{
       id: string;
-      vector: number[];
+      values: number[];
       metadata: any;
     }> = [];
 
-    for (const vector of vectors) {
-      if (vector && vector.metadata) {
-        const updatedMetadata = {
-          ...vector.metadata,
-          ...(updates.documentName && { documentName: updates.documentName }),
-          ...(updates.documentType && { documentType: updates.documentType }),
-          ...(updates.description && { description: updates.description }),
-        };
+    if (fetchResult.records) {
+      for (const [id, record] of Object.entries(fetchResult.records)) {
+        if (record && record.metadata) {
+          const updatedMetadata = {
+            ...record.metadata,
+            ...(updates.documentName && { documentName: updates.documentName }),
+            ...(updates.documentType && { documentType: updates.documentType }),
+            ...(updates.description && { description: updates.description }),
+            ...(updates.targetActors && {
+              targetActors: updates.targetActors.join(","),
+            }),
+          };
 
-        vectorsToUpdate.push({
-          id: vector.id,
-          vector: vector.vector || [],
-          metadata: updatedMetadata,
-        });
+          vectorsToUpdate.push({
+            id,
+            values: record.values || [],
+            metadata: updatedMetadata,
+          });
+        }
       }
     }
 
@@ -299,9 +347,9 @@ export async function updateDocumentMetadata(
       };
     }
 
-    // Re-upsert all vectors in one request
+    // Re-upsert all vectors in a single request
     const startUpsert = Date.now();
-    await index.upsert(vectorsToUpdate);
+    await index.namespace(DEFAULT_NAMESPACE).upsert(vectorsToUpdate);
     console.log(`Upsert completed in ${Date.now() - startUpsert}ms`);
 
     console.log(

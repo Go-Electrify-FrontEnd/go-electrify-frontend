@@ -27,6 +27,7 @@ import {
   FieldError,
   FieldGroup,
 } from "@/components/ui/field";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useServerAction } from "@/hooks/use-server-action";
 import { toast } from "sonner";
 import { Loader2, Plus, X } from "lucide-react";
@@ -69,6 +70,7 @@ export function DocumentUploadDialog() {
       name: "",
       type: "Guide" as const,
       description: "",
+      targetActors: ["admin", "staff", "driver"] as const,
     },
   });
 
@@ -113,6 +115,7 @@ export function DocumentUploadDialog() {
     if (data.description) {
       formData.append("description", data.description);
     }
+    formData.append("targetActors", JSON.stringify(data.targetActors));
     formData.append("file", selectedFile);
 
     execute(formData);
@@ -257,6 +260,96 @@ export function DocumentUploadDialog() {
                     placeholder="Mô tả ngắn gọn về tài liệu"
                     disabled={pending}
                   />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+          </FieldGroup>
+
+          {/* Target Actors */}
+          <FieldGroup>
+            <Controller
+              control={form.control}
+              name="targetActors"
+              render={({ field, fieldState }) => (
+                <Field>
+                  <FieldLabel>Đối Tượng Mục Tiêu *</FieldLabel>
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="actor-admin"
+                        checked={field.value?.includes("admin")}
+                        onCheckedChange={(checked) => {
+                          const current = field.value || [];
+                          if (checked) {
+                            field.onChange([...current, "admin"]);
+                          } else {
+                            field.onChange(
+                              current.filter((v) => v !== "admin"),
+                            );
+                          }
+                        }}
+                        disabled={pending}
+                      />
+                      <label
+                        htmlFor="actor-admin"
+                        className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        Admin
+                      </label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="actor-staff"
+                        checked={field.value?.includes("staff")}
+                        onCheckedChange={(checked) => {
+                          const current = field.value || [];
+                          if (checked) {
+                            field.onChange([...current, "staff"]);
+                          } else {
+                            field.onChange(
+                              current.filter((v) => v !== "staff"),
+                            );
+                          }
+                        }}
+                        disabled={pending}
+                      />
+                      <label
+                        htmlFor="actor-staff"
+                        className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        Nhân Viên (Staff)
+                      </label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="actor-driver"
+                        checked={field.value?.includes("driver")}
+                        onCheckedChange={(checked) => {
+                          const current = field.value || [];
+                          if (checked) {
+                            field.onChange([...current, "driver"]);
+                          } else {
+                            field.onChange(
+                              current.filter((v) => v !== "driver"),
+                            );
+                          }
+                        }}
+                        disabled={pending}
+                      />
+                      <label
+                        htmlFor="actor-driver"
+                        className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        Tài Xế (Driver)
+                      </label>
+                    </div>
+                    <p className="text-muted-foreground text-xs">
+                      Chọn vai trò nào có thể xem tài liệu này
+                    </p>
+                  </div>
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}
