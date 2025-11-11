@@ -1,71 +1,17 @@
-import { v4 as uuidv4 } from "uuid";
-import type { DocumentMetadata, RetrievedChunk } from "../types";
-import { getIndex } from "./pinecone-client";
+import type { DocumentMetadata } from "../types";
+import { getIndex } from "./upstash-client";
+import { generateEmbedding, generateEmbeddings } from "./embeddings";
 
-const DEFAULT_NAMESPACES = [
-  "faq",
-  "guide",
-  "policy",
-  "troubleshooting",
-  "other",
-  "default",
-] as const;
-
-const DEFAULT_SEARCH_FIELDS = [
-  "text",
-  "source",
-  "documentId",
-  "documentName",
-  "documentType",
-  "chunkIndex",
-  "uploadDate",
-  "description",
-] as const;
-
-const toRecordPayload = (record: unknown): Record<string, any> => {
-  if (!record || typeof record !== "object") {
-    return {};
-  }
-
-  const { fields, metadata } = record as {
-    fields?: Record<string, any>;
-    metadata?: Record<string, any>;
-  };
-
-  return fields ?? metadata ?? {};
-};
-
-const buildNamespaceList = (override?: string): string[] =>
-  override ? [override] : [...DEFAULT_NAMESPACES];
-
-async function exponentialBackoffRetry<T>(
-  func: () => Promise<T>,
-  maxRetries = 5,
-): Promise<T> {
-  for (let attempt = 0; attempt < maxRetries; attempt++) {
-    try {
-      return await func();
-    } catch (error: any) {
-      const statusCode = error.status || error.statusCode;
-
-      if (statusCode && (statusCode >= 500 || statusCode === 429)) {
-        if (attempt < maxRetries - 1) {
-          const delay = Math.min(2 ** attempt * 1000, 60000);
-          await new Promise((resolve) => setTimeout(resolve, delay));
-          console.log(
-            `Retrying after ${delay}ms (attempt ${attempt + 1}/${maxRetries})`,
-          );
-        } else {
-          throw error;
-        }
-      } else {
-        throw error;
-      }
-    }
-  }
-  throw new Error("Max retries exceeded");
-}
-
+/**
+ * Upsert document chunks to Upstash Vector
+ *
+ * @param documentId - Unique document identifier
+ * @param documentName - Display name of document
+ * @param documentType - Category of document
+ * @param chunks - Array of text chunks
+ * @param metadata - Additional metadata (source, description)
+ * @returns Success result with message
+ */
 export async function upsertDocumentChunks(
   documentId: string,
   documentName: string,
@@ -76,35 +22,46 @@ export async function upsertDocumentChunks(
   try {
     const index = getIndex();
     const uploadDate = Date.now();
-    const namespace = documentType.toLowerCase() || "default";
 
-    const records = chunks.map((chunk, chunkIndex) => ({
-      _id: uuidv4(),
-      text: chunk.content,
-      documentId,
-      documentName,
-      documentType,
-      chunkIndex,
-      uploadDate,
-      description: metadata.description || "",
-      source: metadata.source,
+    console.log(`Starting upload for document: ${documentName}`);
+    console.log(`   Document ID: ${documentId}`);
+    console.log(`   Total chunks: ${chunks.length}`);
+
+    // Extract text content from chunks
+    const chunkTexts = chunks.map((chunk) => chunk.content);
+
+    // Generate embeddings for all chunks in one batch
+    console.log(`Generating embeddings for ${chunks.length} chunks...`);
+    const startEmbed = Date.now();
+    const chunkEmbeddings = await generateEmbeddings(chunkTexts);
+    console.log(`Embeddings generated in ${Date.now() - startEmbed}ms`);
+
+    // Convert to Upstash upsert format
+    const toUpsert = chunkEmbeddings.map((chunk, i) => ({
+      id: `${documentId}-${i}`,
+      vector: chunk.embedding,
+      metadata: {
+        content: chunk.content,
+        documentId,
+        documentName,
+        documentType,
+        chunkIndex: i,
+        uploadDate,
+        description: metadata.description || "",
+        source: metadata.source,
+      },
     }));
 
-    const batchSize = 96;
-    for (let i = 0; i < records.length; i += batchSize) {
-      const batch = records.slice(i, i + batchSize);
-
-      await exponentialBackoffRetry(async () => {
-        await index.namespace(namespace).upsertRecords(batch);
-      });
-
-      if (i + batchSize < records.length) {
-        await new Promise((resolve) => setTimeout(resolve, 100));
-      }
-    }
+    // Upsert all vectors in a single batch (Upstash supports up to 1000 vectors per request)
+    console.log(
+      `Upserting ${toUpsert.length} vectors to Upstash in 1 request...`,
+    );
+    const startUpsert = Date.now();
+    await index.upsert(toUpsert);
+    console.log(`Upsert completed in ${Date.now() - startUpsert}ms`);
 
     console.log(
-      `✓ Successfully indexed ${chunks.length} chunks for document ${documentId}`,
+      `Successfully indexed ${chunks.length} chunks for document ${documentId}`,
     );
 
     return {
@@ -121,27 +78,32 @@ export async function upsertDocumentChunks(
   }
 }
 
+/**
+ * Delete all chunks belonging to a document
+ *
+ * @param documentId - Document to delete
+ * @returns Success result with message
+ */
 export async function deleteDocumentById(
   documentId: string,
 ): Promise<{ success: boolean; message: string }> {
   try {
     const index = getIndex();
 
-    const namespaces = buildNamespaceList();
+    console.log(`Deleting document: ${documentId}`);
 
-    for (const namespace of namespaces) {
-      try {
-        await exponentialBackoffRetry(async () => {
-          await index.namespace(namespace).deleteMany({
-            documentId: documentId,
-          });
-        });
-      } catch (nsError) {
-        console.log(`Skipping namespace ${namespace}:`, nsError);
-      }
+    // Generate potential IDs (up to 1000 chunks per document)
+    const vectorIds: string[] = [];
+    for (let i = 0; i < 1000; i++) {
+      vectorIds.push(`${documentId}-${i}`);
     }
 
-    console.log(`✓ Successfully deleted document ${documentId}`);
+    // Delete all in a single request (Upstash supports up to 1000 IDs)
+    const startDelete = Date.now();
+    await index.delete(vectorIds);
+    console.log(`Delete completed in ${Date.now() - startDelete}ms`);
+
+    console.log(`Deleted chunks for document ${documentId}`);
 
     return {
       success: true,
@@ -156,75 +118,56 @@ export async function deleteDocumentById(
   }
 }
 
+/**
+ * List all documents by fetching vectors and aggregating by metadata
+ *
+ * @returns Array of document metadata
+ */
 export async function listAllDocuments(): Promise<DocumentMetadata[]> {
   try {
     const index = getIndex();
 
-    const stats = await index.describeIndexStats();
-    const namespaces = Object.keys(stats.namespaces || {});
+    const result = await index.range({
+      cursor: "",
+      limit: 1000,
+      includeMetadata: true,
+    });
 
-    if (namespaces.length === 0) {
-      console.log("No namespaces found in index");
+    if (!result.vectors?.length) {
       return [];
     }
 
-    const documentsById = new Map<string, DocumentMetadata>();
+    const documentsMap = new Map<string, DocumentMetadata>();
 
-    for (const namespace of namespaces) {
-      try {
-        let paginationToken: string | undefined = undefined;
+    for (const vector of result.vectors) {
+      const metadata = vector.metadata;
+      if (!metadata?.documentId) continue;
 
-        do {
-          const page = await index.namespace(namespace).listPaginated({
-            limit: 100,
-            paginationToken,
-          });
+      const docId = metadata.documentId;
+      const existing = documentsMap.get(docId);
 
-          if (page.vectors && page.vectors.length > 0) {
-            const ids = page.vectors.map((vector: any) => vector.id);
-            const recordsResponse = await index.namespace(namespace).fetch(ids);
-
-            for (const record of Object.values(recordsResponse.records || {})) {
-              const data = toRecordPayload(record);
-              const docId = String(data?.documentId ?? "");
-
-              if (!docId) continue;
-
-              if (!documentsById.has(docId)) {
-                documentsById.set(docId, {
-                  id: docId,
-                  name: String(data?.documentName ?? "Unknown"),
-                  type: String(data?.documentType ?? "Other") as any,
-                  description: String(data?.description ?? ""),
-                  chunkCount: 1,
-                  uploadDate: new Date(
-                    Number(data?.uploadDate ?? Date.now()),
-                  ).toISOString(),
-                  status: "indexed",
-                  source: String(data?.source ?? "Unknown"),
-                });
-              } else {
-                const summary = documentsById.get(docId)!;
-                summary.chunkCount++;
-              }
-            }
-          }
-
-          paginationToken = page.pagination?.next;
-        } while (paginationToken);
-      } catch (nsError) {
-        console.log(`Error processing namespace ${namespace}:`, nsError);
+      if (existing) {
+        existing.chunkCount++;
+      } else {
+        documentsMap.set(docId, {
+          id: docId,
+          name: metadata.documentName || "Unknown",
+          type: (metadata.documentType as any) || "Other",
+          description: metadata.description || "",
+          chunkCount: 1,
+          uploadDate: new Date(metadata.uploadDate || Date.now()).toISOString(),
+          status: "indexed",
+          source: metadata.source || "Unknown",
+        });
       }
     }
 
-    const documents = Array.from(documentsById.values()).sort(
+    const documents = Array.from(documentsMap.values()).sort(
       (a, b) =>
         new Date(b.uploadDate).getTime() - new Date(a.uploadDate).getTime(),
     );
 
-    console.log(
-      `✓ Found ${documents.length} documents across ${namespaces.length} namespaces`,
-    );
+    console.log(`Found ${documents.length} unique documents`);
 
     return documents;
   } catch (error) {
@@ -233,146 +176,57 @@ export async function listAllDocuments(): Promise<DocumentMetadata[]> {
   }
 }
 
-type SearchChunkOptions = {
-  vector?: number[];
-  recordId?: string;
-  namespaceOverride?: string;
-  rerankTopN?: number;
-  fields?: string[];
-};
+/**
+ * Find relevant content using semantic similarity search
+ *
+ * @param query - Search query text
+ * @param k - Number of results to return (default: 4)
+ * @returns Raw Upstash query results with metadata
+ */
+export async function findRelevantContent(query: string, k = 6) {
+  const index = getIndex();
+  const userEmbedding = await generateEmbedding(query);
 
-export async function searchSimilarChunks(
-  query: string,
-  topK: number = 3,
-  scoreThreshold: number = 0.7,
-  options: SearchChunkOptions = {},
-): Promise<RetrievedChunk[]> {
-  try {
-    const index = getIndex();
-    const sanitizedQuery = query.trim();
-    const namespaces = buildNamespaceList(options.namespaceOverride);
-    const collectedChunks: RetrievedChunk[] = [];
+  const result = await index.query({
+    vector: userEmbedding,
+    topK: k,
+    includeMetadata: true,
+  });
 
-    // Search across all namespaces
-    for (const namespace of namespaces) {
-      try {
-        const searchResults = await exponentialBackoffRetry(async () => {
-          // Build search query based on available inputs
-          const searchQuery: any = { topK: topK * 2 };
-
-          if (sanitizedQuery) {
-            searchQuery.inputs = { text: sanitizedQuery };
-          }
-          if (options.vector?.length) {
-            searchQuery.vector = { values: options.vector };
-          }
-          if (options.recordId) {
-            searchQuery.id = options.recordId;
-          }
-
-          // Build rerank configuration
-          const rerankConfig: any = {
-            model: "bge-reranker-v2-m3",
-            rankFields: ["text"],
-            topN: options.rerankTopN ?? topK,
-          };
-
-          if (sanitizedQuery) {
-            rerankConfig.query = sanitizedQuery;
-          }
-
-          // Execute search with reranking
-          return await index.namespace(namespace).searchRecords({
-            query: searchQuery,
-            fields: options.fields ?? [...DEFAULT_SEARCH_FIELDS],
-            rerank: rerankConfig,
-          });
-        });
-
-        // Process and filter results
-        const hits = searchResults.result?.hits || [];
-        const formattedResults = hits
-          .filter((hit: any) => hit._score >= scoreThreshold)
-          .map((hit: any) => {
-            const data = toRecordPayload(hit);
-            return {
-              content: String(data?.text ?? data?.content ?? ""),
-              source: String(data?.source ?? ""),
-              score: Number(hit._score ?? 0),
-              metadata: {
-                documentName: String(data?.documentName ?? ""),
-                documentType: String(data?.documentType ?? "Other") as any,
-                chunkIndex: Number(data?.chunkIndex ?? 0),
-              },
-            };
-          });
-
-        collectedChunks.push(...formattedResults);
-      } catch (nsError) {
-        console.log(`Namespace ${namespace} not found or error:`, nsError);
-      }
-    }
-
-    // Sort by score and return top results
-    const results = collectedChunks
-      .sort((a, b) => b.score - a.score)
-      .slice(0, topK);
-
-    console.log(
-      `✓ Found ${results.length} chunks matching query (threshold: ${scoreThreshold})`,
-    );
-
-    return results;
-  } catch (error) {
-    console.error("Error searching chunks:", error);
-    return [];
-  }
+  return result;
 }
 
+/**
+ * Get statistics for a specific document
+ *
+ * @param documentId - Document to get stats for
+ * @returns Chunk and vector counts
+ */
 export async function getDocumentStats(
   documentId: string,
 ): Promise<{ chunks: number; vectors: number }> {
   try {
     const index = getIndex();
 
-    const namespaces = buildNamespaceList();
-    let totalCount = 0;
+    console.log(`Getting stats for document: ${documentId}`);
 
-    for (const namespace of namespaces) {
-      try {
-        let paginationToken: string | undefined;
-
-        do {
-          const page = await index.namespace(namespace).listPaginated({
-            limit: 100,
-            paginationToken,
-          });
-
-          if (page.vectors && page.vectors.length > 0) {
-            const ids = page.vectors.map((vector: any) => vector.id);
-            const recordsResponse = await index.namespace(namespace).fetch(ids);
-
-            for (const record of Object.values(recordsResponse.records || {})) {
-              const data = toRecordPayload(record);
-
-              if (data?.documentId === documentId) {
-                totalCount++;
-              }
-            }
-          }
-
-          paginationToken = page.pagination?.next;
-        } while (paginationToken);
-      } catch (nsError) {
-        console.log(`Namespace ${namespace} not found:`, nsError);
-      }
+    // Generate IDs to fetch (up to 1000 chunks)
+    const sampleIds: string[] = [];
+    for (let i = 0; i < 1000; i++) {
+      sampleIds.push(`${documentId}-${i}`);
     }
 
-    console.log(`✓ Document ${documentId} has ${totalCount} chunks`);
+    // Fetch all in one request
+    const results = await index.fetch(sampleIds);
+
+    // Count non-null results
+    const count = results.filter((result) => result !== null).length;
+
+    console.log(`Document ${documentId} has ${count} chunks`);
 
     return {
-      chunks: totalCount,
-      vectors: totalCount,
+      chunks: count,
+      vectors: count,
     };
   } catch (error) {
     console.error("Error getting document stats:", error);
@@ -380,6 +234,13 @@ export async function getDocumentStats(
   }
 }
 
+/**
+ * Update metadata for a document's chunks
+ *
+ * @param documentId - Document to update
+ * @param updates - Metadata fields to update
+ * @returns Success result with message
+ */
 export async function updateDocumentMetadata(
   documentId: string,
   updates: Partial<{
@@ -391,68 +252,65 @@ export async function updateDocumentMetadata(
   try {
     const index = getIndex();
 
-    const namespaces = buildNamespaceList();
-    let updatedCount = 0;
+    console.log(`Updating metadata for document: ${documentId}`);
 
-    for (const namespace of namespaces) {
-      try {
-        let paginationToken: string | undefined;
+    // Generate IDs to fetch (up to 1000 chunks)
+    const vectorIds: string[] = [];
+    for (let i = 0; i < 1000; i++) {
+      vectorIds.push(`${documentId}-${i}`);
+    }
 
-        do {
-          const page = await index.namespace(namespace).listPaginated({
-            limit: 100,
-            paginationToken,
-          });
+    // Fetch all vectors in one request
+    const startFetch = Date.now();
+    const vectors = await index.fetch(vectorIds, {
+      includeMetadata: true,
+      includeVectors: true,
+    });
+    console.log(`Fetched vectors in ${Date.now() - startFetch}ms`);
 
-          if (page.vectors && page.vectors.length > 0) {
-            const ids = page.vectors.map((vector: any) => vector.id);
-            const recordsResponse = await index.namespace(namespace).fetch(ids);
+    // Prepare updated vectors
+    const vectorsToUpdate: Array<{
+      id: string;
+      vector: number[];
+      metadata: any;
+    }> = [];
 
-            // Find vectors matching documentId and update them
-            const recordsToUpdate: Array<any> = [];
+    for (const vector of vectors) {
+      if (vector && vector.metadata) {
+        const updatedMetadata = {
+          ...vector.metadata,
+          ...(updates.documentName && { documentName: updates.documentName }),
+          ...(updates.documentType && { documentType: updates.documentType }),
+          ...(updates.description && { description: updates.description }),
+        };
 
-            for (const [recordId, record] of Object.entries(
-              recordsResponse.records || {},
-            )) {
-              const data = toRecordPayload(record);
-
-              if (data?.documentId === documentId) {
-                // Update using upsertRecords with same structure as original insert
-                recordsToUpdate.push({
-                  _id: recordId,
-                  text: data.text || data.content || "", // Try both field names
-                  documentId: data.documentId,
-                  documentName: updates.documentName || data.documentName,
-                  documentType: updates.documentType || data.documentType,
-                  chunkIndex: data.chunkIndex || 0,
-                  uploadDate: data.uploadDate || Date.now(),
-                  description: updates.description || data.description || "",
-                  source: data.source || "",
-                });
-              }
-            }
-
-            // Update records using upsertRecords (not upsert)
-            if (recordsToUpdate.length > 0) {
-              await exponentialBackoffRetry(async () => {
-                await index.namespace(namespace).upsertRecords(recordsToUpdate);
-              });
-              updatedCount += recordsToUpdate.length;
-            }
-          }
-
-          paginationToken = page.pagination?.next;
-        } while (paginationToken);
-      } catch (nsError) {
-        console.log(`Namespace ${namespace} not found:`, nsError);
+        vectorsToUpdate.push({
+          id: vector.id,
+          vector: vector.vector || [],
+          metadata: updatedMetadata,
+        });
       }
     }
 
-    console.log(`✓ Updated ${updatedCount} vectors for document ${documentId}`);
+    if (vectorsToUpdate.length === 0) {
+      return {
+        success: false,
+        message: "No vectors found for this document",
+      };
+    }
+
+    // Re-upsert all vectors in one request
+    const startUpsert = Date.now();
+    await index.upsert(vectorsToUpdate);
+    console.log(`Upsert completed in ${Date.now() - startUpsert}ms`);
+
+    console.log(
+      `Updated metadata for ${vectorsToUpdate.length} chunks of document ${documentId}`,
+    );
 
     return {
       success: true,
-      message: `Document metadata updated successfully (${updatedCount} chunks)`,
+      message: `Updated ${vectorsToUpdate.length} chunks`,
     };
   } catch (error) {
     console.error("Error updating document metadata:", error);

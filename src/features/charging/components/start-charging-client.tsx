@@ -50,7 +50,6 @@ export default function StartChargingClient() {
     });
   };
 
-  // Sync form value with joinCode state for QR scanner display
   useEffect(() => {
     const subscription = form.watch((value) => {
       setJoinCode(value.joinCode || "");

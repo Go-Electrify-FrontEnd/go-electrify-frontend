@@ -53,6 +53,7 @@ interface BookingBindingClientProps {
   channelId: string;
   expiresAt: string;
   reservations: Reservation[];
+  pricePerKwh: number;
 }
 
 function BookingBindingInner({
@@ -61,14 +62,8 @@ function BookingBindingInner({
   ablyToken,
   expiresAt,
   reservations,
-}: {
-  sessionId: string;
-  channelId: string;
-  ablyToken: string;
-  expiresAt: string;
-  reservations: Reservation[];
-}) {
-  const router = useRouter();
+  pricePerKwh,
+}: BookingBindingClientProps) {
   const [carInformation, setCarInformation] = useState<CarInformation | null>(
     null,
   );
@@ -81,7 +76,6 @@ function BookingBindingInner({
     {
       onSuccess: (state) => {
         toast.success(state.msg);
-        // The server action will handle the redirect
       },
       onError: (state) => {
         toast.error(state.msg);
@@ -108,9 +102,8 @@ function BookingBindingInner({
   };
 
   useEffect(() => {
-    // Publish load_car_information message on component mount
     publish("load_car_information", {});
-  }, [publish]);
+  }, []);
 
   const currentSOC = carInformation
     ? (carInformation.currentCapacity / carInformation.maxCapacity) * 100
@@ -122,7 +115,7 @@ function BookingBindingInner({
     ? ((parseFloat(targetSOC) - currentSOC) / 100) * carInformation!.maxCapacity
     : 0;
 
-  const estimatedPrice = energyNeeded * 4000;
+  const estimatedPrice = pricePerKwh * energyNeeded;
 
   if (!carInformation) {
     return (
@@ -132,6 +125,13 @@ function BookingBindingInner({
       </div>
     );
   }
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+
+    execute(formData);
+  };
 
   return (
     <Card className="mx-auto mt-8 max-w-2xl">
@@ -145,14 +145,7 @@ function BookingBindingInner({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            const formData = new FormData(e.currentTarget);
-            execute(formData);
-          }}
-          className="space-y-6"
-        >
+        <form onSubmit={handleSubmit} className="space-y-6">
           <input type="hidden" name="sessionId" value={sessionId} />
           <input type="hidden" name="ablyToken" value={ablyToken} />
           <input type="hidden" name="channelId" value={channelId} />
@@ -238,8 +231,8 @@ function BookingBindingInner({
                 disabled={true}
               />
               <FieldDescription>
-                Ước tính dựa trên {energyNeeded.toFixed(2)} kWh cần sạc (4000
-                VND/kWh)
+                Ước tính dựa trên {energyNeeded.toFixed(2)} kWh cần sạc (
+                {pricePerKwh.toLocaleString()} VND/kWh)
               </FieldDescription>
             </Field>
           )}
@@ -271,6 +264,7 @@ export function BookingBindingClient({
   channelId,
   expiresAt,
   reservations,
+  pricePerKwh,
 }: BookingBindingClientProps) {
   const realtimeClient = useMemo(
     () =>
@@ -290,6 +284,7 @@ export function BookingBindingClient({
           ablyToken={ablyToken}
           expiresAt={expiresAt}
           reservations={reservations}
+          pricePerKwh={pricePerKwh}
         />
       </ChannelProvider>
     </AblyProvider>

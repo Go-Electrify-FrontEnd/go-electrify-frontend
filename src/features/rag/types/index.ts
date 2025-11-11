@@ -97,15 +97,3 @@ export interface EmbeddingConfig {
   model: string; // OpenAI model (e.g., "text-embedding-3-small")
   dimensions: number; // Vector dimensions (1536 for text-embedding-3-small)
 }
-
-/**
- * Pinecone index configuration
- * ⚠️ Note: Index creation must be done via Pinecone CLI, not in application code
- * Use: pc index create -n <name> -m cosine -c aws -r us-east-1 --model llama-text-embed-v2 --field_map text=content
- */
-export interface IndexConfig {
-  name: string; // Index name
-  metric: "cosine" | "euclidean" | "dotproduct"; // Distance metric
-  cloud: "aws" | "gcp" | "azure"; // Cloud provider
-  region: string; // Cloud region (e.g., "us-east-1")
-}

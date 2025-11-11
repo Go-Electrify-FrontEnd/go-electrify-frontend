@@ -1,0 +1,169 @@
+# Hướng Dẫn Sạc Xe Điện với Go-Electrify
+
+## Giới Thiệu
+Go-Electrify là nền tảng sạc xe điện hàng đầu tại Việt Nam, cung cấp mạng lưới trạm sạc rộng khắp và dịch vụ tiện lợi cho người dùng xe điện.
+
+## Cách Tìm Trạm Sạc
+
+### Bước 1: Mở Ứng Dụng
+Mở ứng dụng Go-Electrify trên điện thoại di động của bạn. Đảm bảo bạn đã đăng nhập vào tài khoản.
+
+### Bước 2: Xem Bản Đồ
+Trên màn hình chính, bạn sẽ thấy bản đồ hiển thị các trạm sạc gần bạn. Các biểu tượng màu xanh lá cây cho biết trạm đang có sẵn, màu cam là trạm đang bận, và màu xám là trạm không hoạt động.
+
+### Bước 3: Lọc Trạm Sạc
+Sử dụng bộ lọc để tìm trạm sạc phù hợp:
+- Loại đầu sạc (CCS, CHAdeMO, Type 2, GB/T)
+- Công suất sạc (7kW, 22kW, 50kW, 150kW, 350kW)
+- Tiện ích (Wi-Fi, nhà vệ sinh, quán cà phê)
+- Giá cả và khuyến mãi
+
+## Quy Trình Sạc Xe
+
+### Chuẩn Bị
+1. Kiểm tra loại đầu sạc của xe bạn
+2. Đảm bảo ví điện tử có đủ số dư hoặc đã liên kết thẻ thanh toán
+3. Kiểm tra thời gian hoạt động của trạm sạc
+
+### Thực Hiện Sạc
+
+#### Phương Pháp 1: Quét Mã QR
+1. Đỗ xe tại vị trí trạm sạc
+2. Mở ứng dụng và chọn "Quét mã QR"
+3. Quét mã QR trên trụ sạc
+4. Chọn đầu sạc và xác nhận
+5. Cắm dây sạc vào xe
+6. Bắt đầu sạc
+
+#### Phương Phương 2: Đặt Chỗ Trước
+1. Tìm trạm sạc trên bản đồ
+2. Chọn "Đặt chỗ"
+3. Chọn thời gian sạc dự kiến
+4. Xác nhận đặt chỗ
+5. Đến trạm trong thời gian đã đặt
+6. Quét mã QR để bắt đầu
+
+### Trong Quá Trình Sạc
+- Theo dõi tiến độ sạc trên ứng dụng
+- Nhận thông báo khi sạc đạt 80% và 100%
+- Kiểm tra chi phí sạc theo thời gian thực
+- Có thể dừng sạc bất cứ lúc nào từ ứng dụng
+
+### Kết Thúc Sạc
+1. Dừng sạc từ ứng dụng hoặc trên xe
+2. Rút dây sạc khỏi xe
+3. Cất dây sạc vào vị trí ban đầu
+4. Xác nhận thanh toán trên ứng dụng
+5. Nhận hóa đơn điện tử
+
+## Loại Đầu Sạc
+
+### CCS (Combined Charging System)
+- Phổ biến: Xe Châu Âu và Mỹ
+- Công suất: 50kW - 350kW
+- Thời gian sạc: 20-40 phút đạt 80%
+- Thích hợp: Tesla Model 3, VinFast VF8, VF9
+
+### CHAdeMO
+- Phổ biến: Xe Nhật Bản
+- Công suất: 50kW - 100kW
+- Thời gian sạc: 30-60 phút đạt 80%
+- Thích hợp: Nissan Leaf, Mitsubishi Outlander PHEV
+
+### Type 2 (Mennekes)
+- Phổ biến: Sạc AC tại nhà và công cộng
+- Công suất: 7kW - 22kW
+- Thời gian sạc: 4-8 giờ đầy pin
+- Thích hợp: Hầu hết xe điện tại Việt Nam
+
+### GB/T
+- Phổ biến: Xe Trung Quốc
+- Công suất: 40kW - 120kW
+- Thời gian sạc: 30-90 phút đạt 80%
+- Thích hợp: BYD, MG, SAIC
+
+## Bảng Giá Sạc
+
+### Sạc Thường
+- 7kW AC: 3.000đ/kWh
+- 22kW AC: 3.500đ/kWh
+- 50kW DC: 5.000đ/kWh
+- 150kW DC: 6.000đ/kWh
+- 350kW DC: 7.000đ/kWh
+
+### Giờ Cao Điểm (6h-22h)
+Áp dụng phụ phí +20%
+
+### Giờ Thấp Điểm (22h-6h)
+Giảm giá 30%
+
+### Gói Đăng Ký Tháng
+- Gói Cơ Bản (300kWh): 850.000đ/tháng
+- Gói Tiêu Chuẩn (500kWh): 1.400.000đ/tháng
+- Gói Cao Cấp (1000kWh): 2.500.000đ/tháng
+
+## Xử Lý Sự Cố
+
+### Không Kết Nối Được Sạc
+1. Kiểm tra đầu sạc đã cắm chặt chưa
+2. Khởi động lại ứng dụng
+3. Thử lại quét mã QR
+4. Liên hệ hotline: 1900-xxxx
+
+### Sạc Chậm Hơn Bình Thường
+1. Kiểm tra công suất trạm sạc
+2. Pin xe có thể giới hạn tốc độ sạc khi gần đầy
+3. Nhiệt độ môi trường ảnh hưởng tốc độ sạc
+4. Kiểm tra trạng thái pin trên xe
+
+### Lỗi Thanh Toán
+1. Kiểm tra số dư ví điện tử
+2. Cập nhật phương thức thanh toán
+3. Liên hệ bộ phận hỗ trợ
+4. Sử dụng phương thức thanh toán dự phòng
+
+### Trạm Sạc Không Hoạt Động
+1. Báo lỗi qua ứng dụng
+2. Tìm trạm sạc gần nhất
+3. Nhận thông báo khi trạm hoạt động trở lại
+
+## Mẹo Sử Dụng
+
+### Tối Ưu Hóa Chi Phí
+- Sạc vào giờ thấp điểm để tiết kiệm 30%
+- Đăng ký gói tháng nếu sạc thường xuyên
+- Sử dụng điểm thưởng và khuyến mãi
+- Tham gia chương trình giới thiệu bạn bè
+
+### Bảo Vệ Pin Xe
+- Không sạc quá 80% thường xuyên
+- Tránh để pin dưới 20% quá lâu
+- Sạc chậm (AC) tốt hơn cho tuổi thọ pin
+- Không sạc liên tục nhiều lần trong ngày
+
+### An Toàn
+- Kiểm tra dây sạc trước khi sử dụng
+- Không sạc khi trời mưa to (trừ trạm có mái che)
+- Không để trẻ em chơi gần khu vực sạc
+- Báo ngay nếu phát hiện hư hỏng
+
+## Hỗ Trợ Khách Hàng
+
+### Hotline
+- Số điện thoại: 1900-xxxx
+- Email: support@go-electrify.com
+- Thời gian: 24/7
+
+### Chat Trực Tuyến
+Sử dụng chatbot AI trong ứng dụng để được hỗ trợ nhanh chóng về:
+- Tìm trạm sạc
+- Hướng dẫn sử dụng
+- Xử lý sự cố
+- Thanh toán và hóa đơn
+
+### Trung Tâm Hỗ Trợ
+Truy cập help.go-electrify.com để:
+- Xem video hướng dẫn
+- Đọc câu hỏi thường gặp
+- Tải tài liệu hướng dẫn
+- Tham gia cộng đồng người dùng
