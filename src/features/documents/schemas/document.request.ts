@@ -1,14 +1,9 @@
 import { z } from "zod";
 
 /**
- * Allowed MIME types for document upload
+ * Allowed MIME types for document upload (only TXT files)
  */
-const ALLOWED_MIME_TYPES = [
-  "application/pdf",
-  "text/plain",
-  "text/markdown",
-  "text/x-markdown",
-] as const;
+const ALLOWED_MIME_TYPES = ["text/plain"] as const;
 
 /**
  * Maximum file size (10MB)
@@ -99,11 +94,14 @@ export function validateFile(file: File): {
     };
   }
 
-  // Check MIME type
-  if (!ALLOWED_MIME_TYPES.includes(file.type as any)) {
+  // Check file extension (primary method since MIME types are unreliable)
+  const ext = getFileExtension(file.name);
+  const allowedExtensions = ["txt"];
+
+  if (!allowedExtensions.includes(ext)) {
     return {
       valid: false,
-      error: `Invalid file type: ${file.type}. Allowed: PDF, TXT, MD`,
+      error: `Invalid file extension: .${ext || "unknown"}. Only .txt files are allowed`,
     };
   }
 

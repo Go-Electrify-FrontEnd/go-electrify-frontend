@@ -1,11 +1,8 @@
 import { getUser } from "@/lib/auth/auth-server";
 import { redirect } from "next/navigation";
 import { getCurrentSessionWithToken } from "@/features/charging/services/session-service";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { InfoIcon, ZapIcon, AlertTriangle } from "lucide-react";
-import Link from "next/link";
+import { AlertTriangle } from "lucide-react";
 import StartChargingClient from "@/features/charging/components/start-charging-client";
 
 export default async function StartChargingPage() {
@@ -16,7 +13,6 @@ export default async function StartChargingPage() {
   }
 
   const currentSession = await getCurrentSessionWithToken(token);
-
   if (currentSession) {
     const { status, id } = currentSession.session;
 

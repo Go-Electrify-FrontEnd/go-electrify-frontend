@@ -29,10 +29,7 @@ import { useServerAction } from "@/hooks/use-server-action";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { updateDocument } from "../services/documents-actions";
-import {
-  updateDocumentSchema,
-  type UpdateDocumentFormData,
-} from "../schemas/document.request";
+import { updateDocumentSchema } from "../schemas/document.request";
 import type { Document } from "../schemas/document.types";
 import { useEffect } from "react";
 

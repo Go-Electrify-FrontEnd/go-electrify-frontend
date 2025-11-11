@@ -6,21 +6,13 @@ import {
 } from "@chonkiejs/core";
 import type { ChunkConfig } from "../types";
 
-/**
- * Default chunking configuration
- * Based on best practices for RAG systems with Chonkie
- */
 const DEFAULT_CHUNK_CONFIG: ChunkConfig = {
   chunkSize: 512, // tokens (optimal for embeddings)
   chunkOverlap: 100, // tokens (maintains context)
   separator: "\n\n", // Paragraph separator
 };
 
-/**
- * Create custom Chonkie rules for different document types
- */
 const CHUNKING_RULES = {
-  // Default rules for general text
   default: new RecursiveRules({
     levels: [
       { delimiters: ["\n\n", "\r\n\r\n"], includeDelim: "none" }, // Paragraphs
@@ -30,7 +22,6 @@ const CHUNKING_RULES = {
     ],
   }),
 
-  // Optimized for markdown documents
   markdown: new RecursiveRules({
     levels: [
       { delimiters: ["\n## ", "\n### "], includeDelim: "next" }, // Headers
@@ -40,7 +31,6 @@ const CHUNKING_RULES = {
     ],
   }),
 
-  // Optimized for code-heavy documents
   code: new RecursiveRules({
     levels: [
       { delimiters: ["\n\n"], includeDelim: "none" }, // Code blocks
@@ -329,65 +319,34 @@ export async function parseTextFile(content: Buffer): Promise<string> {
 }
 
 /**
- * Parse markdown file
- * Preserves markdown structure for better chunking
- *
- * @param content - File content buffer
- * @returns Parsed markdown text
- */
-export async function parseMarkdownFile(content: Buffer): Promise<string> {
-  const text = content.toString("utf-8");
-  // Clean text but preserve markdown structure (headers, code blocks, lists)
-  return text
-    .replace(/\r\n/g, "\n")
-    .replace(/[ \t]+/g, " ")
-    .replace(/\n{4,}/g, "\n\n\n") // Keep max 3 newlines for markdown spacing
-    .trim();
-}
-
-/**
- * Parse PDF file
- * Extracts text content from PDF
- *
- * @param content - File content buffer
- * @returns Parsed text
- */
-export async function parsePdfFile(content: Buffer): Promise<string> {
-  try {
-    // Dynamic import to avoid bundling issues
-    const pdfParse = (await import("pdf-parse")) as any;
-    const parseFunc = pdfParse.default || pdfParse;
-    const data = await parseFunc(content);
-    return cleanText(data.text);
-  } catch (error) {
-    console.error("PDF parsing error:", error);
-    throw new Error("Failed to parse PDF file");
-  }
-}
-
-/**
  * Parse document based on file type
  *
  * @param content - File content buffer
  * @param mimeType - File MIME type
+ * @param filename - Optional filename for fallback extension detection
  * @returns Parsed text content
  */
 export async function parseDocument(
   content: Buffer,
   mimeType: string,
+  filename?: string,
 ): Promise<string> {
-  switch (mimeType) {
-    case "application/pdf":
-      return parsePdfFile(content);
+  // Derive actual type from filename extension if MIME is generic/unreliable
+  let actualType = mimeType;
 
+  if ((mimeType === "application/octet-stream" || !mimeType) && filename) {
+    const ext = filename.split(".").pop()?.toLowerCase();
+    if (ext === "txt") {
+      actualType = "text/plain";
+    }
+  }
+
+  switch (actualType) {
     case "text/plain":
       return parseTextFile(content);
-
-    case "text/markdown":
-    case "text/x-markdown":
-      return parseMarkdownFile(content);
-
     default:
-      throw new Error(`Unsupported file type: ${mimeType}`);
+      throw new Error(
+        `Unsupported file type: ${actualType}. Only .txt files are currently supported`,
+      );
   }
 }

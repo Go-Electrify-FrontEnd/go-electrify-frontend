@@ -9,15 +9,16 @@ interface BindingPageProps {
     ablyToken?: string;
     channelId?: string;
     expiresAt?: string;
+    pricePerKwh?: string;
   }>;
 }
 
 export default async function BindingPage({ searchParams }: BindingPageProps) {
   const params = await searchParams;
-  const { sessionId, ablyToken, channelId, expiresAt } = params;
+  const { sessionId, ablyToken, channelId, expiresAt, pricePerKwh } = params;
 
   // Validate required parameters
-  if (!sessionId || !ablyToken || !channelId || !expiresAt) {
+  if (!sessionId || !ablyToken || !channelId || !expiresAt || !pricePerKwh) {
     notFound();
   }
 
@@ -31,6 +32,7 @@ export default async function BindingPage({ searchParams }: BindingPageProps) {
       channelId={channelId}
       expiresAt={expiresAt}
       reservations={reservations}
+      pricePerKwh={Number(pricePerKwh)}
     />
   );
 }

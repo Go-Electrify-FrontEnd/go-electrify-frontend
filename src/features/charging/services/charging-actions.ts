@@ -42,11 +42,7 @@ export async function handleJoin(_prev: unknown, formData: FormData) {
     if (!response.ok) {
       return {
         success: false,
-        msg:
-          (rawJson && typeof rawJson === "object" && "message" in rawJson
-            ? (rawJson as { message?: string }).message
-            : undefined) || `Failed to join session (${response.status})`,
-        data: null,
+        msg: rawJson?.message || `Failed to join session (${response.status})`,
       };
     }
 
@@ -70,13 +66,15 @@ export async function handleJoin(_prev: unknown, formData: FormData) {
       };
     }
 
-    const { sessionId, channelId, ablyToken, expiresAt } = parsedData.data;
+    const { sessionId, channelId, ablyToken, expiresAt, pricePerKwh } =
+      parsedData.data;
 
     const queryParams = new URLSearchParams({
       sessionId: String(sessionId),
       channelId,
       ablyToken,
       expiresAt,
+      pricePerKwh: String(pricePerKwh),
     });
 
     redirectUrl = `/dashboard/charging/binding?${queryParams.toString()}`;

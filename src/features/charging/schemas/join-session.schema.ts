@@ -12,6 +12,7 @@ const JoinSessionDataSchema = z.object({
   channelId: z.string().min(1),
   ablyToken: z.string().min(1),
   expiresAt: isoDateStringSchema,
+  pricePerKwh: z.number().nonnegative(),
 });
 
 const JoinSessionSuccessSchema = z.object({

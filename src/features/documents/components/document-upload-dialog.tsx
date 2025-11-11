@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/field";
 import { useServerAction } from "@/hooks/use-server-action";
 import { toast } from "sonner";
-import { Loader2, Plus, Upload, X } from "lucide-react";
+import { Loader2, Plus, X } from "lucide-react";
 import { uploadDocument } from "../services/documents-actions";
 import {
   uploadDocumentSchema,
@@ -138,33 +138,32 @@ export function DocumentUploadDialog() {
             <Field>
               <FieldLabel htmlFor="file">Tệp *</FieldLabel>
               <div className="space-y-2">
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  id="file"
-                  accept=".pdf,.txt,.md"
-                  onChange={handleFileChange}
-                  className="hidden"
-                  disabled={pending}
-                />
-
                 {!selectedFile ? (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    onClick={() => fileInputRef.current?.click()}
+                  <Input
+                    ref={fileInputRef}
+                    type="file"
+                    id="file"
+                    accept=".txt"
+                    onChange={handleFileChange}
                     disabled={pending}
-                  >
-                    <Upload className="mr-2 h-4 w-4" />
-                    Chọn Tệp
-                  </Button>
+                  />
                 ) : (
                   <div className="border-input bg-muted flex items-center gap-2 rounded-md border p-3">
                     <div className="flex-1 truncate text-sm">
                       <div className="font-medium">{selectedFile.name}</div>
                       <div className="text-muted-foreground">
-                        {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                        {(() => {
+                          const sizeInBytes = selectedFile.size;
+                          if (sizeInBytes === 0) return "0 KB";
+                          const sizeInKB = sizeInBytes / 1024;
+                          const sizeInMB = sizeInKB / 1024;
+
+                          if (sizeInMB >= 1) {
+                            return `${sizeInMB.toFixed(2)} MB`;
+                          } else {
+                            return `${sizeInKB.toFixed(2)} KB`;
+                          }
+                        })()}
                       </div>
                     </div>
                     <Button
@@ -180,7 +179,7 @@ export function DocumentUploadDialog() {
                 )}
 
                 <p className="text-muted-foreground text-xs">
-                  Hỗ trợ: PDF, TXT, MD (Tối đa 10MB)
+                  Hỗ trợ: TXT (Tối đa 10MB)
                 </p>
               </div>
             </Field>

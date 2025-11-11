@@ -25,6 +25,7 @@ interface BookingBindingWrapperProps {
   ablyToken: string;
   channelId: string;
   expiresAt: string;
+  pricePerKwh: number;
   reservations: Reservation[];
 }
 
@@ -34,6 +35,7 @@ export function BookingBindingWrapper({
   channelId,
   expiresAt,
   reservations,
+  pricePerKwh,
 }: BookingBindingWrapperProps) {
   return (
     <BookingBindingClient
@@ -42,6 +44,7 @@ export function BookingBindingWrapper({
       channelId={channelId}
       expiresAt={expiresAt}
       reservations={reservations}
+      pricePerKwh={pricePerKwh}
     />
   );
 }

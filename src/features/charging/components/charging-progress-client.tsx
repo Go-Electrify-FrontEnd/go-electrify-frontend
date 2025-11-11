@@ -25,7 +25,7 @@ import {
   Zap,
 } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { AblyProvider, ChannelProvider, useChannel } from "ably/react";
 import * as Ably from "ably";
@@ -54,6 +54,7 @@ function ChargingProgressInner({
   const [progress, setProgress] = useState<number>(sessionData?.socStart || 0);
   const [isStarted, setStarted] = useState<boolean>(false);
   const [countdown, setCountdown] = useState<number>(5);
+  const [shouldRedirect, setShouldRedirect] = useState<boolean>(false);
   const { push, refresh } = useRouter();
 
   // Derived state - countdown is active when countdown > 0
@@ -69,6 +70,14 @@ function ChargingProgressInner({
     }
   }, [countdown]);
 
+  // Handle redirect when charging is complete
+  useEffect(() => {
+    if (shouldRedirect) {
+      // Use window.location for more reliable navigation
+      window.location.href = "/dashboard/charging/payment";
+    }
+  }, [shouldRedirect]);
+
   const { publish } = useChannel(channelId, (message) => {
     setMessages((prevMessages) => [...prevMessages, message]);
 
@@ -77,9 +86,8 @@ function ChargingProgressInner({
         description: "Chuẩn bị tiến hành thanh toán.",
       });
 
-      setProgress(100);
-      refresh();
-      push(`/dashboard/charging/payment`);
+      // Trigger redirect via state
+      setShouldRedirect(true);
     } else if (message.name === "soc_update") {
       setProgress(Number(message.data.soc));
 

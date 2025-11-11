@@ -53,6 +53,7 @@ import { createReservation } from "../services/reservation-actions";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { BookingFee } from "@/features/booking-fee/schemas/booking-fee.types";
+import { useServerAction } from "@/hooks/use-server-action";
 
 const initialState = {
   success: false,
@@ -70,7 +71,6 @@ interface CreateReservationButtonProps {
 
 export default function CreateReservationButton({
   stations,
-  vehicleModels,
   connectorTypes,
   bookingFee,
   preSelectedStationId,
@@ -79,68 +79,41 @@ export default function CreateReservationButton({
   const [open, setOpen] = useState(defaultOpen);
   const [step, setStep] = useState<1 | 2>(1);
   const [openStation, setOpenStation] = useState(false);
-  const [openVehicleModel, setOpenVehicleModel] = useState(false);
   const [openConnectorType, setOpenConnectorType] = useState(false);
 
-  const [createState, createAction, pending] = useActionState(
+  const { execute, pending } = useServerAction(
     createReservation,
     initialState,
+    {
+      onSettled: (data) => {
+        if (data.success) {
+          form.reset();
+          setStep(1);
+          setOpen(false);
+          toast.success(data.msg);
+        } else {
+          toast.error(data.msg);
+        }
+      },
+    },
   );
 
   const form = useForm<ReservationFormData>({
     resolver: zodResolver(reservationFormSchema),
     defaultValues: {
       stationId: preSelectedStationId || "",
-      vehicleModelId: "",
       connectorTypeId: "",
       initialSoc: 20,
     },
   });
 
-  const selectedVehicleModelId = form.watch("vehicleModelId");
-
-  const availableConnectorTypes = selectedVehicleModelId
-    ? connectorTypes.filter((ct) => {
-        const vehicleModel = vehicleModels.find(
-          (vm) => vm.id.toString() === selectedVehicleModelId,
-        );
-        return vehicleModel?.connectorTypeIds.includes(ct.id.toString());
-      })
-    : [];
-
-  useEffect(() => {
-    if (!createState.msg) return;
-
-    if (createState.success) {
-      form.reset();
-      setStep(1);
-      setOpen(false);
-      toast.success(createState.msg);
-    } else {
-      toast.error(createState.msg);
-    }
-  }, [createState, form]);
-
-  useEffect(() => {
-    if (selectedVehicleModelId) {
-      const currentConnectorTypeId = form.getValues("connectorTypeId");
-      const isCurrentConnectorTypeAvailable = availableConnectorTypes.some(
-        (ct) => ct.id.toString() === currentConnectorTypeId,
-      );
-      if (!isCurrentConnectorTypeAvailable) {
-        form.setValue("connectorTypeId", "");
-      }
-    }
-  }, [selectedVehicleModelId, availableConnectorTypes, form]);
-
   function onSubmit(data: ReservationFormData) {
     const formData = new FormData();
     formData.append("stationId", data.stationId);
-    formData.append("vehicleModelId", data.vehicleModelId);
     formData.append("connectorTypeId", data.connectorTypeId);
 
     startTransition(() => {
-      createAction(formData);
+      execute(formData);
     });
   }
 
@@ -255,76 +228,6 @@ export default function CreateReservationButton({
                 )}
               />
 
-              {/* Vehicle Model Selection */}
-              <Controller
-                name="vehicleModelId"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="vehicleModelId">Mẫu xe</FieldLabel>
-                    <Popover
-                      open={openVehicleModel}
-                      onOpenChange={setOpenVehicleModel}
-                    >
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          aria-expanded={openVehicleModel}
-                          aria-invalid={fieldState.invalid}
-                          className={cn(
-                            "w-full justify-between",
-                            !field.value && "text-muted-foreground",
-                          )}
-                        >
-                          {field.value
-                            ? vehicleModels.find(
-                                (vm) => vm.id.toString() === field.value,
-                              )?.modelName
-                            : vehicleModels.length === 0
-                              ? "Đang tải mẫu xe..."
-                              : "Chọn mẫu xe của bạn"}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-full p-0">
-                        <Command>
-                          <CommandInput placeholder="Tìm kiếm mẫu xe..." />
-                          <CommandList>
-                            <CommandEmpty>Không tìm thấy mẫu xe.</CommandEmpty>
-                            <CommandGroup>
-                              {vehicleModels.map((vm) => (
-                                <CommandItem
-                                  key={vm.id}
-                                  value={vm.modelName}
-                                  onSelect={() => {
-                                    field.onChange(vm.id.toString());
-                                    setOpenVehicleModel(false);
-                                  }}
-                                >
-                                  <Check
-                                    className={cn(
-                                      "mr-2 h-4 w-4",
-                                      field.value === vm.id.toString()
-                                        ? "opacity-100"
-                                        : "opacity-0",
-                                    )}
-                                  />
-                                  {vm.modelName}
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
-              />
-
               {/* Connector Type Selection */}
               <Controller
                 name="connectorTypeId"
@@ -342,7 +245,6 @@ export default function CreateReservationButton({
                           role="combobox"
                           aria-expanded={openConnectorType}
                           aria-invalid={fieldState.invalid}
-                          disabled={!selectedVehicleModelId}
                           className={cn(
                             "w-full justify-between",
                             !field.value && "text-muted-foreground",
@@ -352,9 +254,7 @@ export default function CreateReservationButton({
                             ? connectorTypes.find(
                                 (ct) => ct.id.toString() === field.value,
                               )?.name
-                            : selectedVehicleModelId
-                              ? "Chọn loại cổng"
-                              : "Vui lòng chọn mẫu xe trước"}
+                            : "Chọn loại cổng"}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </PopoverTrigger>
@@ -366,7 +266,7 @@ export default function CreateReservationButton({
                               Không tìm thấy loại cổng.
                             </CommandEmpty>
                             <CommandGroup>
-                              {availableConnectorTypes.map((ct) => (
+                              {connectorTypes.map((ct) => (
                                 <CommandItem
                                   key={ct.id}
                                   value={ct.name}

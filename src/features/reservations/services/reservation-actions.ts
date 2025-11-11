@@ -16,7 +16,6 @@ export async function createReservation(prev: unknown, formData: FormData) {
 
   const { success, data, error } = reservationFormSchema.safeParse({
     stationId: String(formData.get("stationId") ?? ""),
-    vehicleModelId: String(formData.get("vehicleModelId") ?? ""),
     connectorTypeId: String(formData.get("connectorTypeId") ?? ""),
     initialSoc: formData.get("initialSoc"),
   });
@@ -39,7 +38,6 @@ export async function createReservation(prev: unknown, formData: FormData) {
       },
       body: JSON.stringify({
         StationId: parseInt(data.stationId),
-        VehicleModelId: parseInt(data.vehicleModelId),
         ConnectorTypeId: parseInt(data.connectorTypeId),
         InitialSoc: data.initialSoc,
         ScheduledStart: scheduledStart.toISOString(),
