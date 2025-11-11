@@ -42,9 +42,7 @@ async function getOrderDetails(
   if (!orderCode) return null;
 
   try {
-    const res = await fetch(
-      `${API_PAYMENT_ORDER_URL}/${orderCode}`,
-    );
+    const res = await fetch(`${API_PAYMENT_ORDER_URL}/${orderCode}`);
 
     if (!res.ok) throw new Error("Fetch failed");
     const data = await res.json();
@@ -69,9 +67,6 @@ export default async function Page({
 
   const formatDateTime = (dateString?: string) => {
     return formatDateWithOptions(dateString || new Date().toISOString(), {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -106,7 +101,7 @@ export default async function Page({
         <div className="mb-6 rounded-lg bg-white p-8 shadow-md">
           <div className="mb-8 text-center">
             <h1 className="mb-2 text-2xl font-bold text-gray-900">
-              Trung tâm nạp thẻ chính thức
+              Trang giao dịch chính thức
             </h1>
           </div>
 
@@ -181,14 +176,6 @@ export default async function Page({
               </>
             ) : (
               <>
-                <div className="rounded-lg border border-blue-200 bg-blue-50 p-6">
-                  <p className="mb-2 text-sm text-blue-800">
-                    Giao dịch đang được xử lý
-                  </p>
-                  <p className="text-xs text-blue-600">
-                    Thông tin chi tiết sẽ được cập nhật trong giây lát
-                  </p>
-                </div>
                 <hr className="border-gray-200" />
                 <DetailRow
                   label="Thời gian giao dịch"
@@ -201,15 +188,9 @@ export default async function Page({
             <DetailRow label="Mã đơn hàng" value={transactionData.orderCode} />
             <hr className="border-gray-200" />
             <DetailRow label="Trạng thái" value={transactionData.status} />
-            <DetailRow
-              label="Mã phản hồi"
-              value={transactionData.code || "00"}
-            />
 
             {orderDetails &&
-              (orderDetails.customerName ||
-                orderDetails.customerEmail ||
-                orderDetails.customerPhone) && (
+              (orderDetails.customerName || orderDetails.customerEmail) && (
                 <>
                   <hr className="border-gray-200" />
                   {orderDetails.customerName && (
@@ -245,8 +226,8 @@ export default async function Page({
           {!isSuccess && (
             <div className="mt-6 rounded-lg border border-orange-200 bg-orange-50 p-4">
               <p className="text-center text-sm text-orange-800">
-                Nếu bạn đã thanh toán nhưng nhận được thông báo này, vui lòng
-                liên hệ với chúng tôi.
+                Nếu bạn đã thanh toán nhưng nhận được thông báo này
+                <br /> Vui lòng liên hệ với chúng tôi.
               </p>
             </div>
           )}
@@ -254,8 +235,7 @@ export default async function Page({
 
         {/* Footer */}
         <div className="space-y-2 text-center text-sm text-gray-600">
-          <p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi</p>
-          <p>Kiểm tra email để nhận xác nhận giao dịch</p>
+          <p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi !</p>
         </div>
       </div>
     </div>
