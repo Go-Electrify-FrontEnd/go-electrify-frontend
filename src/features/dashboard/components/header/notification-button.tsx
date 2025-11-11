@@ -155,52 +155,14 @@ export function NotificationButton({
   // Mark all as read and navigate
   const handleViewAll = useCallback(async () => {
     setIsPopoverOpen(false);
-    router.push("/dashboard/notifications");
-    // if (unreadCount === 0) {
-    //   router.push("/dashboard/notifications");
-    //   return;
-    // }
-
     setIsMarkingAllRead(true);
 
-    // Optimistic update cho mượt
-    // setNotifications((prev) => prev.map((n) => ({ ...n, IsUnread: false })));
+    // Chờ một nhịp ngắn để UX mượt mà (tuỳ chọn)
+    await new Promise((r) => setTimeout(r, 100));
 
-    // try {
-    //   const unreadIds = initialNotifications
-    //     .filter((n) => n.IsUnread)
-    //     .map((n) => n.Id);
-
-    //   if (unreadIds.length === 0) {
-    //     throw new Error("State bị lệch, không tìm thấy unread IDs.");
-    //   }
-
-    //   const readPromises = unreadIds.map((id) =>
-    //     fetch(`https://api.go-electrify.com/api/v1/notifications/${id}/read`, {
-    //       method: "POST",
-    //       headers: {
-    //         Authorization: `Bearer ${token}`,
-    //         "Content-Type": "application/json",
-    //       },
-    //     }),
-    //   );
-
-    //   const results = await Promise.allSettled(readPromises);
-
-    //   const failedRequests = results.filter((r) => r.status === "rejected");
-    //   if (failedRequests.length > 0) {
-    //     console.error("Một số request 'read' đã thất bại:", failedRequests);
-    //     throw new Error("Một số request con thất bại.");
-    //   }
-    // } catch (err) {
-    //   console.error("Lỗi khi gọi nhiều API 'read':", err);
-    //   setNotifications(initialNotifications);
-    // } finally {
-    //   setIsMarkingAllRead(false);
-    //   router.push("/dashboard/notifications");
-    //   router.refresh();
-    // }
-  }, [router, unreadCount, token, initialNotifications]);
+    router.push("/dashboard/notifications");
+    setIsMarkingAllRead(false);
+  }, [router]);
 
   const triggerButton = (
     <Button variant="ghost" size="icon" className="relative">
