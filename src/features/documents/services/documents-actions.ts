@@ -39,10 +39,16 @@ export async function uploadDocument(prev: unknown, formData: FormData) {
     }
 
     // Extract and validate form data
+    const targetActorsRaw = formData.get("targetActors");
+    const targetActors = targetActorsRaw
+      ? JSON.parse(targetActorsRaw as string)
+      : ["admin", "staff", "driver"];
+
     const rawData = {
       name: formData.get("name"),
       type: formData.get("type"),
       description: formData.get("description") || undefined,
+      targetActors,
     };
 
     const validation = uploadDocumentSchema.safeParse(rawData);
@@ -104,6 +110,7 @@ export async function uploadDocument(prev: unknown, formData: FormData) {
       {
         source: file.name,
         description: data.description,
+        targetActors: data.targetActors,
       },
     );
 
@@ -150,11 +157,17 @@ export async function updateDocument(prev: unknown, formData: FormData) {
     }
 
     // Extract and validate form data
+    const targetActorsRaw = formData.get("targetActors");
+    const targetActors = targetActorsRaw
+      ? JSON.parse(targetActorsRaw as string)
+      : ["admin", "staff", "driver"];
+
     const rawData = {
       id: formData.get("id"),
       name: formData.get("name"),
       type: formData.get("type"),
       description: formData.get("description") || undefined,
+      targetActors,
       reindex: formData.get("reindex") === "true",
     };
 
@@ -168,11 +181,12 @@ export async function updateDocument(prev: unknown, formData: FormData) {
 
     const data = validation.data;
 
-    // Update metadata in Pinecone
+    // Update metadata in Upstash Vector
     const updateResult = await updateDocumentMetadata(data.id, {
       documentName: data.name,
       documentType: data.type,
       description: data.description,
+      targetActors: data.targetActors,
     });
 
     if (!updateResult.success) {
@@ -245,14 +259,6 @@ export async function deleteDocument(prev: unknown, formData: FormData) {
 
     if (!document) {
       return { success: false, msg: "Document not found" };
-    }
-
-    // Verify confirmation text matches document name
-    if (data.confirmText !== document.name) {
-      return {
-        success: false,
-        msg: "Confirmation text does not match document name",
-      };
     }
 
     // Delete from Pinecone

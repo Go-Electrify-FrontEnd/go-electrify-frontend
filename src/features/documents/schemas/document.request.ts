@@ -30,6 +30,11 @@ export const uploadDocumentSchema = z.object({
     .default("")
     .transform((value) => (value === "" ? undefined : value)),
 
+  targetActors: z
+    .array(z.enum(["admin", "staff", "driver"]))
+    .min(1, "At least one target actor is required")
+    .default(["admin", "staff", "driver"]),
+
   // File will be validated separately in the component/action
   // FormData doesn't work well with z.instanceof(File)
 });
@@ -55,6 +60,11 @@ export const updateDocumentSchema = z.object({
     .max(500, "Description must be less than 500 characters")
     .default("")
     .transform((value) => (value === "" ? undefined : value)),
+
+  targetActors: z
+    .array(z.enum(["admin", "staff", "driver"]))
+    .min(1, "At least one target actor is required")
+    .default(["admin", "staff", "driver"]),
 
   reindex: z
     .boolean()

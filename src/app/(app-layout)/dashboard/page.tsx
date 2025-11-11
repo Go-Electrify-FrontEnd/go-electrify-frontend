@@ -6,7 +6,11 @@ import { permanentRedirect } from "next/navigation";
 export default async function DashboardPage() {
   const { user } = await getUser();
 
-  const userRole = user!.role.toLowerCase();
+  if (!user) {
+    permanentRedirect("/login");
+  }
+
+  const userRole = user.role.toLowerCase();
 
   if (userRole === "admin") {
     return <AdminDashboardPage />;

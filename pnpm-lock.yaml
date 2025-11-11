@@ -18,12 +18,15 @@ importers:
       '@ai-sdk/openai':
         specifier: ^2.0.64
         version: 2.0.64(zod@4.1.11)
+      '@ai-sdk/provider':
+        specifier: ^2.0.0
+        version: 2.0.0
       '@ai-sdk/react':
         specifier: ^2.0.89
         version: 2.0.89(react@19.2.0)(zod@4.1.11)
-      '@chonkiejs/core':
-        specifier: ^0.0.5
-        version: 0.0.5
+      '@ai-sdk/xai':
+        specifier: ^2.0.32
+        version: 2.0.32(zod@4.1.11)
       '@gsap/react':
         specifier: ^2.1.2
         version: 2.1.2(gsap@3.13.0)(react@19.2.0)
@@ -132,9 +135,6 @@ importers:
       '@turf/distance':
         specifier: ^7.2.0
         version: 7.2.0
-      '@upstash/vector':
-        specifier: ^1.2.2
-        version: 1.2.2
       '@vercel/blob':
         specifier: ^2.0.0
         version: 2.0.0
@@ -373,6 +373,12 @@ packages:
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
+  '@ai-sdk/openai-compatible@1.0.27':
+    resolution: {integrity: sha512-bpYruxVLhrTbVH6CCq48zMJNeHu6FmHtEedl9FXckEgcIEAi036idFhJlcRwC1jNCwlacbzb8dPD7OAH1EKJaQ==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.25.76 || ^4.1.8
+
   '@ai-sdk/openai@2.0.64':
     resolution: {integrity: sha512-+1mqxn42uB32DPZ6kurSyGAmL3MgCaDpkYU7zNDWI4NLy3Zg97RxTsI1jBCGIqkEVvRZKJlIMYtb89OvMnq3AQ==}
     engines: {node: '>=18'}
@@ -381,6 +387,12 @@ packages:
 
   '@ai-sdk/provider-utils@3.0.16':
     resolution: {integrity: sha512-lsWQY9aDXHitw7C1QRYIbVGmgwyT98TF3MfM8alNIXKpdJdi+W782Rzd9f1RyOfgRmZ08gJ2EYNDhWNK7RqpEA==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.25.76 || ^4.1.8
+
+  '@ai-sdk/provider-utils@3.0.17':
+    resolution: {integrity: sha512-TR3Gs4I3Tym4Ll+EPdzRdvo/rc8Js6c4nVhFLuvGLX/Y4V9ZcQMa/HTiYsHEgmYrf1zVi6Q145UEZUfleOwOjw==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -398,6 +410,12 @@ packages:
     peerDependenciesMeta:
       zod:
         optional: true
+
+  '@ai-sdk/xai@2.0.32':
+    resolution: {integrity: sha512-DsFVUslhyhq0RqXnLF4jUxqv+XeEh26ylmlzcF0fxYpiJTsHH6CdZscf6WhS1Tz15zwEAJPNcO5Pe2tEbWId4Q==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.25.76 || ^4.1.8
 
   '@alloc/quick-lru@5.2.0':
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
@@ -572,9 +590,6 @@ packages:
 
   '@chevrotain/utils@11.0.3':
     resolution: {integrity: sha512-YslZMgtJUyuMbZ+aKvfF3x1f5liK4mWNxghFRv7jqRR9C3R3fAOGTTKvxXDa2Y1s9zSbcpuO0cAxDYsc9SrXoQ==}
-
-  '@chonkiejs/core@0.0.5':
-    resolution: {integrity: sha512-Y6geZY+/9AyDy5i+h+aRY1g873d8fe/Xz6vndSo+FrP1hzDDBmAgJXhaZhZqZFQ7RraiNP8ImTiOddNmiiP/hw==}
 
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
@@ -2361,9 +2376,6 @@ packages:
     resolution: {integrity: sha512-lrW200hZdbfRtztbygyaq/6jP6AKE8qQN2KvPcJ+x7wiD038YtnYtZ82IMNJ69GJibV7bwL3y9FgK+5w/pYt6g==}
     cpu: [x64]
     os: [win32]
-
-  '@upstash/vector@1.2.2':
-    resolution: {integrity: sha512-ptQ9xnxtKqmpNK52PCcHCszlPOLxIBfjsv7ty8RoF95pkjctS9rSjTQ3Pl9bx5VFbpDj+0dMXw88WLt6swDkgQ==}
 
   '@use-gesture/core@10.3.1':
     resolution: {integrity: sha512-WcINiDt8WjqBdUXye25anHiNxPc0VOrlT8F6LLkU6cycrOGUDyY/yyFmsg3k8i5OLvv25llc0QC45GhR/C8llw==}
@@ -6129,6 +6141,12 @@ snapshots:
       '@vercel/oidc': 3.0.3
       zod: 4.1.11
 
+  '@ai-sdk/openai-compatible@1.0.27(zod@4.1.11)':
+    dependencies:
+      '@ai-sdk/provider': 2.0.0
+      '@ai-sdk/provider-utils': 3.0.17(zod@4.1.11)
+      zod: 4.1.11
+
   '@ai-sdk/openai@2.0.64(zod@4.1.11)':
     dependencies:
       '@ai-sdk/provider': 2.0.0
@@ -6136,6 +6154,13 @@ snapshots:
       zod: 4.1.11
 
   '@ai-sdk/provider-utils@3.0.16(zod@4.1.11)':
+    dependencies:
+      '@ai-sdk/provider': 2.0.0
+      '@standard-schema/spec': 1.0.0
+      eventsource-parser: 3.0.6
+      zod: 4.1.11
+
+  '@ai-sdk/provider-utils@3.0.17(zod@4.1.11)':
     dependencies:
       '@ai-sdk/provider': 2.0.0
       '@standard-schema/spec': 1.0.0
@@ -6154,6 +6179,13 @@ snapshots:
       swr: 2.3.6(react@19.2.0)
       throttleit: 2.1.0
     optionalDependencies:
+      zod: 4.1.11
+
+  '@ai-sdk/xai@2.0.32(zod@4.1.11)':
+    dependencies:
+      '@ai-sdk/openai-compatible': 1.0.27(zod@4.1.11)
+      '@ai-sdk/provider': 2.0.0
+      '@ai-sdk/provider-utils': 3.0.17(zod@4.1.11)
       zod: 4.1.11
 
   '@alloc/quick-lru@5.2.0': {}
@@ -6396,8 +6428,6 @@ snapshots:
   '@chevrotain/types@11.0.3': {}
 
   '@chevrotain/utils@11.0.3': {}
-
-  '@chonkiejs/core@0.0.5': {}
 
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
@@ -8197,8 +8227,6 @@ snapshots:
 
   '@unrs/resolver-binding-win32-x64-msvc@1.11.1':
     optional: true
-
-  '@upstash/vector@1.2.2': {}
 
   '@use-gesture/core@10.3.1': {}
 

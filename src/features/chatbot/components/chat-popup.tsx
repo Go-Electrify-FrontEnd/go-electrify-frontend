@@ -3,7 +3,7 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { AnimatePresence, motion } from "framer-motion";
-import { Bot, Send, X } from "lucide-react";
+import { Bot, Send, X, Plus } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -76,6 +76,15 @@ export function ChatPopup() {
     }
   };
 
+  const handleNewChat = () => {
+    // Create new chat ID
+    const newId = createChat();
+    sessionStorage.setItem("current_chat_id", newId);
+    setChatId(newId);
+    // Clear current messages
+    setMessages([]);
+  };
+
   return (
     <>
       {/* Floating trigger button */}
@@ -105,24 +114,24 @@ export function ChatPopup() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-x-4 bottom-4 z-50 max-h-[90vh] sm:inset-x-auto sm:right-6 sm:bottom-6 sm:w-[420px] md:w-[480px]"
+            className="fixed inset-x-4 bottom-4 z-50 max-h-[90vh] sm:inset-x-auto sm:right-6 sm:bottom-6 sm:w-[380px] md:w-[420px]"
           >
             <div className="bg-background flex flex-col overflow-hidden rounded-xl border shadow-2xl">
               <div className="bg-muted/50 flex items-center justify-between border-b px-4 py-3 sm:px-5 sm:py-4">
                 <div className="flex items-center gap-3">
                   <div className="relative">
                     <Avatar className="size-9 sm:size-10">
-                      <AvatarFallback className="bg-primary text-primary-foreground text-xs font-bold">
+                      <AvatarFallback className="bg-primary text-primary-foreground text-sm font-bold">
                         <Bot className="size-5 sm:size-6" />
                       </AvatarFallback>
                     </Avatar>
                     <div className="border-background absolute -right-0.5 -bottom-0.5 size-3 rounded-full border-2 bg-green-500"></div>
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-foreground text-xs leading-tight font-bold">
+                    <span className="text-foreground text-sm leading-tight font-bold">
                       Trợ lý GoElectrify
                     </span>
-                    <span className="text-muted-foreground text-[10px] leading-tight font-medium">
+                    <span className="text-muted-foreground text-sm leading-tight font-medium">
                       {status === "streaming"
                         ? "Đang trả lời..."
                         : "Sẵn sàng hỗ trợ"}
@@ -130,6 +139,15 @@ export function ChatPopup() {
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleNewChat}
+                    className="hover:bg-muted size-7 sm:size-8"
+                    title="Cuộc trò chuyện mới"
+                  >
+                    <Plus className="size-4 sm:size-5" />
+                  </Button>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -141,7 +159,7 @@ export function ChatPopup() {
                 </div>
               </div>
 
-              <ScrollArea className="bg-background h-[450px] sm:h-[520px] md:h-[580px]">
+              <ScrollArea className="bg-background h-[380px] sm:h-[440px] md:h-[480px]">
                 <div className="flex flex-col gap-3 p-4 sm:gap-4 sm:p-5">
                   {messages.length === 0 && (
                     <div className="flex flex-col items-center gap-3 py-12 text-center sm:gap-4 sm:py-16">
@@ -151,10 +169,10 @@ export function ChatPopup() {
                         </AvatarFallback>
                       </Avatar>
                       <div className="space-y-1 sm:space-y-2">
-                        <p className="text-foreground text-xs font-semibold">
+                        <p className="text-foreground text-sm font-semibold">
                           Xin chào! Tôi là trợ lý Go-Electrify
                         </p>
-                        <p className="text-muted-foreground text-[10px]">
+                        <p className="text-muted-foreground text-sm">
                           Hỏi tôi bất cứ điều gì về trạm sạc, giá cả, đặt chỗ và
                           quản lý tài khoản.
                         </p>
@@ -174,14 +192,14 @@ export function ChatPopup() {
                     >
                       {message.role === "assistant" && (
                         <Avatar className="size-7 shrink-0 sm:size-8">
-                          <AvatarFallback className="bg-primary text-primary-foreground text-[10px]">
+                          <AvatarFallback className="bg-primary text-primary-foreground text-sm">
                             <Bot className="size-3.5 sm:size-4" />
                           </AvatarFallback>
                         </Avatar>
                       )}
                       <div
                         className={cn(
-                          "max-w-[75%] rounded-2xl px-3 py-2 text-xs sm:max-w-[80%] sm:px-4 sm:py-2.5",
+                          "max-w-[75%] rounded-2xl px-3 py-2 text-sm sm:max-w-[80%] sm:px-4 sm:py-2.5",
                           message.role === "user"
                             ? "bg-primary text-primary-foreground"
                             : "bg-muted text-foreground",
@@ -225,7 +243,7 @@ export function ChatPopup() {
                     onChange={(e) => setInput(e.currentTarget.value)}
                     placeholder="Viết tin nhắn..."
                     disabled={status === "streaming"}
-                    className="max-h-[100px] min-h-[40px] resize-none text-xs sm:max-h-[120px] sm:min-h-[44px]"
+                    className="max-h-[100px] min-h-[40px] resize-none text-sm sm:max-h-[120px] sm:min-h-[44px]"
                     rows={1}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" && !e.shiftKey) {

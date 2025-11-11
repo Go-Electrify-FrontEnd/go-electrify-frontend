@@ -12,6 +12,7 @@ type VectorMetadata = {
   uploadDate: number;
   description?: string;
   source: string;
+  targetActors?: string;
 };
 
 export function getUpstashClient(): Index<VectorMetadata> {

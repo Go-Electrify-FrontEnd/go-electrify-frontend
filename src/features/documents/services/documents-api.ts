@@ -12,8 +12,6 @@ import type { Document } from "../schemas/document.types";
 export const getDocuments = cache(async (): Promise<Document[]> => {
   try {
     const documents = await listAllDocuments();
-
-    // Validate with Zod schema
     const parsed = documentsArraySchema.safeParse(documents);
 
     if (!parsed.success) {
