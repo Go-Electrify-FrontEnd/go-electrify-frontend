@@ -53,7 +53,7 @@ export const StationBookingSchema = z.object({
   estimatedCost: z.number().nullable(),
   stationId: z.number(),
   connectorTypeId: z.number(),
-  vehicleModelId: z.number(),
+  vehicleModelId: z.number().nullable(),
 });
 
 export const StationBookingApiSchema = z
@@ -65,8 +65,9 @@ export const StationBookingApiSchema = z
     InitialSoc: z.number().nullable(),
     StationId: z.number(),
     ConnectorTypeId: z.number(),
-    VehicleModelId: z.number(),
+    VehicleModelId: z.number().nullable(),
     EstimatedCost: z.number().nullable(),
+    ChargerId: z.number().nullable(),
   })
   .transform((raw) => ({
     id: raw.Id,

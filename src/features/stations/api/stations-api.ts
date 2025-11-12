@@ -157,10 +157,11 @@ export async function getBookingsByStationId(
     }
 
     const payload = await response.json();
-    const { success, data } = StationBookingListApiSchema.safeParse(payload);
+    const { success, data, error } =
+      StationBookingListApiSchema.safeParse(payload);
 
     if (!success) {
-      console.error("Failed to parse bookings data");
+      console.error("Failed to parse bookings data", error);
       return [];
     }
 

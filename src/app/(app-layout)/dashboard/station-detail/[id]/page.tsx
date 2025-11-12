@@ -206,14 +206,6 @@ export default async function StationPage({
           </Card>
         </div>
 
-        {/* Utilization Chart
-        <StationUtilizationChart
-          stationName={station.name}
-          currentUtilization={utilizationRate}
-          activeSessions={activeSessions}
-        /> */}
-
-        {/* Chargers Table */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
