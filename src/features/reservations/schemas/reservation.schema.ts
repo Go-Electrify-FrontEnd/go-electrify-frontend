@@ -11,6 +11,7 @@ export const ReservationSchema = z
     ConnectorTypeId: z.coerce.number<number>(),
     VehicleModelId: z.coerce.number<number>(),
     EstimatedCost: z.coerce.number<number>().nullable(),
+    ChargerId: z.coerce.number<number>().nullable(),
   })
   .transform((raw) => ({
     id: raw.Id,
@@ -22,6 +23,7 @@ export const ReservationSchema = z
     connectorTypeId: raw.ConnectorTypeId,
     vehicleModelId: raw.VehicleModelId,
     estimatedCost: raw.EstimatedCost,
+    chargerId: raw.ChargerId,
   }));
 
 export type Reservation = z.infer<typeof ReservationSchema>;

@@ -26,6 +26,8 @@ import {
 } from "@/components/ui/card";
 import { Plus } from "lucide-react";
 import { getBookingFee } from "@/features/booking-fee/services/booking-fee-api";
+import { getStationChargers } from "@/features/stations/api/stations-api";
+import { Charger } from "@/features/chargers/schemas/charger.schema";
 
 interface ReservationPageProps {
   searchParams: Promise<{ stationId?: string }>;
@@ -36,7 +38,17 @@ export default async function ReservationPage({
 }: ReservationPageProps) {
   const { stationId } = await searchParams;
   const { token } = await getUser();
+  const chargers: Charger[] = [];
   const stations = await getStations();
+
+  await Promise.all(
+    stations.map(async (station) => {
+      chargers.push(
+        ...(await getStationChargers(station.id!.toString(), token!)),
+      );
+    }),
+  );
+
   const vehicleModels = await getVehicleModels(token!);
   const connectorTypes = await getConnectorTypes();
   const allReservations = await getReservationsDetails(
@@ -53,6 +65,13 @@ export default async function ReservationPage({
   const currentReservation =
     upcomingReservations.length > 0 ? upcomingReservations[0] : null;
 
+  let chargerCode = "Unknown";
+  if (currentReservation) {
+    const charger = chargers.find((c) => c.id === currentReservation.chargerId);
+    if (charger) {
+      chargerCode = charger.code;
+    }
+  }
   return (
     <div className="flex flex-col gap-4 md:gap-6">
       <SectionHeader
@@ -78,7 +97,10 @@ export default async function ReservationPage({
             </CardHeader>
             <CardContent>
               {currentReservation ? (
-                <ReservationSimple reservation={currentReservation} />
+                <ReservationSimple
+                  reservation={currentReservation}
+                  chargerCode={chargerCode}
+                />
               ) : (
                 <Empty>
                   <EmptyHeader>
