@@ -2,7 +2,6 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
-import { formatCurrencyVND } from "@/lib/formatters";
 import { StationBooking } from "../schemas/station.schema";
 
 export type Booking = {
@@ -16,9 +15,6 @@ export type Booking = {
   connectorTypeId?: number;
   vehicleModelId?: number;
 };
-
-const formatCurrency = (amount?: number) =>
-  amount == null ? "" : formatCurrencyVND(amount);
 
 const formatDate = (iso?: string | null) => {
   if (!iso) return "-";
