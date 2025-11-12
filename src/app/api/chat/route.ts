@@ -36,14 +36,12 @@ Follow these directives in order:
 
 export async function POST(req: Request) {
   const { user } = await getUser();
+
   if (!user) {
     forbidden();
   }
 
-  if (
-    user.email !== "phungthequan030@gmail.com" &&
-    user.email !== "dnhuy207@gmail.com"
-  ) {
+  if (user.role.toLowerCase() !== "admin") {
     forbidden();
   }
 
@@ -84,9 +82,7 @@ export async function POST(req: Request) {
           question: z.string().describe("The question to search for"),
         }),
         execute: async ({ question }) => {
-          const hits = await findRelevantContent(question, 2);
-
-          // Filter hits based on user role and targetActors
+          const hits = await findRelevantContent(question, 3);
           const userRole = user.role.toLowerCase();
 
           const filteredHits = hits.filter((hit) => {
@@ -96,10 +92,9 @@ export async function POST(req: Request) {
             }
 
             const targetActors = String(metadata.targetActors);
-            return targetActors.includes(userRole) && (hit.score ?? 0) >= 0.65;
+            return targetActors.includes(userRole);
           });
 
-          // Map to compact format to reduce token usage
           const compactResults = filteredHits.map((hit) => ({
             content: String(hit.metadata?.content || ""),
             documentName: String(hit.metadata?.documentName || ""),
@@ -110,7 +105,6 @@ export async function POST(req: Request) {
           console.log(
             `[RAG] Returning ${compactResults.length} results, avg score: ${compactResults.length > 0 ? (compactResults.reduce((sum, r) => sum + r.score, 0) / compactResults.length).toFixed(3) : "N/A"}`,
           );
-
           return compactResults;
         },
       }),

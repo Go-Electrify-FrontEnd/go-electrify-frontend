@@ -1,7 +1,7 @@
 import { Pinecone } from "@pinecone-database/pinecone";
 
 const PINECONE_API_KEY = process.env.PINECONE_API_KEY;
-const PINECONE_INDEX_NAME = process.env.PINECONE_INDEX_NAME || "go-electrify-docs";
+const PINECONE_INDEX_NAME = process.env.PINECONE_INDEX_NAME;
 
 type VectorMetadata = {
   content: string;
@@ -39,9 +39,7 @@ export function getIndex() {
   const indexName = PINECONE_INDEX_NAME?.trim();
 
   if (!indexName) {
-    throw new Error(
-      "PINECONE_INDEX_NAME environment variable must be set.",
-    );
+    throw new Error("PINECONE_INDEX_NAME environment variable must be set.");
   }
 
   return pc.index(indexName);
