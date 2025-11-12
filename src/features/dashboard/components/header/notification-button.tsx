@@ -204,7 +204,7 @@ export function NotificationButton({
 
   const triggerButton = (
     <Button variant="ghost" size="icon" className="relative">
-      <Bell className="h-5 w-5" />
+      <Bell className="size-4" />
       {unreadCount > 0 && (
         <Badge
           variant="destructive"

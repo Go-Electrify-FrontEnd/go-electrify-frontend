@@ -1,8 +1,15 @@
-import { convertToModelMessages, stepCountIs, streamText, tool } from "ai";
+import {
+  convertToModelMessages,
+  createIdGenerator,
+  stepCountIs,
+  streamText,
+  tool,
+} from "ai";
 import { gateway } from "@ai-sdk/gateway";
 import { z } from "zod";
 import { findRelevantContent } from "@/features/rag/services/vector-operations";
 import { getAuthenticatedUserWithRole } from "@/lib/auth/api-auth-helper";
+import { saveUserChat } from "@/features/chatbot/services/chat-persistence";
 
 export const maxDuration = 30;
 
@@ -55,6 +62,10 @@ export async function POST(req: Request) {
   }
 
   const { messages, id } = await req.json();
+  console.log(
+    `[Chat API] Received request - Chat ID: ${id}, Message count: ${messages.length}`,
+  );
+
   const result = streamText({
     model: gateway("xai/grok-4-fast-reasoning"),
     messages: convertToModelMessages(messages),
@@ -113,8 +124,21 @@ export async function POST(req: Request) {
   });
 
   return result.toUIMessageStreamResponse({
+    originalMessages: messages,
     sendReasoning: true,
-    // Return chat ID in headers for client-side persistence
-    headers: id ? { "x-chat-id": id } : undefined,
+    generateMessageId: createIdGenerator({
+      prefix: "msg",
+      size: 16,
+    }),
+    onFinish: async ({ messages }) => {
+      if (id) {
+        console.log(
+          `[Chat API] Saving ${messages.length} messages for Chat ID: ${id}`,
+        );
+        await saveUserChat(user.uid.toString(), id, messages);
+      } else {
+        console.warn("[Chat API] No chat ID provided, messages not persisted");
+      }
+    },
   });
 }

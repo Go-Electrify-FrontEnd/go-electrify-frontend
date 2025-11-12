@@ -7,16 +7,6 @@ import { handleAuthRefresh } from "./lib/auth/auth-middleware";
  * Handles authentication token refresh for all routes
  */
 export async function proxy(request: NextRequest) {
-  // Skip auth refresh for public routes
-  const path = request.nextUrl.pathname;
-
-  // Public routes that don't need auth
-  const publicRoutes = ["/login", "/"];
-  if (publicRoutes.some((route) => path.startsWith(route))) {
-    return NextResponse.next({ request });
-  }
-
-  // Handle auth refresh for all other routes (including /api/chat)
   return await handleAuthRefresh(request);
 }
 

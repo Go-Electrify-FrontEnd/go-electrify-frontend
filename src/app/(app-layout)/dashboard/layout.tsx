@@ -13,6 +13,10 @@ import { NotificationButton } from "@/features/dashboard/components/header/notif
 import { Notification } from "@/features/dashboard/types/notification";
 import { API_BASE_URL } from "@/lib/api-config";
 import { ChatPopup } from "@/features/chatbot/components/chat-popup";
+import {
+  loadNearestChat,
+  loadUserChat,
+} from "@/features/chatbot/services/chat-persistence";
 
 export const dynamic = "force-dynamic";
 
@@ -42,9 +46,17 @@ export default async function DashboardLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   const { user, token } = await getUser();
 
-  if (!user || !token) {
-    redirect("/login");
+  if (!user) {
+    forbidden();
   }
+
+  const { chatId, messages: initialMessages } = await loadNearestChat(
+    user.uid.toString(),
+  );
+  console.log(
+    `[DashboardLayout] Chat ID: ${chatId}, Loaded ${initialMessages.length} initial messages for user ${user.uid}`,
+  );
+
   const notifications = await getNotifications(token);
   return (
     <SidebarProvider>
@@ -58,13 +70,13 @@ export default async function DashboardLayout({
               className="mr-2 data-[orientation=vertical]:h-4"
             />
             <HeaderBreadcrumb />
-            <div className="ml-auto">
+            <div className="ml-auto flex items-center gap-2">
+              <ChatPopup chatId={chatId} initialMessages={initialMessages} />
               <NotificationButton notifications={notifications} />
             </div>
           </header>
           <div className="flex flex-1 flex-col gap-4">{children}</div>
         </SidebarInset>
-        <ChatPopup />
       </UserProvider>
     </SidebarProvider>
   );

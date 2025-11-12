@@ -120,9 +120,7 @@ export async function getUserFromToken(accessToken: string) {
       };
       return { user };
     }
-  } catch {
-    // jwt verify error
-  }
+  } catch {}
 
   return { user: null };
 }
@@ -150,7 +148,7 @@ export async function refreshAccessToken() {
           name: "refreshToken",
           value: tokens.refreshToken,
           httpOnly: process.env.NODE_ENV === "production",
-          maxAge: 60 * 60 * 24 * 30,
+          expires: tokens.refreshExpires,
         });
       },
     );

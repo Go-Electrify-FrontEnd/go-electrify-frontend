@@ -1,271 +1,224 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
-import { AnimatePresence, motion } from "framer-motion";
-import { Bot, Send, X, Plus } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { DefaultChatTransport, UIMessage, generateId } from "ai";
+import { Bot, MessageSquare, Plus, X } from "lucide-react";
+import type { FormEvent } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { cn } from "@/lib/utils";
-import { createChat, loadChat, saveChat } from "@/lib/chat-store";
-import { MemoizedMarkdown } from "@/components/memoized-markdown";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Conversation,
+  ConversationContent,
+  ConversationEmptyState,
+  ConversationScrollButton,
+} from "@/components/ai-elements/conversation";
+import {
+  Message,
+  MessageContent,
+  MessageResponse,
+} from "@/components/ai-elements/message";
+import {
+  PromptInput as Input,
+  PromptInputTextarea,
+  PromptInputSubmit,
+} from "@/components/ai-elements/prompt-input";
 
-export function ChatPopup() {
+interface ChatPopupProps {
+  chatId: string;
+  initialMessages?: UIMessage[];
+}
+
+export function ChatPopup({ chatId, initialMessages }: ChatPopupProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
-  const [chatId, setChatId] = useState<string | null>(null);
-
-  // Initialize chat ID and load previous messages
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      // Try to get existing chat ID from session storage or create new one
-      let id = sessionStorage.getItem("current_chat_id");
-      if (!id) {
-        id = createChat();
-        sessionStorage.setItem("current_chat_id", id);
-      }
-      setChatId(id);
-    }
-  }, []);
+  const [isCreatingNewChat, setIsCreatingNewChat] = useState(false);
+  const [currentChatId, setCurrentChatId] = useState(chatId);
 
   const { messages, sendMessage, status, setMessages } = useChat({
-    id: chatId || undefined,
+    messages: currentChatId === chatId ? initialMessages : [],
+    id: currentChatId,
     transport: new DefaultChatTransport({
       api: "/api/chat",
-      headers: async () => {
-        return {
-          "x-chat-id": chatId || "",
-        };
-      },
     }),
-    onFinish: ({ messages: updatedMessages }) => {
-      // Save messages to local storage after each response
-      if (chatId) {
-        saveChat(chatId, updatedMessages);
-      }
-    },
   });
 
-  // Load initial messages from local storage
-  useEffect(() => {
-    if (chatId && messages.length === 0) {
-      const savedMessages = loadChat(chatId);
-      if (savedMessages.length > 0) {
-        setMessages(savedMessages);
-      }
+  const submitPrompt = () => {
+    if (!input.trim() || status === "streaming") {
+      return;
     }
-  }, [chatId, messages.length, setMessages]);
 
-  // Save messages to local storage whenever they change
-  const prevMessagesRef = useRef(messages);
-  useEffect(() => {
-    if (chatId && messages.length > 0 && messages !== prevMessagesRef.current) {
-      saveChat(chatId, messages);
-      prevMessagesRef.current = messages;
-    }
-  }, [messages, chatId]);
+    sendMessage({ text: input });
+    setInput("");
+  };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (input.trim()) {
-      sendMessage({ text: input });
-      setInput("");
-    }
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    submitPrompt();
   };
 
   const handleNewChat = () => {
-    // Create new chat ID
-    const newId = createChat();
-    sessionStorage.setItem("current_chat_id", newId);
-    setChatId(newId);
-    // Clear current messages
-    setMessages([]);
+    setIsCreatingNewChat(true);
+    try {
+      // Generate a new chat ID
+      const newChatId = generateId();
+
+      // Update the chat ID to create a new session
+      setCurrentChatId(newChatId);
+
+      // Clear current messages to start fresh
+      setMessages([]);
+      setInput("");
+
+      console.log(`[ChatPopup] Started new chat session with ID: ${newChatId}`);
+    } catch (error) {
+      console.error("[ChatPopup] Failed to create new chat:", error);
+    } finally {
+      setIsCreatingNewChat(false);
+    }
   };
 
   return (
-    <>
-      {/* Floating trigger button */}
-      <AnimatePresence>
-        {!isOpen && (
-          <motion.div
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-            className="fixed right-4 bottom-4 z-50 sm:right-6 sm:bottom-6"
-          >
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="Mở trợ lý GoElectrify"
+          className="relative"
+        >
+          <Bot className="size-4" />
+        </Button>
+      </DialogTrigger>
+
+      <DialogContent
+        showCloseButton={false}
+        className="bg-background no-scrollbar flex h-[520px] w-full max-w-[calc(100%-2rem)] flex-col p-0 sm:max-w-[420px]"
+      >
+        <DialogTitle className="sr-only">Trợ lý GoElectrify</DialogTitle>
+        <div className="bg-muted/50 flex items-center justify-between border-b px-4 py-3 sm:px-5 sm:py-4">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <Avatar className="size-9 sm:size-10">
+                <AvatarFallback className="bg-primary text-primary-foreground text-sm font-bold">
+                  <Bot className="size-5 sm:size-6" />
+                </AvatarFallback>
+              </Avatar>
+              <div className="border-background absolute -right-0.5 -bottom-0.5 size-3 rounded-full border-2 bg-green-500" />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-foreground text-sm leading-tight font-bold">
+                Trợ lý GoElectrify
+              </span>
+              <span className="text-muted-foreground text-sm leading-tight font-medium">
+                {status === "streaming" ? "Đang trả lời..." : "Sẵn sàng hỗ trợ"}
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-1">
             <Button
-              onClick={() => setIsOpen(true)}
-              className="size-14 rounded-full shadow-lg hover:shadow-xl sm:size-16"
-              aria-label="Nhắn tin"
+              variant="ghost"
+              size="icon"
+              onClick={handleNewChat}
+              disabled={isCreatingNewChat || status === "streaming"}
+              className="hover:bg-muted size-8"
+              title="Cuộc trò chuyện mới"
             >
-              <Bot className="size-6 sm:size-7" />
+              <Plus className="size-4 sm:size-5" />
             </Button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsOpen(false)}
+              className="hover:bg-muted size-8"
+            >
+              <X className="size-4 sm:size-5" />
+            </Button>
+          </div>
+        </div>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-x-4 bottom-4 z-50 max-h-[90vh] sm:inset-x-auto sm:right-6 sm:bottom-6 sm:w-[380px] md:w-[420px]"
-          >
-            <div className="bg-background flex flex-col overflow-hidden rounded-xl border shadow-2xl">
-              <div className="bg-muted/50 flex items-center justify-between border-b px-4 py-3 sm:px-5 sm:py-4">
-                <div className="flex items-center gap-3">
-                  <div className="relative">
-                    <Avatar className="size-9 sm:size-10">
-                      <AvatarFallback className="bg-primary text-primary-foreground text-sm font-bold">
-                        <Bot className="size-5 sm:size-6" />
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="border-background absolute -right-0.5 -bottom-0.5 size-3 rounded-full border-2 bg-green-500"></div>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-foreground text-sm leading-tight font-bold">
-                      Trợ lý GoElectrify
-                    </span>
-                    <span className="text-muted-foreground text-sm leading-tight font-medium">
-                      {status === "streaming"
-                        ? "Đang trả lời..."
-                        : "Sẵn sàng hỗ trợ"}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleNewChat}
-                    className="hover:bg-muted size-7 sm:size-8"
-                    title="Cuộc trò chuyện mới"
-                  >
-                    <Plus className="size-4 sm:size-5" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setIsOpen(false)}
-                    className="hover:bg-muted size-7 sm:size-8"
-                  >
-                    <X className="size-4 sm:size-5" />
-                  </Button>
-                </div>
-              </div>
+        <div className="flex flex-1 flex-col overflow-hidden">
+          <Conversation>
+            <ConversationContent>
+              {messages.length === 0 ? (
+                <ConversationEmptyState
+                  icon={
+                    <MessageSquare className="text-muted-foreground size-10 sm:size-12" />
+                  }
+                  title="Xin chào! Tôi là trợ lý Go-Electrify"
+                  description="Hỏi tôi bất cứ điều gì về trạm sạc, giá cả, đặt chỗ và quản lý tài khoản."
+                />
+              ) : (
+                messages.map((message, msgIndex) => {
+                  const isUser = message.role === "user";
+                  const messageKey = message.id || `msg-${msgIndex}`;
 
-              <ScrollArea className="bg-background h-[380px] sm:h-[440px] md:h-[480px]">
-                <div className="flex flex-col gap-3 p-4 sm:gap-4 sm:p-5">
-                  {messages.length === 0 && (
-                    <div className="flex flex-col items-center gap-3 py-12 text-center sm:gap-4 sm:py-16">
-                      <Avatar className="size-16 sm:size-20">
-                        <AvatarFallback className="bg-primary text-primary-foreground">
-                          <Bot className="size-8 sm:size-10" />
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="space-y-1 sm:space-y-2">
-                        <p className="text-foreground text-sm font-semibold">
-                          Xin chào! Tôi là trợ lý Go-Electrify
-                        </p>
-                        <p className="text-muted-foreground text-sm">
-                          Hỏi tôi bất cứ điều gì về trạm sạc, giá cả, đặt chỗ và
-                          quản lý tài khoản.
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {messages.map((message) => (
-                    <div
-                      key={message.id}
-                      className={cn(
-                        "flex gap-2",
-                        message.role === "user"
-                          ? "flex-row-reverse"
-                          : "flex-row",
-                      )}
-                    >
-                      {message.role === "assistant" && (
+                  return (
+                    <Message from={message.role} key={messageKey}>
+                      {!isUser && (
                         <Avatar className="size-7 shrink-0 sm:size-8">
                           <AvatarFallback className="bg-primary text-primary-foreground text-sm">
                             <Bot className="size-3.5 sm:size-4" />
                           </AvatarFallback>
                         </Avatar>
                       )}
-                      <div
-                        className={cn(
-                          "max-w-[75%] rounded-2xl px-3 py-2 text-sm sm:max-w-[80%] sm:px-4 sm:py-2.5",
-                          message.role === "user"
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-muted text-foreground",
-                        )}
-                      >
-                        {message.parts.map((part, i) => {
-                          if (part.type === "text") {
-                            // Use memoized markdown for assistant messages
-                            if (message.role === "assistant") {
-                              return (
-                                <MemoizedMarkdown
-                                  key={`${message.id}-${i}`}
-                                  id={`${message.id}-${i}`}
-                                  content={part.text}
-                                />
-                              );
-                            }
-                            // Plain text for user messages
-                            return (
-                              <p
-                                key={`${message.id}-${i}`}
-                                className="leading-relaxed break-words whitespace-pre-wrap"
-                              >
-                                {part.text}
-                              </p>
-                            );
+                      <MessageContent className="group-[.is-user]:bg-primary group-[.is-user]:text-primary-foreground group-[.is-assistant]:bg-muted group-[.is-assistant]:text-foreground rounded-2xl px-3 py-2 text-sm sm:px-4 sm:py-3">
+                        {message.parts.map((part, index) => {
+                          if (part.type !== "text") {
+                            return null;
                           }
-                          return null;
-                        })}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
 
-              {/* Footer with input */}
-              <div className="bg-background border-t p-3 sm:p-4">
-                <form onSubmit={handleSubmit} className="flex gap-2 sm:gap-3">
-                  <Textarea
-                    value={input}
-                    onChange={(e) => setInput(e.currentTarget.value)}
-                    placeholder="Viết tin nhắn..."
-                    disabled={status === "streaming"}
-                    className="max-h-[100px] min-h-[40px] resize-none text-sm sm:max-h-[120px] sm:min-h-[44px]"
-                    rows={1}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && !e.shiftKey) {
-                        e.preventDefault();
-                        handleSubmit(e);
-                      }
-                    }}
-                  />
-                  <Button
-                    type="submit"
-                    size="icon"
-                    disabled={!input.trim() || status === "streaming"}
-                    className="size-10 shrink-0 rounded-full sm:size-11"
-                  >
-                    <Send className="size-4 sm:size-5" />
-                  </Button>
-                </form>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+                          return (
+                            <MessageResponse
+                              key={`${messageKey}-part-${index}`}
+                            >
+                              {part.text}
+                            </MessageResponse>
+                          );
+                        })}
+                      </MessageContent>
+                    </Message>
+                  );
+                })
+              )}
+            </ConversationContent>
+            <ConversationScrollButton />
+          </Conversation>
+
+          <div className="border-t p-3 sm:p-4">
+            <Input
+              onSubmit={handleSubmit}
+              className="flex w-full items-end gap-2 sm:gap-3"
+            >
+              <PromptInputTextarea
+                value={input}
+                onChange={(event) => setInput(event.currentTarget.value)}
+                placeholder="Viết tin nhắn..."
+                disabled={status === "streaming"}
+                rows={1}
+                className="max-h-[120px] min-h-[44px] resize-none text-sm"
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" && !event.shiftKey) {
+                    event.preventDefault();
+                    submitPrompt();
+                  }
+                }}
+              />
+              <PromptInputSubmit
+                status={status === "streaming" ? "streaming" : "ready"}
+                disabled={!input.trim() || status === "streaming"}
+                className="size-10 rounded-full sm:size-11"
+              />
+            </Input>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

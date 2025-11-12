@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, XCircle, AlertCircle } from "lucide-react";
 import type { ChargingHistoryItem } from "../types/session.types";
-import { formatCurrencyVND } from "@/lib/formatters";
+import { formatCurrencyVND, formatDateTime } from "@/lib/formatters";
 
 function formatDuration(seconds: number): string {
   const hours = Math.floor(seconds / 3600);
@@ -14,17 +14,6 @@ function formatDuration(seconds: number): string {
     return `${hours}g ${minutes}p`;
   }
   return `${minutes}p`;
-}
-
-function formatDateTime(dateString: string): string {
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat("vi-VN", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(date);
 }
 
 function StatusBadge({ status }: { status: ChargingHistoryItem["status"] }) {
@@ -101,14 +90,6 @@ export const columns: ColumnDef<ChargingHistoryItem>[] = [
     cell: ({ row }) => {
       const energy = row.getValue("energyKwh") as number;
       return <div>{energy.toFixed(2)} kWh</div>;
-    },
-  },
-  {
-    accessorKey: "cost",
-    header: "Chi phí",
-    cell: ({ row }) => {
-      const cost = row.getValue("cost") as number | null;
-      return <div className="font-medium">{formatCurrencyVND(cost)}</div>;
     },
   },
 ];
