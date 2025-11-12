@@ -1,22 +1,38 @@
-import { convertToModelMessages, stepCountIs, streamText, tool } from "ai";
+import {
+  convertToModelMessages,
+  createIdGenerator,
+  stepCountIs,
+  streamText,
+  tool,
+} from "ai";
 import { gateway } from "@ai-sdk/gateway";
 import { z } from "zod";
 import { findRelevantContent } from "@/features/rag/services/vector-operations";
-import { getUser } from "@/lib/auth/auth-server";
-import { forbidden } from "next/navigation";
+import { getAuthenticatedUserWithRole } from "@/lib/auth/api-auth-helper";
+import { saveUserChat } from "@/features/chatbot/services/chat-persistence";
 
 export const maxDuration = 30;
 
-const systemPrompt = `
+const buildSystemPrompt = (
+  userName: string,
+  userEmail: string,
+  userRole: string,
+) => `
 You are the Go-Electrify EV charging assistant answering only about Go-Electrify.
+
+Current User Context:
+- Name: ${userName}
+- Email: ${userEmail}
+- Role: ${userRole}
+
 Follow these directives in order:
 
 1. Scope & Assumptions
   - Treat every query as Go-Electrify-specific; never ask which project or product.
   - Interpret generic terms ("pricing", "how it works", "contributors") as referring to Go-Electrify.
+  - Personalize responses using the user's name when appropriate.
 
 2. Tool Strategy
-  - Call getUserInfo exactly once at the start of the conversation to personalize responses.
   - Before giving any factual, procedural, pricing, technical, or policy answer, call getInformation with the best possible search phrase. If results look incomplete, refine the query and call again. Only skip tools for pure greetings or obvious chit-chat.
   - Do not rely on memory; base answers strictly on tool outputs.
 
@@ -35,21 +51,25 @@ Follow these directives in order:
   - Change official Go-Electrify product names.`;
 
 export async function POST(req: Request) {
-  const { user } = await getUser();
+  // Get authenticated admin user with automatic token refresh
+  const user = await getAuthenticatedUserWithRole(["admin"]);
 
   if (!user) {
-    forbidden();
-  }
-
-  if (user.role.toLowerCase() !== "admin") {
-    forbidden();
+    return new Response(
+      JSON.stringify({ error: "Unauthorized. Admin access required." }),
+      { status: 403, headers: { "Content-Type": "application/json" } },
+    );
   }
 
   const { messages, id } = await req.json();
+  console.log(
+    `[Chat API] Received request - Chat ID: ${id}, Message count: ${messages.length}`,
+  );
+
   const result = streamText({
     model: gateway("xai/grok-4-fast-reasoning"),
     messages: convertToModelMessages(messages),
-    system: systemPrompt,
+    system: buildSystemPrompt(user.name || "User", user.email, user.role),
     stopWhen: stepCountIs(5),
     prepareStep: async ({ messages }) => {
       if (messages.length > 5) {
@@ -63,19 +83,6 @@ export async function POST(req: Request) {
       return {};
     },
     tools: {
-      getUserInfo: tool({
-        description:
-          "Get current user information including name, email, and role for personalization and role-based support.",
-        inputSchema: z.object({}),
-        execute: async () => {
-          return {
-            name: user.name || "No Name",
-            email: user.email,
-            role: user.role,
-            userId: user.uid,
-          };
-        },
-      }),
       getInformation: tool({
         description: `Retrieve relevant knowledge from your knowledge base to answer user queries.`,
         inputSchema: z.object({
@@ -117,8 +124,21 @@ export async function POST(req: Request) {
   });
 
   return result.toUIMessageStreamResponse({
+    originalMessages: messages,
     sendReasoning: true,
-    // Return chat ID in headers for client-side persistence
-    headers: id ? { "x-chat-id": id } : undefined,
+    generateMessageId: createIdGenerator({
+      prefix: "msg",
+      size: 16,
+    }),
+    onFinish: async ({ messages }) => {
+      if (id) {
+        console.log(
+          `[Chat API] Saving ${messages.length} messages for Chat ID: ${id}`,
+        );
+        await saveUserChat(user.uid.toString(), id, messages);
+      } else {
+        console.warn("[Chat API] No chat ID provided, messages not persisted");
+      }
+    },
   });
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { formatCurrencyVND, formatDateTime } from "@/lib/formatters";
+import { formatDateTime } from "@/lib/formatters";
 import { ReservationDetails } from "../services/reservations-api";
 import { ActionsCell } from "./reservation-actions-cell";
 
@@ -41,9 +41,13 @@ const translateStatus = (status: string) => {
 
 interface ReservationSimpleProps {
   reservation: ReservationDetails;
+  chargerCode: string;
 }
 
-export function ReservationSimple({ reservation }: ReservationSimpleProps) {
+export function ReservationSimple({
+  reservation,
+  chargerCode,
+}: ReservationSimpleProps) {
   return (
     <div className="bg-card rounded-lg border p-4">
       <div className="mb-3 flex items-center justify-between">
@@ -62,10 +66,6 @@ export function ReservationSimple({ reservation }: ReservationSimpleProps) {
           {reservation.stationName}
         </div>
         <div>
-          <span className="font-medium">Mẫu xe: </span>
-          {reservation.vehicleModelName}
-        </div>
-        <div>
           <span className="font-medium">Thời gian: </span>
           {formatDateTime(reservation.scheduledStart)}
         </div>
@@ -82,10 +82,8 @@ export function ReservationSimple({ reservation }: ReservationSimpleProps) {
           {reservation.connectorTypeName}
         </div>
         <div>
-          <span className="font-medium">Chi phí: </span>
-          <span className="font-semibold text-green-600">
-            {formatCurrencyVND(Number(reservation.estimatedCost || 0))}
-          </span>
+          <span className="font-medium">Mã trụ sạc: </span>
+          {chargerCode || "Chưa gán bộ sạc"}
         </div>
       </div>
     </div>

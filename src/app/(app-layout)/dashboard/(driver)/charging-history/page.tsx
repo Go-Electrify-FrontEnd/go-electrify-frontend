@@ -18,15 +18,11 @@ export default async function ChargingHistoryPage({
 }: ChargingHistoryPageProps) {
   const { user, token } = await getUser();
 
-  if (!user) {
-    redirect("/login");
-  }
-
   const params = await searchParams;
   const currentPage = Number(params.page) || 1;
-  const pageSize = 20;
+  const pageSize = 8;
 
-  const historyData = await getChargingHistory(token, currentPage, pageSize);
+  const historyData = await getChargingHistory(token!, currentPage, pageSize);
 
   if (!historyData || !historyData.ok) {
     return (

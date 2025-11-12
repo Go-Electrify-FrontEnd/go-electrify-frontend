@@ -9,7 +9,9 @@ export async function handleAuthRefresh(request: NextRequest) {
 
   if (accessToken) {
     const { user } = await getUserFromToken(accessToken);
-    if (user) return response;
+    if (user) {
+      return response;
+    }
   }
 
   if (!refreshToken) {
@@ -36,6 +38,7 @@ export async function handleAuthRefresh(request: NextRequest) {
     });
   });
 
+  // If refresh failed, clear all auth cookies
   if (!result.success) {
     response.cookies.delete("accessToken");
     response.cookies.delete("refreshToken");

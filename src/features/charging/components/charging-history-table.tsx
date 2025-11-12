@@ -23,7 +23,7 @@ export function ChargingHistoryTable({
   const router = useRouter();
 
   const handlePageChange = (newPage: number) => {
-    router.push(`?page=${newPage}`);
+    router.push(`?page=${newPage}`, { scroll: false });
   };
 
   return (
