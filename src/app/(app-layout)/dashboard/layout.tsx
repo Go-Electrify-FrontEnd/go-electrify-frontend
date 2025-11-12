@@ -41,6 +41,7 @@ export default async function DashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const { user, token } = await getUser();
+
   if (!user) {
     forbidden();
   }

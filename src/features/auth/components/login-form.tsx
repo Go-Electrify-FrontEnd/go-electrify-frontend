@@ -74,6 +74,14 @@ export function LoginForm({
     return <OTPForm email={email} />;
   }
 
+  const redirectTo = new URL(
+    `https://api.go-electrify.com/api/v1/auth/login/google`,
+  );
+  redirectTo.searchParams.append(
+    "returnUrl",
+    "http://localhost:3000/dashboard",
+  );
+
   return (
     <form
       onSubmit={handleSubmit}
@@ -135,7 +143,7 @@ export function LoginForm({
               "flex h-11 items-center justify-center gap-2 transition-colors hover:border-gray-300 hover:bg-gray-50",
           })}
           // parameter is return url after login
-          href={`${API_BASE_URL}/auth/login/google?returnUrl=${encodeURIComponent(REDIRECT_URL!)}`}
+          href={redirectTo.toString()}
         >
           <svg
             className="h-5 w-5"

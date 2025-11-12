@@ -26,12 +26,13 @@ export async function handleAuthRefresh(request: NextRequest) {
       path: "/",
       expires: tokens.accessExpires,
     });
+
     response.cookies.set("refreshToken", tokens.refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-      maxAge: 60 * 60 * 24 * 30,
+      expires: tokens.refreshExpires,
     });
   });
 
