@@ -152,17 +152,28 @@ export function NotificationButton({
     [token, router],
   );
 
-  // Mark all as read and navigate
+  // Mark all as read + navigate (giữ loading để disable, không đổi text)
   const handleViewAll = useCallback(async () => {
     setIsPopoverOpen(false);
     setIsMarkingAllRead(true);
 
-    // Chờ một nhịp ngắn để UX mượt mà (tuỳ chọn)
-    await new Promise((r) => setTimeout(r, 100));
+    try {
+      // 🔹 Gọi API "mark all as read"
+      await fetch(`${API_BASE_URL}/notifications/mark-all-read`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
-    router.push("/dashboard/notifications");
-    setIsMarkingAllRead(false);
-  }, [router]);
+      router.push("/dashboard/notifications");
+    } catch (error) {
+      console.error("Lỗi khi đánh dấu tất cả thông báo:", error);
+    } finally {
+      setIsMarkingAllRead(false); // 🔹 Mở lại nút
+    }
+  }, [router, token]);
 
   const triggerButton = (
     <Button variant="ghost" size="icon" className="relative">
@@ -215,9 +226,9 @@ export function NotificationButton({
             variant="ghost"
             className="w-full text-sm"
             onClick={handleViewAll}
-            disabled={isMarkingAllRead}
+            disabled={isMarkingAllRead} // ✅ Chỉ disable, không đổi chữ
           >
-            {isMarkingAllRead ? "Đang xử lý..." : "Xem tất cả thông báo"}
+            Xem tất cả thông báo
           </Button>
         </div>
       )}
