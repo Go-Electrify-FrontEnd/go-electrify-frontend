@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
-import { formatCurrencyVND } from "@/lib/formatters";
+import { StationBooking } from "../schemas/station.schema";
 
 export type Booking = {
   id: number;
@@ -15,9 +15,6 @@ export type Booking = {
   connectorTypeId?: number;
   vehicleModelId?: number;
 };
-
-const formatCurrency = (amount?: number) =>
-  amount == null ? "" : formatCurrencyVND(amount);
 
 const formatDate = (iso?: string | null) => {
   if (!iso) return "-";
@@ -67,7 +64,7 @@ const getStatusLabel = (status?: string) => {
   }
 };
 
-export const bookingColumns: ColumnDef<Booking>[] = [
+export const bookingColumns: ColumnDef<StationBooking>[] = [
   {
     accessorKey: "id",
     header: "ID",
@@ -97,29 +94,9 @@ export const bookingColumns: ColumnDef<Booking>[] = [
     ),
   },
   {
-    accessorKey: "initialSoc",
-    header: "SOC ban đầu",
-    cell: ({ row }) => (
-      <div>
-        {typeof row.getValue("initialSoc") === "number"
-          ? `${row.getValue("initialSoc")} %`
-          : "—"}
-      </div>
-    ),
-  },
-  {
     accessorKey: "connectorTypeId",
     header: "Loại Kết Nối",
     cell: ({ row }) => <div>#{row.getValue("connectorTypeId")}</div>,
-  },
-  {
-    accessorKey: "estimatedCost",
-    header: "Ước tính chi phí",
-    cell: ({ row }) => (
-      <div className="font-semibold">
-        {formatCurrency(row.getValue("estimatedCost") as number)}
-      </div>
-    ),
   },
 ];
 

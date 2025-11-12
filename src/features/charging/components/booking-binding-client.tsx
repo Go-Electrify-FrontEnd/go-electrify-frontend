@@ -223,18 +223,35 @@ function BookingBindingInner({
           </Field>
 
           {showPriceEstimate && (
-            <Field>
-              <FieldLabel>Ước tính chi phí</FieldLabel>
-              <Input
-                type="text"
-                value={`${estimatedPrice.toLocaleString()} VND`}
-                disabled={true}
-              />
-              <FieldDescription>
-                Ước tính dựa trên {energyNeeded.toFixed(2)} kWh cần sạc (
-                {pricePerKwh.toLocaleString()} VND/kWh)
-              </FieldDescription>
-            </Field>
+            <>
+              <Field>
+                <FieldLabel>Ước tính chi phí</FieldLabel>
+                <Input
+                  type="text"
+                  value={`${estimatedPrice.toLocaleString()} VND`}
+                  disabled={true}
+                />
+                <FieldDescription>
+                  Ước tính dựa trên {energyNeeded.toFixed(2)} kWh cần sạc (
+                  {pricePerKwh.toLocaleString()} VND/kWh)
+                </FieldDescription>
+              </Field>
+
+              <Alert
+                variant="default"
+                className="border-2 border-orange-500 bg-orange-50 dark:bg-orange-900/30"
+              >
+                <InfoIcon className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                <AlertTitle className="font-semibold text-orange-900 dark:text-orange-100">
+                  Lưu ý về giá
+                </AlertTitle>
+                <AlertDescription className="font-medium text-orange-800 dark:text-orange-200">
+                  Giá hiển thị chỉ mang tính chất tham khảo và ước tính. Số tiền
+                  thực tế bạn phải thanh toán sẽ phụ thuộc vào lượng điện năng
+                  thực tế đã sạc.
+                </AlertDescription>
+              </Alert>
+            </>
           )}
 
           {state.msg && !state.success && <FieldError>{state.msg}</FieldError>}

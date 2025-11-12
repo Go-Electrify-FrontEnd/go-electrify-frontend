@@ -1,12 +1,11 @@
 "use client";
 
-import * as React from "react";
 import { SharedDataTable } from "@/components/shared-data-table";
 import bookingColumns from "@/features/stations/components/bookings-table-columns";
-import type { Booking } from "@/features/stations/components/bookings-table-columns";
+import { StationBooking } from "../schemas/station.schema";
 
 interface BookingsTableProps {
-  data: Booking[];
+  data: StationBooking[];
 }
 
 export function BookingsTable({ data }: BookingsTableProps) {

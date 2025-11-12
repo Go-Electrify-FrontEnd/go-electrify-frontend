@@ -67,14 +67,6 @@ export const columns: ColumnDef<ReservationDetails>[] = [
     },
   },
   {
-    accessorKey: "vehicleModelName",
-    header: "Mẫu xe",
-    cell: ({ row }) => {
-      const vehicleModelName = row.getValue("vehicleModelName") as string;
-      return <div className="text-foreground">{vehicleModelName}</div>;
-    },
-  },
-  {
     accessorKey: "scheduledStart",
     header: "Bắt đầu dự kiến",
     cell: ({ row }) => (
@@ -92,15 +84,6 @@ export const columns: ColumnDef<ReservationDetails>[] = [
     },
   },
   {
-    accessorKey: "initialSoc",
-    header: "SOC ban đầu",
-    cell: ({ row }) => (
-      <div className="text-foreground text-left font-medium">
-        {row.getValue("initialSoc")}%
-      </div>
-    ),
-  },
-  {
     accessorKey: "status",
     header: "Trạng thái",
     cell: ({ row }) => {
@@ -109,20 +92,6 @@ export const columns: ColumnDef<ReservationDetails>[] = [
         <Badge variant={getStatusVariant(status)} className="font-medium">
           {translateStatus(status)}
         </Badge>
-      );
-    },
-  },
-  {
-    accessorKey: "estimatedCost",
-    header: "Chi phí ước tính",
-    cell: ({ row }) => {
-      const raw = row.getValue("estimatedCost") as unknown;
-      const amount = Number(raw ?? 0);
-      const safeAmount = Number.isFinite(amount) ? amount : 0;
-      return (
-        <div className="text-foreground text-left font-semibold">
-          {formatCurrencyVND(safeAmount)}
-        </div>
       );
     },
   },
