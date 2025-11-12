@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/sidebar";
 import { getUser } from "@/lib/auth/auth-server";
 import { UserProvider } from "@/features/users/contexts/user-context";
-import { forbidden } from "next/navigation";
+import { forbidden, redirect } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import HeaderBreadcrumb from "@/features/dashboard/components/sidebar/header-breadcrumb";
 import { NotificationButton } from "@/features/dashboard/components/header/notification-button";
@@ -42,8 +42,8 @@ export default async function DashboardLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   const { user, token } = await getUser();
 
-  if (!user) {
-    forbidden();
+  if (!user || !token) {
+    redirect("/login");
   }
   const notifications = await getNotifications(token);
   return (

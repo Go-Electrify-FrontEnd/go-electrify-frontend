@@ -104,7 +104,10 @@ export function SharedDataTable<TData extends Record<string, unknown>, TValue>({
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     manualPagination: isServerSide,
-    pageCount: serverSidePagination?.totalPages ?? -1,
+    // Avoid injecting a bogus pageCount when operating client-side; TanStack will derive it automatically.
+    pageCount: serverSidePagination
+      ? serverSidePagination.totalPages
+      : undefined,
     state: {
       sorting,
       columnFilters,

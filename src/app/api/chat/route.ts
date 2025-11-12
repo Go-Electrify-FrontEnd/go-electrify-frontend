@@ -2,21 +2,30 @@ import { convertToModelMessages, stepCountIs, streamText, tool } from "ai";
 import { gateway } from "@ai-sdk/gateway";
 import { z } from "zod";
 import { findRelevantContent } from "@/features/rag/services/vector-operations";
-import { getUser } from "@/lib/auth/auth-server";
-import { forbidden } from "next/navigation";
+import { getAuthenticatedUserWithRole } from "@/lib/auth/api-auth-helper";
 
 export const maxDuration = 30;
 
-const systemPrompt = `
+const buildSystemPrompt = (
+  userName: string,
+  userEmail: string,
+  userRole: string,
+) => `
 You are the Go-Electrify EV charging assistant answering only about Go-Electrify.
+
+Current User Context:
+- Name: ${userName}
+- Email: ${userEmail}
+- Role: ${userRole}
+
 Follow these directives in order:
 
 1. Scope & Assumptions
   - Treat every query as Go-Electrify-specific; never ask which project or product.
   - Interpret generic terms ("pricing", "how it works", "contributors") as referring to Go-Electrify.
+  - Personalize responses using the user's name when appropriate.
 
 2. Tool Strategy
-  - Call getUserInfo exactly once at the start of the conversation to personalize responses.
   - Before giving any factual, procedural, pricing, technical, or policy answer, call getInformation with the best possible search phrase. If results look incomplete, refine the query and call again. Only skip tools for pure greetings or obvious chit-chat.
   - Do not rely on memory; base answers strictly on tool outputs.
 
@@ -35,21 +44,21 @@ Follow these directives in order:
   - Change official Go-Electrify product names.`;
 
 export async function POST(req: Request) {
-  const { user } = await getUser();
+  // Get authenticated admin user with automatic token refresh
+  const user = await getAuthenticatedUserWithRole(["admin"]);
 
   if (!user) {
-    forbidden();
-  }
-
-  if (user.role.toLowerCase() !== "admin") {
-    forbidden();
+    return new Response(
+      JSON.stringify({ error: "Unauthorized. Admin access required." }),
+      { status: 403, headers: { "Content-Type": "application/json" } },
+    );
   }
 
   const { messages, id } = await req.json();
   const result = streamText({
     model: gateway("xai/grok-4-fast-reasoning"),
     messages: convertToModelMessages(messages),
-    system: systemPrompt,
+    system: buildSystemPrompt(user.name || "User", user.email, user.role),
     stopWhen: stepCountIs(5),
     prepareStep: async ({ messages }) => {
       if (messages.length > 5) {
@@ -63,19 +72,6 @@ export async function POST(req: Request) {
       return {};
     },
     tools: {
-      getUserInfo: tool({
-        description:
-          "Get current user information including name, email, and role for personalization and role-based support.",
-        inputSchema: z.object({}),
-        execute: async () => {
-          return {
-            name: user.name || "No Name",
-            email: user.email,
-            role: user.role,
-            userId: user.uid,
-          };
-        },
-      }),
       getInformation: tool({
         description: `Retrieve relevant knowledge from your knowledge base to answer user queries.`,
         inputSchema: z.object({
