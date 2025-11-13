@@ -58,14 +58,11 @@ export function AssignStaffDialog({
       if (!token) {
         throw new Error("User not authenticated");
       }
-      const response = await fetch(
-        `${API_BASE_URL}/users?role=Staff`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const response = await fetch(`${API_BASE_URL}/users?role=Staff`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+      });
 
       if (!response.ok) {
         throw new Error("Failed to fetch users");
@@ -153,9 +150,6 @@ export function AssignStaffDialog({
             <UserPlus className="h-5 w-5" />
             Phân Công Nhân Viên
           </DialogTitle>
-          <DialogDescription>
-            Chọn nhân viên để phân công quản lý trạm này
-          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
