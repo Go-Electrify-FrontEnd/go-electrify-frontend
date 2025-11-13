@@ -31,19 +31,39 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function RevenueChart({ data, loading, granularity }: RevenueChartProps) {
-  const formattedData = data?.Series.map((item) => {
-    const date = new Date(item.Bucket);
-    return {
-      date: format(date, granularity === "day" ? "dd/MM" : "HH:mm"),
-      label: granularity === "day" 
-        ? format(date, "dd/MM/yyyy") 
-        : format(date, "dd/MM/yyyy HH:mm"),
-      Amount: item.Amount,
-    };
-  }) ?? [];
+export function RevenueChart({
+  data,
+  loading,
+  granularity,
+}: RevenueChartProps) {
+  const formattedData =
+    data?.Series.map((item) => {
+      const date = new Date(item.Bucket);
 
-  const chartWidth = Math.max(800, formattedData.length * (granularity === "day" ? 60 : 80));
+      let axisLabel: string;
+      let tooltipLabel: string;
+
+      if (granularity === "day") {
+        axisLabel = format(date, "dd/MM");
+        tooltipLabel = format(date, "dd/MM/yyyy");
+      } else {
+        const hour = date.getUTCHours();
+        const hourStr = hour.toString().padStart(2, "0");
+        axisLabel = `${hourStr}:00`;
+        tooltipLabel = `${format(date, "dd/MM/yyyy")} ${hourStr}:00`;
+      }
+
+      return {
+        date: axisLabel, // dùng cho trục X
+        label: tooltipLabel, // dùng trong tooltip
+        Amount: item.Amount,
+      };
+    }) ?? [];
+
+  const chartWidth = Math.max(
+    800,
+    formattedData.length * (granularity === "day" ? 60 : 80),
+  );
   const total = data?.Total?.toLocaleString("vi-VN") ?? "0";
 
   return (
@@ -81,12 +101,16 @@ export function RevenueChart({ data, loading, granularity }: RevenueChartProps) 
                 margin={{ top: 10, right: 10, left: 10, bottom: 10 }}
               >
                 <CartesianGrid vertical={false} />
-                
+
                 <XAxis
                   dataKey="date"
                   tickLine={false}
                   tickMargin={10}
-interval={granularity === "day" ? Math.max(0, Math.floor(formattedData.length / 10) - 1) : "preserveStartEnd"}
+                  interval={
+                    granularity === "day"
+                      ? Math.max(0, Math.floor(formattedData.length / 10) - 1)
+                      : "preserveStartEnd"
+                  }
                 />
 
                 <YAxis
@@ -104,7 +128,9 @@ interval={granularity === "day" ? Math.max(0, Math.floor(formattedData.length / 
                         }
                         return "";
                       }}
-                      formatter={(value) => `${Number(value).toLocaleString("vi-VN")} ₫`}
+                      formatter={(value) =>
+                        `${Number(value).toLocaleString("vi-VN")} ₫`
+                      }
                     />
                   }
                   cursor={{ fill: "rgba(0,0,0,0.05)" }}

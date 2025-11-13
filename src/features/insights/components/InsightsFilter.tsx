@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { format, isAfter, startOfDay } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -22,6 +21,12 @@ import { Label } from "@/components/ui/label";
 import { Granularity, InsightsFilters } from "../types/insights.types";
 import { getStations } from "@/features/stations/services/stations-api";
 import { toast } from "sonner";
+import {
+  format,
+  isAfter,
+  startOfDay,
+  differenceInCalendarDays,
+} from "date-fns";
 
 interface Station {
   id: string;
@@ -38,7 +43,7 @@ export function InsightsFilter({ onChange, loading }: InsightsFilterProps) {
   const [from, setFrom] = useState<Date | undefined>(today);
   const [to, setTo] = useState<Date | undefined>(today);
   const [stationId, setStationId] = useState<string>("all");
-  const [granularity, setGranularity] = useState<Granularity>("day");
+
   const [stations, setStations] = useState<Station[]>([]);
   const [loadingStations, setLoadingStations] = useState(true);
 
@@ -79,14 +84,22 @@ export function InsightsFilter({ onChange, loading }: InsightsFilterProps) {
         return;
       }
 
+      // Tính số ngày chênh lệch
+      const diffDays = differenceInCalendarDays(toDate, fromDate);
+
+      // Rule: khoảng ngắn → theo giờ, khoảng dài → theo ngày
+      // Ví dụ: 13/11–14/11 (diff = 1) → hour
+      //        1/11–13/11 (diff = 12) → day
+      const autoGranularity: Granularity = diffDays <= 1 ? "hour" : "day";
+
       onChange({
         from: format(fromDate, "yyyy-MM-dd"),
         to: format(toDate, "yyyy-MM-dd"),
         stationId: stationId === "all" ? undefined : stationId,
-        granularity,
+        granularity: autoGranularity,
       });
     }
-  }, [from, to, stationId, granularity, onChange]);
+  }, [from, to, stationId, onChange]);
 
   return (
     <div className="grid gap-4 md:grid-cols-4">
@@ -185,23 +198,6 @@ export function InsightsFilter({ onChange, loading }: InsightsFilterProps) {
                 {s.name}
               </SelectItem>
             ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="space-y-2">
-        <Label>Độ chi tiết</Label>
-        <Select
-          value={granularity}
-          onValueChange={(v) => setGranularity(v as Granularity)}
-          disabled={loading}
-        >
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="day">Theo ngày</SelectItem>
-            <SelectItem value="hour">Theo giờ</SelectItem>
           </SelectContent>
         </Select>
       </div>

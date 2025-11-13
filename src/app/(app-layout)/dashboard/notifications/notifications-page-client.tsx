@@ -18,10 +18,10 @@ function getNotificationIcon(type: string) {
     case "booking_confirmed":
     case "booking_deposit_succeeded":
     case "booking_canceled":
-      return <Bookmark className="text-primary h-5 w-5" />;
-    case "user":
-      return <User className="text-foreground h-5 w-5" />;
-    default:
+      //   return <Bookmark className="text-primary h-5 w-5" />;
+      // case "user":
+      //   return <User className="text-foreground h-5 w-5" />;
+      // default:
       return <Bell className="text-muted-foreground h-5 w-5" />;
   }
 }
@@ -29,11 +29,11 @@ function getNotificationIcon(type: string) {
 function getNotificationTypeName(type: string) {
   switch (type) {
     case "booking_confirmed":
-      return "Đặt phòng xác nhận";
+      return "Đặt xác nhận";
     case "booking_deposit_succeeded":
       return "Đặt cọc thành công";
     case "booking_canceled":
-      return "Hủy đặt phòng";
+      return "Hủy";
     case "user":
       return "Người dùng";
     default:
