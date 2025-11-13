@@ -39,6 +39,7 @@ export async function createSubscription(prev: unknown, data: FormData) {
     });
 
     const success = response.ok;
+    if (success) updateTag("subscriptions");
     return {
       success,
       msg: success ? "Gói đăng ký đã được tạo" : "Tạo gói đăng ký thất bại",

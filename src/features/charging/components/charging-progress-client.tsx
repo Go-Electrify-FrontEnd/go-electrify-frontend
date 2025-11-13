@@ -21,16 +21,23 @@ import {
   BatteryCharging,
   CheckCircle,
   Info,
+  Loader2,
   Play,
   Zap,
 } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { AblyProvider, ChannelProvider, useChannel } from "ably/react";
 import * as Ably from "ably";
 import type { Message } from "ably";
 import type { CurrentChargingSession } from "@/features/charging/schemas/current-session.schema";
+
+interface CarInformation {
+  currentCapacity: number;
+  maxCapacity: number;
+  timestamp: string;
+}
 
 interface ChargingProgressClientProps {
   sessionId: number;
@@ -51,6 +58,9 @@ function ChargingProgressInner({
   errorMessage?: string | null;
 }) {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [carInformation, setCarInformation] = useState<CarInformation | null>(
+    null,
+  );
   const [progress, setProgress] = useState<number>(sessionData?.socStart || 0);
   const [isStarted, setStarted] = useState<boolean>(false);
   const [countdown, setCountdown] = useState<number>(5);
@@ -89,21 +99,40 @@ function ChargingProgressInner({
       // Trigger redirect via state
       setShouldRedirect(true);
     } else if (message.name === "soc_update") {
-      setProgress(Number(message.data.soc));
+      const newSOC = Number(message.data.soc);
+      setProgress(newSOC);
+
+      // Also update car information if available
+      if (carInformation) {
+        const newCapacity = (newSOC / 100) * carInformation.maxCapacity;
+        setCarInformation({
+          ...carInformation,
+          currentCapacity: newCapacity,
+        });
+      }
 
       if (!isStarted) {
         toast.success("Phiên sạc đã bắt đầu!", {
-          description: `Mức pin hiện tại: ${message.data.soc}%`,
+          description: `Mức pin hiện tại: ${newSOC}%`,
         });
 
         setStarted(true);
       }
     } else if (message.name === "car_information") {
-      toast.error("Lỗi trong phiên sạc", {
-        description: message.data?.message || "Đã xảy ra lỗi không xác định.",
-      });
+      setCarInformation(message.data);
+      console.log("Received car information:", message.data);
     }
   });
+
+  // Load car information on mount
+  useEffect(() => {
+    publish("load_car_information", {});
+  }, []);
+
+  // Calculate current SOC from car information
+  const currentSOC = carInformation
+    ? (carInformation.currentCapacity / carInformation.maxCapacity) * 100
+    : progress;
 
   const handlePublish = () => {
     if (!sessionData) return;
@@ -126,6 +155,17 @@ function ChargingProgressInner({
             Quay lại trang sạc
           </Button>
           <Button onClick={() => refresh()}>Thử lại</Button>
+        </div>
+      </SectionContent>
+    );
+  }
+
+  if (!carInformation) {
+    return (
+      <SectionContent className="mt-8">
+        <div className="mx-auto flex h-[60vh] max-w-2xl flex-col items-center justify-center space-y-4">
+          <Loader2 className="text-primary h-8 w-8 animate-spin" />
+          <p className="text-muted-foreground">Đang tải thông tin xe...</p>
         </div>
       </SectionContent>
     );
@@ -160,7 +200,7 @@ function ChargingProgressInner({
           <CardHeader>
             <CardDescription>SOC Hiện Tại</CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-              {progress}%
+              {currentSOC.toFixed(2)}%
             </CardTitle>
             <CardAction>
               <Badge variant="outline">
@@ -209,16 +249,16 @@ function ChargingProgressInner({
           </CardDescription>
           <CardAction>
             <Badge variant="default" className="text-[10px] sm:text-xs">
-              {progress}% / {sessionData.targetSoc}%
+              {currentSOC.toFixed(2)}% / {sessionData.targetSoc}%
             </Badge>
           </CardAction>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            <Progress value={progress} className="h-4" />
+            <Progress value={currentSOC} className="h-4" />
             <div className="text-muted-foreground flex justify-between text-xs">
-              <span>Bắt đầu: {sessionData.socStart}%</span>
-              <span>Hiện tại: {progress}%</span>
+              <span>0%</span>
+              <span>Hiện tại: {currentSOC.toFixed(2)}%</span>
               <span>Mục tiêu: {sessionData.targetSoc}%</span>
             </div>
           </div>
