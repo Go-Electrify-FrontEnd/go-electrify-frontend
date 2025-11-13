@@ -52,11 +52,11 @@ export function DocumentActionsCell({ document }: DocumentActionsCellProps) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <DocumentEditDialog
+      {/* <DocumentEditDialog
         document={document}
         open={showEditDialog}
         onOpenChange={setShowEditDialog}
-      />
+      /> */}
 
       <DocumentDeleteDialog
         document={document}

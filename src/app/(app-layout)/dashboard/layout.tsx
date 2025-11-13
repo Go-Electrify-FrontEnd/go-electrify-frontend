@@ -13,10 +13,7 @@ import { NotificationButton } from "@/features/dashboard/components/header/notif
 import { Notification } from "@/features/dashboard/types/notification";
 import { API_BASE_URL } from "@/lib/api-config";
 import { ChatPopup } from "@/features/chatbot/components/chat-popup";
-import {
-  loadNearestChat,
-  loadUserChat,
-} from "@/features/chatbot/services/chat-persistence";
+import { loadNearestChat } from "@/features/chatbot/services/chat-persistence";
 
 export const dynamic = "force-dynamic";
 
