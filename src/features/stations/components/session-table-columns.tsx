@@ -75,13 +75,6 @@ export const sessionColumns: ColumnDef<SessionRow>[] = [
     ),
   },
   {
-    accessorKey: "initialSoc",
-    header: "SOC bắt đầu",
-    cell: ({ row }) => (
-      <div>{formatWithSuffix(row.original.initialSoc, "%")}</div>
-    ),
-  },
-  {
     accessorKey: "targetSoc",
     header: "SOC mục tiêu",
     cell: ({ row }) => (
@@ -93,22 +86,6 @@ export const sessionColumns: ColumnDef<SessionRow>[] = [
     header: "Công suất sạc",
     cell: ({ row }) => (
       <div>{formatWithSuffix(row.original.chargerPowerKw, " kW")}</div>
-    ),
-  },
-  {
-    accessorKey: "vehicleMaxPowerKw",
-    header: "Công suất xe",
-    cell: ({ row }) => (
-      <div>{formatWithSuffix(row.original.vehicleMaxPowerKw, " kW")}</div>
-    ),
-  },
-  {
-    accessorKey: "vehicleBatteryCapacityKwh",
-    header: "Dung lượng pin",
-    cell: ({ row }) => (
-      <div>
-        {formatWithSuffix(row.original.vehicleBatteryCapacityKwh, " kWh")}
-      </div>
     ),
   },
   {
