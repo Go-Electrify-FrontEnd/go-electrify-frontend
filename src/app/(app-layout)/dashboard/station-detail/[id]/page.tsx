@@ -107,7 +107,7 @@ export default async function StationPage({
         <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-linear-to-t *:data-[slot=card]:shadow-xs lg:grid-cols-2 @5xl/main:grid-cols-4">
           <Card className="@container/card">
             <CardHeader>
-              <CardDescription>Tổng Dock</CardDescription>
+              <CardDescription>Tổng Trụ Sạc</CardDescription>
               <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
                 {totalChargers}
               </CardTitle>
@@ -122,7 +122,7 @@ export default async function StationPage({
                 {activeChargers} đang hoạt động <Zap className="size-4" />
               </div>
               <div className="text-muted-foreground">
-                Quản lý dock sạc trong trạm
+                Quản lý trụ sạc trong trạm
               </div>
             </CardFooter>
           </Card>
@@ -198,15 +198,15 @@ export default async function StationPage({
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
               <Battery className="h-4 w-4 sm:h-5 sm:w-5" />
-              Danh sách Dock Sạc
+              Danh sách trụ sạc
             </CardTitle>
             <CardDescription className="mt-1 text-xs sm:mt-1.5 sm:text-sm">
-              Quản lý và theo dõi trạng thái các dock sạc trong trạm
+              Quản lý và theo dõi trạng thái các trụ sạc trong trạm
             </CardDescription>
             <CardAction>
               <div className="flex items-center gap-2">
                 <Badge variant="default" className="text-[10px] sm:text-xs">
-                  {totalChargers} dock
+                  {totalChargers} trụ sạc
                 </Badge>
                 <Badge variant="secondary" className="text-[10px] sm:text-xs">
                   {activeChargers} đang hoạt động
@@ -230,18 +230,15 @@ export default async function StationPage({
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
               <Activity className="h-4 w-4 sm:h-5 sm:w-5" />
-              Phiên Sạc & Giữ Chỗ
+              Phiên Sạc
             </CardTitle>
             <CardDescription className="mt-1 text-xs sm:mt-1.5 sm:text-sm">
-              Theo dõi các phiên sạc đang diễn ra và lịch giữ chỗ sắp tới
+              Theo dõi các phiên sạc tại trạm này.
             </CardDescription>
             <CardAction>
               <div className="flex flex-wrap gap-2">
                 <Badge variant="default" className="text-[10px] sm:text-xs">
                   {activeSessions} đang sạc
-                </Badge>
-                <Badge variant="secondary" className="text-[10px] sm:text-xs">
-                  {upcomingBookings} giữ chỗ
                 </Badge>
               </div>
             </CardAction>

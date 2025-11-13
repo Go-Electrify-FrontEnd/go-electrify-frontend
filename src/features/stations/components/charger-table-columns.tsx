@@ -22,6 +22,19 @@ const getStatusVariant = (status: string) => {
   }
 };
 
+const getStatusText = (status: string) => {
+  switch (status.toUpperCase()) {
+    case "ONLINE":
+      return "Trực tuyến";
+    case "OFFLINE":
+      return "Ngoại tuyến";
+    case "MAINTENANCE":
+      return "Bảo trì";
+    default:
+      return status;
+  }
+};
+
 export const columns: ColumnDef<Charger>[] = [
   {
     accessorKey: "id",
@@ -51,7 +64,7 @@ export const columns: ColumnDef<Charger>[] = [
       <Badge
         variant={getStatusVariant((row.getValue("status") as string) || "")}
       >
-        {String(row.getValue("status"))}
+        {getStatusText((row.getValue("status") as string) || "")}
       </Badge>
     ),
   },

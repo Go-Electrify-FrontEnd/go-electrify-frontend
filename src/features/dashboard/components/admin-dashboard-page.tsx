@@ -33,7 +33,6 @@ export async function AdminDashboardPage() {
 
   return (
     <AdminDashboard
-      carModels={carModels}
       stations={stations}
       subscriptions={subscriptions}
       connectorTypes={connectors}

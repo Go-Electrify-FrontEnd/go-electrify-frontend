@@ -41,15 +41,6 @@ export function UserActionsCell({ user }: UserActionsProps) {
           <Copy className="h-4 w-4" />
           {copied ? "Đã sao chép" : "Sao chép ID"}
         </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => {
-            // placeholder for open user detail
-            console.log("Open user detail", user.id);
-          }}
-        >
-          <Eye className="h-4 w-4" />
-          Xem chi tiết
-        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Electrify",
-  description: "A tool to help you find electric vehicle incentives.",
+  description: "Nền tảng sạc xe điện cho tài xế - dự án môn học.",
 };
 
 export default async function LocaleLayout({

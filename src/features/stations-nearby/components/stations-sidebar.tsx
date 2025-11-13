@@ -71,7 +71,25 @@ export function StationsSidebar({ className = "" }: StationsSidebarProps) {
       <div className="no-scrollbar flex-1 overflow-y-auto p-4">
         {sortedStations.map((station) => {
           const isSelected = station.id === selectedStation?.id;
-          const isActive = station.status === "ACTIVE";
+          const statusText =
+            {
+              ACTIVE: "Hoạt động",
+              INACTIVE: "Không hoạt động",
+              MAINTENANCE: "Bảo trì",
+            }[station.status] || "Không xác định";
+
+          const statusVariant = {
+            ACTIVE: "outline",
+            INACTIVE: "outline",
+            MAINTENANCE: "outline",
+          }[station.status] as "default" | "secondary" | "outline";
+
+          const statusColor =
+            {
+              ACTIVE: "bg-green-500",
+              INACTIVE: "bg-gray-500",
+              MAINTENANCE: "bg-yellow-500",
+            }[station.status] || "bg-gray-500";
 
           return (
             <div
@@ -93,16 +111,11 @@ export function StationsSidebar({ className = "" }: StationsSidebarProps) {
 
               {/* Status Badge */}
               <div className="mb-3">
-                <Badge
-                  variant={isActive ? "default" : "destructive"}
-                  className="text-xs"
-                >
+                <Badge variant={statusVariant} className="text-xs">
                   <span
-                    className={`mr-1.5 inline-block h-1.5 w-1.5 rounded-full ${
-                      isActive ? "bg-green-500" : "bg-red-500"
-                    }`}
+                    className={`mr-1.5 inline-block h-1.5 w-1.5 rounded-full ${statusColor}`}
                   />
-                  {isActive ? "Đang hoạt động" : "Không hoạt động"}
+                  {statusText}
                 </Badge>
               </div>
 

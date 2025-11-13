@@ -26,12 +26,6 @@ const overview = {
       url: "/dashboard",
       icon: House,
     },
-    {
-      title: "Bắt Đầu Sạc",
-      url: "/dashboard/charging",
-      icon: Zap,
-      roles: ["driver", "admin"],
-    },
   ],
 };
 
@@ -102,12 +96,6 @@ const admin = {
       title: "Quản Lý Loại Kết Nối",
       url: "/dashboard/admin/connector-type",
       icon: Plug,
-      roles: ["admin"],
-    },
-    {
-      title: "Quản Lý Mẫu Xe",
-      url: "/dashboard/admin/vehicle-models",
-      icon: Car,
       roles: ["admin"],
     },
     {

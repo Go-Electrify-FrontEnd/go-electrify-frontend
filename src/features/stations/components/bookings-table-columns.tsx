@@ -38,9 +38,12 @@ const getStatusVariant = (status?: string) => {
     case "COMPLETED":
       return "default" as const;
     case "CANCELLED":
+    case "CANCELED":
       return "outline" as const;
     case "EXPIRED":
       return "destructive" as const;
+    case "CONSUMED":
+      return "default" as const;
     default:
       return "outline" as const;
   }
@@ -56,9 +59,12 @@ const getStatusLabel = (status?: string) => {
     case "COMPLETED":
       return "Hoàn thành";
     case "CANCELLED":
+    case "CANCELED":
       return "Đã hủy";
     case "EXPIRED":
       return "Hết hạn";
+    case "CONSUMED":
+      return "Đã sử dụng";
     default:
       return status ?? "—";
   }
