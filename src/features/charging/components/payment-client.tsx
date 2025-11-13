@@ -203,26 +203,6 @@ export default function PaymentClient({
             <div className="flex items-start gap-3 rounded-lg border p-4">
               <Battery className="text-muted-foreground mt-0.5 h-5 w-5" />
               <div className="space-y-1">
-                <p className="text-sm font-medium">SOC ban đầu</p>
-                <p className="text-muted-foreground text-sm">
-                  {sessionData.socStart}%
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3 rounded-lg border p-4">
-              <Battery className="text-muted-foreground mt-0.5 h-5 w-5" />
-              <div className="space-y-1">
-                <p className="text-sm font-medium">SOC mục tiêu</p>
-                <p className="text-muted-foreground text-sm">
-                  {sessionData.targetSoc}%
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3 rounded-lg border p-4">
-              <Battery className="text-muted-foreground mt-0.5 h-5 w-5" />
-              <div className="space-y-1">
                 <p className="text-sm font-medium">SOC cuối cùng</p>
                 <p className="text-muted-foreground text-sm">
                   {sessionData.finalSoc ? `${sessionData.finalSoc}%` : "N/A"}

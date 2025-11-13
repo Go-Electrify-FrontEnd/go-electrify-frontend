@@ -48,13 +48,13 @@ const charging = {
       title: "Đặt Chỗ",
       url: "/dashboard/reservations",
       icon: TicketCheckIcon,
-      roles: ["driver", "admin"],
+      roles: ["driver"],
     },
     {
       title: "Lịch Sử Sạc",
       url: "/dashboard/charging-history",
       icon: PieChart,
-      roles: ["driver", "admin"],
+      roles: ["driver"],
     },
   ],
 };
@@ -66,13 +66,13 @@ const payment = {
       title: "Ví",
       url: "/dashboard/wallet",
       icon: Wallet2Icon,
-      roles: ["driver", "admin"],
+      roles: ["driver"],
     },
     {
       title: "Gói & Thanh Toán",
       url: "/dashboard/plans-billing",
       icon: BookOpen,
-      roles: ["driver", "admin"],
+      roles: ["driver"],
     },
   ],
 };
@@ -187,7 +187,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        {/* All sections - items are filtered based on roles property */}
         <NavSection items={overview} userRole={userRole} />
         <NavSection items={charging} userRole={userRole} />
         <NavSection items={payment} userRole={userRole} />

@@ -8,7 +8,10 @@ import {
 import { gateway } from "@ai-sdk/gateway";
 import { z } from "zod";
 import { findRelevantContent } from "@/features/rag/services/vector-operations";
-import { getAuthenticatedUserWithRole } from "@/lib/auth/api-auth-helper";
+import {
+  getAuthenticatedUser,
+  getAuthenticatedUserWithRole,
+} from "@/lib/auth/api-auth-helper";
 import { saveUserChat } from "@/features/chatbot/services/chat-persistence";
 
 export const maxDuration = 30;
@@ -52,7 +55,7 @@ Follow these directives in order:
 
 export async function POST(req: Request) {
   // Get authenticated admin user with automatic token refresh
-  const user = await getAuthenticatedUserWithRole(["admin"]);
+  const user = await getAuthenticatedUser();
 
   if (!user) {
     return new Response(

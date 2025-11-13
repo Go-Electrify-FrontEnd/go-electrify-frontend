@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { CheckedState } from "@radix-ui/react-checkbox";
 import {
   Dialog,
   DialogContent,
@@ -25,13 +27,23 @@ import {
   FieldError,
   FieldGroup,
 } from "@/components/ui/field";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useServerAction } from "@/hooks/use-server-action";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { updateDocument } from "../services/documents-actions";
-import { updateDocumentSchema } from "../schemas/document.request";
+import {
+  updateDocumentSchema,
+  type UpdateDocumentFormData,
+} from "../schemas/document.request";
 import type { Document } from "../schemas/document.types";
-import { useEffect } from "react";
+import type { TargetActor } from "@/features/rag/types";
+
+const TARGET_ACTOR_OPTIONS: Array<{ value: TargetActor; label: string }> = [
+  { value: "admin", label: "Admin" },
+  { value: "staff", label: "Nhân Viên (Staff)" },
+  { value: "driver", label: "Tài Xế (Driver)" },
+];
 
 interface DocumentEditDialogProps {
   document: Document;
@@ -66,22 +78,23 @@ export function DocumentEditDialog({
       name: document.name,
       type: document.type,
       description: document.description || "",
+      targetActors: [...document.targetActors],
       reindex: false,
     },
   });
 
-  // Reset form when document changes
   useEffect(() => {
     form.reset({
       id: document.id,
       name: document.name,
       type: document.type,
       description: document.description || "",
+      targetActors: [...document.targetActors],
       reindex: false,
     });
   }, [document, form]);
 
-  const handleSubmit = form.handleSubmit((data) => {
+  const handleSubmit = form.handleSubmit((data: UpdateDocumentFormData) => {
     const formData = new FormData();
     formData.append("id", data.id);
     formData.append("name", data.name);
@@ -89,6 +102,7 @@ export function DocumentEditDialog({
     if (data.description) {
       formData.append("description", data.description);
     }
+    formData.append("targetActors", JSON.stringify(data.targetActors));
     formData.append("reindex", data.reindex ? "true" : "false");
 
     execute(formData);
@@ -174,6 +188,62 @@ export function DocumentEditDialog({
                     placeholder="Mô tả ngắn gọn về tài liệu"
                     disabled={pending}
                   />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+          </FieldGroup>
+
+          {/* Target Actors */}
+          <FieldGroup>
+            <Controller
+              control={form.control}
+              name="targetActors"
+              render={({ field, fieldState }) => (
+                <Field>
+                  <FieldLabel>Đối Tượng Mục Tiêu *</FieldLabel>
+                  <div className="space-y-3">
+                    {TARGET_ACTOR_OPTIONS.map(({ value, label }) => {
+                      const checkboxId = `actor-${value}`;
+                      const current = Array.isArray(field.value)
+                        ? field.value
+                        : [];
+
+                      return (
+                        <div
+                          className="flex items-center space-x-2"
+                          key={value}
+                        >
+                          <Checkbox
+                            id={checkboxId}
+                            checked={current.includes(value)}
+                            onCheckedChange={(checked: CheckedState) => {
+                              const next =
+                                checked === true
+                                  ? current.includes(value)
+                                    ? current
+                                    : [...current, value]
+                                  : current.filter((role) => role !== value);
+
+                              field.onChange(next);
+                            }}
+                            disabled={pending}
+                          />
+                          <label
+                            htmlFor={checkboxId}
+                            className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            {label}
+                          </label>
+                        </div>
+                      );
+                    })}
+                    <p className="text-muted-foreground text-xs">
+                      Chọn vai trò nào có thể xem tài liệu này
+                    </p>
+                  </div>
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}
