@@ -39,27 +39,34 @@ export function UsageChart({ data, loading, granularity }: UsageChartProps) {
         parsedDate = new Date(item.Bucket);
       }
 
-      const axisLabel =
-        granularity === "day"
-          ? format(parsedDate, "dd/MM")
-          : format(parsedDate, "HH:mm");
+      let axisLabel: string;
+      let tooltipLabel: string;
 
-      const tooltipLabel =
-        granularity === "day"
-          ? format(parsedDate, "dd/MM/yyyy")
-          : format(parsedDate, "dd/MM/yyyy HH:mm");
+      if (granularity === "day") {
+        // Hiển thị theo ngày: giữ nguyên local
+        axisLabel = format(parsedDate, "dd/MM");
+        tooltipLabel = format(parsedDate, "dd/MM/yyyy");
+      } else {
+        // Hiển thị theo giờ: dùng UTC để không bị lệch +7h
+        const hour = parsedDate.getUTCHours(); // 0..23 đúng như trên API
+        const hourStr = hour.toString().padStart(2, "0"); // "00".."23"
+
+        axisLabel = `${hourStr}:00`; // label trên trục X
+        tooltipLabel = `${format(parsedDate, "dd/MM/yyyy")} ${hourStr}:00`;
+      }
 
       return {
-        time: parsedDate.getTime(),
+        time: parsedDate.getTime(), // dùng để sort, lệch múi giờ vẫn giữ thứ tự
         axisLabel,
         tooltipLabel,
         Count: item.Count,
       };
-    })
-      .sort((a, b) => a.time - b.time)
-    ?? [];
+    }).sort((a, b) => a.time - b.time) ?? [];
 
-  const chartWidth = Math.max(800, formattedData.length * (granularity === "day" ? 60 : 80));
+  const chartWidth = Math.max(
+    800,
+    formattedData.length * (granularity === "day" ? 60 : 80),
+  );
   const totalSessions = data?.TotalSessions ?? 0;
   const peakHour = data?.PeakHour !== undefined ? `${data.PeakHour}h` : "-";
 
@@ -70,7 +77,8 @@ export function UsageChart({ data, loading, granularity }: UsageChartProps) {
           <div>
             <CardTitle>Lượt Sạc</CardTitle>
             <CardDescription>
-              Tổng {totalSessions.toLocaleString("vi-VN")} phiên • Giờ cao điểm: {peakHour}
+              Tổng {totalSessions.toLocaleString("vi-VN")} phiên • Giờ cao điểm:{" "}
+              {peakHour}
             </CardDescription>
           </div>
           <Zap className="h-6 w-6 text-yellow-500" />
@@ -96,7 +104,7 @@ export function UsageChart({ data, loading, granularity }: UsageChartProps) {
                 margin={{ top: 10, right: 20, left: 10, bottom: 10 }}
               >
                 <CartesianGrid stroke="#e5e7eb" strokeDasharray="3 3" />
-                
+
                 <XAxis
                   dataKey="axisLabel"
                   tickLine={false}
@@ -120,15 +128,23 @@ export function UsageChart({ data, loading, granularity }: UsageChartProps) {
                     <ChartTooltipContent
                       labelFormatter={(_, payload) => {
                         if (payload && payload.length > 0) {
-                          const data = payload[0].payload as { tooltipLabel: string };
+                          const data = payload[0].payload as {
+                            tooltipLabel: string;
+                          };
                           return data.tooltipLabel;
                         }
                         return "";
                       }}
-                      formatter={(value) => `${Number(value).toLocaleString("vi-VN")} phiên`}
+                      formatter={(value) =>
+                        `${Number(value).toLocaleString("vi-VN")} phiên`
+                      }
                     />
                   }
-                  cursor={{ stroke: "var(--chart-1)", strokeWidth: 1, strokeDasharray: "5 5" }}
+                  cursor={{
+                    stroke: "var(--chart-1)",
+                    strokeWidth: 1,
+                    strokeDasharray: "5 5",
+                  }}
                 />
 
                 <Line
