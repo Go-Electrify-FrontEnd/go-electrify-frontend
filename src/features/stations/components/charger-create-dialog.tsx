@@ -74,7 +74,6 @@ export default function StationDockCreate({
         setOpen(false);
         form.reset();
 
-        // Show the secret key dialog if we have a secret key
         if (result.data?.secretKey) {
           setSecretKey(result.data.secretKey);
           setShowSecretDialog(true);
@@ -88,9 +87,7 @@ export default function StationDockCreate({
   });
 
   const form = useForm<ChargerCreateFormData>({
-    resolver: zodResolver(
-      chargerCreateSchema,
-    ) as Resolver<ChargerCreateFormData>,
+    resolver: zodResolver(chargerCreateSchema),
     defaultValues: {
       stationId,
       connectorTypeId: 1,
