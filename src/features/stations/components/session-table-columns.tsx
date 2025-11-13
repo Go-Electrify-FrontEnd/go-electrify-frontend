@@ -24,13 +24,56 @@ const formatWithSuffix = (value: number | null | undefined, suffix = "") => {
   return `${formatNumber(value)}${suffix}`;
 };
 
-const getStatusVariant = (status: string) => {
-  const normalized = String(status).toLowerCase();
-  if (normalized === "active" || normalized === "charging") return "default";
-  if (normalized === "stopped" || normalized === "completed")
-    return "secondary";
-  if (normalized === "error" || normalized === "faulted") return "destructive";
-  return "secondary";
+const getStatusVariant = (
+  status: string,
+): "default" | "secondary" | "destructive" | "outline" => {
+  const normalized = String(status).toUpperCase();
+
+  switch (normalized) {
+    case "PENDING":
+      return "outline";
+    case "RUNNING":
+      return "default";
+    case "COMPLETED":
+      return "secondary";
+    case "PAID":
+      return "secondary";
+    case "TIMEOUT":
+      return "destructive";
+    case "FAILED":
+      return "destructive";
+    case "ABORTED":
+      return "destructive";
+    case "UNPAID":
+      return "outline";
+    default:
+      return "secondary";
+  }
+};
+
+const getStatusLabel = (status: string): string => {
+  const normalized = String(status).toUpperCase();
+
+  switch (normalized) {
+    case "PENDING":
+      return "Chờ xử lý";
+    case "RUNNING":
+      return "Đang sạc";
+    case "COMPLETED":
+      return "Hoàn thành";
+    case "TIMEOUT":
+      return "Hết thời gian";
+    case "FAILED":
+      return "Thất bại";
+    case "ABORTED":
+      return "Đã hủy";
+    case "UNPAID":
+      return "Chưa thanh toán";
+    case "PAID":
+      return "Đã thanh toán";
+    default:
+      return status;
+  }
 };
 
 export const sessionColumns: ColumnDef<SessionRow>[] = [
@@ -61,11 +104,14 @@ export const sessionColumns: ColumnDef<SessionRow>[] = [
   {
     accessorKey: "status",
     header: "Trạng thái",
-    cell: ({ row }) => (
-      <Badge variant={getStatusVariant(String(row.getValue("status")))}>
-        {String(row.getValue("status"))}
-      </Badge>
-    ),
+    cell: ({ row }) => {
+      const status = String(row.getValue("status"));
+      return (
+        <Badge variant={getStatusVariant(status)}>
+          {getStatusLabel(status)}
+        </Badge>
+      );
+    },
   },
   {
     accessorKey: "startedAt",

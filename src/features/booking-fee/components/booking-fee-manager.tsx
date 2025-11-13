@@ -74,8 +74,6 @@ export function BookingFeeManager({
   });
 
   const selectedType = form.watch("type");
-  const currentValue = form.watch("value");
-  const isPercent = selectedType === "PERCENT";
 
   useEffect(() => {
     if (bookingFee) {
@@ -162,16 +160,6 @@ export function BookingFeeManager({
                               </div>
                               <div className="text-muted-foreground">
                                 Phí Cố Định
-                              </div>
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="PERCENT">
-                            <div className="flex items-center gap-3">
-                              <div className="flex h-6 w-6 items-center justify-center rounded bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
-                                <Percent className="h-3 w-3" />
-                              </div>
-                              <div className="text-muted-foreground">
-                                % Pin Của Xe
                               </div>
                             </div>
                           </SelectItem>

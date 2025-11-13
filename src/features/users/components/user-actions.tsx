@@ -102,15 +102,6 @@ export function UserActionsCell({ user }: UserActionsProps) {
             {copied ? "Đã sao chép ID" : "Sao chép ID"}
           </DropdownMenuItem>
 
-          <DropdownMenuItem
-            onClick={() => {
-              console.log("Open user detail", user.id);
-            }}
-          >
-            <Eye className="mr-2 h-4 w-4" />
-            Xem chi tiết
-          </DropdownMenuItem>
-
           {canChangeRole && (
             <DropdownMenuItem
               onClick={() => {
