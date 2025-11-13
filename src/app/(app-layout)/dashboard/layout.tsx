@@ -14,6 +14,7 @@ import { Notification } from "@/features/dashboard/types/notification";
 import { API_BASE_URL } from "@/lib/api-config";
 import { ChatPopup } from "@/features/chatbot/components/chat-popup";
 import { loadNearestChat } from "@/features/chatbot/services/chat-persistence";
+import { generateId } from "ai";
 
 export const dynamic = "force-dynamic";
 
@@ -47,13 +48,7 @@ export default async function DashboardLayout({
     forbidden();
   }
 
-  const { chatId, messages: initialMessages } = await loadNearestChat(
-    user.uid.toString(),
-  );
-  console.log(
-    `[DashboardLayout] Chat ID: ${chatId}, Loaded ${initialMessages.length} initial messages for user ${user.uid}`,
-  );
-
+  const chatId = generateId();
   const notifications = await getNotifications(token);
   return (
     <SidebarProvider>
@@ -68,7 +63,7 @@ export default async function DashboardLayout({
             />
             <HeaderBreadcrumb />
             <div className="ml-auto flex items-center gap-2">
-              <ChatPopup chatId={chatId} initialMessages={initialMessages} />
+              <ChatPopup chatId={chatId} />
               <NotificationButton notifications={notifications} />
             </div>
           </header>
