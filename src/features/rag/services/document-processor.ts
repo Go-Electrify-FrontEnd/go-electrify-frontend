@@ -8,28 +8,21 @@ const DEFAULT_CHUNK_CONFIG: ChunkConfig = {
 };
 
 /**
- * Document type for specialized chunking rules
- */
-export type DocumentType = "default" | "markdown" | "code";
-
-/**
  * Split text into chunks using LLM-based intelligent chunking
  *
  * Uses Grok-4-fast-reasoning for superior semantic chunking:
  * - Understands document context and structure
  * - Preserves semantic boundaries
- * - Adapts to different document types
+ * - Adapts to procedural and instructional text structures
  * - Maintains coherence across chunks
  *
  * @param text - Text to chunk
  * @param config - Chunking configuration
- * @param documentType - Type of document for specialized rules
  * @returns Array of text chunks
  */
 export async function chunkText(
   text: string,
   config: Partial<ChunkConfig> = {},
-  documentType: DocumentType = "default",
 ): Promise<string[]> {
   const fullConfig = { ...DEFAULT_CHUNK_CONFIG, ...config };
   const { chunkSize } = fullConfig;
@@ -44,8 +37,6 @@ export async function chunkText(
     const options: Partial<ChunkingOptions> = {
       maxChunkSize: chunkSize * 4,
       minChunkSize: Math.floor(chunkSize * 4 * 0.2), // 20% of max
-      preserveContext: true,
-      documentType,
     };
 
     const result = await chunkTextWithLLM(normalizedText, options);
@@ -62,13 +53,11 @@ export async function chunkText(
  *
  * @param text - Text to chunk
  * @param config - Chunking configuration
- * @param documentType - Type of document for specialized rules
  * @returns Chunking result with chunks and metadata
  */
 export async function chunkTextWithMetadata(
   text: string,
   config: Partial<ChunkConfig> = {},
-  documentType: DocumentType = "default",
 ) {
   const fullConfig = { ...DEFAULT_CHUNK_CONFIG, ...config };
   const { chunkSize } = fullConfig;
@@ -90,8 +79,6 @@ export async function chunkTextWithMetadata(
     const options: Partial<ChunkingOptions> = {
       maxChunkSize: chunkSize * 4,
       minChunkSize: Math.floor(chunkSize * 4 * 0.2),
-      preserveContext: true,
-      documentType,
     };
 
     return await chunkTextWithLLM(normalizedText, options);

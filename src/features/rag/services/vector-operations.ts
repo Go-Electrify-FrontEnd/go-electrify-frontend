@@ -294,71 +294,46 @@ export async function updateDocumentMetadata(
   }>,
 ): Promise<{ success: boolean; message: string }> {
   try {
-    const index = getIndex();
+    const namespace = getIndex().namespace(DEFAULT_NAMESPACE);
 
-    console.log(`Updating metadata for document: ${documentId}`);
-
-    // Generate IDs to fetch (up to 1000 chunks)
-    const vectorIds: string[] = [];
-    for (let i = 0; i < 1000; i++) {
-      vectorIds.push(`${documentId}-${i}`);
-    }
-
-    // Fetch all vectors in one request
-    const startFetch = Date.now();
-    const fetchResult = await index
-      .namespace(DEFAULT_NAMESPACE)
-      .fetch(vectorIds);
-    console.log(`Fetched vectors in ${Date.now() - startFetch}ms`);
-
-    // Prepare updated vectors
-    const vectorsToUpdate: Array<{
-      id: string;
-      values: number[];
-      metadata: any;
-    }> = [];
-
-    if (fetchResult.records) {
-      for (const [id, record] of Object.entries(fetchResult.records)) {
-        if (record && record.metadata) {
-          const updatedMetadata = {
-            ...record.metadata,
-            ...(updates.documentName && { documentName: updates.documentName }),
-            ...(updates.documentType && { documentType: updates.documentType }),
-            ...(updates.description && { description: updates.description }),
-            ...(updates.targetActors && {
-              targetActors: updates.targetActors.join(","),
-            }),
-          };
-
-          vectorsToUpdate.push({
-            id,
-            values: record.values || [],
-            metadata: updatedMetadata,
-          });
-        }
-      }
-    }
-
-    if (vectorsToUpdate.length === 0) {
-      return {
-        success: false,
-        message: "No vectors found for this document",
-      };
-    }
-
-    // Re-upsert all vectors in a single request
-    const startUpsert = Date.now();
-    await index.namespace(DEFAULT_NAMESPACE).upsert(vectorsToUpdate);
-    console.log(`Upsert completed in ${Date.now() - startUpsert}ms`);
-
-    console.log(
-      `Updated metadata for ${vectorsToUpdate.length} chunks of document ${documentId}`,
+    // Fetch all chunks for this document
+    const vectorIds = Array.from(
+      { length: 1000 },
+      (_, i) => `${documentId}-${i}`,
     );
+    const allRecords: Record<string, any> = {};
+
+    for (let i = 0; i < vectorIds.length; i += 100) {
+      const batch = await namespace.fetch(vectorIds.slice(i, i + 100));
+      if (batch.records) Object.assign(allRecords, batch.records);
+    }
+
+    if (Object.keys(allRecords).length === 0) {
+      return { success: false, message: "No vectors found" };
+    }
+
+    // Build new metadata
+    const newMetadata = {
+      ...(updates.documentName && { documentName: updates.documentName }),
+      ...(updates.documentType && { documentType: updates.documentType }),
+      ...(updates.description && { description: updates.description }),
+      ...(updates.targetActors && {
+        targetActors: updates.targetActors.join(","),
+      }),
+    };
+
+    // Update each chunk
+    for (const [id, record] of Object.entries(allRecords)) {
+      if (!record?.metadata) continue;
+      await namespace.update({
+        id,
+        metadata: { ...record.metadata, ...newMetadata },
+      });
+    }
 
     return {
       success: true,
-      message: `Updated ${vectorsToUpdate.length} chunks`,
+      message: `Updated ${Object.keys(allRecords).length} chunks`,
     };
   } catch (error) {
     console.error("Error updating document metadata:", error);

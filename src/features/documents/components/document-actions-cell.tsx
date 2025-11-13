@@ -39,7 +39,7 @@ export function DocumentActionsCell({ document }: DocumentActionsCellProps) {
 
           <DropdownMenuItem onClick={() => setShowEditDialog(true)}>
             <Pencil className="mr-2 h-4 w-4" />
-            Chỉnh Sửa
+            Cập Nhật
           </DropdownMenuItem>
 
           <DropdownMenuItem
@@ -52,11 +52,11 @@ export function DocumentActionsCell({ document }: DocumentActionsCellProps) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* <DocumentEditDialog
+      <DocumentEditDialog
         document={document}
         open={showEditDialog}
         onOpenChange={setShowEditDialog}
-      /> */}
+      />
 
       <DocumentDeleteDialog
         document={document}

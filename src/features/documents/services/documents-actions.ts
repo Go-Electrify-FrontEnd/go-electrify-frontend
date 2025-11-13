@@ -30,12 +30,15 @@ export async function uploadDocument(prev: unknown, formData: FormData) {
     // Check authentication
     const { user } = await getUser();
     if (!user) {
-      return { success: false, msg: "User not authenticated" };
+      return { success: false, msg: "Người dùng chưa xác thực" };
     }
 
     // Admin-only check
     if (user.role.toLowerCase() !== "admin") {
-      return { success: false, msg: "Unauthorized: Admin access required" };
+      return {
+        success: false,
+        msg: "Không được phép: Yêu cầu quyền quản trị viên",
+      };
     }
 
     // Extract and validate form data
@@ -64,7 +67,7 @@ export async function uploadDocument(prev: unknown, formData: FormData) {
     // Get and validate file
     const file = formData.get("file") as File | null;
     if (!file) {
-      return { success: false, msg: "No file provided" };
+      return { success: false, msg: "Không có tệp được cung cấp" };
     }
 
     const fileValidation = validateFile(file);
@@ -83,20 +86,20 @@ export async function uploadDocument(prev: unknown, formData: FormData) {
     } catch (error) {
       return {
         success: false,
-        msg: `Failed to parse file: ${error instanceof Error ? error.message : "Unknown error"}`,
+        msg: `Không thể phân tích tệp: ${error instanceof Error ? error.message : "Lỗi không xác định"}`,
       };
     }
 
     if (!parsedText || parsedText.length < 50) {
       return {
         success: false,
-        msg: "Document is too short or empty. Please provide a document with more content.",
+        msg: "Tài liệu quá ngắn hoặc trống. Vui lòng cung cấp tài liệu có nhiều nội dung hơn.",
       };
     }
 
     const chunks = await chunkText(parsedText);
     if (chunks.length === 0) {
-      return { success: false, msg: "Failed to chunk document" };
+      return { success: false, msg: "Không thể chia nhỏ tài liệu" };
     }
 
     const textChunks = chunks.map((content) => ({ content }));
@@ -123,7 +126,7 @@ export async function uploadDocument(prev: unknown, formData: FormData) {
 
     return {
       success: true,
-      msg: `Successfully uploaded "${data.name}" with ${chunks.length} chunks`,
+      msg: `Đã tải lên thành công "${data.name}" với ${chunks.length} phần`,
       data: {
         documentId,
         chunks: chunks.length,
@@ -134,7 +137,8 @@ export async function uploadDocument(prev: unknown, formData: FormData) {
     console.error("Error uploading document:", error);
     return {
       success: false,
-      msg: error instanceof Error ? error.message : "Failed to upload document",
+      msg:
+        error instanceof Error ? error.message : "Không thể tải lên tài liệu",
     };
   }
 }
@@ -148,12 +152,15 @@ export async function updateDocument(prev: unknown, formData: FormData) {
     // Check authentication
     const { user } = await getUser();
     if (!user) {
-      return { success: false, msg: "User not authenticated" };
+      return { success: false, msg: "Người dùng chưa xác thực" };
     }
 
     // Admin-only check
     if (user.role.toLowerCase() !== "admin") {
-      return { success: false, msg: "Unauthorized: Admin access required" };
+      return {
+        success: false,
+        msg: "Không được phép: Yêu cầu quyền quản trị viên",
+      };
     }
 
     // Extract and validate form data
@@ -200,7 +207,7 @@ export async function updateDocument(prev: unknown, formData: FormData) {
       // In production, you'd store files in blob storage and re-process
       return {
         success: true,
-        msg: `Metadata updated. Note: Re-indexing requires re-uploading the document.`,
+        msg: `Đã cập nhật siêu dữ liệu. Lưu ý: Việc lập chỉ mục lại yêu cầu tải lên lại tài liệu.`,
       };
     }
 
@@ -209,13 +216,14 @@ export async function updateDocument(prev: unknown, formData: FormData) {
 
     return {
       success: true,
-      msg: `Successfully updated "${data.name}"`,
+      msg: `Đã cập nhật thành công "${data.name}"`,
     };
   } catch (error) {
     console.error("Error updating document:", error);
     return {
       success: false,
-      msg: error instanceof Error ? error.message : "Failed to update document",
+      msg:
+        error instanceof Error ? error.message : "Không thể cập nhật tài liệu",
     };
   }
 }
@@ -229,12 +237,15 @@ export async function deleteDocument(prev: unknown, formData: FormData) {
     // Check authentication
     const { user } = await getUser();
     if (!user) {
-      return { success: false, msg: "User not authenticated" };
+      return { success: false, msg: "Người dùng chưa xác thực" };
     }
 
     // Admin-only check
     if (user.role.toLowerCase() !== "admin") {
-      return { success: false, msg: "Unauthorized: Admin access required" };
+      return {
+        success: false,
+        msg: "Không được phép: Yêu cầu quyền quản trị viên",
+      };
     }
 
     // Extract and validate form data
@@ -258,7 +269,7 @@ export async function deleteDocument(prev: unknown, formData: FormData) {
     const document = documents.find((doc) => doc.id === data.id);
 
     if (!document) {
-      return { success: false, msg: "Document not found" };
+      return { success: false, msg: "Không tìm thấy tài liệu" };
     }
 
     // Delete from Pinecone
@@ -273,13 +284,13 @@ export async function deleteDocument(prev: unknown, formData: FormData) {
 
     return {
       success: true,
-      msg: `Successfully deleted "${document.name}"`,
+      msg: `Đã xóa thành công "${document.name}"`,
     };
   } catch (error) {
     console.error("Error deleting document:", error);
     return {
       success: false,
-      msg: error instanceof Error ? error.message : "Failed to delete document",
+      msg: error instanceof Error ? error.message : "Không thể xóa tài liệu",
     };
   }
 }

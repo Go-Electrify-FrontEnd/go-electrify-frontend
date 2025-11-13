@@ -1,4 +1,8 @@
-import type { DocumentType, DocumentStatus } from "@/features/rag/types";
+import type {
+  DocumentType,
+  DocumentStatus,
+  TargetActor,
+} from "@/features/rag/types";
 
 /**
  * Document data structure for admin table
@@ -13,6 +17,7 @@ export interface Document extends Record<string, unknown> {
   uploadDate: string; // ISO date string
   status: DocumentStatus; // Processing status
   source: string; // Original filename
+  targetActors: TargetActor[]; // Roles that can access document
 }
 
 /**
@@ -22,6 +27,7 @@ export interface DocumentFormData {
   name: string;
   type: DocumentType;
   description?: string;
+  targetActors: TargetActor[];
   file?: File;
   reindex?: boolean; // For update only
 }

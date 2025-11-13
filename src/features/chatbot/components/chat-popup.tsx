@@ -4,7 +4,7 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, UIMessage, generateId } from "ai";
 import { Bot, MessageSquare, Plus, X } from "lucide-react";
 import type { FormEvent } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -35,19 +35,40 @@ interface ChatPopupProps {
   initialMessages?: UIMessage[];
 }
 
-export function ChatPopup({ chatId, initialMessages }: ChatPopupProps) {
+export function ChatPopup({ chatId, initialMessages = [] }: ChatPopupProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
   const [isCreatingNewChat, setIsCreatingNewChat] = useState(false);
   const [currentChatId, setCurrentChatId] = useState(chatId);
 
+  // Track if chat is initialized to prevent re-initialization
+  const hasInitializedRef = useRef(false);
+
+  // Memoize transport to prevent recreation on every render (prevents 429 errors)
+  const transport = useMemo(
+    () =>
+      new DefaultChatTransport({
+        api: "/api/chat",
+      }),
+    [],
+  );
+
   const { messages, sendMessage, status, setMessages } = useChat({
-    messages: currentChatId === chatId ? initialMessages : [],
     id: currentChatId,
-    transport: new DefaultChatTransport({
-      api: "/api/chat",
-    }),
+    transport,
   });
+
+  // Initialize messages only once on mount
+  useEffect(() => {
+    if (
+      !hasInitializedRef.current &&
+      initialMessages.length > 0 &&
+      currentChatId === chatId
+    ) {
+      setMessages(initialMessages);
+      hasInitializedRef.current = true;
+    }
+  }, [chatId, currentChatId, initialMessages, setMessages]);
 
   const submitPrompt = () => {
     if (!input.trim() || status === "streaming") {
@@ -99,7 +120,7 @@ export function ChatPopup({ chatId, initialMessages }: ChatPopupProps) {
 
       <DialogContent
         showCloseButton={false}
-        className="bg-background no-scrollbar flex h-[520px] w-full max-w-[calc(100%-2rem)] flex-col p-0 sm:max-w-[420px]"
+        className="bg-background no-scrollbar flex h-[600px] w-full max-w-[calc(100%-2rem)] flex-col p-0 sm:h-[680px] sm:max-w-[540px] lg:h-[720px] lg:max-w-[640px]"
       >
         <DialogTitle className="sr-only">Trợ lý GoElectrify</DialogTitle>
         <div className="bg-muted/50 flex items-center justify-between border-b px-4 py-3 sm:px-5 sm:py-4">
@@ -203,12 +224,6 @@ export function ChatPopup({ chatId, initialMessages }: ChatPopupProps) {
                 disabled={status === "streaming"}
                 rows={1}
                 className="max-h-[120px] min-h-[44px] resize-none text-sm"
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" && !event.shiftKey) {
-                    event.preventDefault();
-                    submitPrompt();
-                  }
-                }}
               />
               <PromptInputSubmit
                 status={status === "streaming" ? "streaming" : "ready"}
