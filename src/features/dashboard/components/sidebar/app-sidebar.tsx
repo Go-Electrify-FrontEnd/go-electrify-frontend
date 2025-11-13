@@ -34,7 +34,7 @@ const charging = {
   items: [
     {
       title: "Bắt Đầu Sạc",
-      url: "/dashboard/start-charging",
+      url: "/dashboard/charging",
       icon: Zap,
       roles: ["driver"],
     },

@@ -26,7 +26,11 @@ function generateSecretKey(length = 32): string {
 
 export async function createCharger(prevState: unknown, formData: FormData) {
   const { user, token } = await getUser();
-  if (!user || !user.role.toLowerCase().includes("admin")) {
+  if (
+    !user ||
+    (!user.role.toLowerCase().includes("staff") &&
+      !user.role.toLowerCase().includes("admin"))
+  ) {
     forbidden();
   }
   const rawEntries = Object.fromEntries(formData.entries());
@@ -112,9 +116,7 @@ export async function updateCharger(prevState: unknown, formData: FormData) {
 
   const data = parsed.data;
 
-  const url = `${API_BASE_URL}/chargers/${encodeURIComponent(
-    data.id,
-  )}`;
+  const url = `${API_BASE_URL}/chargers/${encodeURIComponent(data.id)}`;
 
   try {
     const response = await fetch(url, {
