@@ -152,55 +152,28 @@ export function NotificationButton({
     [token, router],
   );
 
-  // Mark all as read and navigate
+  // Mark all as read + navigate (giữ loading để disable, không đổi text)
   const handleViewAll = useCallback(async () => {
     setIsPopoverOpen(false);
-    router.push("/dashboard/notifications");
-    // if (unreadCount === 0) {
-    //   router.push("/dashboard/notifications");
-    //   return;
-    // }
-
     setIsMarkingAllRead(true);
 
-    // Optimistic update cho mượt
-    // setNotifications((prev) => prev.map((n) => ({ ...n, IsUnread: false })));
+    try {
+      // 🔹 Gọi API "mark all as read"
+      await fetch(`${API_BASE_URL}/notifications/mark-all-read`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
-    // try {
-    //   const unreadIds = initialNotifications
-    //     .filter((n) => n.IsUnread)
-    //     .map((n) => n.Id);
-
-    //   if (unreadIds.length === 0) {
-    //     throw new Error("State bị lệch, không tìm thấy unread IDs.");
-    //   }
-
-    //   const readPromises = unreadIds.map((id) =>
-    //     fetch(`https://api.go-electrify.com/api/v1/notifications/${id}/read`, {
-    //       method: "POST",
-    //       headers: {
-    //         Authorization: `Bearer ${token}`,
-    //         "Content-Type": "application/json",
-    //       },
-    //     }),
-    //   );
-
-    //   const results = await Promise.allSettled(readPromises);
-
-    //   const failedRequests = results.filter((r) => r.status === "rejected");
-    //   if (failedRequests.length > 0) {
-    //     console.error("Một số request 'read' đã thất bại:", failedRequests);
-    //     throw new Error("Một số request con thất bại.");
-    //   }
-    // } catch (err) {
-    //   console.error("Lỗi khi gọi nhiều API 'read':", err);
-    //   setNotifications(initialNotifications);
-    // } finally {
-    //   setIsMarkingAllRead(false);
-    //   router.push("/dashboard/notifications");
-    //   router.refresh();
-    // }
-  }, [router, unreadCount, token, initialNotifications]);
+      router.push("/dashboard/notifications");
+    } catch (error) {
+      console.error("Lỗi khi đánh dấu tất cả thông báo:", error);
+    } finally {
+      setIsMarkingAllRead(false); // 🔹 Mở lại nút
+    }
+  }, [router, token]);
 
   const triggerButton = (
     <Button variant="ghost" size="icon" className="relative">
@@ -253,9 +226,9 @@ export function NotificationButton({
             variant="ghost"
             className="w-full text-sm"
             onClick={handleViewAll}
-            disabled={isMarkingAllRead}
+            disabled={isMarkingAllRead} // ✅ Chỉ disable, không đổi chữ
           >
-            {isMarkingAllRead ? "Đang xử lý..." : "Xem tất cả thông báo"}
+            Xem tất cả thông báo
           </Button>
         </div>
       )}
