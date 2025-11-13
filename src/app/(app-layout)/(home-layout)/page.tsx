@@ -23,7 +23,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-      <TeamSection />
       <FooterSection />
     </main>
   );

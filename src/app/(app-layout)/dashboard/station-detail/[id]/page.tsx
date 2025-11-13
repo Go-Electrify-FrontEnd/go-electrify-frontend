@@ -45,13 +45,6 @@ import {
   getStationStaff,
 } from "@/features/stations/api/stations-api";
 import { getConnectorTypes } from "@/features/connector-type/services/connector-type-api";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { AssignStaffDialog } from "@/features/stations/components/assign-staff-dialog";
 import { StationStaffTableClient } from "@/features/stations/components/station-staff-table-client";
 
@@ -102,11 +95,6 @@ export default async function StationPage({
     <div className="flex flex-col gap-6 md:gap-6">
       <SectionHeader title={station.name} subtitle={station.address}>
         <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-          <Button variant="outline" size="lg">
-            <Activity className="mr-2 h-4 w-4" />
-            <span className="hidden sm:inline">Xem Lịch Sử</span>
-            <span className="sm:hidden">Lịch Sử</span>
-          </Button>
           <StationDockCreate
             connectorTypes={connectorTypes}
             stationId={Number(id)}
@@ -283,28 +271,6 @@ export default async function StationPage({
                   <Badge variant="secondary" className="text-[10px] sm:text-xs">
                     {upcomingBookings} giữ chỗ
                   </Badge>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm" className="h-7">
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
-                        <Download className="mr-2 h-4 w-4" />
-                        Xuất dữ liệu
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Calendar className="mr-2 h-4 w-4" />
-                        Xem lịch
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem>
-                        <Filter className="mr-2 h-4 w-4" />
-                        Bộ lọc nâng cao
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
                 </div>
               </CardAction>
             </div>
@@ -360,28 +326,6 @@ async function StationStaffTable({ stationId }: { stationId: string }) {
                 stationId={stationId}
                 assignedStaffIds={assignedStaffIds}
               />
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="h-8">
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem>
-                    <Download className="mr-2 h-4 w-4" />
-                    Xuất danh sách
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Users className="mr-2 h-4 w-4" />
-                    Quản lý vai trò
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <Activity className="mr-2 h-4 w-4" />
-                    Xem lịch sử hoạt động
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
             </div>
           </CardAction>
         </div>

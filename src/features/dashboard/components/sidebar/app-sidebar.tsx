@@ -123,7 +123,7 @@ const admin = {
       roles: ["admin"],
     },
     {
-      title: "Tài liệu (Chưa Xong)",
+      title: "Tài liệu (Experimental)",
       url: "/dashboard/admin/documents",
       icon: BookOpen,
       roles: ["admin"],
