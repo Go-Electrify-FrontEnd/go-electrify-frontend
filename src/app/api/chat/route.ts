@@ -8,10 +8,7 @@ import {
 import { gateway } from "@ai-sdk/gateway";
 import { z } from "zod";
 import { findRelevantContent } from "@/features/rag/services/vector-operations";
-import {
-  getAuthenticatedUser,
-  getAuthenticatedUserWithRole,
-} from "@/lib/auth/api-auth-helper";
+import { getAuthenticatedUser } from "@/lib/auth/api-auth-helper";
 import { saveUserChat } from "@/features/chatbot/services/chat-persistence";
 
 export const maxDuration = 30;
@@ -127,21 +124,6 @@ export async function POST(req: Request) {
   });
 
   return result.toUIMessageStreamResponse({
-    originalMessages: messages,
     sendReasoning: true,
-    generateMessageId: createIdGenerator({
-      prefix: "msg",
-      size: 16,
-    }),
-    onFinish: async ({ messages }) => {
-      if (id) {
-        console.log(
-          `[Chat API] Saving ${messages.length} messages for Chat ID: ${id}`,
-        );
-        await saveUserChat(user.uid.toString(), id, messages);
-      } else {
-        console.warn("[Chat API] No chat ID provided, messages not persisted");
-      }
-    },
   });
 }

@@ -33,6 +33,12 @@ const charging = {
   title: "Trạm & Sạc",
   items: [
     {
+      title: "Bắt Đầu Sạc",
+      url: "/dashboard/start-charging",
+      icon: Zap,
+      roles: ["driver"],
+    },
+    {
       title: "Trạm Gần Đây",
       url: "/dashboard/stations-nearby",
       icon: Map,

@@ -32,43 +32,22 @@ import {
 
 interface ChatPopupProps {
   chatId: string;
-  initialMessages?: UIMessage[];
 }
 
-export function ChatPopup({ chatId, initialMessages = [] }: ChatPopupProps) {
+export function ChatPopup({ chatId }: ChatPopupProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
   const [isCreatingNewChat, setIsCreatingNewChat] = useState(false);
   const [currentChatId, setCurrentChatId] = useState(chatId);
 
-  // Track if chat is initialized to prevent re-initialization
-  const hasInitializedRef = useRef(false);
-
-  // Memoize transport to prevent recreation on every render (prevents 429 errors)
-  const transport = useMemo(
-    () =>
-      new DefaultChatTransport({
-        api: "/api/chat",
-      }),
-    [],
-  );
+  const transport = new DefaultChatTransport({
+    api: "/api/chat",
+  });
 
   const { messages, sendMessage, status, setMessages } = useChat({
     id: currentChatId,
     transport,
   });
-
-  // Initialize messages only once on mount
-  useEffect(() => {
-    if (
-      !hasInitializedRef.current &&
-      initialMessages.length > 0 &&
-      currentChatId === chatId
-    ) {
-      setMessages(initialMessages);
-      hasInitializedRef.current = true;
-    }
-  }, [chatId, currentChatId, initialMessages, setMessages]);
 
   const submitPrompt = () => {
     if (!input.trim() || status === "streaming") {
@@ -192,6 +171,10 @@ export function ChatPopup({ chatId, initialMessages = [] }: ChatPopupProps) {
                       <MessageContent className="group-[.is-user]:bg-primary group-[.is-user]:text-primary-foreground group-[.is-assistant]:bg-muted group-[.is-assistant]:text-foreground rounded-2xl px-3 py-2 text-sm sm:px-4 sm:py-3">
                         {message.parts.map((part, index) => {
                           if (part.type !== "text") {
+                            console.log(
+                              "[ChatPopup] Unsupported message part type:",
+                              part.type,
+                            );
                             return null;
                           }
 
