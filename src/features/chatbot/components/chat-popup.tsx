@@ -1,10 +1,10 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport, UIMessage, generateId } from "ai";
+import { DefaultChatTransport, generateId } from "ai";
 import { Bot, MessageSquare, Plus, X } from "lucide-react";
 import type { FormEvent } from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -25,10 +25,16 @@ import {
   MessageResponse,
 } from "@/components/ai-elements/message";
 import {
-  PromptInput as Input,
+  PromptInput,
   PromptInputTextarea,
   PromptInputSubmit,
+  PromptInputMessage,
 } from "@/components/ai-elements/prompt-input";
+import {
+  Reasoning,
+  ReasoningContent,
+  ReasoningTrigger,
+} from "@/components/ai-elements/reasoning";
 
 interface ChatPopupProps {
   chatId: string;
@@ -40,27 +46,21 @@ export function ChatPopup({ chatId }: ChatPopupProps) {
   const [isCreatingNewChat, setIsCreatingNewChat] = useState(false);
   const [currentChatId, setCurrentChatId] = useState(chatId);
 
-  const transport = new DefaultChatTransport({
-    api: "/api/chat",
-  });
-
   const { messages, sendMessage, status, setMessages } = useChat({
     id: currentChatId,
-    transport,
+    transport: new DefaultChatTransport({
+      api: "/api/chat",
+    }),
+    onFinish: (message) => {
+      console.log("[ChatPopup] Message finished:", JSON.stringify(message));
+    },
   });
 
-  const submitPrompt = () => {
-    if (!input.trim() || status === "streaming") {
-      return;
+  const handleSubmit = (message: PromptInputMessage) => {
+    if (message.text.trim()) {
+      sendMessage({ text: message.text });
+      setInput("");
     }
-
-    sendMessage({ text: input });
-    setInput("");
-  };
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    submitPrompt();
   };
 
   const handleNewChat = () => {
@@ -156,35 +156,36 @@ export function ChatPopup({ chatId }: ChatPopupProps) {
                 />
               ) : (
                 messages.map((message, msgIndex) => {
-                  const isUser = message.role === "user";
-                  const messageKey = message.id || `msg-${msgIndex}`;
-
                   return (
-                    <Message from={message.role} key={messageKey}>
-                      {!isUser && (
-                        <Avatar className="size-7 shrink-0 sm:size-8">
-                          <AvatarFallback className="bg-primary text-primary-foreground text-sm">
-                            <Bot className="size-3.5 sm:size-4" />
-                          </AvatarFallback>
-                        </Avatar>
-                      )}
+                    <Message from={message.role} key={msgIndex}>
                       <MessageContent className="group-[.is-user]:bg-primary group-[.is-user]:text-primary-foreground group-[.is-assistant]:bg-muted group-[.is-assistant]:text-foreground rounded-2xl px-3 py-2 text-sm sm:px-4 sm:py-3">
-                        {message.parts.map((part, index) => {
-                          if (part.type !== "text") {
-                            console.log(
-                              "[ChatPopup] Unsupported message part type:",
-                              part.type,
-                            );
-                            return null;
+                        {message.parts.map((part, i) => {
+                          switch (part.type) {
+                            case "text":
+                              return (
+                                <MessageResponse key={`${msgIndex}-part-${i}`}>
+                                  {part.text}
+                                </MessageResponse>
+                              );
+                            case "reasoning":
+                              return (
+                                <Reasoning
+                                  defaultOpen={true}
+                                  key={`${message.id}-${i}`}
+                                  className="w-full"
+                                  isStreaming={
+                                    status === "streaming" &&
+                                    i === message.parts.length - 1 &&
+                                    message.id === messages.at(-1)?.id
+                                  }
+                                >
+                                  <ReasoningTrigger />
+                                  <ReasoningContent>
+                                    {part.text}
+                                  </ReasoningContent>
+                                </Reasoning>
+                              );
                           }
-
-                          return (
-                            <MessageResponse
-                              key={`${messageKey}-part-${index}`}
-                            >
-                              {part.text}
-                            </MessageResponse>
-                          );
                         })}
                       </MessageContent>
                     </Message>
@@ -196,24 +197,22 @@ export function ChatPopup({ chatId }: ChatPopupProps) {
           </Conversation>
 
           <div className="border-t p-3 sm:p-4">
-            <Input
+            <PromptInput
               onSubmit={handleSubmit}
-              className="flex w-full items-end gap-2 sm:gap-3"
+              className="relative mx-auto mt-4 w-full max-w-2xl"
             >
               <PromptInputTextarea
                 value={input}
-                onChange={(event) => setInput(event.currentTarget.value)}
-                placeholder="Viết tin nhắn..."
-                disabled={status === "streaming"}
-                rows={1}
-                className="max-h-[120px] min-h-[44px] resize-none text-sm"
+                placeholder="Hãy hỏi tôi bất cứ điều gì..."
+                onChange={(e) => setInput(e.currentTarget.value)}
+                className="pr-12"
               />
               <PromptInputSubmit
                 status={status === "streaming" ? "streaming" : "ready"}
-                disabled={!input.trim() || status === "streaming"}
-                className="size-10 rounded-full sm:size-11"
+                disabled={!input.trim()}
+                className="absolute right-1 bottom-1"
               />
-            </Input>
+            </PromptInput>
           </div>
         </div>
       </DialogContent>

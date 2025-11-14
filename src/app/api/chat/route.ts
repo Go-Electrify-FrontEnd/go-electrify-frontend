@@ -1,10 +1,4 @@
-import {
-  convertToModelMessages,
-  createIdGenerator,
-  stepCountIs,
-  streamText,
-  tool,
-} from "ai";
+import { convertToModelMessages, stepCountIs, streamText, tool } from "ai";
 import { gateway } from "@ai-sdk/gateway";
 import { z } from "zod";
 import { findRelevantContent } from "@/features/rag/services/vector-operations";
@@ -54,7 +48,6 @@ Follow these directives in order:
   - Change official Go-Electrify product names.`;
 
 export async function POST(req: Request) {
-  // Get authenticated admin user with automatic token refresh
   const user = await getAuthenticatedUser();
 
   if (!user) {
@@ -70,16 +63,17 @@ export async function POST(req: Request) {
   );
 
   const result = streamText({
-    model: gateway("xai/grok-4-fast-reasoning"),
+    model: gateway("openai/gpt-oss-120b"),
     messages: convertToModelMessages(messages),
     system: buildSystemPrompt(user.name || "User", user.email, user.role),
     stopWhen: stepCountIs(5),
     prepareStep: async ({ messages }) => {
-      if (messages.length > 5) {
+      // Keep only recent messages to stay within context limits
+      if (messages.length > 10) {
         return {
           messages: [
-            messages[0],
-            ...messages.slice(-3), // Keep last 3 messages
+            messages[0], // Keep system instructions
+            ...messages.slice(-5), // Keep last 10 messages
           ],
         };
       }
