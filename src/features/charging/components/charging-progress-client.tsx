@@ -160,6 +160,14 @@ function ChargingProgressInner({
     );
   }
 
+  const socStart = sessionData.socStart;
+  const targetSOC = sessionData.targetSoc;
+  const socRange = Math.max(targetSOC - socStart, 0.0001);
+  const progressToTarget =
+    targetSOC <= socStart
+      ? 100
+      : Math.min(Math.max(((currentSOC - socStart) / socRange) * 100, 0), 100);
+
   if (!carInformation) {
     return (
       <SectionContent className="mt-8">
@@ -255,9 +263,9 @@ function ChargingProgressInner({
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            <Progress value={currentSOC} className="h-4" />
+            <Progress value={progressToTarget} className="h-4" />
             <div className="text-muted-foreground flex justify-between text-xs">
-              <span>0%</span>
+              <span>Bắt đầu: {socStart}%</span>
               <span>Hiện tại: {currentSOC.toFixed(2)}%</span>
               <span>Mục tiêu: {sessionData.targetSoc}%</span>
             </div>
