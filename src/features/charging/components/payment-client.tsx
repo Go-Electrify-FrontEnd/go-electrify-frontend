@@ -43,7 +43,11 @@ import {
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { formatCurrencyVND, formatDateWithOptions } from "@/lib/formatters";
+import {
+  formatCurrencyVND,
+  formatDate,
+  formatDateWithOptions,
+} from "@/lib/formatters";
 import {
   Loader2,
   CreditCard,
@@ -75,9 +79,7 @@ export default function PaymentClient({
   const router = useRouter();
 
   const form = useForm<CompletePaymentFormValues>({
-    resolver: zodResolver(
-      completePaymentFormSchema,
-    ) as Resolver<CompletePaymentFormValues>,
+    resolver: zodResolver(completePaymentFormSchema),
     defaultValues: {
       method: "WALLET",
     },
@@ -114,21 +116,6 @@ export default function PaymentClient({
     () => Boolean(state.msg) && !state.success,
     [state.msg, state.success],
   );
-
-  const formatDate = (dateString: string) => {
-    return formatDateWithOptions(dateString, {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  const formatCurrency = (amount: number | null) => {
-    if (amount === null) return "Chưa xác định";
-    return formatCurrencyVND(amount);
-  };
 
   const sessionDuration = useMemo(() => {
     if (!sessionData.startedAt || !sessionData.endedAt) return "N/A";
@@ -235,7 +222,7 @@ export default function PaymentClient({
               <div className="space-y-1">
                 <p className="text-sm font-medium">Tổng chi phí</p>
                 <p className="text-primary text-lg font-semibold">
-                  {formatCurrency(sessionData.cost)}
+                  {formatCurrencyVND(sessionData.cost)}
                 </p>
               </div>
             </div>
@@ -319,7 +306,7 @@ export default function PaymentClient({
               <DollarSign className="h-4 w-4" />
               <AlertTitle>Tổng chi phí cần thanh toán</AlertTitle>
               <AlertDescription className="text-lg font-semibold">
-                {formatCurrency(sessionData.cost)}
+                {formatCurrencyVND(sessionData.cost)}
               </AlertDescription>
             </Alert>
 

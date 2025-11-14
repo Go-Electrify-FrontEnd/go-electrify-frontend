@@ -3,6 +3,7 @@ import { gateway } from "@ai-sdk/gateway";
 import { z } from "zod";
 import { findRelevantContent } from "@/features/rag/services/vector-operations";
 import { getAuthenticatedUser } from "@/lib/auth/api-auth-helper";
+import OpenAI from "openai";
 
 export const maxDuration = 30;
 
@@ -67,18 +68,6 @@ export async function POST(req: Request) {
     messages: convertToModelMessages(messages),
     system: buildSystemPrompt(user.name || "User", user.email, user.role),
     stopWhen: stepCountIs(5),
-    prepareStep: async ({ messages }) => {
-      // Keep only recent messages to stay within context limits
-      if (messages.length > 10) {
-        return {
-          messages: [
-            messages[0], // Keep system instructions
-            ...messages.slice(-5), // Keep last 10 messages
-          ],
-        };
-      }
-      return {};
-    },
     tools: {
       getInformation: tool({
         description: `Retrieve relevant knowledge from your knowledge base to answer user queries.`,

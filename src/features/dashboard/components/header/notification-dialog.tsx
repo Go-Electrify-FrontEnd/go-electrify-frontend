@@ -9,10 +9,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Notification } from "@/features/dashboard/types/notification";
-import { formatDistanceToNow } from "date-fns";
-import { vi } from "date-fns/locale";
 import { Bell, Bookmark, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { formatRelativeTime } from "@/lib/formatters";
 
 function getNotificationIcon(type: string) {
   switch (type) {
@@ -33,15 +32,6 @@ function getNotificationTypeName(type: string) {
       return "Người dùng";
     default:
       return "Thông báo";
-  }
-}
-
-function formatDate(dateString: string) {
-  try {
-    const date = new Date(dateString);
-    return formatDistanceToNow(date, { addSuffix: true, locale: vi });
-  } catch (error) {
-    return dateString;
   }
 }
 
@@ -73,7 +63,7 @@ export function NotificationDialog({
                   {getNotificationTypeName(notification.Type)}
                 </Badge>
                 <span className="text-muted-foreground text-xs">
-                  {formatDate(notification.CreatedAt)}
+                  {formatRelativeTime(notification.CreatedAt)}
                 </span>
               </div>
             </div>

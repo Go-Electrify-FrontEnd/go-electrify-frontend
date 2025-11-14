@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreditCard, WalletIcon, Zap } from "lucide-react";
-import { formatShortCurrency } from "@/lib/formatters";
+import { formatDateTime, formatShortCurrency } from "@/lib/formatters";
 import { Transaction, Wallet } from "../schemas/wallet.schema";
 
 interface WalletOverviewProps {
@@ -25,11 +25,8 @@ export function WalletOverview({ wallet, transactions }: WalletOverviewProps) {
   const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
 
-  const toDate = (value: Date | string) =>
-    value instanceof Date ? value : new Date(String(value));
-
   const depositsThisMonth = transactions.filter((transaction) => {
-    const date = toDate(transaction.createdAt as Date | string);
+    const date = transaction.createdAt;
     return (
       transaction.type === "DEPOSIT" &&
       transaction.status === "SUCCEEDED" &&
@@ -44,7 +41,7 @@ export function WalletOverview({ wallet, transactions }: WalletOverviewProps) {
   );
 
   const chargesThisMonth = transactions.filter((transaction) => {
-    const date = toDate(transaction.createdAt as Date | string);
+    const date = transaction.createdAt;
     return (
       transaction.type === "CHARGING" &&
       transaction.status === "SUCCEEDED" &&
@@ -60,7 +57,7 @@ export function WalletOverview({ wallet, transactions }: WalletOverviewProps) {
 
   const chargingSessionIds = new Set<number>();
   chargesThisMonth.forEach((t) => {
-    if (typeof t.chargingSession === "number") {
+    if (t.chargingSession) {
       chargingSessionIds.add(t.chargingSession);
     }
   });
@@ -74,24 +71,18 @@ export function WalletOverview({ wallet, transactions }: WalletOverviewProps) {
   let lastActivity = "Chưa có giao dịch";
   if (transactions.length > 0) {
     const latest = transactions.reduce((prev, curr) => {
-      const pd = toDate(prev.createdAt as Date | string);
-      const cd = toDate(curr.createdAt as Date | string);
+      const pd = prev.createdAt;
+      const cd = curr.createdAt;
       return cd > pd ? curr : prev;
     });
-    const latestDate = toDate(latest.createdAt as Date | string);
-    const formatted = new Intl.DateTimeFormat("vi-VN", {
-      dateStyle: "short",
-      timeStyle: "short",
-    }).format(latestDate);
+    const latestDate = latest.createdAt;
+    const formatted = formatDateTime(latestDate);
     const sign =
       latest.type === "DEPOSIT" || latest.type === "REFUND" ? "+" : "−";
     lastActivity = `${formatted} • ${typeLabels[latest.type]} ${sign}${latest.amount.toLocaleString("vi-VN")} ₫`;
   }
 
   const depositCount = depositsThisMonth.length;
-
-  // local helpers replaced by shared formatters
-
   return (
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:grid-cols-3">
       <Card>
@@ -101,10 +92,7 @@ export function WalletOverview({ wallet, transactions }: WalletOverviewProps) {
         </CardHeader>
         <CardContent>
           <div className="text-primary text-2xl font-bold">
-            {new Intl.NumberFormat("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            }).format(wallet.balance)}
+            {formatShortCurrency(wallet.balance)}
           </div>
           <p className="text-muted-foreground mt-1 text-xs">{lastActivity}</p>
         </CardContent>

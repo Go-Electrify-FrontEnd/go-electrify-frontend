@@ -1,3 +1,7 @@
+import { formatDistanceToNow } from "date-fns";
+import type { Locale } from "date-fns";
+import { vi } from "date-fns/locale";
+
 export function formatCurrencyVND(value: number | null | undefined) {
   if (value == null || Number.isNaN(value)) return "0 ₫";
   return new Intl.NumberFormat("vi-VN", {
@@ -74,4 +78,50 @@ export function formatDate(
     return String(value);
   }
   return date.toLocaleDateString(locale);
+}
+
+const FULL_DATE_TIME_OPTIONS: Intl.DateTimeFormatOptions = {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+};
+
+export function formatFullDate(
+  value: string | Date | null | undefined,
+  locale = "vi-VN",
+) {
+  return formatDateWithOptions(value, FULL_DATE_TIME_OPTIONS, locale);
+}
+
+type RelativeTimeOptions = {
+  addSuffix?: boolean;
+  includeSeconds?: boolean;
+  locale?: Locale;
+  now?: Date | number;
+  fallback?: string;
+};
+
+export function formatRelativeTime(
+  value: string | Date | null | undefined,
+  options?: RelativeTimeOptions,
+) {
+  const fallback = options?.fallback ?? "-";
+  if (!value) return fallback;
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return typeof value === "string" ? value : fallback;
+  }
+
+  try {
+    return formatDistanceToNow(date, {
+      addSuffix: true,
+      locale: vi,
+      ...options,
+    });
+  } catch {
+    return fallback;
+  }
 }

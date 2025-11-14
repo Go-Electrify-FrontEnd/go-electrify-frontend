@@ -6,12 +6,11 @@ import { Bell, Bookmark, User, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { formatDistanceToNow } from "date-fns";
-import { vi } from "date-fns/locale";
 import { NotificationDialog } from "@/features/dashboard/components/header/notification-dialog";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/features/users/contexts/user-context";
 import { API_BASE_URL } from "@/lib/api-config";
+import { formatFullDate, formatRelativeTime } from "@/lib/formatters";
 
 function getNotificationIcon(type: string) {
   switch (type) {
@@ -38,30 +37,6 @@ function getNotificationTypeName(type: string) {
       return "Người dùng";
     default:
       return "Thông báo";
-  }
-}
-
-function formatDate(dateString: string) {
-  try {
-    const date = new Date(dateString);
-    return formatDistanceToNow(date, { addSuffix: true, locale: vi });
-  } catch (error) {
-    return dateString;
-  }
-}
-
-function formatFullDate(dateString: string) {
-  try {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat("vi-VN", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }).format(date);
-  } catch (error) {
-    return dateString;
   }
 }
 
@@ -260,7 +235,7 @@ export function NotificationsPageClient({
                       className="text-muted-foreground text-xs whitespace-nowrap"
                       title={formatFullDate(notification.CreatedAt)}
                     >
-                      {formatDate(notification.CreatedAt)}
+                      {formatRelativeTime(notification.CreatedAt)}
                     </span>
                   </div>
                   <p className="text-muted-foreground text-sm">
