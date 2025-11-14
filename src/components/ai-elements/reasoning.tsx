@@ -115,12 +115,12 @@ export type ReasoningTriggerProps = ComponentProps<typeof CollapsibleTrigger>;
 
 const getThinkingMessage = (isStreaming: boolean, duration?: number) => {
   if (isStreaming || duration === 0) {
-    return <Shimmer duration={1}>Thinking...</Shimmer>;
+    return <Shimmer duration={1}>Đang suy nghĩ...</Shimmer>;
   }
   if (duration === undefined) {
-    return <p>Thought for a few seconds</p>;
+    return <p>Suy nghĩ trong vài giây</p>;
   }
-  return <p>Thought for {duration} seconds</p>;
+  return <p>Suy nghĩ trong {duration} giây</p>;
 };
 
 export const ReasoningTrigger = memo(
@@ -168,18 +168,7 @@ export const ReasoningContent = memo(
       )}
       {...props}
     >
-      <Streamdown
-        components={
-          {
-            think: ({ children }: { children?: React.ReactNode }) => (
-              <span className="hidden">{children}</span>
-            ),
-          } as any
-        }
-        {...props}
-      >
-        {children}
-      </Streamdown>
+      <Streamdown {...props}>{children}</Streamdown>
     </CollapsibleContent>
   ),
 );

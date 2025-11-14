@@ -83,7 +83,7 @@ export default async function Page({
             Không thể tải thông tin giao dịch
           </p>
           <Link
-            href={`/dashboard/wallet`}
+            href="/dashboard/wallet"
             prefetch={false}
             className="inline-block w-full rounded-lg bg-red-600 px-6 py-3 font-semibold text-white transition hover:bg-red-700"
           >
