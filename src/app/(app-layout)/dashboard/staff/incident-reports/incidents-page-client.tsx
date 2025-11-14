@@ -12,9 +12,8 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { ReportIncidentModal } from "./report-incident-modal";
-import { formatDistanceToNow } from "date-fns";
-import { vi } from "date-fns/locale";
 import { UpdateIncidentModal } from "./update-incident-modal";
+import { formatRelativeTime } from "@/lib/formatters";
 
 interface Incident {
   Id: number;
@@ -158,10 +157,7 @@ export function IncidentsPageClient({
                     </div>
                   </div>
                   <span className="text-muted-foreground text-xs whitespace-nowrap">
-                    {formatDistanceToNow(new Date(incident.ReportedAt), {
-                      addSuffix: true,
-                      locale: vi,
-                    })}
+                    {formatRelativeTime(incident.ReportedAt)}
                   </span>
                 </div>
               </CardHeader>

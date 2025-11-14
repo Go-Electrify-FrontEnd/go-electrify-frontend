@@ -20,12 +20,7 @@ import {
   FieldGroup,
 } from "@/components/ui/field";
 import { Loader2, Plus } from "lucide-react";
-import {
-  Controller,
-  type Resolver,
-  type SubmitHandler,
-  useForm,
-} from "react-hook-form";
+import { Controller, type SubmitHandler, useForm } from "react-hook-form";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useServerAction } from "@/hooks/use-server-action";

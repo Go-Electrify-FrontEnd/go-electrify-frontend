@@ -37,10 +37,9 @@ const initialState = {
 
 export default function WalletDepositButton() {
   const [open, setOpen] = useState(false);
-  const schema = walletTopupSchema;
 
   const form = useForm({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(walletTopupSchema),
     defaultValues: { amount: 10000 },
   });
 

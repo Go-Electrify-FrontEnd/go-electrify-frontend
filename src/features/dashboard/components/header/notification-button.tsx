@@ -5,9 +5,8 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Notification } from "@/features/dashboard/types/notification";
-import { formatDistanceToNow } from "date-fns";
-import { vi } from "date-fns/locale";
 import { NotificationPopoverWrapper } from "./notification-popover-wrapper";
+import { formatRelativeTime } from "@/lib/formatters";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
 import { NotificationDialog } from "./notification-dialog";
@@ -24,15 +23,6 @@ function getNotificationIcon(type: string) {
       return <User className="h-4 w-4 text-green-500" />;
     default:
       return <Bell className="h-4 w-4 text-gray-500" />;
-  }
-}
-
-function formatDate(dateString: string) {
-  try {
-    const date = new Date(dateString);
-    return formatDistanceToNow(date, { addSuffix: true, locale: vi });
-  } catch (error) {
-    return dateString;
   }
 }
 
@@ -70,7 +60,7 @@ function NotificationItem({
           {notification.Message}
         </p>
         <p className="text-muted-foreground text-xs">
-          {formatDate(notification.CreatedAt)}
+          {formatRelativeTime(notification.CreatedAt)}
         </p>
       </div>
     </div>

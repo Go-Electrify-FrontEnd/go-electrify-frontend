@@ -41,6 +41,7 @@ interface ChatPopupProps {
 }
 
 export function ChatPopup({ chatId }: ChatPopupProps) {
+  const MAX_MESSAGES = 15;
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
   const [isCreatingNewChat, setIsCreatingNewChat] = useState(false);
@@ -51,12 +52,16 @@ export function ChatPopup({ chatId }: ChatPopupProps) {
     transport: new DefaultChatTransport({
       api: "/api/chat",
     }),
-    onFinish: (message) => {
-      console.log("[ChatPopup] Message finished:", JSON.stringify(message));
-    },
+    experimental_throttle: 60,
   });
 
+  const hasReachedMessageLimit = messages.length >= MAX_MESSAGES;
+
   const handleSubmit = (message: PromptInputMessage) => {
+    if (hasReachedMessageLimit) {
+      return;
+    }
+
     if (message.text.trim()) {
       sendMessage({ text: message.text });
       setInput("");
@@ -197,6 +202,24 @@ export function ChatPopup({ chatId }: ChatPopupProps) {
           </Conversation>
 
           <div className="border-t p-3 sm:p-4">
+            {hasReachedMessageLimit && (
+              <div className="mb-3 flex flex-col gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-100">
+                <p>
+                  Bạn đã đạt giới hạn {MAX_MESSAGES} tin nhắn cho cuộc trò
+                  chuyện này. Hãy tạo cuộc trò chuyện mới để tiếp tục.
+                </p>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  className="self-start"
+                  onClick={handleNewChat}
+                  disabled={isCreatingNewChat || status === "streaming"}
+                >
+                  Bắt đầu cuộc trò chuyện mới
+                </Button>
+              </div>
+            )}
             <PromptInput
               onSubmit={handleSubmit}
               className="relative mx-auto mt-4 w-full max-w-2xl"
@@ -206,10 +229,11 @@ export function ChatPopup({ chatId }: ChatPopupProps) {
                 placeholder="Hãy hỏi tôi bất cứ điều gì..."
                 onChange={(e) => setInput(e.currentTarget.value)}
                 className="pr-12"
+                disabled={hasReachedMessageLimit}
               />
               <PromptInputSubmit
                 status={status === "streaming" ? "streaming" : "ready"}
-                disabled={!input.trim()}
+                disabled={hasReachedMessageLimit || !input.trim()}
                 className="absolute right-1 bottom-1"
               />
             </PromptInput>
