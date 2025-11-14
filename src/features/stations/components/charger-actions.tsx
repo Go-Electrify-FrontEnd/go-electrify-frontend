@@ -81,7 +81,7 @@ export function ActionsCell({ charger }: ActionsCellProps) {
             setEditDialogOpen(true);
           }}
         >
-          {/* Edit icon omitted to keep icons consistent */}
+          <Eye className="h-4 w-4" />
           Cập nhật
         </DropdownMenuItem>
         <DropdownMenuItem
@@ -101,15 +101,6 @@ export function ActionsCell({ charger }: ActionsCellProps) {
         >
           <Copy className="h-4 w-4" />
           {copied ? "Đã sao chép" : "Sao chép ID"}
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => {
-            // placeholder: open detail view (not implemented)
-            // view charger action
-          }}
-        >
-          <Eye className="h-4 w-4" />
-          Xem chi tiết
         </DropdownMenuItem>
       </DropdownMenuContent>
 
