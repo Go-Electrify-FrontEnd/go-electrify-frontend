@@ -1,6 +1,7 @@
 "use client";
 
 import { type LucideIcon } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 import {
   SidebarGroup,
@@ -26,6 +27,8 @@ export function NavSection({
   };
   userRole?: string;
 }) {
+  const pathname = usePathname();
+
   // Filter items based on user role
   const filteredItems = items.items.filter((item) => {
     // If no roles specified, show to everyone
@@ -56,23 +59,18 @@ export function NavSection({
     <SidebarGroup>
       <SidebarGroupLabel className="uppercase">{items.title}</SidebarGroupLabel>
       <SidebarMenu>
-        {filteredItems.map((item) => (
-          <SidebarMenuItem
-            className="!flex !items-center !justify-center !align-middle"
-            key={item.title}
-          >
-            <SidebarMenuButton tooltip={item.title} asChild>
-              <Link
-                prefetch={false}
-                href={item.url}
-                className="hover:text-foreground text-muted-foreground/90 hover:bg-muted flex items-center rounded-md transition-colors group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0"
-              >
-                {item.icon && <item.icon />}
-                <span>{item.title}</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        ))}
+        {filteredItems.map((item) => {
+          return (
+            <SidebarMenuItem key={item.title}>
+              <SidebarMenuButton tooltip={item.title} asChild>
+                <Link prefetch={false} href={item.url}>
+                  {item.icon && <item.icon />}
+                  <span>{item.title}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          );
+        })}
       </SidebarMenu>
     </SidebarGroup>
   );

@@ -162,7 +162,7 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarMenu,
+  SidebarRail,
 } from "@/components/ui/sidebar";
 import { NavSection } from "./nav-section";
 import { useUser } from "@/features/users/contexts/user-context";
@@ -174,11 +174,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const userRole = user?.role;
 
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
+    <Sidebar collapsible="icon" {...props}>
       <SidebarHeader className="h-16 border-b">
-        <SidebarMenu>
-          <NavUser />
-        </SidebarMenu>
+        <NavUser />
       </SidebarHeader>
       <SidebarContent>
         <NavSection items={overview} userRole={userRole} />
@@ -190,6 +188,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter>
         <NavSecondary items={navSecondary} />
       </SidebarFooter>
+      <SidebarRail />
     </Sidebar>
   );
 }
