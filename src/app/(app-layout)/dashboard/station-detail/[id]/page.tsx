@@ -27,8 +27,7 @@ import {
   Users,
   Zap,
 } from "lucide-react";
-import { SharedDataTable } from "@/components/shared-data-table";
-import bookingColumns from "@/features/stations/components/bookings-table-columns";
+import { BookingsTable } from "@/features/stations/components/bookings-table";
 import { notFound } from "next/navigation";
 import StationDockCreate from "@/features/stations/components/charger-create-dialog";
 import { ChargerUpdateProvider } from "@/features/stations/contexts/charger-update-context";
@@ -274,14 +273,7 @@ export default async function StationPage({
           </CardHeader>
           <CardContent className="p-0">
             <div className="p-3 sm:p-6">
-              <SharedDataTable
-                columns={bookingColumns}
-                data={bookings}
-                searchColumn="code"
-                searchPlaceholder="Tìm kiếm mã giữ chỗ..."
-                emptyTitle="Chưa có giữ chỗ"
-                emptyMessage="Khách hàng chưa đăng ký giữ chỗ nào cho trạm này."
-              />
+              <BookingsTable data={bookings} />
             </div>
           </CardContent>
         </Card>

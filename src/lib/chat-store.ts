@@ -1,125 +1,139 @@
-"use client";
-
+import { put, list, del } from "@vercel/blob";
 import { UIMessage } from "ai";
-import { generateId } from "ai";
 
-const CHAT_STORAGE_PREFIX = "chat_";
-const CHAT_LIST_KEY = "chat_list";
-
-/**
- * Create a new chat and return its ID
- */
-export function createChat(): string {
-  const id = generateId();
-
-  // Initialize empty chat messages
-  saveChat(id, []);
-
-  // Add to chat list
-  const chatList = getChatList();
-  chatList.push({
-    id,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  });
-  localStorage.setItem(CHAT_LIST_KEY, JSON.stringify(chatList));
-
-  return id;
+export interface Chat {
+  id: string;
+  title: string;
+  createdAt: number;
+  messages: UIMessage[];
+  userId: string;
 }
 
-/**
- * Load chat messages from local storage
- */
-export function loadChat(id: string): UIMessage[] {
-  if (typeof window === "undefined") return [];
+export async function saveChat({
+  id,
+  messages,
+  userId,
+}: {
+  id: string;
+  messages: UIMessage[];
+  userId: string;
+}): Promise<void> {
+  // Try to load existing chat to preserve title and creation date
+  const existingChat = await loadChat(id, userId);
 
+  let title = existingChat?.title || "New Chat";
+  const createdAt = existingChat?.createdAt || Date.now();
+
+  // If it's a new chat or title is default, try to generate from content
+  if (!existingChat || title === "New Chat") {
+    const firstUserMessage = messages.find((m) => m.role === "user");
+    if (firstUserMessage) {
+      const fullText = firstUserMessage.parts
+        .filter((p) => p.type === "text")
+        .map((p) => p.text)
+        .join("")
+        .trim();
+
+      // Truncate to 60 characters and add ellipsis if needed
+      if (fullText.length > 60) {
+        title = fullText.substring(0, 60) + "...";
+      } else if (fullText.length > 0) {
+        title = fullText;
+      }
+    }
+  }
+
+  const chat: Chat = {
+    id,
+    title,
+    createdAt,
+    messages,
+    userId,
+  };
+
+  await put(`chat-messages/${userId}/${id}.json`, JSON.stringify(chat), {
+    access: "public",
+    addRandomSuffix: false,
+    allowOverwrite: true, // Allow overwriting existing chat files
+  });
+}
+
+export async function loadChat(
+  id: string,
+  userId: string,
+): Promise<Chat | null> {
   try {
-    const chatData = localStorage.getItem(`${CHAT_STORAGE_PREFIX}${id}`);
-    if (!chatData) return [];
+    const { blobs } = await list({
+      prefix: `chat-messages/${userId}/${id}.json`,
+      limit: 1,
+    });
 
-    return JSON.parse(chatData) as UIMessage[];
+    if (blobs.length === 0) {
+      return null;
+    }
+
+    const response = await fetch(blobs[0].url);
+    const chat = await response.json();
+    return chat as Chat;
   } catch (error) {
     console.error("Error loading chat:", error);
-    return [];
+    return null;
   }
 }
 
-/**
- * Save chat messages to local storage
- */
-export function saveChat(id: string, messages: UIMessage[]): void {
-  if (typeof window === "undefined") return;
-
+export async function getChats(userId: string): Promise<Chat[]> {
   try {
-    localStorage.setItem(
-      `${CHAT_STORAGE_PREFIX}${id}`,
-      JSON.stringify(messages)
+    const { blobs } = await list({
+      prefix: `chat-messages/${userId}/`,
+    });
+
+    const chats = await Promise.all(
+      blobs.map(async (blob) => {
+        const response = await fetch(blob.url);
+        return (await response.json()) as Chat;
+      }),
     );
 
-    // Update the updatedAt timestamp in chat list
-    const chatList = getChatList();
-    const chatIndex = chatList.findIndex((chat) => chat.id === id);
-    if (chatIndex !== -1) {
-      chatList[chatIndex].updatedAt = new Date().toISOString();
-      localStorage.setItem(CHAT_LIST_KEY, JSON.stringify(chatList));
-    }
+    return chats.sort((a, b) => b.createdAt - a.createdAt);
   } catch (error) {
-    console.error("Error saving chat:", error);
-  }
-}
-
-/**
- * Delete a chat from local storage
- */
-export function deleteChat(id: string): void {
-  if (typeof window === "undefined") return;
-
-  try {
-    localStorage.removeItem(`${CHAT_STORAGE_PREFIX}${id}`);
-
-    // Remove from chat list
-    const chatList = getChatList();
-    const updatedList = chatList.filter((chat) => chat.id !== id);
-    localStorage.setItem(CHAT_LIST_KEY, JSON.stringify(updatedList));
-  } catch (error) {
-    console.error("Error deleting chat:", error);
-  }
-}
-
-/**
- * Get list of all chats
- */
-export function getChatList(): Array<{
-  id: string;
-  createdAt: string;
-  updatedAt: string;
-}> {
-  if (typeof window === "undefined") return [];
-
-  try {
-    const chatListData = localStorage.getItem(CHAT_LIST_KEY);
-    if (!chatListData) return [];
-
-    return JSON.parse(chatListData);
-  } catch (error) {
-    console.error("Error getting chat list:", error);
+    console.error("Error getting chats:", error);
     return [];
   }
 }
 
-/**
- * Clear all chats from local storage
- */
-export function clearAllChats(): void {
-  if (typeof window === "undefined") return;
-
+export async function updateChatTitle(
+  id: string,
+  userId: string,
+  newTitle: string,
+): Promise<void> {
   try {
-    const chatList = getChatList();
-    chatList.forEach((chat) => {
-      localStorage.removeItem(`${CHAT_STORAGE_PREFIX}${chat.id}`);
-    });
-    localStorage.removeItem(CHAT_LIST_KEY);
+    const chat = await loadChat(id, userId);
+    if (!chat) return;
+    const updatedChat = { ...chat, title: newTitle };
+    await put(
+      `chat-messages/${userId}/${id}.json`,
+      JSON.stringify(updatedChat),
+      {
+        access: "public",
+        addRandomSuffix: false,
+        allowOverwrite: true, // Allow overwriting existing chat files
+      },
+    );
   } catch (error) {
-    console.error("Error clearing all chats:", error);
+    console.error("Error updating chat title:", error);
+  }
+}
+
+export async function deleteChat(id: string, userId: string): Promise<void> {
+  try {
+    const { blobs } = await list({
+      prefix: `chat-messages/${userId}/${id}.json`,
+      limit: 1,
+    });
+    if (blobs.length > 0) {
+      await del(blobs[0].url);
+    }
+  } catch (error) {
+    console.error("Error deleting chat:", error);
   }
 }

@@ -1,9 +1,16 @@
-import { convertToModelMessages, stepCountIs, streamText, tool } from "ai";
+import {
+  convertToModelMessages,
+  stepCountIs,
+  streamText,
+  tool,
+  UIMessage,
+} from "ai";
 import { gateway } from "@ai-sdk/gateway";
 import { z } from "zod";
 import { findRelevantContent } from "@/features/rag/services/vector-operations";
 import { getAuthenticatedUser } from "@/lib/auth/api-auth-helper";
-import OpenAI from "openai";
+import { saveChat } from "@/lib/chat-store";
+import { forbidden } from "next/navigation";
 
 export const maxDuration = 30;
 
@@ -34,7 +41,7 @@ Follow these directives in order:
 
 3. Response Crafting
   - Summarize only what tools returned. Cite each fact using [Source: documentName#chunkIndex].
-  - Match the user's language; you may translate for search but respond in the original language.
+  - Always respond in the same language as the user's message. Match the user's language exactly.
   - Keep replies efficient: avoid repeating the question, limit to concise paragraphs or short bullet lists (≤3 bullets when possible), and exclude filler to reduce token usage.
   - Offer detailed explanations for admins and simpler guidance for drivers. Provide reasoning only when resolving conflicting information and keep it under 40 tokens.
 
@@ -52,19 +59,18 @@ export async function POST(req: Request) {
   const user = await getAuthenticatedUser();
 
   if (!user) {
-    return new Response(
-      JSON.stringify({ error: "Unauthorized. Admin access required." }),
-      { status: 403, headers: { "Content-Type": "application/json" } },
-    );
+    forbidden();
   }
 
-  const { messages, id } = await req.json();
+  const { messages, id }: { messages: UIMessage[]; id: string } =
+    await req.json();
+
   console.log(
     `[Chat API] Received request - Chat ID: ${id}, Message count: ${messages.length}`,
   );
 
   const result = streamText({
-    model: gateway("openai/gpt-oss-120b"),
+    model: gateway("xai/grok-code-fast-1"),
     messages: convertToModelMessages(messages),
     system: buildSystemPrompt(user.name || "User", user.email, user.role),
     stopWhen: stepCountIs(5),
@@ -127,6 +133,18 @@ export async function POST(req: Request) {
   });
 
   return result.toUIMessageStreamResponse({
+    originalMessages: messages,
     sendReasoning: true,
+    onFinish: async ({ messages: finalMessages }) => {
+      console.log(
+        `[Chat API] Saving ${finalMessages.length} messages for chat ID: ${id}`,
+      );
+      await saveChat({
+        id: id,
+        messages: finalMessages,
+        userId: user.email,
+      });
+      console.log(`[Chat API] Successfully saved chat ${id}`);
+    },
   });
 }
