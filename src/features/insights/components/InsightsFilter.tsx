@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Granularity, InsightsFilters } from "../types/insights.types";
-import { getStations } from "@/features/stations/services/stations-api";
 import { toast } from "sonner";
 import {
   format,
@@ -27,6 +26,7 @@ import {
   startOfDay,
   differenceInCalendarDays,
 } from "date-fns";
+import { getStations } from "@/features/stations/api/stations-api";
 
 interface Station {
   id: string;

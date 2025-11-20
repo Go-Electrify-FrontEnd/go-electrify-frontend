@@ -1,7 +1,6 @@
 import { StationMap } from "@/features/stations-nearby/components/stations-map";
 import { StationsSidebar } from "@/features/stations-nearby/components/stations-sidebar";
 import { StationsNearbyProvider } from "@/contexts/stations-nearby-context";
-import { getStations } from "@/features/stations/services/stations-api";
 import {
   Sheet,
   SheetContent,
@@ -10,6 +9,7 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
+import { getStations } from "@/features/stations/api/stations-api";
 
 export default async function FindStationsPage() {
   const chargingStations = await getStations();
