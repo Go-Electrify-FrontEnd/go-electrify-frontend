@@ -2,7 +2,7 @@ import SectionHeader from "@/components/section-header";
 import StationCreate from "@/features/stations/components/station-create-dialog";
 import { StationsTable } from "@/features/stations/components/station-table";
 import SectionContent from "@/components/section-content";
-import { getStations } from "@/features/stations/services/stations-api";
+import { getStations } from "@/features/stations/api/stations-api";
 
 export default async function StationsManagementPage() {
   const stations = await getStations();
