@@ -6,12 +6,6 @@ interface ApiFetchOptions extends RequestInit {
   requireAuth?: boolean;
 }
 
-interface ApiResponse<T> {
-  data: T;
-  success: boolean;
-  error?: string;
-}
-
 /**
  * Performs an authenticated API fetch with consistent error handling
  * @param endpoint - API endpoint path (will be appended to API_BASE_URL)
