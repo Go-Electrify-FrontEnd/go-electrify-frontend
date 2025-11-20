@@ -1,7 +1,7 @@
 "use client";
 
 import { DataTable } from "@/components/ui/data-table";
-import { reservationColumns } from "./reservation-table-columns";
+import { columns } from "./reservation-table-columns";
 import type { ReservationApi } from "../schemas/reservation.schema";
 
 interface ReservationTableProps {
@@ -11,7 +11,7 @@ interface ReservationTableProps {
 export function ReservationTable({ data }: ReservationTableProps) {
   return (
     <DataTable
-      columns={reservationColumns}
+      columns={columns}
       data={data}
       searchColumn="stationName"
       searchPlaceholder="Tìm kiếm theo tên trạm..."

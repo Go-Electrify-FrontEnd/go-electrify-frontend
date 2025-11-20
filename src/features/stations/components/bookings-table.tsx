@@ -1,7 +1,7 @@
 "use client";
 
 import { DataTable } from "@/components/ui/data-table";
-import { bookingColumns } from "./booking-table-columns";
+import { bookingColumns } from "./bookings-table-columns";
 import type { StationBooking } from "../schemas/station.schema";
 
 interface BookingsTableProps {
