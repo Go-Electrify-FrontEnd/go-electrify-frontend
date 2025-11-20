@@ -4,7 +4,6 @@ import { getUser } from "@/lib/auth/auth-server";
 import { getConnectorTypes } from "../../admin/connector-type/page";
 import { getVehicleModels } from "../../admin/vehicle-models/page";
 import SectionContent from "@/components/section-content";
-import { getStations } from "@/features/stations/services/stations-api";
 import { getReservationsDetails } from "@/features/reservations/services/reservations-api";
 
 import { ReservationTable } from "@/features/reservations/components/reservation-table";
@@ -26,7 +25,10 @@ import {
 } from "@/components/ui/card";
 import { Plus } from "lucide-react";
 import { getBookingFee } from "@/features/booking-fee/services/booking-fee-api";
-import { getStationChargers } from "@/features/stations/api/stations-api";
+import {
+  getStationChargers,
+  getStations,
+} from "@/features/stations/api/stations-api";
 import { Charger } from "@/features/chargers/schemas/charger.schema";
 
 interface ReservationPageProps {

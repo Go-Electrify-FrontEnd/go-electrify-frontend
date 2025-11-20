@@ -1,12 +1,11 @@
 import { getUser } from "@/lib/auth/auth-server";
 import { redirect } from "next/navigation";
 import { AdminDashboard } from "@/features/dashboard/components/home/admin-dashboard";
-import { getStations } from "@/features/stations/services/stations-api";
 import { getUsers } from "@/features/users/api/users-api";
 import { getConnectorTypes } from "@/features/connector-type/services/connector-type-api";
-import { getVehicleModels } from "@/features/vehicle-models/api/vehicle-model-api";
 import { getReportedIncidents } from "@/app/(app-layout)/dashboard/admin/incident-reports/page";
 import { getSubscriptions } from "@/features/subscriptions/api/subscriptions-api";
+import { getStations } from "@/features/stations/api/stations-api";
 
 export async function AdminDashboardPage() {
   const { user, token } = await getUser();
@@ -14,22 +13,11 @@ export async function AdminDashboardPage() {
   if (!user || !token) {
     redirect("/login");
   }
-
-  const [
-    stations,
-    connectors,
-    carModels,
-    subscriptions,
-    users,
-    reportedIncidents,
-  ] = await Promise.all([
-    getStations(),
-    getConnectorTypes(),
-    getVehicleModels(token),
-    getSubscriptions(),
-    getUsers(),
-    getReportedIncidents(token),
-  ]);
+  const users = await getUsers();
+  const stations = await getStations();
+  const connectors = await getConnectorTypes();
+  const subscriptions = await getSubscriptions();
+  const reportedIncidents = await getReportedIncidents(token);
 
   return (
     <AdminDashboard
