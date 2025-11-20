@@ -33,7 +33,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useEffect, useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { AblyProvider, ChannelProvider, useChannel } from "ably/react";
 import * as Ably from "ably";

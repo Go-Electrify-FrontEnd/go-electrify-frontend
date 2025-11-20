@@ -1,19 +1,26 @@
 import type { DocumentMetadata } from "../types";
 import { getIndex } from "./pinecone-client";
 import { generateEmbedding, generateEmbeddings } from "./embeddings";
+import { z } from "zod";
 
 const DEFAULT_NAMESPACE = "go-electrify";
 
-/**
- * Upsert document chunks to Pinecone Vector Database
- *
- * @param documentId - Unique document identifier
- * @param documentName - Display name of document
- * @param documentType - Category of document
- * @param chunks - Array of text chunks
- * @param metadata - Additional metadata (source, description, targetActors)
- * @returns Success result with message
- */
+const PineconeMetadataSchema = z.object({
+  documentId: z.union([z.string(), z.number()]).transform(String),
+  documentName: z.string().default("Unknown"),
+  documentType: z
+    .enum(["FAQ", "Guide", "Policy", "Troubleshooting", "Other"])
+    .default("Other"),
+  description: z.string().default(""),
+  uploadDate: z
+    .union([z.string(), z.number()])
+    .transform((val) =>
+      typeof val === "number" ? val : Date.parse(val) || Date.now(),
+    ),
+  source: z.string().default("Unknown"),
+  targetActors: z.string().default("admin,staff,driver"),
+});
+
 export async function upsertDocumentChunks(
   documentId: string,
   documentName: string,
@@ -29,16 +36,13 @@ export async function upsertDocumentChunks(
     console.log(`   Document ID: ${documentId}`);
     console.log(`   Total chunks: ${chunks.length}`);
 
-    // Extract text content from chunks
     const chunkTexts = chunks.map((chunk) => chunk.content);
 
-    // Generate embeddings for all chunks in one batch
     console.log(`Generating embeddings for ${chunks.length} chunks...`);
     const startEmbed = Date.now();
     const chunkEmbeddings = await generateEmbeddings(chunkTexts);
     console.log(`Embeddings generated in ${Date.now() - startEmbed}ms`);
 
-    // Convert to Pinecone upsert format (flat metadata structure)
     const records = chunkEmbeddings.map((chunk, i) => ({
       id: `${documentId}-${i}`,
       values: chunk.embedding,
@@ -55,7 +59,6 @@ export async function upsertDocumentChunks(
       },
     }));
 
-    // Upsert all vectors in a single request
     console.log(`Upserting ${records.length} vectors to Pinecone...`);
     const startUpsert = Date.now();
     await index.namespace(DEFAULT_NAMESPACE).upsert(records);
@@ -79,12 +82,6 @@ export async function upsertDocumentChunks(
   }
 }
 
-/**
- * Delete all chunks belonging to a document
- *
- * @param documentId - Document to delete
- * @returns Success result with message
- */
 export async function deleteDocumentById(
   documentId: string,
 ): Promise<{ success: boolean; message: string }> {
@@ -93,13 +90,11 @@ export async function deleteDocumentById(
 
     console.log(`Deleting document: ${documentId}`);
 
-    // Generate potential IDs (up to 1000 chunks per document)
     const vectorIds: string[] = [];
     for (let i = 0; i < 1000; i++) {
       vectorIds.push(`${documentId}-${i}`);
     }
 
-    // Delete all in batches (Pinecone supports deleteMany)
     const startDelete = Date.now();
     await index.namespace(DEFAULT_NAMESPACE).deleteMany(vectorIds);
     console.log(`Delete completed in ${Date.now() - startDelete}ms`);
@@ -119,16 +114,10 @@ export async function deleteDocumentById(
   }
 }
 
-/**
- * List all documents by fetching vectors and aggregating by metadata
- *
- * @returns Array of document metadata
- */
 export async function listAllDocuments(): Promise<DocumentMetadata[]> {
   try {
     const index = getIndex();
 
-    // Use listPaginated to get all vector IDs
     const allVectors: Array<{ id: string }> = [];
     let paginationToken: string | undefined = undefined;
 
@@ -141,7 +130,6 @@ export async function listAllDocuments(): Promise<DocumentMetadata[]> {
       });
 
       if (result.vectors && result.vectors.length > 0) {
-        // Filter out vectors without IDs
         const validVectors = result.vectors
           .filter((v) => v.id !== undefined)
           .map((v) => ({ id: v.id! }));
@@ -160,7 +148,6 @@ export async function listAllDocuments(): Promise<DocumentMetadata[]> {
       `Found ${allVectors.length} total vectors, fetching metadata...`,
     );
 
-    // Fetch metadata for all vectors in batches
     const vectorIds = allVectors.map((v) => v.id);
     const metadataBatchSize = 1000;
     const documentsMap = new Map<string, DocumentMetadata>();
@@ -170,11 +157,12 @@ export async function listAllDocuments(): Promise<DocumentMetadata[]> {
       const fetchResult = await index.namespace(DEFAULT_NAMESPACE).fetch(batch);
 
       if (fetchResult.records) {
-        for (const [_id, record] of Object.entries(fetchResult.records)) {
-          const metadata = record.metadata as Record<string, any>;
-          if (!metadata?.documentId) continue;
+        for (const [, record] of Object.entries(fetchResult.records)) {
+          const parseResult = PineconeMetadataSchema.safeParse(record.metadata);
+          if (!parseResult.success) continue;
 
-          const docId = String(metadata.documentId);
+          const metadata = parseResult.data;
+          const docId = metadata.documentId;
           const existing = documentsMap.get(docId);
 
           if (existing) {
@@ -182,18 +170,14 @@ export async function listAllDocuments(): Promise<DocumentMetadata[]> {
           } else {
             documentsMap.set(docId, {
               id: docId,
-              name: String(metadata.documentName || "Unknown"),
-              type: (metadata.documentType as any) || "Other",
-              description: String(metadata.description || ""),
+              name: metadata.documentName,
+              type: metadata.documentType,
+              description: metadata.description,
               chunkCount: 1,
-              uploadDate: new Date(
-                metadata.uploadDate || Date.now(),
-              ).toISOString(),
+              uploadDate: new Date(metadata.uploadDate).toISOString(),
               status: "indexed",
-              source: String(metadata.source || "Unknown"),
-              targetActors: String(
-                metadata.targetActors || "admin,staff,driver",
-              ),
+              source: metadata.source,
+              targetActors: metadata.targetActors,
             });
           }
         }
@@ -214,14 +198,7 @@ export async function listAllDocuments(): Promise<DocumentMetadata[]> {
   }
 }
 
-/**
- * Find relevant content using semantic similarity search
- *
- * @param query - Search query text
- * @param k - Number of results to return (default: 1)
- * @returns Pinecone query results with metadata
- */
-export async function findRelevantContent(query: string, k = 1) {
+export async function findRelevantContent(query: string, k = 3) {
   const index = getIndex();
   const userEmbedding = await generateEmbedding(query);
 
@@ -239,12 +216,6 @@ export async function findRelevantContent(query: string, k = 1) {
   }
 }
 
-/**
- * Get statistics for a specific document
- *
- * @param documentId - Document to get stats for
- * @returns Chunk and vector counts
- */
 export async function getDocumentStats(
   documentId: string,
 ): Promise<{ chunks: number; vectors: number }> {
@@ -253,16 +224,13 @@ export async function getDocumentStats(
 
     console.log(`Getting stats for document: ${documentId}`);
 
-    // Generate IDs to fetch (up to 1000 chunks)
     const sampleIds: string[] = [];
     for (let i = 0; i < 1000; i++) {
       sampleIds.push(`${documentId}-${i}`);
     }
 
-    // Fetch all in one request
     const results = await index.namespace(DEFAULT_NAMESPACE).fetch(sampleIds);
 
-    // Count existing records
     const count = Object.keys(results.records || {}).length;
 
     console.log(`Document ${documentId} has ${count} chunks`);
@@ -277,13 +245,6 @@ export async function getDocumentStats(
   }
 }
 
-/**
- * Update metadata for a document's chunks
- *
- * @param documentId - Document to update
- * @param updates - Metadata fields to update
- * @returns Success result with message
- */
 export async function updateDocumentMetadata(
   documentId: string,
   updates: Partial<{
@@ -296,12 +257,11 @@ export async function updateDocumentMetadata(
   try {
     const namespace = getIndex().namespace(DEFAULT_NAMESPACE);
 
-    // Fetch all chunks for this document
     const vectorIds = Array.from(
       { length: 1000 },
       (_, i) => `${documentId}-${i}`,
     );
-    const allRecords: Record<string, any> = {};
+    const allRecords: Record<string, Record<string, unknown>> = {};
 
     for (let i = 0; i < vectorIds.length; i += 100) {
       const batch = await namespace.fetch(vectorIds.slice(i, i + 100));
@@ -312,7 +272,6 @@ export async function updateDocumentMetadata(
       return { success: false, message: "No vectors found" };
     }
 
-    // Build new metadata
     const newMetadata = {
       ...(updates.documentName && { documentName: updates.documentName }),
       ...(updates.documentType && { documentType: updates.documentType }),
@@ -322,12 +281,13 @@ export async function updateDocumentMetadata(
       }),
     };
 
-    // Update each chunk
     for (const [id, record] of Object.entries(allRecords)) {
-      if (!record?.metadata) continue;
+      const parseResult = PineconeMetadataSchema.safeParse(record?.metadata);
+      if (!parseResult.success) continue;
+
       await namespace.update({
         id,
-        metadata: { ...record.metadata, ...newMetadata },
+        metadata: { ...parseResult.data, ...newMetadata },
       });
     }
 

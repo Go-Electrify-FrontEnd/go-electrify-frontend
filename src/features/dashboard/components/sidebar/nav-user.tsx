@@ -1,17 +1,12 @@
 "use client";
 
 import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
   Computer,
   CreditCard,
   Dot,
-  Languages,
   LogOut,
   Moon,
   Settings2,
-  Sparkles,
   Sun,
 } from "lucide-react";
 // Language switching removed — Vietnamese only

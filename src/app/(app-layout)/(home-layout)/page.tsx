@@ -1,6 +1,5 @@
 import FooterSection from "@/features/landing/footer";
 import HeroSection from "@/features/landing/hero-section";
-import TeamSection from "@/features/landing/team";
 import {
   CheaperPriceCard,
   OnlinePaymentCard,

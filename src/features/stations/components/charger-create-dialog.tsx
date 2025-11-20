@@ -124,17 +124,7 @@ export default function StationDockCreate({
         <form
           id="charger-form"
           className="space-y-6"
-          onSubmit={(e) => {
-            // Debug wrapper to ensure submit attempts are logged and validation errors are visible
-            // form submit clicked
-            e.preventDefault();
-            form.handleSubmit(onSubmit, (errors) => {
-              // validation errors (see form state)
-              try {
-                toast.error("Vui lòng kiểm tra các trường có lỗi");
-              } catch {}
-            })();
-          }}
+          onSubmit={form.handleSubmit(onSubmit)}
         >
           <input type="hidden" {...form.register("stationId")} />
           <FieldGroup>

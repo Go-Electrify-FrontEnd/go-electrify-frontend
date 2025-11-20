@@ -172,6 +172,20 @@ export async function getBookingsByStationId(
   }
 }
 
+export async function getSelfStation(token: string) {
+  if (!token) {
+    console.error("getSelfStation: missing auth token");
+    return null;
+  }
+
+  const stationId = await getSelfStationId(token);
+  if (!stationId) {
+    return null;
+  }
+
+  return getStationById(stationId.toString(10), token);
+}
+
 export async function getStationStaff(stationId: string, token: string) {
   if (!token) {
     console.error("getStationStaff: missing auth token");

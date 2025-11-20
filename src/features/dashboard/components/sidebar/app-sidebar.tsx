@@ -3,7 +3,6 @@
 import {
   AudioWaveform,
   BookOpen,
-  Car,
   Command,
   GalleryVerticalEnd,
   House,

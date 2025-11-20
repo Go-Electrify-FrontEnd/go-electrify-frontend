@@ -20,7 +20,7 @@ import {
 import { Controller, useForm } from "react-hook-form";
 import { useState, useEffect, useTransition } from "react";
 import { InfoIcon, ZapIcon, Loader2, QrCode, Keyboard } from "lucide-react";
-import { QRScanner } from "@/components/qr-scanner";
+import { QRScanner } from "@/features/charging/components/qr-scanner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   joinSchema,

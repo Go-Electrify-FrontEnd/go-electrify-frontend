@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
 import { useState } from "react";
-import { Controller, type Resolver, useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useServerAction } from "@/hooks/use-server-action";
 import { useConnectorTypes } from "@/contexts/connector-type-context";

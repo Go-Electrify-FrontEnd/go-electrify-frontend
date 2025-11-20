@@ -33,7 +33,7 @@ export function SecretKeyDialog({
       toast.success("Đã sao chép khóa bí mật", {
         description: "Khóa bí mật đã được sao chép vào clipboard",
       });
-    } catch (error) {
+    } catch {
       toast.error("Không thể sao chép", {
         description: "Vui lòng sao chép thủ công",
       });
@@ -72,7 +72,7 @@ export function SecretKeyDialog({
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">
+            <label className="text-foreground text-sm font-medium">
               Khóa Bí Mật
             </label>
             <div className="relative">
@@ -82,7 +82,7 @@ export function SecretKeyDialog({
                 readOnly
                 className="pr-20 font-mono"
               />
-              <div className="absolute right-1 top-1 flex gap-1">
+              <div className="absolute top-1 right-1 flex gap-1">
                 <Button
                   type="button"
                   variant="ghost"
@@ -109,7 +109,7 @@ export function SecretKeyDialog({
                 </Button>
               </div>
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               Nhấn vào biểu tượng mắt để hiển thị hoặc ẩn khóa. Nhấn vào biểu
               tượng sao chép để copy.
             </p>

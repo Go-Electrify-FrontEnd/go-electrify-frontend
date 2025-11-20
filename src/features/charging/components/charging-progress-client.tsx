@@ -67,10 +67,8 @@ function ChargingProgressInner({
   const [shouldRedirect, setShouldRedirect] = useState<boolean>(false);
   const { push, refresh } = useRouter();
 
-  // Derived state - countdown is active when countdown > 0
   const isCountdownActive = countdown > 0;
 
-  // 5-second countdown on mount
   useEffect(() => {
     if (countdown > 0) {
       const timer = setTimeout(() => {
@@ -80,10 +78,8 @@ function ChargingProgressInner({
     }
   }, [countdown]);
 
-  // Handle redirect when charging is complete
   useEffect(() => {
     if (shouldRedirect) {
-      // Use window.location for more reliable navigation
       window.location.href = "/dashboard/charging/payment";
     }
   }, [shouldRedirect]);
@@ -96,13 +92,11 @@ function ChargingProgressInner({
         description: "Chuẩn bị tiến hành thanh toán.",
       });
 
-      // Trigger redirect via state
       setShouldRedirect(true);
     } else if (message.name === "soc_update") {
       const newSOC = Number(message.data.soc);
       setProgress(newSOC);
 
-      // Also update car information if available
       if (carInformation) {
         const newCapacity = (newSOC / 100) * carInformation.maxCapacity;
         setCarInformation({
@@ -124,12 +118,10 @@ function ChargingProgressInner({
     }
   });
 
-  // Load car information on mount
   useEffect(() => {
     publish("load_car_information", {});
   }, []);
 
-  // Calculate current SOC from car information
   const currentSOC = carInformation
     ? (carInformation.currentCapacity / carInformation.maxCapacity) * 100
     : progress;
@@ -137,6 +129,12 @@ function ChargingProgressInner({
   const handlePublish = () => {
     if (!sessionData) return;
     publish("start_session", { targetSOC: sessionData.targetSoc });
+  };
+
+  const handleStopCharging = () => {
+    if (!sessionData) return;
+    publish("request_stop_charging", { sessionId: sessionData.id });
+    toast.success("Yêu cầu dừng sạc đã được gửi");
   };
 
   if (!sessionData) {
@@ -245,7 +243,6 @@ function ChargingProgressInner({
         </Card>
       </div>
 
-      {/* Progress Bar */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
@@ -314,7 +311,6 @@ function ChargingProgressInner({
           </CardContent>
         </Card>
 
-        {/* Control Panel */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
@@ -361,11 +357,19 @@ function ChargingProgressInner({
                 ? `Vui lòng chờ (${countdown}s)`
                 : "Bắt đầu sạc"}
             </Button>
+            <Button
+              onClick={handleStopCharging}
+              disabled={!isStarted}
+              variant="destructive"
+              className="w-full"
+              size="lg"
+            >
+              Dừng sạc
+            </Button>
           </CardContent>
         </Card>
       </div>
 
-      {/* Info Alert */}
       <Alert>
         <Info className="h-4 w-4" />
         <AlertTitle>Hướng dẫn</AlertTitle>

@@ -1,19 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
   flexRender,
   getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Empty,
   EmptyDescription,
@@ -29,53 +22,61 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Inbox, Search } from "lucide-react";
-import { vehicleModelTableColumns } from "./vehicle-model-table-columns";
-import { CarModel } from "@/features/vehicle-models/schemas/vehicle-model.schema";
+import { Inbox } from "lucide-react";
+import { chargerLogColumns } from "./charger-log-table-columns";
+import type { ChargerLogItem } from "../schemas/charger-log.schema";
 
-interface VehicleModelTableProps {
-  data: CarModel[];
+interface ChargerLogTableProps {
+  data: ChargerLogItem[];
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  pageSize: number;
 }
 
-export function VehicleModelTable({ data }: VehicleModelTableProps) {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+export function ChargerLogTable({
+  data,
+  currentPage,
+  totalPages,
+  totalItems,
+  pageSize,
+}: ChargerLogTableProps) {
+  const router = useRouter();
 
   const table = useReactTable({
     data,
-    columns: vehicleModelTableColumns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
+    columns: chargerLogColumns,
+    pageCount: totalPages,
     state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
+      pagination: {
+        pageIndex: currentPage - 1,
+        pageSize: pageSize,
+      },
     },
+    onPaginationChange: (updater) => {
+      if (typeof updater === "function") {
+        const newPagination = updater({
+          pageIndex: currentPage - 1,
+          pageSize: pageSize,
+        });
+        router.push(`?page=${newPagination.pageIndex + 1}`, {
+          scroll: false,
+        });
+      }
+    },
+    manualPagination: true,
+    getCoreRowModel: getCoreRowModel(),
   });
 
-  const searchColumn = table.getColumn("modelName");
-  const searchValue = (searchColumn?.getFilterValue() as string) ?? "";
+  const canPreviousPage = currentPage > 1;
+  const canNextPage = currentPage < totalPages;
+
+  const handlePageChange = (newPage: number) => {
+    router.push(`?page=${newPage}`, { scroll: false });
+  };
 
   return (
     <div className="w-full space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="relative">
-          <Search className="text-muted-foreground absolute top-2.5 left-2 h-4 w-4" />
-          <Input
-            placeholder="Tìm kiếm"
-            value={searchValue}
-            onChange={(e) => searchColumn?.setFilterValue(e.target.value)}
-            className="max-w-sm pl-8"
-          />
-        </div>
-      </div>
-
       <div className="rounded-md border p-2">
         <Table>
           <TableHeader>
@@ -113,17 +114,16 @@ export function VehicleModelTable({ data }: VehicleModelTableProps) {
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={vehicleModelTableColumns.length}
-                  className="p-8"
-                >
+                <TableCell colSpan={chargerLogColumns.length} className="p-8">
                   <Empty className="border-muted-foreground/30 bg-muted/40 border border-dashed p-8">
                     <EmptyHeader>
                       <EmptyMedia variant="icon">
                         <Inbox className="h-6 w-6" aria-hidden="true" />
                       </EmptyMedia>
-                      <EmptyTitle>Không tìm thấy dữ liệu</EmptyTitle>
-                      <EmptyDescription>Không có dữ liệu</EmptyDescription>
+                      <EmptyTitle>Không có dữ liệu</EmptyTitle>
+                      <EmptyDescription>
+                        Không tìm thấy log cho bộ sạc này.
+                      </EmptyDescription>
                     </EmptyHeader>
                   </Empty>
                 </TableCell>
@@ -135,23 +135,22 @@ export function VehicleModelTable({ data }: VehicleModelTableProps) {
 
       <div className="flex items-center justify-between space-x-2 py-4">
         <div className="text-muted-foreground flex-1 text-sm">
-          Đang hiển thị {table.getRowModel().rows.length} trong tổng{" "}
-          {table.getFilteredRowModel().rows.length} dòng.
+          Trang {currentPage} của {totalPages} ({totalItems} dòng)
         </div>
         <div className="flex items-center space-x-2">
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={!canPreviousPage}
           >
             Trước
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={!canNextPage}
           >
             Sau
           </Button>

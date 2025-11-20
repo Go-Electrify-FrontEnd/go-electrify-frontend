@@ -8,15 +8,7 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui",
-    "test:e2e:debug": "playwright test --debug",
-    "test:e2e:headed": "playwright test --headed"
-  },
-  "engines": {
-    "npm": "Please use pnpm",
-    "yarn": "Please use pnpm"
+    "lint": "eslint"
   },
   "dependencies": {
     "@ai-sdk/gateway": "^2.0.7",
@@ -133,6 +125,7 @@
     "eslint-config-next": "16.0.3",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-unused-imports": "^4.3.0",
     "jsdom": "^27.0.0",
     "mailosaur": "^9.0.0",
     "msw": "^2.11.6",

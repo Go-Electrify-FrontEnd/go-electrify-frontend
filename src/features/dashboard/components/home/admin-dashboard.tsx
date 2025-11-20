@@ -1,13 +1,12 @@
 "use client";
 
-import { User, UserApi } from "@/features/users/schemas/user.types";
+import { UserApi } from "@/features/users/schemas/user.types";
 import {
   MapPin,
   Users,
   Plug,
   Package,
   ArrowUpRight,
-  ReceiptText,
 } from "lucide-react";
 import {
   Card,
@@ -18,7 +17,6 @@ import {
 } from "@/components/ui/card";
 import SectionHeader from "@/components/section-header";
 import StatCard from "../shared/stat-card";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,

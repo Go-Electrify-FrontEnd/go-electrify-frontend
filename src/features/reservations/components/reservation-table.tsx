@@ -44,7 +44,7 @@ export function ReservationTable({ data }: ReservationTableProps) {
 
   const table = useReactTable({
     data,
-    columns: columns as any,
+    columns: columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),

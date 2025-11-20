@@ -36,7 +36,6 @@ import {
   uploadDocumentSchema,
   validateFile,
   generateDocumentName,
-  type UploadDocumentFormData,
 } from "../schemas/document.request";
 
 export function DocumentUploadDialog() {

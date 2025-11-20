@@ -60,16 +60,8 @@ export function UpdateStation({
 }: UpdateStationProps) {
   const [isLocating, setIsLocating] = useState(false);
   const [useManualCoords, setUseManualCoords] = useState(false);
-  const {
-    id,
-    name,
-    description,
-    address,
-    imageUrl,
-    latitude,
-    longitude,
-    status,
-  } = station;
+  const { id, name, description, address, latitude, longitude, status } =
+    station;
 
   const defaultValues: StationUpdateFormData = {
     id,

@@ -31,7 +31,7 @@ import {
 import { useServerAction } from "@/hooks/use-server-action";
 import { updateBookingFee } from "../services/booking-fee-actions";
 import { toast } from "sonner";
-import { Percent, DollarSign } from "lucide-react";
+import { DollarSign } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BookingFee } from "../schemas/booking-fee.types";
 import {

@@ -1,12 +1,7 @@
 import VehicleModelCreateDialog from "@/features/vehicle-models/components/vehicle-model-create-dialog";
 import SectionHeader from "@/components/section-header";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+
+
 import { getUser } from "@/lib/auth/auth-server";
 import { CarModelSchema } from "@/features/vehicle-models/schemas/vehicle-model.schema";
 import type { CarModel } from "@/features/vehicle-models/schemas/vehicle-model.types";

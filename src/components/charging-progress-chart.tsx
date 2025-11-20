@@ -1,6 +1,6 @@
 "use client";
 
-import { TrendingUp, Battery, Zap } from "lucide-react";
+import { TrendingUp, Battery } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
   Card,

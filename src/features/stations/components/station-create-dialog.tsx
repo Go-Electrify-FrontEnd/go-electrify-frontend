@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -32,7 +32,7 @@ import {
   InputGroupTextarea,
 } from "@/components/ui/input-group";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, type Resolver, useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import {
   Field,
   FieldError,
@@ -56,20 +56,16 @@ export default function StationCreate({ onCancel }: StationCreateProps) {
   const [useManualCoords, setUseManualCoords] = useState(false);
 
   const initialState = { success: false, msg: "" };
-  const { state, execute, pending } = useServerAction(
-    createStation,
-    initialState,
-    {
-      onSettled: (result) => {
-        if (result.success) {
-          setOpen(false);
-          toast.success(result.msg);
-        } else if (result.msg) {
-          toast.error(result.msg);
-        }
-      },
+  const { execute, pending } = useServerAction(createStation, initialState, {
+    onSettled: (result) => {
+      if (result.success) {
+        setOpen(false);
+        toast.success(result.msg);
+      } else if (result.msg) {
+        toast.error(result.msg);
+      }
     },
-  );
+  });
 
   const form = useForm<StationCreateFormData>({
     resolver: zodResolver(stationCreateSchema),
