@@ -1,7 +1,7 @@
 import { StationMap } from "@/features/stations-nearby/components/stations-map";
 import { StationsSidebar } from "@/features/stations-nearby/components/stations-sidebar";
 import { StationsNearbyProvider } from "@/contexts/stations-nearby-context";
-import { getStations } from "@/features/stations/services/stations-api";
+import { getStations } from "@/features/stations/api/stations-api";
 import {
   Sheet,
   SheetContent,

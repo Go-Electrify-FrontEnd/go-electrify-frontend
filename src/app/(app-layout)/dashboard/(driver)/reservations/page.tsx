@@ -4,7 +4,7 @@ import { getUser } from "@/lib/auth/auth-server";
 import { getConnectorTypes } from "../../admin/connector-type/page";
 import { getVehicleModels } from "../../admin/vehicle-models/page";
 import SectionContent from "@/components/section-content";
-import { getStations } from "@/features/stations/services/stations-api";
+import { getStations } from "@/features/stations/api/stations-api";
 import { getReservationsDetails } from "@/features/reservations/services/reservations-api";
 
 import { ReservationTable } from "@/features/reservations/components/reservation-table";
