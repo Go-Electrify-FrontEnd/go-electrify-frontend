@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Eye, Copy, Shield } from "lucide-react";
+import { MoreHorizontal, Copy, Shield } from "lucide-react";
 import type { UserApi } from "@/features/users/schemas/user.types";
 import { useUser } from "@/features/users/contexts/user-context";
 import { useRouter } from "next/navigation";

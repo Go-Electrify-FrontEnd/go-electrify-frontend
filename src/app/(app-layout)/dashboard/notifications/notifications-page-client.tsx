@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Notification } from "@/features/dashboard/types/notification";
-import { Bell, Bookmark, User, ArrowLeft } from "lucide-react";
+import { Bell, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";

@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -17,7 +16,6 @@ import { Search, UserPlus, Check, Loader2 } from "lucide-react";
 import { assignStaffToStation } from "@/features/stations/api/stations-api";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { getAuthToken } from "@/features/stations/api/auth-actions";
 import { useUser } from "@/contexts/user-context";
 import { API_BASE_URL } from "@/lib/api-config";
 

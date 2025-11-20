@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrencyVND } from "@/lib/formatters";
@@ -44,9 +45,18 @@ export const columns: ColumnDef<Charger>[] = [
   {
     accessorKey: "code",
     header: "Mã Dock",
-    cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("code")}</div>
-    ),
+    cell: ({ row }) => {
+      const code = row.getValue("code") as string;
+      const id = row.getValue("id") as number | string;
+      return (
+        <Link
+          href={`/dashboard/charger-log/${encodeURIComponent(String(id))}`}
+          className="font-medium underline"
+        >
+          {code}
+        </Link>
+      );
+    },
   },
   {
     accessorKey: "powerKw",

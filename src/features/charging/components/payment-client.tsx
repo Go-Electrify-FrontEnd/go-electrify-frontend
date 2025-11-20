@@ -10,7 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import {
   Field,
   FieldError,
@@ -36,7 +35,6 @@ import {
 import type { CurrentChargingSession } from "@/features/charging/schemas/current-session.schema";
 import {
   Controller,
-  type Resolver,
   type SubmitHandler,
   useForm,
 } from "react-hook-form";
@@ -46,7 +44,6 @@ import { toast } from "sonner";
 import {
   formatCurrencyVND,
   formatDate,
-  formatDateWithOptions,
 } from "@/lib/formatters";
 import {
   Loader2,

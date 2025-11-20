@@ -15,21 +15,6 @@ export function QRScanner({ onScan, onError }: QRScannerProps) {
   const [isScanning, setIsScanning] = useState(false);
   const [error, setError] = useState<string>("");
 
-  const handleResult = (result: any, error: any) => {
-    if (result) {
-      onScan(result.text);
-      setIsScanning(false);
-    }
-    if (error) {
-      console.error("QR Scanner error:", error);
-      setError("Không thể truy cập camera hoặc quét mã QR thất bại");
-      setIsScanning(false);
-      if (onError) {
-        onError(new Error(error?.message || "QR scan error"));
-      }
-    }
-  };
-
   const startScanning = () => {
     setError("");
     setIsScanning(true);
@@ -44,7 +29,7 @@ export function QRScanner({ onScan, onError }: QRScannerProps) {
       <div className="bg-muted relative aspect-video overflow-hidden rounded-lg border">
         {isScanning ? (
           <Scanner
-            onScan={(detectedCodes: any[]) => {
+            onScan={(detectedCodes) => {
               if (detectedCodes.length > 0) {
                 onScan(detectedCodes[0].rawValue);
                 setIsScanning(false);

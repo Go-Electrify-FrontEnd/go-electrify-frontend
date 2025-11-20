@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
-import { formatCurrencyVND, formatDateTime } from "@/lib/formatters";
+import { formatDateTime } from "@/lib/formatters";
 import { ReservationDetails } from "../services/reservations-api";
 import { ActionsCell } from "./reservation-actions-cell";
 

@@ -1,6 +1,5 @@
 import { getUser } from "@/lib/auth/auth-server";
 import { getChargingHistory } from "@/features/charging/services/session-service";
-import { redirect } from "next/navigation";
 import { ChargingHistoryTable } from "@/features/charging/components/charging-history-table";
 import SectionHeader from "@/components/section-header";
 import SectionContent from "@/components/section-content";

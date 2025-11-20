@@ -1,9 +1,7 @@
 import { getUser } from "@/lib/auth/auth-server";
 import { ChargersTable } from "@/features/stations/components/charger-table";
 import { SessionsTable } from "@/features/stations/components/session-table";
-import type { SessionRow } from "@/features/stations/components/session-table-columns";
 import SectionHeader from "@/components/section-header";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -18,12 +16,7 @@ import {
   Activity,
   Battery,
   Calendar,
-  Download,
-  Filter,
-  MoreVertical,
-  Plus,
   TrendingUp,
-  UserPlus,
   Users,
   Zap,
 } from "lucide-react";
@@ -59,7 +52,11 @@ export default async function StationPage({
 
   const { token, user } = await getUser();
 
-  if (user!.role.toLowerCase() === "staff") {
+  if (!user || !token) {
+    notFound();
+  }
+
+  if (user.role.toLowerCase() === "staff") {
     const stationId = await getSelfStationId(token!);
     if (stationId && Number(stationId) !== Number(id)) {
       notFound();

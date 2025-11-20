@@ -8,7 +8,6 @@ import {
   updateDocumentSchema,
   deleteDocumentSchema,
   validateFile,
-  generateDocumentName,
 } from "../schemas/document.request";
 import {
   parseDocument,

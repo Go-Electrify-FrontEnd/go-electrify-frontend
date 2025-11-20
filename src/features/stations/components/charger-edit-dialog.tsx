@@ -18,7 +18,6 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
-import { Loader2 } from "lucide-react";
 import { useChargerUpdate } from "@/features/stations/contexts/charger-update-context";
 import { useServerAction } from "@/hooks/use-server-action";
 import { updateCharger } from "@/features/stations/services/chargers-actions";

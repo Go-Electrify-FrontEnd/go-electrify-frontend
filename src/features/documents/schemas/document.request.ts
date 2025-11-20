@@ -1,11 +1,6 @@
 import { z } from "zod";
 
 /**
- * Allowed MIME types for document upload (only TXT files)
- */
-const ALLOWED_MIME_TYPES = ["text/plain"] as const;
-
-/**
  * Maximum file size (10MB)
  */
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes

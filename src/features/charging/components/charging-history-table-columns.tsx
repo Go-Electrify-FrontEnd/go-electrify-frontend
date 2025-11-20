@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, XCircle, AlertCircle } from "lucide-react";
 import type { ChargingHistoryItem } from "../types/session.types";
-import { formatCurrencyVND, formatDateTime } from "@/lib/formatters";
+import { formatDateTime } from "@/lib/formatters";
 
 function formatDuration(seconds: number): string {
   const hours = Math.floor(seconds / 3600);
