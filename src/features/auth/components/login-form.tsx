@@ -74,14 +74,8 @@ export function LoginForm({
     return <OTPForm email={email} />;
   }
 
-  // Google OAuth redirect URL
-  const fullReturnUrl =
-    typeof window !== "undefined"
-      ? `${window.location.origin}/dashboard`
-      : `http://localhost:3000/dashboard`;
-
   const redirectTo = new URL(`${API_BASE_URL}/auth/login/google`);
-  redirectTo.searchParams.append("returnUrl", fullReturnUrl);
+  redirectTo.searchParams.append("returnUrl", REDIRECT_URL!);
 
   return (
     <form

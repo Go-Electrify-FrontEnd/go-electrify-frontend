@@ -44,14 +44,13 @@ export function StationMap() {
   );
 
   // Create popup content with Book Now button
-  const createPopupContent = useCallback(
-    (station: Station) => {
-      const isActive = station.status === "ACTIVE";
-      const statusBadgeColor = isActive ? "#10B981" : "#EF4444";
-      const statusBgColor = isActive ? "#ECFDF5" : "#FEF2F2";
-      const statusText = isActive ? "Đang hoạt động" : "Không hoạt động";
+  const createPopupContent = useCallback((station: Station) => {
+    const isActive = station.status === "ACTIVE";
+    const statusBadgeColor = isActive ? "#10B981" : "#EF4444";
+    const statusBgColor = isActive ? "#ECFDF5" : "#FEF2F2";
+    const statusText = isActive ? "Đang hoạt động" : "Không hoạt động";
 
-      return `
+    return `
         <div style="
           min-width: 280px;
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -162,9 +161,7 @@ export function StationMap() {
           </div>
         </div>
       `;
-    },
-    [],
-  );
+  }, []);
 
   // Initialize map instance
   useEffect(() => {
@@ -207,26 +204,17 @@ export function StationMap() {
     type GeolocateEvent = Parameters<GeolocateListener>[0];
 
     const handler = (e: GeolocateEvent) => {
-      // Normalize geolocation data from different Mapbox versions
-      const normalized = (
-        e as unknown as {
-          target?: { _lastKnownPosition?: GeolocationPosition };
-        }
-      )?.target
-        ? (
-            e as unknown as {
-              target?: { _lastKnownPosition?: GeolocationPosition };
-            }
-          ).target?._lastKnownPosition
-        : ((e as unknown as { coords?: GeolocationPosition | null }).coords ??
-          null);
+      const coords = e.target?._lastKnownPosition?.coords;
 
-      if (!normalized) return;
-
-      const { longitude, latitude } = normalized.coords;
-      if (typeof longitude === "number" && typeof latitude === "number") {
-        updateUserLocationRef.current([longitude, latitude]);
+      if (
+        !coords ||
+        typeof coords.longitude !== "number" ||
+        typeof coords.latitude !== "number"
+      ) {
+        return;
       }
+
+      updateUserLocationRef.current([coords.longitude, coords.latitude]);
     };
 
     // Store handler for cleanup
