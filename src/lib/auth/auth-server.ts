@@ -6,8 +6,8 @@ import * as jose from "jose";
 import * as z from "zod";
 import { API_BASE_URL } from "@/lib/api-config";
 
-const DEFAULT_ACCESS_MAX_AGE = 60 * 15; // 15 minutes
-const DEFAULT_REFRESH_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
+const DEFAULT_ACCESS_MAX_AGE = 60 * 15;
+const DEFAULT_REFRESH_MAX_AGE = 60 * 60 * 24 * 7;
 
 const secret = new TextEncoder().encode(process.env.AUTH_SECRET_KEY);
 
@@ -140,15 +140,21 @@ export async function refreshAccessToken() {
         cookieStore.set({
           name: "accessToken",
           value: tokens.accessToken,
-          httpOnly: process.env.NODE_ENV === "production",
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
           expires: tokens.accessExpires,
+          sameSite: "lax",
+          path: "/",
         });
 
         cookieStore.set({
           name: "refreshToken",
           value: tokens.refreshToken,
-          httpOnly: process.env.NODE_ENV === "production",
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
           expires: tokens.refreshExpires,
+          sameSite: "lax",
+          path: "/",
         });
       },
     );

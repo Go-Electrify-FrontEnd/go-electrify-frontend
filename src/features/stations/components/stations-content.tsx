@@ -16,7 +16,7 @@ import {
   CheckCircle,
   Clock,
 } from "lucide-react";
-import { getBackendUrl } from "@/lib/utils";
+import { API_BASE_URL } from "@/lib/api-config";
 
 interface StationWithDistance {
   id: number;
@@ -31,7 +31,7 @@ interface StationWithDistance {
 }
 
 export async function StationsContent() {
-  const response = await fetch(getBackendUrl("api/stations"));
+  const response = await fetch(`${API_BASE_URL}/stations`);
   const stations: StationWithDistance[] = await response.json();
 
   const transformedStations = stations.map((station) => ({

@@ -103,18 +103,23 @@ export async function handleVerifyOTP(prevState: unknown, data: FormData) {
     cookieStore.set({
       name: "accessToken",
       value: accessToken,
-      httpOnly: process.env.NODE_ENV === "production",
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
       expires: accessExpires,
+      sameSite: "lax",
+      path: "/",
     });
 
     cookieStore.set({
       name: "refreshToken",
       value: refreshToken,
-      httpOnly: process.env.NODE_ENV === "production",
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
       expires: refreshExpires,
+      sameSite: "lax",
+      path: "/",
     });
 
-    // Return success for client-side redirect
     return {
       success: true,
       msg: "Đăng nhập thành công",
