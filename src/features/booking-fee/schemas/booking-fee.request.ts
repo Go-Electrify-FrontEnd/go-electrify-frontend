@@ -1,7 +1,8 @@
 import * as z from "zod";
+import { BookingFeeTypeSchema } from "./booking-fee.schema";
 
 export const bookingFeeUpdateSchema = z.object({
-  type: z.enum(["FLAT", "PERCENT"]),
+  type: BookingFeeTypeSchema,
   value: z.coerce.number<number>().nonnegative("Giá trị phải là số dương"),
 });
 

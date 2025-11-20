@@ -1,7 +1,10 @@
+
 import { z } from "zod";
 
+export const BookingFeeTypeSchema = z.enum(["FLAT", "PERCENT"]);
+
 export const BookingFeeSchema = z.object({
-  type: z.enum(["FLAT", "PERCENT"]),
+  type: BookingFeeTypeSchema,
   value: z.number().nonnegative("Giá trị phải là số dương"),
 });
 

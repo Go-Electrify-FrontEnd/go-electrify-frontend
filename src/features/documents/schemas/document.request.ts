@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { documentTypeSchema, targetActorsSchema } from "./document.schema";
 
 /**
  * Maximum file size (10MB)
@@ -16,7 +17,7 @@ export const uploadDocumentSchema = z.object({
     .min(1, "Document name is required")
     .max(200, "Name must be less than 200 characters"),
 
-  type: z.enum(["FAQ", "Guide", "Policy", "Troubleshooting", "Other"]),
+  type: documentTypeSchema,
 
   description: z
     .string()
@@ -25,10 +26,7 @@ export const uploadDocumentSchema = z.object({
     .default("")
     .transform((value) => (value === "" ? undefined : value)),
 
-  targetActors: z
-    .array(z.enum(["admin", "staff", "driver"]))
-    .min(1, "At least one target actor is required")
-    .default(["admin", "staff", "driver"]),
+  targetActors: targetActorsSchema,
 
   // File will be validated separately in the component/action
   // FormData doesn't work well with z.instanceof(File)
@@ -47,7 +45,7 @@ export const updateDocumentSchema = z.object({
     .min(1, "Document name is required")
     .max(200, "Name must be less than 200 characters"),
 
-  type: z.enum(["FAQ", "Guide", "Policy", "Troubleshooting", "Other"]),
+  type: documentTypeSchema,
 
   description: z
     .string()
@@ -56,10 +54,7 @@ export const updateDocumentSchema = z.object({
     .default("")
     .transform((value) => (value === "" ? undefined : value)),
 
-  targetActors: z
-    .array(z.enum(["admin", "staff", "driver"]))
-    .min(1, "At least one target actor is required")
-    .default(["admin", "staff", "driver"]),
+  targetActors: targetActorsSchema,
 
   reindex: z
     .boolean()
