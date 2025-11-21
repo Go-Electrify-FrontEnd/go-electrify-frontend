@@ -41,7 +41,7 @@ export const columns: ColumnDef<Station>[] = [
   {
     accessorKey: "id",
     header: "ID",
-    cell: ({ row }) => <div className="font-medium">{row.getValue("id")}</div>,
+    cell: ({ row }) => <div className="font-medium">{row.index}</div>,
   },
   {
     accessorKey: "name",

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +16,6 @@ import { Charger } from "@/features/chargers/schemas/charger.schema";
 import { useServerAction } from "@/hooks/use-server-action";
 import { regenerateDockSecret } from "../services/chargers-actions";
 import { toast } from "sonner";
-import { SecretKeyDialog } from "./secret-key-dialog";
 
 interface ActionsCellProps {
   charger: Charger;
@@ -30,9 +29,13 @@ const initialState = {
 
 export function ActionsCell({ charger }: ActionsCellProps) {
   const [copied, setCopied] = useState(false);
-  const [secretKey, setSecretKey] = useState<string>("");
-  const [showSecretDialog, setShowSecretDialog] = useState(false);
-  const { setCharger, setEditDialogOpen } = useChargerUpdate();
+  const {
+    setCharger,
+    setEditDialogOpen,
+    setSecretKey,
+    setShowSecretDialog,
+    setSecretDialogChargerId,
+  } = useChargerUpdate();
 
   const { execute: executeRegenerate, pending: regenerating } = useServerAction(
     regenerateDockSecret,
@@ -45,8 +48,9 @@ export function ActionsCell({ charger }: ActionsCellProps) {
           });
 
           // Show the secret key dialog if we have a secret key
-          if (result.data?.secretKey) {
+          if (result.data?.secretKey && result.data?.chargerId) {
             setSecretKey(result.data.secretKey);
+            setSecretDialogChargerId(result.data.chargerId);
             setShowSecretDialog(true);
           }
         } else if (result.msg) {
@@ -104,13 +108,6 @@ export function ActionsCell({ charger }: ActionsCellProps) {
           {copied ? "Đã sao chép" : "Sao chép ID"}
         </DropdownMenuItem>
       </DropdownMenuContent>
-
-      <SecretKeyDialog
-        open={showSecretDialog}
-        onOpenChange={setShowSecretDialog}
-        secretKey={secretKey}
-        chargerId={String(charger.id)}
-      />
     </DropdownMenu>
   );
 }

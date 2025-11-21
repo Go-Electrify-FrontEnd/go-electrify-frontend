@@ -69,7 +69,6 @@ export async function createCharger(prevState: unknown, formData: FormData) {
 
     if (response.ok) {
       const json = await response.json();
-      updateTag("chargers");
       return {
         success: true,
         msg: "Sạc điện đã được tạo thành công",
@@ -190,7 +189,8 @@ export async function regenerateDockSecret(
       };
     }
 
-    updateTag("chargers");
+    // Note: No updateTag("chargers") here because the secret key is not displayed
+    // in the table, so we don't need to refresh the list
     return {
       success: true,
       msg: "Khóa bí mật đã được tạo lại thành công",
