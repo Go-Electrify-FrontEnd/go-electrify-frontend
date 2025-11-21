@@ -44,7 +44,7 @@ import { SecretKeyDialog } from "./secret-key-dialog";
 const initialState = {
   success: false,
   msg: "",
-  data: { secretKey: "" },
+  data: { secretKey: "", chargerId: 0 },
 };
 
 interface StationDockCreateProps {
@@ -58,6 +58,7 @@ export default function StationDockCreate({
 }: StationDockCreateProps) {
   const [open, setOpen] = useState(false);
   const [secretKey, setSecretKey] = useState<string>("");
+  const [chargerId, setChargerId] = useState<string>("");
   const [showSecretDialog, setShowSecretDialog] = useState(false);
 
   const { execute, pending } = useServerAction(createCharger, initialState, {
@@ -71,6 +72,7 @@ export default function StationDockCreate({
 
         if (result.data?.secretKey) {
           setSecretKey(result.data.secretKey);
+          setChargerId(result.data.chargerId.toString());
           setShowSecretDialog(true);
         }
       } else if (result.msg) {
@@ -296,6 +298,7 @@ export default function StationDockCreate({
         open={showSecretDialog}
         onOpenChange={setShowSecretDialog}
         secretKey={secretKey}
+        chargerId={chargerId}
       />
     </Dialog>
   );

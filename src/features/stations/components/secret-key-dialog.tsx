@@ -24,12 +24,14 @@ interface SecretKeyDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   secretKey: string;
+  chargerId: string;
 }
 
 export function SecretKeyDialog({
   open,
   onOpenChange,
   secretKey,
+  chargerId,
 }: SecretKeyDialogProps) {
   const [showSecret, setShowSecret] = useState(false);
 
@@ -76,6 +78,18 @@ export function SecretKeyDialog({
               </p>
             </div>
           </div>
+
+          <Field>
+            <FieldLabel>ID Trụ Sạc</FieldLabel>
+            <InputGroup>
+              <InputGroupInput
+                type="text"
+                value={chargerId}
+                className="font-mono"
+                readOnly
+              />
+            </InputGroup>
+          </Field>
 
           <Field>
             <FieldLabel>Khóa Bí Mật</FieldLabel>

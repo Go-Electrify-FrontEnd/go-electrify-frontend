@@ -1,6 +1,15 @@
 "use client";
 
 import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+} from "@/components/ui/sidebar";
+import { NavSection } from "./nav-section";
+import { NavSecondary } from "./nav-secondary";
+import { NavUser } from "./nav-user";
+import {
   AudioWaveform,
   BookOpen,
   Command,
@@ -155,16 +164,6 @@ const navSecondary = [
     icon: Settings2Icon,
   },
 ];
-
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-} from "@/components/ui/sidebar";
-import { NavSection } from "./nav-section";
-import { NavSecondary } from "./nav-secondary";
-import { NavUser } from "./nav-user";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (

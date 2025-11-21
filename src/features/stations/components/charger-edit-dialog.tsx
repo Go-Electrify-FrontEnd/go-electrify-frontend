@@ -90,8 +90,8 @@ export default function UpdateCharger({ connectorTypes }: UpdateChargerProps) {
     <Dialog open={isEditDialogOpen} onOpenChange={setEditDialogOpen}>
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
-          <DialogTitle>Cập nhật Dock Sạc</DialogTitle>
-          <DialogDescription>Chỉnh sửa chi tiết dock sạc</DialogDescription>
+          <DialogTitle>Cập nhật trụ sạc</DialogTitle>
+          <DialogDescription>Chỉnh sửa chi tiết trụ sạc</DialogDescription>
         </DialogHeader>
 
         <form
@@ -99,7 +99,6 @@ export default function UpdateCharger({ connectorTypes }: UpdateChargerProps) {
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-6"
         >
-          <input type="hidden" {...form.register("id")} />
           <FieldGroup>
             <Controller
               control={form.control}
