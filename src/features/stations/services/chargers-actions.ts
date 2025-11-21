@@ -23,10 +23,13 @@ function generateSecretKey(length = 32): string {
 
 export async function createCharger(prevState: unknown, formData: FormData) {
   const { user, token } = await getUser();
+  if (!user) {
+    forbidden();
+  }
+
   if (
-    !user ||
-    (!user.role.toLowerCase().includes("staff") &&
-      !user.role.toLowerCase().includes("admin"))
+    !user.role.toLowerCase().includes("staff") &&
+    !user.role.toLowerCase().includes("admin")
   ) {
     forbidden();
   }
@@ -92,9 +95,12 @@ export async function createCharger(prevState: unknown, formData: FormData) {
 
 export async function updateCharger(prevState: unknown, formData: FormData) {
   const { user, token } = await getUser();
+  if (!user) {
+    forbidden();
+  }
+
   if (
-    !user ||
-    !user.role.toLowerCase().includes("admin") ||
+    !user.role.toLowerCase().includes("admin") &&
     !user.role.toLowerCase().includes("staff")
   ) {
     forbidden();
@@ -110,7 +116,6 @@ export async function updateCharger(prevState: unknown, formData: FormData) {
   });
 
   if (!success) {
-    console.error("updateCharger validation error:", JSON.stringify(error));
     return { success: false, msg: "Vui lòng kiểm tra lại dữ liệu" };
   }
 
@@ -150,9 +155,12 @@ export async function regenerateDockSecret(
   formData: FormData,
 ) {
   const { user, token } = await getUser();
+  if (!user) {
+    forbidden();
+  }
+
   if (
-    !user ||
-    !user.role.toLowerCase().includes("admin") ||
+    !user.role.toLowerCase().includes("admin") &&
     !user.role.toLowerCase().includes("staff")
   ) {
     forbidden();

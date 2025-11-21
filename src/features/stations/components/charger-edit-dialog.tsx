@@ -73,15 +73,7 @@ export default function UpdateCharger({ connectorTypes }: UpdateChargerProps) {
 
   useEffect(() => {
     if (charger) {
-      form.reset({
-        id: charger.id.toString(),
-        connectorTypeId: charger.connectorTypeId,
-        code: charger.code,
-        powerKw: charger.powerKw,
-        status: charger.status,
-        pricePerKwh: charger.pricePerKwh,
-        dockSecretHash: "",
-      });
+      form.reset();
     }
   }, [charger]);
 
