@@ -109,6 +109,7 @@ export async function getStationSessions(
     const json = await response.json();
     const raw = Array.isArray(json?.data) ? json.data : json;
     const parsed = StationSessionSchema.array().safeParse(raw);
+
     if (!parsed.success) {
       console.error("Invalid session items:", parsed.error);
       return [];

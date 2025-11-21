@@ -25,7 +25,7 @@ interface ActionsCellProps {
 const initialState = {
   success: false,
   msg: "",
-  data: { secretKey: "" },
+  data: { secretKey: "", chargerId: "" },
 };
 
 export function ActionsCell({ charger }: ActionsCellProps) {
@@ -61,6 +61,7 @@ export function ActionsCell({ charger }: ActionsCellProps) {
   const handleRegenerateSecret = () => {
     const formData = new FormData();
     formData.append("chargerId", String(charger.id));
+
     executeRegenerate(formData);
   };
 
@@ -108,6 +109,7 @@ export function ActionsCell({ charger }: ActionsCellProps) {
         open={showSecretDialog}
         onOpenChange={setShowSecretDialog}
         secretKey={secretKey}
+        chargerId={String(charger.id)}
       />
     </DropdownMenu>
   );

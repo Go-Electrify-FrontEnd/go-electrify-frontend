@@ -68,12 +68,14 @@ export async function createCharger(prevState: unknown, formData: FormData) {
     });
 
     if (response.ok) {
+      const json = await response.json();
       updateTag("chargers");
       return {
         success: true,
         msg: "Sạc điện đã được tạo thành công",
         data: {
           secretKey: dockSecretHash,
+          chargerId: json.Id as number,
         },
       };
     }
@@ -193,6 +195,7 @@ export async function regenerateDockSecret(
       success: true,
       msg: "Khóa bí mật đã được tạo lại thành công",
       data: {
+        chargerId,
         secretKey: newDockSecretHash,
       },
     };
