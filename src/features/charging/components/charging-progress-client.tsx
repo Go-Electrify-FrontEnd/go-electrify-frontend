@@ -65,6 +65,7 @@ function ChargingProgressInner({
   const [isStarted, setStarted] = useState<boolean>(false);
   const [countdown, setCountdown] = useState<number>(5);
   const [shouldRedirect, setShouldRedirect] = useState<boolean>(false);
+  const [startSOC, setStartSOC] = useState<number>(0);
   const { push, refresh } = useRouter();
 
   const isCountdownActive = countdown > 0;
@@ -114,6 +115,9 @@ function ChargingProgressInner({
       }
     } else if (message.name === "car_information") {
       setCarInformation(message.data);
+      setStartSOC(
+        (message.data.currentCapacity / message.data.maxCapacity) * 100,
+      );
       console.log("Received car information:", message.data);
     }
   });
@@ -157,14 +161,13 @@ function ChargingProgressInner({
       </SectionContent>
     );
   }
-
-  const socStart = sessionData.socStart;
   const targetSOC = sessionData.targetSoc;
-  const socRange = Math.max(targetSOC - socStart, 0.0001);
+
+  const socRange = Math.max(targetSOC - startSOC, 0.0001);
   const progressToTarget =
-    targetSOC <= socStart
+    targetSOC <= startSOC
       ? 100
-      : Math.min(Math.max(((currentSOC - socStart) / socRange) * 100, 0), 100);
+      : Math.min(Math.max(((currentSOC - startSOC) / socRange) * 100, 0), 100);
 
   if (!carInformation) {
     return (
@@ -262,7 +265,7 @@ function ChargingProgressInner({
           <div className="space-y-2">
             <Progress value={progressToTarget} className="h-4" />
             <div className="text-muted-foreground flex justify-between text-xs">
-              <span>Bắt đầu: {socStart}%</span>
+              <span>Bắt đầu: {startSOC.toFixed(2)}%</span>
               <span>Hiện tại: {currentSOC.toFixed(2)}%</span>
               <span>Mục tiêu: {sessionData.targetSoc}%</span>
             </div>
@@ -300,7 +303,7 @@ function ChargingProgressInner({
               <Separator />
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">SOC Bắt Đầu:</span>
-                <span className="font-medium">{sessionData.socStart}%</span>
+                <span className="font-medium">{startSOC.toFixed(2)}%</span>
               </div>
               <Separator />
               <div className="flex justify-between text-sm">

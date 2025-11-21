@@ -33,17 +33,14 @@ import {
   type CompletePaymentActionState,
 } from "@/features/charging/services/charging-actions";
 import type { CurrentChargingSession } from "@/features/charging/schemas/current-session.schema";
-import {
-  Controller,
-  type SubmitHandler,
-  useForm,
-} from "react-hook-form";
+import { Controller, type SubmitHandler, useForm } from "react-hook-form";
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
   formatCurrencyVND,
   formatDate,
+  formatDuration,
 } from "@/lib/formatters";
 import {
   Loader2,
@@ -82,7 +79,7 @@ export default function PaymentClient({
     },
   });
 
-  const { state, execute, pending } = useServerAction(
+  const { execute, pending } = useServerAction(
     completeSessionPayment,
     initialState,
     {
@@ -109,21 +106,10 @@ export default function PaymentClient({
     execute(formData);
   };
 
-  const hasError = useMemo(
-    () => Boolean(state.msg) && !state.success,
-    [state.msg, state.success],
+  const sessionDuration = useMemo(
+    () => formatDuration(sessionData.startedAt, sessionData.endedAt),
+    [sessionData.startedAt, sessionData.endedAt],
   );
-
-  const sessionDuration = useMemo(() => {
-    if (!sessionData.startedAt || !sessionData.endedAt) return "N/A";
-    const start = new Date(sessionData.startedAt);
-    const end = new Date(sessionData.endedAt);
-    const diffMs = end.getTime() - start.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const hours = Math.floor(diffMins / 60);
-    const minutes = diffMins % 60;
-    return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
-  }, [sessionData.startedAt, sessionData.endedAt]);
 
   return (
     <div className="container mx-auto max-w-4xl px-4 py-8">
@@ -140,16 +126,6 @@ export default function PaymentClient({
           Hoàn tất thanh toán cho phiên sạc #{sessionId}
         </p>
       </div>
-
-      {hasError && (
-        <Alert variant="destructive" className="mb-6">
-          <AlertTitle>{state.code || "Thanh toán thất bại"}</AlertTitle>
-          <AlertDescription className="space-y-2">
-            <span>{state.msg}</span>
-            {state.suggestion && <p>{state.suggestion}</p>}
-          </AlertDescription>
-        </Alert>
-      )}
 
       {/* Session Information Card */}
       <Card className="mb-6">

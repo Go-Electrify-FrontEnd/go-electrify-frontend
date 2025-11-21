@@ -6,7 +6,6 @@ import { AlertTriangle } from "lucide-react";
 import StartChargingClient from "@/features/charging/components/start-charging-client";
 
 export default async function StartChargingPage() {
-  // Authenticate user
   const { user, token } = await getUser();
   if (!user || !token) {
     redirect("/login");

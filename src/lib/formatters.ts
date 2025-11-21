@@ -125,3 +125,30 @@ export function formatRelativeTime(
     return fallback;
   }
 }
+
+/**
+ * Format duration between two dates
+ * @param start - Start date
+ * @param end - End date
+ * @returns Formatted duration string (e.g., "2h 30m" or "45m")
+ */
+export function formatDuration(
+  start: string | Date | null | undefined,
+  end: string | Date | null | undefined,
+) {
+  if (!start || !end) return "N/A";
+
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+
+  if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+    return "N/A";
+  }
+
+  const diffMs = endDate.getTime() - startDate.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const hours = Math.floor(diffMins / 60);
+  const minutes = diffMins % 60;
+
+  return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+}

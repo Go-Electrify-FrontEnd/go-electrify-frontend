@@ -49,9 +49,7 @@ export default async function BillingPage() {
         subtitle="Quản lý gói đăng ký và theo dõi sử dụng của bạn"
       />
 
-      {/* User Subscriptions Section */}
       <SectionContent>
-        {/* Stats Overview - Always visible */}
         <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card mb-6 grid grid-cols-1 gap-4 *:data-[slot=card]:bg-linear-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-3">
           <Card className="@container/card">
             <CardHeader>
@@ -238,7 +236,6 @@ export default async function BillingPage() {
         </Card>
       </SectionContent>
 
-      {/* Available Subscription Plans */}
       <SectionContent>
         <Card id="available-plans">
           <CardHeader>

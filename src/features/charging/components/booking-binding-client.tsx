@@ -1,5 +1,6 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -39,6 +40,11 @@ import * as Ably from "ably";
 import { Reservation } from "@/features/reservations/schemas/reservation.schema";
 import { useServerAction } from "@/hooks/use-server-action";
 import { handleBindBooking } from "@/features/charging/services/charging-actions";
+import { Controller, type SubmitHandler, useForm } from "react-hook-form";
+import {
+  bookingBindingSchema,
+  type BookingBindingFormData,
+} from "../schemas/booking-binding.schema";
 
 interface CarInformation {
   currentCapacity: number;
@@ -66,7 +72,6 @@ function BookingBindingInner({
   const [carInformation, setCarInformation] = useState<CarInformation | null>(
     null,
   );
-  const [targetSOC, setTargetSOC] = useState("");
   const [isReloadingCarInfo, setIsReloadingCarInfo] = useState(false);
 
   const { state, execute, pending } = useServerAction(
@@ -75,12 +80,26 @@ function BookingBindingInner({
     {
       onSuccess: (state) => {
         toast.success(state.msg);
+        form.reset();
       },
       onError: (state) => {
         toast.error(state.msg);
       },
     },
   );
+
+  const form = useForm<BookingBindingFormData>({
+    resolver: zodResolver(bookingBindingSchema),
+    defaultValues: {
+      sessionId,
+      ablyToken,
+      channelId,
+      expiresAt,
+      bookingCode: "",
+      currentSOC: 0,
+      targetSOC: 0,
+    },
+  });
 
   const incomingReservations = reservations.filter((reservation) => {
     return reservation.status === "CONFIRMED";
@@ -90,6 +109,10 @@ function BookingBindingInner({
     if (message.name === "car_information") {
       setCarInformation(message.data);
       setIsReloadingCarInfo(false);
+
+      const soc =
+        (message.data.currentCapacity / message.data.maxCapacity) * 100;
+      form.setValue("currentSOC", soc);
 
       console.log("Received car information:", message.data);
     }
@@ -104,14 +127,13 @@ function BookingBindingInner({
     publish("load_car_information", {});
   }, []);
 
-  const currentSOC = carInformation
-    ? (carInformation.currentCapacity / carInformation.maxCapacity) * 100
-    : 0;
+  const currentSOC = form.watch("currentSOC");
+  const targetSOC = form.watch("targetSOC");
 
-  const showPriceEstimate = targetSOC && parseFloat(targetSOC) > currentSOC;
+  const showPriceEstimate = targetSOC > 0 && targetSOC > currentSOC;
 
   const energyNeeded = showPriceEstimate
-    ? ((parseFloat(targetSOC) - currentSOC) / 100) * carInformation!.maxCapacity
+    ? ((targetSOC - currentSOC) / 100) * carInformation!.maxCapacity
     : 0;
 
   const estimatedPrice = pricePerKwh * energyNeeded;
@@ -125,10 +147,15 @@ function BookingBindingInner({
     );
   }
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-
+  const onSubmit: SubmitHandler<BookingBindingFormData> = (data) => {
+    const formData = new FormData();
+    formData.append("sessionId", data.sessionId);
+    formData.append("ablyToken", data.ablyToken);
+    formData.append("channelId", data.channelId);
+    formData.append("expiresAt", data.expiresAt);
+    formData.append("bookingCode", data.bookingCode);
+    formData.append("currentSOC", data.currentSOC.toString());
+    formData.append("targetSOC", data.targetSOC.toString());
     execute(formData);
   };
 
@@ -144,12 +171,11 @@ function BookingBindingInner({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <input type="hidden" name="sessionId" value={sessionId} />
-          <input type="hidden" name="ablyToken" value={ablyToken} />
-          <input type="hidden" name="channelId" value={channelId} />
-          <input type="hidden" name="expiresAt" value={expiresAt} />
-
+        <form
+          id="booking-binding-form"
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-6"
+        >
           <Alert>
             <InfoIcon className="h-4 w-4" />
             <AlertTitle>Thông tin cần thiết</AlertTitle>
@@ -159,67 +185,108 @@ function BookingBindingInner({
             </AlertDescription>
           </Alert>
 
-          <Field>
-            <FieldLabel htmlFor="bookingCode">Mã đặt chỗ</FieldLabel>
-            <Select name="bookingCode">
-              <SelectTrigger>
-                <SelectValue placeholder="Chọn mã đặt chỗ" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Đặt chỗ</SelectLabel>
-                  {incomingReservations.map((reservation) => (
-                    <SelectItem key={reservation.id} value={reservation.code}>
-                      {reservation.code}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            <FieldDescription>Mã đặt chỗ bạn đã tạo trước đó</FieldDescription>
-
-            <Field>
-              <FieldLabel htmlFor="currentSOC">SOC hiện tại (%)</FieldLabel>
-              <div className="flex gap-2">
-                <Input
-                  name="currentSOC"
-                  type="number"
-                  value={currentSOC.toFixed(2)}
-                  disabled={true}
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={handleReloadCarInfo}
-                  disabled={isReloadingCarInfo}
-                  title="Tải lại thông tin xe"
+          <Controller
+            control={form.control}
+            name="bookingCode"
+            render={({ field, fieldState }) => (
+              <Field>
+                <FieldLabel htmlFor="bookingCode">Mã đặt chỗ</FieldLabel>
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  disabled={pending}
                 >
-                  <RefreshCwIcon
-                    className={`h-4 w-4 ${isReloadingCarInfo ? "animate-spin" : ""}`}
-                  />
-                </Button>
-              </div>
-              <FieldDescription>Mức pin hiện tại của xe</FieldDescription>
-            </Field>
-          </Field>
+                  <SelectTrigger aria-invalid={fieldState.invalid}>
+                    <SelectValue placeholder="Chọn mã đặt chỗ" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Đặt chỗ</SelectLabel>
+                      {incomingReservations.map((reservation) => (
+                        <SelectItem
+                          key={reservation.id}
+                          value={reservation.code}
+                        >
+                          {reservation.code}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <FieldDescription>
+                  Mã đặt chỗ bạn đã tạo trước đó
+                </FieldDescription>
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
 
-          <Field>
-            <FieldLabel htmlFor="targetSOC">SOC mục tiêu (%)</FieldLabel>
-            <Input
-              id="targetSOC"
-              name="targetSOC"
-              placeholder="VD: 80"
-              type="number"
-              min="0"
-              max="100"
-              required
-              disabled={pending}
-              value={targetSOC}
-              onChange={(e) => setTargetSOC(e.target.value)}
-            />
-            <FieldDescription>Mức pin mong muốn sau khi sạc</FieldDescription>
-          </Field>
+          <Controller
+            control={form.control}
+            name="currentSOC"
+            render={({ field, fieldState }) => (
+              <Field>
+                <FieldLabel htmlFor="currentSOC">SOC hiện tại (%)</FieldLabel>
+                <div className="flex gap-2">
+                  <Input
+                    {...field}
+                    type="number"
+                    value={field.value.toFixed(2)}
+                    disabled={true}
+                    aria-invalid={fieldState.invalid}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={handleReloadCarInfo}
+                    disabled={isReloadingCarInfo}
+                    title="Tải lại thông tin xe"
+                  >
+                    <RefreshCwIcon
+                      className={`h-4 w-4 ${isReloadingCarInfo ? "animate-spin" : ""}`}
+                    />
+                  </Button>
+                </div>
+                <FieldDescription>Mức pin hiện tại của xe</FieldDescription>
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+
+          <Controller
+            control={form.control}
+            name="targetSOC"
+            render={({ field, fieldState }) => (
+              <Field>
+                <FieldLabel htmlFor="targetSOC">SOC mục tiêu (%)</FieldLabel>
+                <Input
+                  {...field}
+                  id="targetSOC"
+                  placeholder="VD: 80"
+                  type="number"
+                  min="0"
+                  max="100"
+                  disabled={pending}
+                  onChange={(e) =>
+                    field.onChange(parseFloat(e.target.value) || 0)
+                  }
+                  value={field.value || ""}
+                  aria-invalid={fieldState.invalid}
+                />
+                <FieldDescription>
+                  Mức pin mong muốn sau khi sạc
+                </FieldDescription>
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
 
           {showPriceEstimate && (
             <>
@@ -255,7 +322,13 @@ function BookingBindingInner({
 
           {state.msg && !state.success && <FieldError>{state.msg}</FieldError>}
 
-          <Button type="submit" disabled={pending} className="w-full" size="lg">
+          <Button
+            form="booking-binding-form"
+            type="submit"
+            disabled={pending}
+            className="w-full"
+            size="lg"
+          >
             {pending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
