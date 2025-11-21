@@ -218,7 +218,7 @@ export default async function Page({
           {/* Button */}
           <Link
             href={`/dashboard/wallet`}
-            className="mt-8 block w-full rounded-lg bg-green-500 px-6 py-3 text-center font-bold text-white transition hover:bg-red-700"
+            className="mt-8 block w-full rounded-lg bg-green-500 px-6 py-3 text-center font-bold text-white transition hover:bg-green-600"
           >
             Quay lại Trang chủ
           </Link>
