@@ -6,8 +6,7 @@ import React from "react";
 
 const menuItems = [
   { name: " Tính Năng", href: "#link" },
-  { name: "Giải Pháp", href: "#link" },
-  { name: "Bảng Giá", href: "#link" },
+
   { name: "Giới Thiệu", href: "#link" },
 ];
 
