@@ -24,8 +24,8 @@ import type { Station } from "../schemas/station.types";
 import { deleteStation } from "../services/stations-actions";
 import { useServerAction } from "@/hooks/use-server-action";
 import {
-stationDeleteSchema,
-type StationDeleteFormData,
+  stationDeleteSchema,
+  type StationDeleteFormData,
 } from "../schemas/station.request";
 
 interface DeleteStationProps {
