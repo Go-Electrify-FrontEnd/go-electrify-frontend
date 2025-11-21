@@ -113,7 +113,7 @@ export function ReservationTable({ data }: ReservationTableProps) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={(columns as any).length} className="p-8">
+                <TableCell colSpan={columns.length} className="p-8">
                   <Empty className="border-muted-foreground/30 bg-muted/40 border border-dashed p-8">
                     <EmptyHeader>
                       <EmptyMedia variant="icon">
