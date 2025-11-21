@@ -8,6 +8,13 @@ interface ChargerUpdateContextValue {
   setEditDialogOpen: (open: boolean) => void;
   charger: Charger | null;
   isEditDialogOpen: boolean;
+  // Secret key dialog state
+  secretKey: string;
+  setSecretKey: (key: string) => void;
+  showSecretDialog: boolean;
+  setShowSecretDialog: (open: boolean) => void;
+  secretDialogChargerId: string;
+  setSecretDialogChargerId: (id: string) => void;
 }
 
 const ChargerUpdateContext = createContext<
@@ -18,9 +25,25 @@ export function ChargerUpdateProvider({ children }: React.PropsWithChildren) {
   const [charger, setCharger] = useState<Charger | null>(null);
   const [isEditDialogOpen, setEditDialogOpen] = useState(false);
 
+  // Secret key dialog state
+  const [secretKey, setSecretKey] = useState<string>("");
+  const [showSecretDialog, setShowSecretDialog] = useState(false);
+  const [secretDialogChargerId, setSecretDialogChargerId] = useState<string>("");
+
   return (
     <ChargerUpdateContext.Provider
-      value={{ setCharger, setEditDialogOpen, charger, isEditDialogOpen }}
+      value={{
+        setCharger,
+        setEditDialogOpen,
+        charger,
+        isEditDialogOpen,
+        secretKey,
+        setSecretKey,
+        showSecretDialog,
+        setShowSecretDialog,
+        secretDialogChargerId,
+        setSecretDialogChargerId,
+      }}
     >
       {children}
     </ChargerUpdateContext.Provider>

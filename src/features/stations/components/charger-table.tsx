@@ -3,6 +3,7 @@
 import { useState } from "react";
 import {
   ColumnFiltersState,
+  PaginationState,
   SortingState,
   VisibilityState,
   flexRender,
@@ -32,6 +33,8 @@ import {
 import { Inbox, Search } from "lucide-react";
 import { columns } from "@/features/stations/components/charger-table-columns";
 import { Charger } from "@/features/chargers/schemas/charger.schema";
+import { useChargerUpdate } from "@/features/stations/contexts/charger-update-context";
+import { SecretKeyDialog } from "./secret-key-dialog";
 
 interface ChargersTableProps {
   data: Charger[];
@@ -41,6 +44,13 @@ export function ChargersTable({ data }: ChargersTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+
+  const {
+    secretKey,
+    showSecretDialog,
+    setShowSecretDialog,
+    secretDialogChargerId,
+  } = useChargerUpdate();
 
   const table = useReactTable({
     data,
@@ -154,6 +164,13 @@ export function ChargersTable({ data }: ChargersTableProps) {
           </Button>
         </div>
       </div>
+
+      <SecretKeyDialog
+        open={showSecretDialog}
+        onOpenChange={setShowSecretDialog}
+        secretKey={secretKey}
+        chargerId={secretDialogChargerId}
+      />
     </div>
   );
 }
