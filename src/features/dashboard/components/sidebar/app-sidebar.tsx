@@ -116,7 +116,7 @@ const admin = {
       roles: ["admin"],
     },
     {
-      title: "Tài liệu (Experimental)",
+      title: "Tài liệu",
       url: "/dashboard/admin/documents",
       icon: BookOpen,
       roles: ["admin"],
@@ -161,7 +161,6 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarRail,
 } from "@/components/ui/sidebar";
 import { NavSection } from "./nav-section";
 import { NavSecondary } from "./nav-secondary";
