@@ -164,29 +164,25 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { NavSection } from "./nav-section";
-import { useUser } from "@/features/users/contexts/user-context";
 import { NavSecondary } from "./nav-secondary";
 import { NavUser } from "./nav-user";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { user } = useUser();
-
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader className="h-16 border-b">
         <NavUser />
       </SidebarHeader>
       <SidebarContent>
-        <NavSection items={overview} user={user} />
-        <NavSection items={charging} user={user} />
-        <NavSection items={payment} user={user} />
-        <NavSection items={admin} user={user} />
-        <NavSection items={staff} user={user} />
+        <NavSection items={overview} />
+        <NavSection items={charging} />
+        <NavSection items={payment} />
+        <NavSection items={admin} />
+        <NavSection items={staff} />
       </SidebarContent>
       <SidebarFooter>
         <NavSecondary items={navSecondary} />
       </SidebarFooter>
-      <SidebarRail />
     </Sidebar>
   );
 }

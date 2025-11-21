@@ -1,7 +1,6 @@
 "use client";
 
 import { type LucideIcon } from "lucide-react";
-import { usePathname } from "next/navigation";
 
 import {
   SidebarGroup,
@@ -12,11 +11,10 @@ import {
 } from "@/components/ui/sidebar";
 import { hasRoles } from "@/lib/auth/role-check";
 import Link from "next/link";
-import type { User } from "@/features/users/schemas/user.types";
+import { useUser } from "@/features/users/contexts/user-context";
 
 export function NavSection({
   items,
-  user,
 }: {
   items: {
     title: string;
@@ -27,18 +25,13 @@ export function NavSection({
       roles?: string[];
     }[];
   };
-  user?: User | null;
 }) {
-  const pathname = usePathname();
-
-  // Filter items based on user role
+  const { user } = useUser();
   const filteredItems = items.items.filter((item) => {
-    // If no roles specified, show to everyone
     if (!item.roles || item.roles.length === 0) {
       return true;
     }
 
-    // Check if user has any of the allowed roles
     return hasRoles(user, item.roles);
   });
 
