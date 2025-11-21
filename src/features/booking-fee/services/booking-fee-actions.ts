@@ -1,6 +1,7 @@
 "use server";
 
 import { getUser } from "@/lib/auth/auth-server";
+import { hasRole } from "@/lib/auth/role-check";
 import { forbidden } from "next/navigation";
 import { updateTag } from "next/cache";
 import { bookingFeeUpdateSchema } from "../schemas/booking-fee.request";
@@ -11,7 +12,7 @@ const BACKEND_URL = `${API_BASE_URL}/admin/booking-fee`;
 export async function updateBookingFee(prev: unknown, formData: FormData) {
   const { user, token } = await getUser();
 
-  if (!user || !user.role.toLowerCase().includes("admin")) {
+  if (!user || !hasRole(user, "admin")) {
     forbidden();
   }
 

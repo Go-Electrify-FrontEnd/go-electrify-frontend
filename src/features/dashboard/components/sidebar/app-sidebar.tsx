@@ -170,7 +170,6 @@ import { NavUser } from "./nav-user";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useUser();
-  const userRole = user?.role;
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -178,11 +177,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavUser />
       </SidebarHeader>
       <SidebarContent>
-        <NavSection items={overview} userRole={userRole} />
-        <NavSection items={charging} userRole={userRole} />
-        <NavSection items={payment} userRole={userRole} />
-        <NavSection items={admin} userRole={userRole} />
-        <NavSection items={staff} userRole={userRole} />
+        <NavSection items={overview} user={user} />
+        <NavSection items={charging} user={user} />
+        <NavSection items={payment} user={user} />
+        <NavSection items={admin} user={user} />
+        <NavSection items={staff} user={user} />
       </SidebarContent>
       <SidebarFooter>
         <NavSecondary items={navSecondary} />

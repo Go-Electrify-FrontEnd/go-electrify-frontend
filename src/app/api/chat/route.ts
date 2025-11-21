@@ -9,6 +9,7 @@ import { gateway } from "@ai-sdk/gateway";
 import { z } from "zod";
 import { findRelevantContent } from "@/features/rag/services/vector-operations";
 import { getAuthenticatedUser } from "@/lib/auth/api-auth-helper";
+import { hasRoles } from "@/lib/auth/role-check";
 import { saveChat } from "@/lib/chat-store";
 import { forbidden } from "next/navigation";
 
@@ -84,7 +85,6 @@ export async function POST(req: Request) {
         }),
         execute: async ({ question }) => {
           const hits = await findRelevantContent(question, 3);
-          const userRole = user.role.toLowerCase();
 
           const filteredHits = hits.filter((hit) => {
             const metadata = hit.metadata;
@@ -93,7 +93,8 @@ export async function POST(req: Request) {
             }
 
             const targetActors = String(metadata.targetActors);
-            return targetActors.includes(userRole);
+            const allowedRoles = targetActors.split(",").map((r) => r.trim());
+            return hasRoles(user, allowedRoles);
           });
 
           const MIN_SCORE = 0.5;

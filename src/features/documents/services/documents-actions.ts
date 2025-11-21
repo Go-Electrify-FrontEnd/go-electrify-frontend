@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
 import { getUser } from "@/lib/auth/auth-server";
+import { hasRole } from "@/lib/auth/role-check";
 import {
   uploadDocumentSchema,
   updateDocumentSchema,
@@ -33,7 +34,7 @@ export async function uploadDocument(prev: unknown, formData: FormData) {
     }
 
     // Admin-only check
-    if (user.role.toLowerCase() !== "admin") {
+    if (!hasRole(user, "admin")) {
       return {
         success: false,
         msg: "Không được phép: Yêu cầu quyền quản trị viên",
@@ -155,7 +156,7 @@ export async function updateDocument(prev: unknown, formData: FormData) {
     }
 
     // Admin-only check
-    if (user.role.toLowerCase() !== "admin") {
+    if (!hasRole(user, "admin")) {
       return {
         success: false,
         msg: "Không được phép: Yêu cầu quyền quản trị viên",
@@ -240,7 +241,7 @@ export async function deleteDocument(prev: unknown, formData: FormData) {
     }
 
     // Admin-only check
-    if (user.role.toLowerCase() !== "admin") {
+    if (!hasRole(user, "admin")) {
       return {
         success: false,
         msg: "Không được phép: Yêu cầu quyền quản trị viên",

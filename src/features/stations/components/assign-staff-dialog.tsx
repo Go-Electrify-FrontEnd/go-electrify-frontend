@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search, UserPlus, Check, Loader2 } from "lucide-react";
 import { assignStaffToStation } from "@/features/stations/api/stations-api";
+import { hasRole } from "@/lib/auth/role-check";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useUser } from "@/contexts/user-context";
@@ -78,8 +79,8 @@ export function AssignStaffDialog({
       }));
 
       // Filter only staff users
-      const staffUsers = normalizedUsers.filter(
-        (user: User) => user.role.toLowerCase() === "staff",
+      const staffUsers = normalizedUsers.filter((user: User) =>
+        hasRole(user, "staff"),
       );
 
       console.log("Fetched staff users:", staffUsers); // Debug log

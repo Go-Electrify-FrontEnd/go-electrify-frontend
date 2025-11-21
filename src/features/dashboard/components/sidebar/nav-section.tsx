@@ -10,11 +10,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { hasRoles } from "@/lib/auth/role-check";
 import Link from "next/link";
+import type { User } from "@/features/users/schemas/user.types";
 
 export function NavSection({
   items,
-  userRole,
+  user,
 }: {
   items: {
     title: string;
@@ -25,7 +27,7 @@ export function NavSection({
       roles?: string[];
     }[];
   };
-  userRole?: string;
+  user?: User | null;
 }) {
   const pathname = usePathname();
 
@@ -36,18 +38,8 @@ export function NavSection({
       return true;
     }
 
-    // If user role is not available, hide items with role restrictions
-    if (!userRole) {
-      return false;
-    }
-
-    // Check if user role matches any allowed role (case-insensitive)
-    const normalizedUserRole = userRole.toLowerCase();
-    const normalizedAllowedRoles = item.roles.map((role) =>
-      role.toLowerCase()
-    );
-
-    return normalizedAllowedRoles.includes(normalizedUserRole);
+    // Check if user has any of the allowed roles
+    return hasRoles(user, item.roles);
   });
 
   // Don't render section if no items are visible

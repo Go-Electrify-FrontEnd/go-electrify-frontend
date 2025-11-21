@@ -1,4 +1,5 @@
 import { getUser } from "@/lib/auth/auth-server";
+import { hasRole } from "@/lib/auth/role-check";
 import { AdminDashboardPage } from "@/features/dashboard/components/admin-dashboard-page";
 import { DriverDashboardPage } from "@/features/dashboard/components/driver-dashboard-page";
 import { redirect } from "next/navigation";
@@ -10,12 +11,11 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  const userRole = user.role.toLowerCase();
-  if (userRole === "admin") {
+  if (hasRole(user, "admin")) {
     return <AdminDashboardPage />;
   }
 
-  if (userRole === "staff") {
+  if (hasRole(user, "staff")) {
     redirect("/dashboard/staff/station-me");
   }
 

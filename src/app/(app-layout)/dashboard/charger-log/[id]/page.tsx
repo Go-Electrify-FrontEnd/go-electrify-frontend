@@ -12,6 +12,7 @@ import { Activity } from "lucide-react";
 import SectionHeader from "@/components/section-header";
 import SectionContent from "@/components/section-content";
 import { getUser } from "@/lib/auth/auth-server";
+import { hasRole, hasRoles } from "@/lib/auth/role-check";
 import {
   getSelfStation,
   getStationChargers,
@@ -67,10 +68,7 @@ export default async function ChargerLogPage({
     notFound();
   }
 
-  if (
-    user.role.toLowerCase() !== "admin" &&
-    user.role.toLowerCase() !== "staff"
-  ) {
+  if (!hasRoles(user, ["admin", "staff"])) {
     forbidden();
   }
 
@@ -85,7 +83,7 @@ export default async function ChargerLogPage({
 
   const page = pageParam ? parseInt(pageParam, 10) : 1;
 
-  if (user.role.toLowerCase() === "staff") {
+  if (hasRole(user, "staff")) {
     const station = await getSelfStation(token);
     if (!station) {
       notFound();
