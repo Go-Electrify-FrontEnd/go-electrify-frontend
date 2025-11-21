@@ -1,6 +1,7 @@
 "use server";
 
 import { getUser } from "@/lib/auth/auth-server";
+import { hasRoles } from "@/lib/auth/role-check";
 import { forbidden } from "next/navigation";
 import { updateTag } from "next/cache";
 import {
@@ -27,10 +28,7 @@ export async function createCharger(prevState: unknown, formData: FormData) {
     forbidden();
   }
 
-  if (
-    !user.role.toLowerCase().includes("staff") &&
-    !user.role.toLowerCase().includes("admin")
-  ) {
+  if (!hasRoles(user, ["staff", "admin"])) {
     forbidden();
   }
   const rawEntries = Object.fromEntries(formData.entries());
@@ -99,10 +97,7 @@ export async function updateCharger(prevState: unknown, formData: FormData) {
     forbidden();
   }
 
-  if (
-    !user.role.toLowerCase().includes("admin") &&
-    !user.role.toLowerCase().includes("staff")
-  ) {
+  if (!hasRoles(user, ["admin", "staff"])) {
     forbidden();
   }
 
@@ -159,10 +154,7 @@ export async function regenerateDockSecret(
     forbidden();
   }
 
-  if (
-    !user.role.toLowerCase().includes("admin") &&
-    !user.role.toLowerCase().includes("staff")
-  ) {
+  if (!hasRoles(user, ["admin", "staff"])) {
     forbidden();
   }
 

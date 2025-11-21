@@ -15,6 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { hasRole } from "@/lib/auth/role-check";
 import SectionHeader from "@/components/section-header";
 import StatCard from "../shared/stat-card";
 import {
@@ -66,11 +67,7 @@ export function AdminDashboard({
           </StatCard>
 
           <StatCard title="Người Dùng" icon={<Users />} value={users.length}>
-            {
-              users.filter((user) => user.role.toLowerCase() === "driver")
-                .length
-            }{" "}
-            tài xế
+            {users.filter((user) => hasRole(user, "driver")).length} tài xế
           </StatCard>
 
           <StatCard

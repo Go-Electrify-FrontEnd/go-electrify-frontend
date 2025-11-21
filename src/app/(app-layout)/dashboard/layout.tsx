@@ -13,7 +13,6 @@ import { NotificationButton } from "@/features/dashboard/components/header/notif
 import { Notification } from "@/features/dashboard/types/notification";
 import { API_BASE_URL } from "@/lib/api-config";
 import { ChatPopup } from "@/features/chatbot/components/chat-popup";
-import { generateId } from "ai";
 
 export const dynamic = "force-dynamic";
 
@@ -47,7 +46,6 @@ export default async function DashboardLayout({
     forbidden();
   }
 
-  const chatId = generateId();
   const notifications = await getNotifications(token);
   return (
     <SidebarProvider>
@@ -59,7 +57,7 @@ export default async function DashboardLayout({
             <Separator orientation="vertical" className="mr-2 h-4" />
             <HeaderBreadcrumb />
             <div className="ml-auto flex items-center gap-2">
-              <ChatPopup chatId={chatId} />
+              <ChatPopup />
               <NotificationButton notifications={notifications} />
             </div>
           </header>

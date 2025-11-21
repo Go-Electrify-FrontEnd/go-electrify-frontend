@@ -18,15 +18,12 @@ import { ChatHistoryList } from "./chat-history-list";
 import { ChatMessages } from "./chat-messages";
 import { ChatInput } from "./chat-input";
 
-interface ChatPopupProps {
-  chatId: string;
-}
+export function ChatPopup() {
+  const [currentChatId, setCurrentChatId] = useState<string>("");
 
-export function ChatPopup({ chatId }: ChatPopupProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
   const [isCreatingNewChat, setIsCreatingNewChat] = useState(false);
-  const [currentChatId, setCurrentChatId] = useState(chatId);
   const [showHistory, setShowHistory] = useState(false);
   const [chatHistory, setChatHistory] = useState<Chat[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
@@ -42,10 +39,17 @@ export function ChatPopup({ chatId }: ChatPopupProps) {
   });
 
   useEffect(() => {
-    if (isOpen && !showHistory) {
-      loadChatHistory();
+    if (isOpen) {
+      // Ensure there's always a chat id when the popup is opened
+      if (!currentChatId) {
+        setCurrentChatId(generateId());
+      }
+
+      if (!showHistory) {
+        loadChatHistory();
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, currentChatId, showHistory]);
 
   const loadChatHistory = async () => {
     setIsLoadingHistory(true);

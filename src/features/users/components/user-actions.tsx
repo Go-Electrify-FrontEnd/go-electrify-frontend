@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Copy, Shield } from "lucide-react";
 import type { UserApi } from "@/features/users/schemas/user.types";
 import { useUser } from "@/features/users/contexts/user-context";
+import { hasRole } from "@/lib/auth/role-check";
 import { useRouter } from "next/navigation";
 import { changeUserRoleAction } from "@/app/(app-layout)/dashboard/admin/users/actions";
 import { toast } from "sonner";
@@ -49,7 +50,7 @@ export function UserActionsCell({ user }: UserActionsProps) {
   const { user: me } = useUser();
   const router = useRouter();
 
-  const canChangeRole = me?.role === "Admin"; // chỉ Admin mới thấy “Đổi vai trò”
+  const canChangeRole = hasRole(me, "admin");
 
   async function handleConfirmChangeRole() {
     if (!nextRole || nextRole === user.role) {

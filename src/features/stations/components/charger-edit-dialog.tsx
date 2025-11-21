@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -9,7 +8,6 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -18,6 +16,7 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
+import { InputGroup, InputGroupInput } from "@/components/ui/input-group";
 import { useChargerUpdate } from "@/features/stations/contexts/charger-update-context";
 import { useServerAction } from "@/hooks/use-server-action";
 import { updateCharger } from "@/features/stations/services/chargers-actions";
@@ -44,6 +43,7 @@ interface UpdateChargerProps {
 export default function UpdateCharger({ connectorTypes }: UpdateChargerProps) {
   const { charger, isEditDialogOpen, setEditDialogOpen, setCharger } =
     useChargerUpdate();
+
   const initialState = { success: false, msg: "" };
   const { execute, pending } = useServerAction(updateCharger, initialState, {
     onSettled: (res) => {
@@ -60,22 +60,17 @@ export default function UpdateCharger({ connectorTypes }: UpdateChargerProps) {
 
   const form = useForm<ChargerUpdateFormData>({
     resolver: zodResolver(chargerUpdateSchema),
-    defaultValues: {
-      id: charger?.id?.toString() ?? "",
-      connectorTypeId: charger?.connectorTypeId ?? 1,
-      code: charger?.code ?? "",
-      powerKw: charger?.powerKw ?? 7,
-      status: charger?.status ?? "ONLINE",
-      pricePerKwh: charger?.pricePerKwh ?? 0,
-      dockSecretHash: "",
-    },
+    values: charger
+      ? {
+          id: charger.id.toString(),
+          connectorTypeId: charger.connectorTypeId,
+          code: charger.code,
+          powerKw: charger.powerKw,
+          status: charger.status,
+          pricePerKwh: charger.pricePerKwh,
+        }
+      : undefined,
   });
-
-  useEffect(() => {
-    if (charger) {
-      form.reset();
-    }
-  }, [charger]);
 
   if (!charger) return null;
 
@@ -143,7 +138,13 @@ export default function UpdateCharger({ connectorTypes }: UpdateChargerProps) {
               render={({ field, fieldState }) => (
                 <Field>
                   <FieldLabel>Mã Dock</FieldLabel>
-                  <Input {...field} placeholder="CHARGER-001" />
+                  <InputGroup>
+                    <InputGroupInput
+                      {...field}
+                      placeholder="CHARGER-001"
+                      aria-invalid={fieldState.invalid}
+                    />
+                  </InputGroup>
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}
@@ -157,7 +158,13 @@ export default function UpdateCharger({ connectorTypes }: UpdateChargerProps) {
               render={({ field, fieldState }) => (
                 <Field>
                   <FieldLabel>Công Suất (kW)</FieldLabel>
-                  <Input {...field} type="number" />
+                  <InputGroup>
+                    <InputGroupInput
+                      {...field}
+                      type="number"
+                      aria-invalid={fieldState.invalid}
+                    />
+                  </InputGroup>
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}
@@ -200,7 +207,13 @@ export default function UpdateCharger({ connectorTypes }: UpdateChargerProps) {
               render={({ field, fieldState }) => (
                 <Field>
                   <FieldLabel>Giá (VND/kWh)</FieldLabel>
-                  <Input {...field} type="number" />
+                  <InputGroup>
+                    <InputGroupInput
+                      {...field}
+                      type="number"
+                      aria-invalid={fieldState.invalid}
+                    />
+                  </InputGroup>
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}

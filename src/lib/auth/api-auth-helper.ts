@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getUser, refreshAccessToken } from "./auth-server";
+import { hasRoles } from "./role-check";
 import type { User } from "@/features/users/schemas/user.types";
 
 /**
@@ -64,14 +65,7 @@ export async function getAuthenticatedUserWithRole(
 ): Promise<User | null> {
   const user = await getAuthenticatedUser();
 
-  if (!user) {
-    return null;
-  }
-
-  const normalizedRoles = allowedRoles.map((role) => role.toLowerCase());
-  const userRole = user.role.toLowerCase();
-
-  if (!normalizedRoles.includes(userRole)) {
+  if (!hasRoles(user, allowedRoles)) {
     return null;
   }
 

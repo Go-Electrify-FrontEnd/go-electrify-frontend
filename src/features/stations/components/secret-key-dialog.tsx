@@ -10,7 +10,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import {
+  InputGroup,
+  InputGroupInput,
+  InputGroupAddon,
+  InputGroupButton,
+} from "@/components/ui/input-group";
+import { Field, FieldLabel } from "@/components/ui/field";
 import { Eye, EyeOff, Copy, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 
@@ -71,49 +77,41 @@ export function SecretKeyDialog({
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-foreground text-sm font-medium">
-              Khóa Bí Mật
-            </label>
-            <div className="relative">
-              <Input
+          <Field>
+            <FieldLabel>Khóa Bí Mật</FieldLabel>
+            <InputGroup>
+              <InputGroupInput
                 type={showSecret ? "text" : "password"}
                 value={secretKey}
+                className="font-mono"
                 readOnly
-                className="pr-20 font-mono"
               />
-              <div className="absolute top-1 right-1 flex gap-1">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 w-8 p-0"
+              <InputGroupAddon align="inline-end">
+                <InputGroupButton
                   onClick={() => setShowSecret(!showSecret)}
                   title={showSecret ? "Ẩn khóa" : "Hiện khóa"}
+                  size="icon-xs"
                 >
                   {showSecret ? (
                     <EyeOff className="h-4 w-4" />
                   ) : (
                     <Eye className="h-4 w-4" />
                   )}
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 w-8 p-0"
+                </InputGroupButton>
+                <InputGroupButton
                   onClick={handleCopy}
                   title="Sao chép khóa"
+                  size="icon-xs"
                 >
                   <Copy className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
+                </InputGroupButton>
+              </InputGroupAddon>
+            </InputGroup>
             <p className="text-muted-foreground text-xs">
               Nhấn vào biểu tượng mắt để hiển thị hoặc ẩn khóa. Nhấn vào biểu
               tượng sao chép để copy.
             </p>
-          </div>
+          </Field>
         </div>
 
         <DialogFooter>

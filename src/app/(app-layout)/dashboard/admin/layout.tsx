@@ -1,4 +1,5 @@
 import { getUser } from "@/lib/auth/auth-server";
+import { hasRole } from "@/lib/auth/role-check";
 import { forbidden } from "next/navigation";
 
 export default async function AdminLayout({
@@ -12,9 +13,7 @@ export default async function AdminLayout({
     forbidden();
   }
 
-  const role = user.role.toLowerCase();
-
-  if (role !== "admin") {
+  if (!hasRole(user, "admin")) {
     forbidden();
   }
 

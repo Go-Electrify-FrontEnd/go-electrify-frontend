@@ -1,4 +1,5 @@
 import { getUser } from "@/lib/auth/auth-server";
+import { hasRole } from "@/lib/auth/role-check";
 import { ChargersTable } from "@/features/stations/components/charger-table";
 import { SessionsTable } from "@/features/stations/components/session-table";
 import SectionHeader from "@/components/section-header";
@@ -56,7 +57,7 @@ export default async function StationPage({
     notFound();
   }
 
-  if (user.role.toLowerCase() === "staff") {
+  if (hasRole(user, "staff")) {
     const stationId = await getSelfStationId(token!);
     if (stationId && Number(stationId) !== Number(id)) {
       notFound();
@@ -274,9 +275,7 @@ export default async function StationPage({
             </div>
           </CardContent>
         </Card>
-        {user!.role.toLowerCase() === "admin" && (
-          <StationStaffTable stationId={id} />
-        )}
+        {hasRole(user, "admin") && <StationStaffTable stationId={id} />}
       </SectionContent>
     </div>
   );
