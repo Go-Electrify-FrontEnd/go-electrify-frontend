@@ -44,7 +44,7 @@ import { SecretKeyDialog } from "./secret-key-dialog";
 const initialState = {
   success: false,
   msg: "",
-  data: undefined as { secretKey: string } | undefined,
+  data: { secretKey: "" },
 };
 
 interface StationDockCreateProps {

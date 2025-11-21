@@ -3,29 +3,18 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { StationBooking } from "../schemas/station.schema";
+import { formatDate } from "@/lib/formatters";
 
 export type Booking = {
   id: number;
   code: string;
   status: string;
-  scheduledStart: string; // ISO
+  scheduledStart: string;
   initialSoc?: number | null;
   estimatedCost?: number | null;
   stationId?: number;
   connectorTypeId?: number;
   vehicleModelId?: number;
-};
-
-const formatDate = (iso?: string | null) => {
-  if (!iso) return "-";
-  try {
-    return new Intl.DateTimeFormat("vi-VN", {
-      dateStyle: "short",
-      timeStyle: "short",
-    }).format(new Date(iso));
-  } catch {
-    return String(iso);
-  }
 };
 
 const getStatusVariant = (status?: string) => {

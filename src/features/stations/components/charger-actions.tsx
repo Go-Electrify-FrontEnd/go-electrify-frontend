@@ -25,7 +25,7 @@ interface ActionsCellProps {
 const initialState = {
   success: false,
   msg: "",
-  data: undefined as { secretKey: string } | undefined,
+  data: { secretKey: "" },
 };
 
 export function ActionsCell({ charger }: ActionsCellProps) {

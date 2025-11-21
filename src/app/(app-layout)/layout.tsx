@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   description: "Nền tảng sạc xe điện cho tài xế - dự án môn học.",
 };
 
-export default async function LocaleLayout({
+export default async function AppLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;

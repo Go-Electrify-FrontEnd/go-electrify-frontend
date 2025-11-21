@@ -47,6 +47,7 @@ export default async function DashboardLayout({
   }
 
   const notifications = await getNotifications(token);
+
   return (
     <SidebarProvider>
       <UserProvider user={user} token={token}>

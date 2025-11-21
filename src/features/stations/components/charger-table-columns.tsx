@@ -7,7 +7,6 @@ import { formatCurrencyVND } from "@/lib/formatters";
 import { ActionsCell } from "@/features/stations/components/charger-actions";
 import { Charger } from "@/features/chargers/schemas/charger.schema";
 
-const formatCurrency = (amount: number) => formatCurrencyVND(amount);
 const formatPower = (power: number) => `${power} kW`;
 
 const getStatusVariant = (status: string) => {
@@ -83,7 +82,7 @@ export const columns: ColumnDef<Charger>[] = [
     header: "Giá (VND/kWh)",
     cell: ({ row }) => (
       <div className="font-semibold">
-        {formatCurrency(row.getValue("pricePerKwh") as number)}
+        {formatCurrencyVND(row.getValue("pricePerKwh") as number)}
       </div>
     ),
   },
