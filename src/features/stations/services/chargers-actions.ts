@@ -9,9 +9,6 @@ import {
 } from "@/features/chargers/schemas/charger.request";
 import { API_BASE_URL } from "@/lib/api-config";
 
-/**
- * Generate a cryptographically secure random secret key
- */
 function generateSecretKey(length = 32): string {
   const charset =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?";
@@ -153,7 +150,11 @@ export async function regenerateDockSecret(
   formData: FormData,
 ) {
   const { user, token } = await getUser();
-  if (!user || !user.role.toLowerCase().includes("admin")) {
+  if (
+    !user ||
+    !user.role.toLowerCase().includes("admin") ||
+    !user.role.toLowerCase().includes("staff")
+  ) {
     forbidden();
   }
 
@@ -165,9 +166,7 @@ export async function regenerateDockSecret(
     };
   }
 
-  // Generate a new secure secret key
   const newDockSecretHash = generateSecretKey(32);
-
   try {
     const url = `${API_BASE_URL}/chargers/${encodeURIComponent(chargerId)}`;
     const response = await fetch(url, {

@@ -272,24 +272,28 @@ export async function updateDocumentMetadata(
       return { success: false, message: "No vectors found" };
     }
 
-    const newMetadata = {
-      ...(updates.documentName && { documentName: updates.documentName }),
-      ...(updates.documentType && { documentType: updates.documentType }),
-      ...(updates.description && { description: updates.description }),
-      ...(updates.targetActors && {
-        targetActors: updates.targetActors.join(","),
-      }),
-    };
+    const metadataUpdates: Record<string, any> = {};
+    if (updates.documentName)
+      metadataUpdates.documentName = updates.documentName;
+    if (updates.documentType)
+      metadataUpdates.documentType = updates.documentType;
+    if (updates.description) metadataUpdates.description = updates.description;
+    if (updates.targetActors)
+      metadataUpdates.targetActors = updates.targetActors.join(",");
 
-    for (const [id, record] of Object.entries(allRecords)) {
-      const parseResult = PineconeMetadataSchema.safeParse(record?.metadata);
-      if (!parseResult.success) continue;
+    const updatePromises = Object.entries(allRecords).map(
+      async ([id, record]) => {
+        const parseResult = PineconeMetadataSchema.safeParse(record?.metadata);
+        if (!parseResult.success) return;
 
-      await namespace.update({
-        id,
-        metadata: { ...parseResult.data, ...newMetadata },
-      });
-    }
+        await namespace.update({
+          id,
+          metadata: { ...parseResult.data, ...metadataUpdates },
+        });
+      },
+    );
+
+    await Promise.all(updatePromises);
 
     return {
       success: true,

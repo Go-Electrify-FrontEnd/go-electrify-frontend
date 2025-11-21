@@ -125,7 +125,7 @@ export async function chunkTextWithLLM(
           ),
       }),
       prompt: `Split this text into semantic chunks for vector database storage:\n\n${text}`,
-      temperature: 0.1,
+      temperature: 0,
       maxRetries: 3,
     });
 
@@ -149,13 +149,6 @@ export async function chunkTextWithLLM(
     if (chunks.length === 0) {
       throw new Error("All chunks were empty after filtering");
     }
-
-    // Log generated chunks
-    console.log("\n[GENERATED CHUNKS]");
-    chunks.forEach((chunk, index) => {
-      console.log(`\nChunk ${index + 1} (${chunk.length} chars):`);
-      console.log(chunk.substring(0, 200) + (chunk.length > 200 ? "..." : ""));
-    });
 
     const processingTime = Date.now() - startTime;
     const averageChunkSize =

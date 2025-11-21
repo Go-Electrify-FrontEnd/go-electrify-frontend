@@ -31,10 +31,12 @@ export function useServerAction<
 
   const handleStateChange = useEffectEvent((currentState: TState) => {
     if (currentState.success) {
-      options.onSuccess?.(currentState) || options.onSettled?.(currentState);
+      options.onSuccess?.(currentState);
     } else {
-      options.onError?.(currentState) || options.onSettled?.(currentState);
+      options.onError?.(currentState);
     }
+
+    options.onSettled?.(currentState);
   });
 
   useEffect(() => {
