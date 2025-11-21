@@ -196,28 +196,6 @@ export async function completeSessionPayment(
   formData: FormData,
 ): Promise<CompletePaymentActionState> {
   try {
-    console.log("[Payment] Starting payment process...");
-
-    // Validate input
-    const parsed = completePaymentSchema.safeParse({
-      sessionId: formData.get("sessionId"),
-      method: formData.get("method"),
-    });
-
-    if (!parsed.success) {
-      const firstError = parsed.error.issues[0]?.message;
-      console.error("[Payment] Validation failed:", parsed.error);
-      return {
-        success: false,
-        msg: firstError || "Dữ liệu thanh toán không hợp lệ.",
-        suggestion: null,
-        code: null,
-      };
-    }
-
-    const { sessionId, method } = parsed.data;
-    console.log("[Payment] Session ID:", sessionId, "Method:", method);
-
     const { token } = await getUser();
 
     if (!token) {
@@ -230,26 +208,33 @@ export async function completeSessionPayment(
       };
     }
 
-    // Call API - Method must be case-sensitive (WALLET or SUBSCRIPTION)
-    console.log(
-      "[Payment] Calling API:",
-      `${API_BASE_URL}/charging-sessions/${sessionId}/complete-payment`,
-    );
+    const parsed = completePaymentSchema.safeParse({
+      sessionId: formData.get("sessionId"),
+      method: formData.get("method"),
+    });
+
+    if (!parsed.success) {
+      const firstError = parsed.error.issues[0]?.message;
+      return {
+        success: false,
+        msg: firstError || "Dữ liệu thanh toán không hợp lệ.",
+        suggestion: null,
+        code: null,
+      };
+    }
+
+    const { sessionId, method } = parsed.data;
     const response = await fetch(
       `${API_BASE_URL}/charging-sessions/${sessionId}/complete-payment`,
       {
         method: "POST",
         headers: createJsonAuthHeaders(token),
         body: JSON.stringify({
-          Method: method, // WALLET or SUBSCRIPTION (case-sensitive)
+          Method: method,
         }),
-        cache: "no-store",
       },
     );
 
-    console.log("[Payment] API response status:", response.status);
-
-    // Parse response
     type ApiErrorResponse = {
       ok: false;
       code: string;
@@ -285,7 +270,6 @@ export async function completeSessionPayment(
 
     console.log("[Payment] Parsed response:", JSON.stringify(rawJson, null, 2));
 
-    // Handle error response
     if (!rawJson.ok) {
       const errorResponse = rawJson as ApiErrorResponse;
       console.error("[Payment] Payment failed:", {
@@ -293,6 +277,7 @@ export async function completeSessionPayment(
         message: errorResponse.message,
         suggestion: errorResponse.suggestion,
       });
+
       return {
         success: false,
         msg: errorResponse.message || "Thanh toán không thành công",
@@ -301,7 +286,6 @@ export async function completeSessionPayment(
       };
     }
 
-    // Handle success response
     const successResponse = rawJson as ApiSuccessResponse;
     const { data } = successResponse;
 
@@ -321,8 +305,6 @@ export async function completeSessionPayment(
         successMessage = `Thanh toán thành công bằng gói đăng ký cho ${formatNumber(data.CoveredBySubscriptionKwh, 2)} kWh.`;
       }
     }
-
-    console.log("[Payment] Success message:", successMessage);
 
     return {
       success: true,

@@ -64,6 +64,7 @@ export default async function ReservationPage({
   const upcomingReservations = allReservations.filter((r) =>
     ["CONFIRMED"].includes(r.status.toUpperCase()),
   );
+
   const currentReservation =
     upcomingReservations.length > 0 ? upcomingReservations[0] : null;
 
@@ -74,6 +75,7 @@ export default async function ReservationPage({
       chargerCode = charger.code;
     }
   }
+
   return (
     <div className="flex flex-col gap-4 md:gap-6">
       <SectionHeader
