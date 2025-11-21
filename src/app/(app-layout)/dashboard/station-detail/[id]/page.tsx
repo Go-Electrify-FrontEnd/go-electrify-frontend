@@ -70,9 +70,15 @@ export default async function StationPage({
   }
 
   const chargers = await getStationChargers(id, token!);
+  const sortedChargers = chargers.sort((a, b) => b.id - a.id);
+
   const bookings = await getBookingsByStationId(id, token!);
+  const sortedBookings = bookings.sort((a, b) => b.id - a.id);
+
   const connectorTypes = await getConnectorTypes();
+
   const sessions = await getStationSessions(id, token!);
+  const sortedSessions = sessions.sort((a, b) => b.id - a.id);
 
   const totalChargers = chargers.length;
   const totalSessions = sessions.length > 0 ? chargers.length : 0;
@@ -215,7 +221,7 @@ export default async function StationPage({
           <CardContent className="p-0">
             <div className="p-3 sm:p-6">
               <ChargerUpdateProvider>
-                <ChargersTable data={chargers} />
+                <ChargersTable data={sortedChargers} />
                 <UpdateCharger connectorTypes={connectorTypes} />
               </ChargerUpdateProvider>
             </div>
@@ -242,7 +248,7 @@ export default async function StationPage({
           </CardHeader>
           <CardContent className="p-0">
             <div className="p-3 sm:p-6">
-              <SessionsTable data={sessions} />
+              <SessionsTable data={sortedSessions} />
             </div>
           </CardContent>
         </Card>
@@ -271,7 +277,7 @@ export default async function StationPage({
           </CardHeader>
           <CardContent className="p-0">
             <div className="p-3 sm:p-6">
-              <BookingsTable data={bookings} />
+              <BookingsTable data={sortedBookings} />
             </div>
           </CardContent>
         </Card>
